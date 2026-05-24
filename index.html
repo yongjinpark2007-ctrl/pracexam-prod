@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PracExam.com | AI License Exam Prep</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0b1120 0%, #19233c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e2e8f0;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 3rem;
+            padding: 3rem 2rem;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .badge {
+            display: inline-block;
+            background: #2dd4bf20;
+            color: #2dd4bf;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            border: 1px solid #2dd4bf40;
+        }
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+        }
+        .domain {
+            font-size: 1.2rem;
+            color: #60a5fa;
+            margin-bottom: 1.5rem;
+            word-break: break-all;
+        }
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .feature {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #a5f3fc;
+        }
+        .coming-soon {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem;
+            background: linear-gradient(135deg, #facc15, #ff8c00);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .email-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+        .email-form input {
+            padding: 0.9rem 1.2rem;
+            border-radius: 60px;
+            border: none;
+            background: #0f172a;
+            color: white;
+            width: 260px;
+            font-size: 1rem;
+            border: 1px solid #334155;
+        }
+        .email-form button {
+            background: #3b82f6;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .email-form button:hover {
+            background: #2563eb;
+            transform: scale(0.97);
+        }
+        .footer {
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        hr {
+            margin: 1.5rem 0;
+            border-color: #334155;
+        }
+        @media (max-width: 550px) {
+            .container { padding: 2rem 1rem; }
+            h1 { font-size: 2.2rem; }
+            .description { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="badge">✨ AI-Powered License Exam Prep</div>
+    <h1>PracExam</h1>
+    <div class="domain">Practice. Pass. Perform.</div>
+    <div class="description">
+        아직 준비 중이지만, 곧 여러분을 만납니다.<br>
+        AI 개인 튜터, 적응형 문제, 실전 모의고사로<br>
+        자격증 시험을 완전히 새롭게 준비하세요.
+    </div>
+
+    <div class="features">
+        <span class="feature">📘 EA (세무사)</span>
+        <span class="feature">🏠 California Real Estate</span>
+        <span class="feature">🧠 AI Tutor (한국어/영어)</span>
+        <span class="feature">📊 오답 분석 & 재생성</span>
+    </div>
+
+    <div class="coming-soon">
+        🚀 Coming Early 2026
+    </div>
+
+    <form class="email-form" action="#" method="post">
+        <input type="email" placeholder="이메일을 입력하세요" required>
+        <button type="submit">Launch 알림 받기</button>
+    </form>
+    <p style="font-size:0.75rem; margin-top:0.7rem;">* 출시 시 최대 30% 할인 쿠폰 발송</p>
+
+    <hr>
+    <div class="footer">
+        © 2025 PracExam — AI 기반 라이선스 시험 플랫폼<br>
+        EA | Real Estate | Insurance | More
+    </div>
+</div>
+
+<!-- 간단한 이메일 저장 (선택) - 실제 backend 없이도 작동하는 티저용 -->
+<script>
+    const form = document.querySelector('.email-form');
+    if(form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = form.querySelector('input[type="email"]').value;
+            if(!email) return;
+            // 여기에 원한다면 Google Forms, Webhook, 또는 간단한 로컬스토리지 저장 가능
+            alert(`✅ ${email}님, 출시 소식을 가장 먼저 보내드리겠습니다.`);
+            form.reset();
+            // 실제로는 나중에 Mailchimp, ConvertKit 등 연동 추천
+        });
+    }
+</script>
+</body>
+</html>
