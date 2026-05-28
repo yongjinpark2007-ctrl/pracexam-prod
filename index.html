@@ -569,7 +569,7 @@ html, body {
 .dash-metric-label{font-size:15px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
 .dash-metric-value{font-size:40px;font-weight:700;color:var(--text-main);letter-spacing:-.02em;line-height:1;}
 .dash-metric-value .pct{font-size:23px;color:var(--text-muted);font-weight:600;}
-.dash-metric-sub{font-size:16px;color:var(--text-muted);margin-top:5px;}
+.dash-metric-sub{font-size:13px;color:var(--text-muted);margin-top:5px;}
 .dash-metric-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:9px;overflow:hidden;}
 .dash-metric-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--gold-light));transition:width .4s;}
 .dash-hero-target{
@@ -1707,14 +1707,7 @@ function renderDashHero(focusPart){
 
   const info = PART_META[focusPart] || PART_META['Part 1'];
   const isReady = accPct >= EXAM_READY_THRESHOLD;
-  const gap = EXAM_READY_THRESHOLD - accPct;
   const statusText = isReady ? '응시 가능' : '준비 중';
-  const targetText = isReady
-    ? '시험 응시 권장 정답률 달성 (90%+)'
-    : (tAttempts === 0
-        ? '학습을 시작하면 정답률이 측정됩니다'
-        : '시험 응시 권장(정답률 90%)까지 ' + gap + '% 부족');
-  const targetCls = isReady ? 'ready' : (accPct >= 70 || tAttempts === 0 ? '' : 'warning');
 
   document.getElementById('dash-hero').innerHTML =
     '<div class="dash-hero">' +
@@ -1736,14 +1729,10 @@ function renderDashHero(focusPart){
           '<div class="dash-metric-label">정답률</div>' +
           '<div class="dash-metric-value">' + accPct + '<span class="pct">%</span></div>' +
           '<div class="dash-metric-sub">' + tCorrect + ' / ' + tAttempts + ' 정답' +
-            '<span style="font-size:13px;color:var(--text-muted);opacity:.75;"> - 반복 풀이 포함</span>' +
+            '<span style="font-size:11px;color:var(--text-muted);opacity:.75;"> - 반복 풀이 포함</span>' +
           '</div>' +
           '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%"></div></div>' +
         '</div>' +
-      '</div>' +
-      '<div class="dash-hero-target ' + targetCls + '">' +
-        '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>' +
-        targetText +
       '</div>' +
       '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
         '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>' +
