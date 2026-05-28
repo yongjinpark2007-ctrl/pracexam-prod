@@ -1735,7 +1735,9 @@ function renderDashHero(focusPart){
         '<div>' +
           '<div class="dash-metric-label">정답률</div>' +
           '<div class="dash-metric-value">' + accPct + '<span class="pct">%</span></div>' +
-          '<div class="dash-metric-sub">' + tCorrect + ' / ' + tAttempts + ' 정답</div>' +
+          '<div class="dash-metric-sub">' + tCorrect + ' / ' + tAttempts + ' 정답' +
+            '<span style="font-size:10px;color:var(--text-muted);opacity:.75;"> - 반복 풀이 포함</span>' +
+          '</div>' +
           '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%"></div></div>' +
         '</div>' +
       '</div>' +
