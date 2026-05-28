@@ -582,7 +582,7 @@ html, body {
 .dash-hero-target svg{width:20px;height:20px;flex-shrink:0;stroke-width:2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;}
 .dash-hero-cta{
   width:100%;background:linear-gradient(135deg,#00c4a7,#007a8a);color:#0d1520;
-  border:none;border-radius:12px;padding:16px 24px;
+  border:none;border-radius:12px;padding:16px 24px;margin-top:1.5rem;
   font-family:inherit;font-size:19px;font-weight:800;
   cursor:pointer;transition:all .18s;letter-spacing:.01em;
   display:flex;align-items:center;justify-content:center;gap:9px;
@@ -1768,7 +1768,7 @@ function renderDashPartsGrid(){
     const meta = PART_META[pk] || { label: pk };
     const shortLabel = meta.label.replace(' — ', ' · ');
     const isActive = (pk===focusPart);
-    return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashStartFocusPart(\''+pk+'\')">'+
+    return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
       '<div class="dash-part-row-name">'+(meta.icon||'')+' '+shortLabel+'</div>'+
       '<div class="dash-part-row-stats">진도 '+progressPct+'% · 정답률 '+accLabel+'</div>'+
       '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%"></div></div>'+
@@ -1832,6 +1832,13 @@ function renderDashRecent2(){
 }
 
 // Hero CTA 클릭 → Study 진입 (focus part 저장 + 해당 chip 자동 선택)
+// Part 카드 클릭 → Hero 포커스만 변경 (Study 진입 안 함, Dashboard 유지)
+function dashSetFocusPart(part){
+  localStorage.setItem('ea_focus_part', part);
+  renderDashboard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function dashStartFocusPart(part){
   localStorage.setItem('ea_focus_part', part);
   const partVal = {
