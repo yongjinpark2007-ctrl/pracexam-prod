@@ -1274,9 +1274,9 @@ async function saveSessionToCloud(count, correct, pct, questionIds){
 
 async function uploadQuestionsToCloud(questions){
   if(!SB_USER){ showToast('⚠️ 로그인 필요'); return 0; }
-  // 중복 id 제거 (같은 id가 여러 개면 마지막 항목만 유지)
+  // 중복 제거 — question_id 우선 (DB UNIQUE 제약과 일치), 없으면 id (defensive fallback)
   const uniqueQuestions = Array.from(
-    new Map(questions.map(q => [q.id, q])).values()
+    new Map(questions.map(q => [q.question_id || q.id, q])).values()
   );
   const rows = uniqueQuestions.map(q => ({
     id:              q.id,
@@ -1294,40 +1294,14 @@ async function uploadQuestionsToCloud(questions){
     outline_code:    q.outlineCode || null,
     difficulty:      (q.difficulty != null && q.difficulty !== '') ? q.difficulty : null,
   }));
-
-  // outline_code FK 사전 검증 — content_outline 에 없는 코드는 null 처리 (FK 위반 방지)
-  if(rows.some(r => r.outline_code)){
-    try {
-      const { data: validCodes, error: ocErr } = await sb.from('content_outline').select('outline_code');
-      if(ocErr){
-        console.warn('content_outline 조회 실패 (검증 건너뜀):', ocErr);
-      } else {
-        const validSet = new Set((validCodes||[]).map(r => r.outline_code));
-        const invalidCodes = new Set();
-        let nulledCount = 0;
-        rows.forEach(r => {
-          if(r.outline_code && !validSet.has(r.outline_code)){
-            invalidCodes.add(r.outline_code);
-            r.outline_code = null;
-            nulledCount++;
-          }
-        });
-        if(nulledCount > 0){
-          console.warn('미등록 outline_code (' + invalidCodes.size + '개 고유 코드, ' + nulledCount + '개 행):', Array.from(invalidCodes).sort());
-          showToast('⚠️ ' + nulledCount + '개 행의 outline_code 미등록 → null 처리 (콘솔 확인)');
-        }
-      }
-    } catch(err){
-      console.warn('outline_code 검증 중 오류 (계속 진행):', err);
-    }
-  }
+  // ※ 2026-06-02 content_outline FK 제거로 사전 검증 블록 불필요 (handoff §9 ⑤ 참조)
 
   let uploaded = 0;
   const errors = [];
   const BATCH_SIZE = 50;  // 100→50 으로 축소: 실패 시 격리 및 손실 최소화
   for(let i = 0; i < rows.length; i += BATCH_SIZE){
     const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await sb.from('questions').upsert(batch, { onConflict: 'id' });
+    const { error } = await sb.from('questions').upsert(batch, { onConflict: 'question_id' });
     if(error){
       errors.push({ rangeStart: i, rangeEnd: i + batch.length - 1, msg: error.message });
       console.error('Upload batch rows ' + i + '-' + (i + batch.length - 1) + ' failed:', error, batch);
@@ -2618,8 +2592,8 @@ function processCSVFile(file){
     try{
       const qsRaw=parseCSV(ev.target.result, file.name);
       if(!qsRaw.length){ showToast('❌ 문제를 찾을 수 없습니다. CSV 형식을 확인하세요.'); return; }
-      // CSV 내 중복 id 제거 — cloud upsert 의 dedup 정책(last-wins)과 일치시켜 로컬↔클라우드 카운트 일관성 확보
-      const qs = Array.from(new Map(qsRaw.map(q => [q.id, q])).values());
+      // CSV 내 중복 제거 — question_id 우선 (DB UNIQUE 제약과 일치), 없으면 id (last-wins)
+      const qs = Array.from(new Map(qsRaw.map(q => [q.question_id || q.id, q])).values());
       const dupeCount = qsRaw.length - qs.length;
       if(dupeCount > 0){
         showToast('⚠️ CSV 내 중복 ID '+dupeCount+'개 발견 — 마지막 항목만 사용 ('+qs.length+'개 처리)');
