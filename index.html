@@ -2577,8 +2577,14 @@ function processCSVFile(file){
   const reader=new FileReader();
   reader.onload=ev=>{
     try{
-      const qs=parseCSV(ev.target.result, file.name);
-      if(!qs.length){ showToast('❌ 문제를 찾을 수 없습니다. CSV 형식을 확인하세요.'); return; }
+      const qsRaw=parseCSV(ev.target.result, file.name);
+      if(!qsRaw.length){ showToast('❌ 문제를 찾을 수 없습니다. CSV 형식을 확인하세요.'); return; }
+      // CSV 내 중복 id 제거 — cloud upsert 의 dedup 정책(last-wins)과 일치시켜 로컬↔클라우드 카운트 일관성 확보
+      const qs = Array.from(new Map(qsRaw.map(q => [q.id, q])).values());
+      const dupeCount = qsRaw.length - qs.length;
+      if(dupeCount > 0){
+        showToast('⚠️ CSV 내 중복 ID '+dupeCount+'개 발견 — 마지막 항목만 사용 ('+qs.length+'개 처리)');
+      }
       const sourceName = file.name;
       const isReplace  = S.questions.some(q => q.source === sourceName);
       if(isReplace){
