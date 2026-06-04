@@ -330,6 +330,14 @@ html, body {
   text-align:left;width:100%;font-family:inherit;color:var(--text-main);
 }
 @media(hover:hover){.option-btn:hover:not(:disabled):not(.sel){
+/* Touch :active — 모든 기기에서 작동 (hover 미디어쿼리 밖) */
+.option-btn:active:not(:disabled){opacity:.72;transform:scale(.99);}
+.mode-btn:active{opacity:.78;transform:scale(.98);}
+.filter-chip:active{opacity:.75;transform:scale(.97);}
+.btn-primary:active,.btn-submit:active{opacity:.82;transform:translateY(0);}
+.btn-ghost:active,.btn-navy:active{opacity:.75;}
+.dash-part-row:active{opacity:.85;transform:translateX(4px);}
+.dash-hero-cta:active{transform:translateY(0);opacity:.85;}
   border-color:rgba(0,196,167,.3);
   background:rgba(0,196,167,.05);
 }}
@@ -390,32 +398,6 @@ html, body {
 .tip-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.08em;margin-bottom:8px;text-transform:uppercase;}
 .tip-body{font-size:18px;line-height:1.8;color:var(--text-mid);word-break:break-word;overflow-wrap:break-word;}
 
-/* FOLLOW-UP */
-.ask-box{
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--border-clr);
-  border-radius:12px;padding:12px 14px;
-  display:flex;gap:8px;margin-top:1rem;
-}
-.ask-input{flex:1;background:none;border:none;outline:none;color:var(--text-main);font-family:inherit;font-size:15px;min-width:0;}
-.ask-input::placeholder{color:rgba(122,147,173,.5);}
-.ask-btn{
-  background:linear-gradient(135deg,#00c4a7,#007a8a);
-  border:none;border-radius:8px;padding:8px 14px;
-  color:#0d1520;cursor:pointer;font-family:inherit;
-  font-size:13px;font-weight:700;transition:all .15s;
-  white-space:nowrap;flex-shrink:0;
-}
-.ask-btn:hover{background:linear-gradient(135deg,#00e5c3,#009980);}
-.ai-answer{
-  background:rgba(0,196,167,.05);
-  border-left:2px solid var(--teal);
-  border-radius:0 10px 10px 0;
-  padding:14px 16px;margin-top:10px;
-  font-size:18px;line-height:1.85;color:var(--text-mid);
-  display:none;word-break:break-word;overflow-wrap:break-word;
-}
-.ai-answer.visible{display:block;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .loading{color:var(--teal);font-size:14px;animation:pulse 1s infinite;}
 
@@ -645,11 +627,7 @@ html, body {
   .exp-body{font-size:19px;line-height:1.65;}
   .update-body{font-size:19px;line-height:1.65;}
   .tip-body{font-size:19px;line-height:1.65;}
-  .ai-answer{font-size:19px;line-height:1.65;}
   .result-banner{font-size:17px;}
-  .exp-label{font-size:12px;letter-spacing:.06em;}
-  .update-label,.tip-label{font-size:12px;letter-spacing:.06em;}
-  .ask-input,.ask-btn{font-size:17px;}
   .exp-section{margin-bottom:.7rem;}
   .update-box,.tip-box{margin:8px 0;}
   .unit-name{font-size:16px;}
@@ -778,11 +756,11 @@ html, body {
 <div id="screen-quiz-setup" class="screen">
   <div style="margin-bottom:1.5rem;">
     <div class="section-title">Start a Study Session</div>
-    <div style="font-size:13px;color:var(--text-muted);">All AI explanations are based on 2025 U.S. tax law.</div>
+    <div style="font-size:13px;color:var(--text-muted);">문제 수, 과목, 범위, 학습 모드를 선택 후 시작하세요.</div>
   </div>
   <div class="start-card">
-    <!-- 문제 수 -->
-    <div class="exp-label">🔢 Number of Questions</div>
+    <!-- ① 문제 수 -->
+    <div class="exp-label" style="font-size:13px;">🔢 Number of Questions</div>
     <div class="mode-grid">
       <button class="mode-btn selected" onclick="selectCount(5,this)"><span class="mode-num">5</span><span class="mode-label">Quick</span></button>
       <button class="mode-btn" onclick="selectCount(10,this)"><span class="mode-num">10</span><span class="mode-label">Standard</span></button>
@@ -790,8 +768,8 @@ html, body {
       <button class="mode-btn" onclick="selectCount(20,this)"><span class="mode-num">20</span><span class="mode-label">Full</span></button>
     </div>
 
-    <!-- EA Exam Part -->
-    <div class="exp-label" style="margin-top:1rem;">📌 EA Exam Part</div>
+    <!-- ② 과목 -->
+    <div class="exp-label" style="font-size:13px;margin-top:0;padding-top:1.5rem;border-top:1px solid var(--border-clr);">📌 EA Exam Part</div>
     <div class="filter-row" id="part-row">
       <button class="filter-chip selected" onclick="selectPart('all',this)">All Parts</button>
       <button class="filter-chip" onclick="selectPart('part1',this)">Part 1 – Individuals</button>
@@ -802,27 +780,26 @@ html, body {
       <button class="filter-chip" onclick="selectPart('partC',this)">Part C</button>
     </div>
 
-    <!-- 문제 범위 -->
-    <div class="exp-label" style="margin-top:1rem;">문제 범위</div>
+    <!-- ③ 범위 설정 -->
+    <div class="exp-label" style="font-size:13px;margin-top:0;padding-top:1.5rem;border-top:1px solid var(--border-clr);">🎯 범위 설정</div>
     <div class="filter-row" id="subset-row">
       <button class="filter-chip selected" onclick="selectSubset('all',this)">Random</button>
       <button class="filter-chip" onclick="selectSubset('unseen',this)">Unseen Only</button>
       <button class="filter-chip" onclick="selectSubset('practiced',this)">Practiced Only</button>
       <button class="filter-chip" onclick="selectSubset('flagged',this)">Flagged Only</button>
     </div>
+    <div style="margin-top:10px;">
+      <select class="repeat-select" id="repeat-select" onchange="selectRepeat(this.value)">
+        <option value="all" selected>Repeat: All (모든 문제)</option>
+        <option value="le1">Repeat: 1회 이하 (0~1회)</option>
+        <option value="le2">Repeat: 2회 이하 (0~2회)</option>
+        <option value="le3">Repeat: 3회 이하 (0~3회)</option>
+        <option value="le4">Repeat: 4회 이하 (0~4회)</option>
+      </select>
+    </div>
 
-    <!-- 반복 학습 -->
-    <div class="exp-label" style="margin-top:1rem;">Repeat Round</div>
-    <select class="repeat-select" id="repeat-select" onchange="selectRepeat(this.value)">
-      <option value="all" selected>All (모든 문제)</option>
-      <option value="le1">1회 이하 (0~1회)</option>
-      <option value="le2">2회 이하 (0~2회)</option>
-      <option value="le3">3회 이하 (0~3회)</option>
-      <option value="le4">4회 이하 (0~4회)</option>
-    </select>
-
-    <!-- Study Mode -->
-    <div class="exp-label" style="margin-top:1rem;">⚙️ Study Mode</div>
+    <!-- ④ 학습 모드 -->
+    <div class="exp-label" style="font-size:13px;margin-top:0;padding-top:1.5rem;border-top:1px solid var(--border-clr);">⚙️ Study Mode</div>
     <div class="filter-row" id="mode-row">
       <button class="filter-chip selected" onclick="selectMode('normal',this)">Normal</button>
       <button class="filter-chip" onclick="selectMode('review',this)">Review Wrong Answers</button>
@@ -886,15 +863,6 @@ html, body {
     <div class="tip-box">
       <div class="tip-label">EA Exam Tip · 2025 세법 기준</div>
       <div class="tip-body" id="tip-body"></div>
-    </div>
-
-    <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:1rem;margin-top:1rem;">
-      <div class="exp-label">Ask a Follow-up Question</div>
-      <div class="ask-box">
-        <input class="ask-input" id="ask-input" placeholder="e.g. What is the 2025 standard deduction for MFJ?" onkeydown="if(event.key==='Enter')sendFollowUp()"/>
-        <button class="ask-btn" onclick="sendFollowUp()">Ask ↗</button>
-      </div>
-      <div class="ai-answer" id="ai-answer"></div>
     </div>
 
     <div style="margin-top:1rem;">
@@ -983,40 +951,10 @@ html, body {
 <div id="screen-settings" class="screen">
   <div class="section-title">Settings</div>
 
-  <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
-    <div class="exp-label" style="margin-bottom:8px;color:#15803d;">☁️ 클라우드 동기화</div>
-    <div style="font-size:14px;color:#166534;line-height:1.75;" id="sync-status-text">Supabase 연결 확인 중…</div>
-    <button class="btn-ghost" style="margin-top:12px;width:100%;color:#dc2626;border-color:rgba(220,38,38,.3);" onclick="doLogout()">🚪 로그아웃</button>
-  </div>
-
-  <div class="api-setup">
-    <div class="exp-label">🔑 DeepSeek API Key (AI 해설용)</div>
-    <div style="font-size:14px;color:var(--text-muted);margin-bottom:10px;">AI 자동 해설에 사용됩니다. 한 번 저장하면 이 기기에서 자동으로 사용됩니다. <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:#2563eb;font-weight:600;">platform.deepseek.com</a>에서 발급받을 수 있습니다.</div>
-    <input class="api-input" type="password" id="api-key-input" placeholder="DeepSeek API 키를 여기에 붙여넣기…"/>
-    <button class="btn-primary" onclick="saveApiKey()">API 키 저장</button>
-    <div style="font-size:13px;color:var(--text-muted);margin-top:10px;font-weight:600;" id="api-status"></div>
-  </div>
-
-  <!-- AI 생성 설정 -->
-  <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
-    <div class="exp-label" style="margin-bottom:10px;">🤖 AI 자동 생성 설정</div>
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      <label style="display:flex; align-items:center; gap:12px; cursor:pointer;">
-        <input type="checkbox" id="ai-toggle-explanation" checked> 
-        <span>✅ 기본 해설 (Explanation) 자동 생성</span>
-      </label>
-      <!-- DEPRECATED: 2025 세법 Update 토글 — examTip이 2025 정보 포함하므로 숨김 처리 (2026-04) -->
-      <label style="display:none; align-items:center; gap:12px; cursor:pointer;">
-        <input type="checkbox" id="ai-toggle-taxupdate"> 
-        <span>📋 2025 세법 Update 생성 (deprecated)</span>
-      </label>
-      <label style="display:flex; align-items:center; gap:12px; cursor:pointer;">
-        <input type="checkbox" id="ai-toggle-examtip" checked> 
-        <span>EA Exam Tip 생성 (2025 세법 정보 포함)</span>
-      </label>
-      <p style="font-size:13px; color:var(--text-muted); margin-top:8px;">체크 해제 시 해당 항목은 AI 호출 없이 기존 DB 값만 표시됩니다.</p>
-      <button class="btn-ghost" style="margin-top:8px;" onclick="saveAISettings()">설정 저장</button>
-    </div>
+  <div style="background:var(--card-bg);border:1px solid rgba(0,196,167,.2);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+    <div class="exp-label" style="margin-bottom:8px;color:var(--teal);">☁️ 클라우드 동기화</div>
+    <div style="font-size:14px;color:var(--text-mid);line-height:1.75;" id="sync-status-text">Supabase 연결 확인 중…</div>
+    <button class="btn-ghost" style="margin-top:12px;width:100%;color:#f43f5e;border-color:rgba(244,63,94,.3);" onclick="doLogout()">🚪 로그아웃</button>
   </div>
 
   <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
@@ -1024,9 +962,9 @@ html, body {
     <button class="btn-ghost" style="margin-bottom:10px;width:100%;" onclick="exportData()">모든 데이터 내보내기 (JSON)</button>
     <button class="btn-ghost" style="width:100%;color:#dc2626;border-color:rgba(220,38,38,.3);" onclick="if(confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))resetData()">모든 데이터 초기화</button>
   </div>
-  <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:14px;padding:1.25rem;margin-top:1rem;">
-    <div class="exp-label" style="margin-bottom:8px;color:#0369a1;">💾 클라우드 저장 안내</div>
-    <div style="font-size:14px;color:#075985;line-height:1.75;">문제은행과 학습 기록은 Supabase 클라우드에 저장됩니다. 어느 기기에서든 로그인하면 동일한 문제와 진도를 볼 수 있습니다.</div>
+  <div style="background:var(--card-bg);border:1px solid rgba(0,196,167,.12);border-radius:14px;padding:1.25rem;margin-top:1rem;">
+    <div class="exp-label" style="margin-bottom:8px;">💾 클라우드 저장 안내</div>
+    <div style="font-size:14px;color:var(--text-mid);line-height:1.75;">문제은행과 학습 기록은 Supabase 클라우드에 저장됩니다. 어느 기기에서든 로그인하면 동일한 문제와 진도를 볼 수 있습니다.</div>
   </div>
 </div>
 
@@ -1047,38 +985,6 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 let SB_USER = null;
-
-// AI 설정 (taxUpdate는 deprecated — 항상 false로 강제)
-const AI_SETTINGS = {
-  explanation: true,
-  taxUpdate: false,  // DEPRECATED: examTip이 2025 세법 정보를 포함하므로 비활성화
-  examTip: true
-};
-
-function loadAISettings() {
-  const saved = localStorage.getItem('ea_ai_settings');
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      // taxUpdate는 사용자가 이전에 true로 저장했어도 무시 — 항상 false
-      Object.assign(AI_SETTINGS, parsed);
-      AI_SETTINGS.taxUpdate = false;
-    } catch(e) {}
-  }
-  const expEl = document.getElementById('ai-toggle-explanation');
-  const tipEl = document.getElementById('ai-toggle-examtip');
-  if(expEl) expEl.checked = AI_SETTINGS.explanation;
-  if(tipEl) tipEl.checked = AI_SETTINGS.examTip;
-  // taxUpdate 토글은 UI에서 숨김 처리되므로 DOM 반영 불필요
-}
-
-function saveAISettings() {
-  AI_SETTINGS.explanation = document.getElementById('ai-toggle-explanation').checked;
-  AI_SETTINGS.examTip = document.getElementById('ai-toggle-examtip').checked;
-  AI_SETTINGS.taxUpdate = false;  // 항상 비활성
-  localStorage.setItem('ea_ai_settings', JSON.stringify(AI_SETTINGS));
-  showToast('⚙️ AI 생성 설정이 저장되었습니다.');
-}
 
 // ── AUTH ────────────────────────────────────────────
 async function doLogin(){
@@ -1142,6 +1048,7 @@ function updateSyncStatus(){
 // ══════════════════════════════════════════════════════
 async function loadFromCloud(){
   if(!SB_USER) return;
+  var localAnsweredCount = Object.keys(S.answered).length;  // Phase 2-9: 클라우드 로드 전 로컬 카운트
   showToast('☁️ 클라우드에서 불러오는 중…');
   try{
     // ── questions 페이지네이션 ──
@@ -1200,6 +1107,13 @@ async function loadFromCloud(){
       S.answered[r.question_id] = { times: r.times, correct: r.correct_count, wrong: r.wrong_count };
       if(r.flagged) S.flagged.add(r.question_id);
     });
+
+    // Phase 2-9: 로컬 vs 클라우드 불일치 경고 (data-loss 사고 조기 감지)
+    var cloudAnsweredCount = Object.keys(S.answered).length;
+    if(localAnsweredCount > cloudAnsweredCount + 30 && localAnsweredCount > cloudAnsweredCount * 1.15){
+      showToast('⚠️ 로컬 학습 기록(' + localAnsweredCount + '개) > 클라우드(' + cloudAnsweredCount + '개). Settings에서 데이터 백업을 권장합니다.');
+      console.warn('[Safety] Local answered:', localAnsweredCount, '/ Cloud:', cloudAnsweredCount);
+    }
 
     // ── sessions ──
     const { data: sRows } = await sb
@@ -1321,45 +1235,6 @@ async function fixQuestionInCloud(q, options = {}) {
 }
 
 // ══════════════════════════════════════════════════════
-// DEEPSEEK API
-// ══════════════════════════════════════════════════════
-const DEEPSEEK_MODEL = 'deepseek-v4-pro';
-const DEEPSEEK_URL   = 'https://api.deepseek.com/v1/chat/completions';
-
-function getApiKey(){
-  return localStorage.getItem('ea_deepseek_key') || '';
-}
-
-async function callDeepSeek(systemPrompt, userPrompt){
-  const key = getApiKey();
-  if(!key) throw new Error('No API key set. Please add your DeepSeek API key in Settings.');
-  
-  const res = await fetch(DEEPSEEK_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${key}`
-    },
-    body: JSON.stringify({
-      model: DEEPSEEK_MODEL,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.3,
-      max_tokens: 3000
-    })
-  });
-  
-  if(!res.ok){
-    const err = await res.json().catch(()=>({}));
-    throw new Error(err?.error?.message || `API error ${res.status}`);
-  }
-  
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || '';
-}
-
 // ══════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════
@@ -1431,7 +1306,6 @@ const DEMO = [
 // INIT & PERSIST
 // ══════════════════════════════════════════════════════
 function init(){
-  loadAISettings();
   // localStorage에서 진행 중 세션 즉시 복원 (오프라인/빠른 표시)
   try{
     const raw = localStorage.getItem('ea_prep_v3');
@@ -1448,11 +1322,6 @@ function init(){
   }catch(e){}
   renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
   updateResumeBadge();
-  const k = getApiKey();
-  if(k){
-    document.getElementById('api-key-input').value = '•'.repeat(Math.min(k.length, 32));
-    document.getElementById('api-status').textContent = '✓ API 키가 저장되어 있습니다 — 자동으로 사용 중';
-  }
 }
 
 function save(){
@@ -1607,15 +1476,6 @@ function clearLiveQuiz(){
 // ══════════════════════════════════════════════════════
 // SETTINGS
 // ══════════════════════════════════════════════════════
-function saveApiKey(){
-  const input=document.getElementById('api-key-input');
-  const raw=input.value.trim();
-  if(!raw || /^•+$/.test(raw)){showToast('새 API 키를 입력해주세요');return;}
-  localStorage.setItem('ea_deepseek_key',raw);
-  input.value='•'.repeat(Math.min(raw.length,32));
-  document.getElementById('api-status').textContent='✅ API 키 저장 완료 — 이 기기에서 자동 사용됩니다';
-  showToast('✅ API 키가 저장되었습니다');
-}
 function exportData(){
   const blob=new Blob([JSON.stringify({questions:S.questions,sessions:S.sessions,flagged:[...S.flagged],answered:S.answered},null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ea-prep-data.json'; a.click();
@@ -1691,7 +1551,7 @@ function renderDashboard(){
 
   renderDashHero(focusPart);
   renderDashPartsGrid();
-  renderDashWeakTopicsPlaceholder();
+  renderDashWeakTopics();
   renderDashRecent2();
 }
 
@@ -1784,12 +1644,66 @@ function renderDashPartsGrid(){
 }
 
 // Phase 2-5 에서 실제 구현 예정
-function renderDashWeakTopicsPlaceholder(){
-  document.getElementById('dash-weak-topics').innerHTML =
-    '<div class="dash-parts-section-label">오늘의 약점 보강</div>' +
-    '<div class="empty" style="padding:1.25rem 1rem;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:10px;margin-bottom:1.5rem;">' +
-      '<div class="empty-sub">Phase 2-5 (다음 세션) — 정답률 낮은 토픽 Top 3 자동 추출</div>' +
+// Phase 2-5: 약점 토픽 Top 3 (현재 포커스 Part, 최소 5회 이상 학습)
+function renderDashWeakTopics(){
+  var MIN_ATT = 5;
+
+  // 현재 포커스 Part
+  var focusPart = localStorage.getItem('ea_focus_part') || 'Part 1';
+  if(!S.questions.some(function(q){ return q.part === focusPart; })) focusPart = 'Part 1';
+
+  // 포커스 Part 의 문제만 → 토픽별 times/correct 집계
+  var topicMap = {};
+  S.questions.forEach(function(q){
+    if(q.part !== focusPart) return;
+    var a = S.answered[q.id];
+    if(!a || !(a.times)) return;
+    var t = q.topic || '기타';
+    if(!topicMap[t]) topicMap[t] = { correct: 0, times: 0 };
+    topicMap[t].correct += (a.correct || 0);
+    topicMap[t].times   += (a.times   || 0);
+  });
+
+  // 최소 MIN_ATT 회 이상 + 정답률 계산
+  var topics = Object.keys(topicMap)
+    .filter(function(t){ return topicMap[t].times >= MIN_ATT; })
+    .map(function(t){
+      var d = topicMap[t];
+      return { name: t, correct: d.correct, times: d.times,
+               pct: Math.round(d.correct / d.times * 100) };
+    });
+
+  // 정답률 오름차순 → Top 3
+  var weak = topics.sort(function(a, b){ return a.pct - b.pct; }).slice(0, 3);
+
+  var el = document.getElementById('dash-weak-topics');
+  if(!el) return;
+
+  var label = '<div class="dash-parts-section-label">약점 보강 · ' + focusPart + ' Top 3</div>';
+
+  if(weak.length === 0){
+    var reason = Object.keys(topicMap).length === 0
+      ? '학습을 시작하면 토픽별 약점이 분석됩니다'
+      : focusPart + ' 토픽을 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다';
+    el.innerHTML = label +
+      '<div class="empty" style="padding:1.25rem 1rem;background:var(--card-bg);' +
+      'border:1px solid var(--border-clr);border-radius:10px;margin-bottom:1.5rem;">' +
+        '<div class="empty-sub">' + reason + '</div>' +
+      '</div>';
+    return;
+  }
+
+  var rows = weak.map(function(item){
+    var cls = item.pct < 60 ? 'crit' : 'warn';
+    return '<div class="weak-row">' +
+      '<span class="weak-name">' + item.name + '</span>' +
+      '<span class="weak-stat ' + cls + '">' + item.pct + '%' +
+        '<span style="font-weight:400;font-size:13px;opacity:.7;"> (' + item.correct + '/' + item.times + ')</span>' +
+      '</span>' +
     '</div>';
+  }).join('');
+
+  el.innerHTML = label + rows;
 }
 
 // Phase 2-6 의 일부 — 최근 2개 세션 (Phase 0 정렬 로직 보존)
@@ -1911,11 +1825,6 @@ async function startQuiz(){
   pool.sort((a,b)=>{const ta=S.answered[a.id]?.times||0,tb=S.answered[b.id]?.times||0;return ta-tb||Math.random()-.5;});
   S.quizQueue=pool.slice(0,S.count).map(q=>q.id);
   
-  // Unseen Only 세션이면 백그라운드 사전 생성 실행
-  if (S.subset === 'unseen') {
-    pregenerateAIForQueue(S.quizQueue);
-  }
-  
   S.quizIdx=0; S.submitted=false; S.selected=null;
   S.reviewMode = false;
   S.results={correct:0,wrong:0,total:S.quizQueue.length};
@@ -1945,49 +1854,6 @@ function reviewSession(sessionIndex){
   showScreen('quiz');
   loadQuestion();
   showToast(`${s.date} 세션 복습 시작 (${validIds.length}문제)`);
-}
-
-// 백그라운드 AI 사전 생성 (비동기)
-// 백그라운드 AI 사전 생성 (비동기) – Exam Tip 사전 생성 제거됨
-async function pregenerateAIForQueue(questionIds) {
-  // AI_SETTINGS.taxUpdate, examTip은 무시하고 explanation만 사전 생성
-  if (!AI_SETTINGS.explanation) return;
-  
-  showToast('🤖 AI 해설 미리 생성 중... (백그라운드)');
-  for (const qid of questionIds) {
-    const q = S.questions.find(x => x.id === qid);
-    if (!q) continue;
-    
-    const needExp = AI_SETTINGS.explanation && !q.aiEnhanced && (!q.explanation || q.explanation === '—');
-    if (!needExp) continue;
-    
-    try {
-      let promptFields = [];
-      promptFields.push('explanation: 한국어 상세 해설 (2025년 미국 세법 기준)');
-      
-      const raw = await callDeepSeek(
-        `당신은 EA(Enrolled Agent) 시험 전문 튜터입니다. 모든 답변은 반드시 2025년 미국 세법(2026년 EA 시험 적용 기준)을 따릅니다. 2024년 이전 세법 기준 정보는 절대 사용하지 마세요. 아래 JSON 형식으로만 응답하세요.`,
-        `문제: ${q.text}\n보기:\n${q.options.map((o,i)=>String.fromCharCode(65+i)+') '+o).join('\n')}\n정답: ${String.fromCharCode(65+q.correct)}) ${q.options[q.correct]}\n\nJSON 키:\n${promptFields.map(f=>'- '+f).join('\n')}`
-      );
-      const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-      
-      if (needExp) {
-        const aiExpl = parsed.explanation;
-        if (aiExpl && aiExpl.trim().length > 2) {
-          q.explanation = aiExpl;
-          q.aiEnhanced = true;
-        }
-        // 실패 시 aiEnhanced는 false로 남아 실시간 생성에서 처리됨
-      }
-      
-      save();
-      await fixQuestionInCloud(q, { explanation: needExp, taxUpdate: false, examTip: false });
-    } catch(e) {
-      console.warn(`배치 생성 실패 (${qid}):`, e);
-    }
-    await new Promise(r => setTimeout(r, 200)); // API 호출 간격
-  }
-  showToast('✅ AI 해설 사전 생성 완료');
 }
 
 function curQ(){const id=S.quizQueue[S.quizIdx];return id?S.questions.find(q=>q.id===id):null;}
@@ -2035,8 +1901,6 @@ function loadQuestion(){
   document.getElementById('btn-submit').textContent='Submit Answer';
   document.getElementById('btn-skip').style.display='';
   document.getElementById('explanation-card').classList.remove('visible');
-  document.getElementById('ai-answer').classList.remove('visible');
-  document.getElementById('ask-input').value='';
 
   // ── Review 모드: 정답을 즉시 공개 (과거 세션 다시보기) ──
   if(S.reviewMode){
@@ -2146,100 +2010,10 @@ async function showExplanation(q, isOk, timeout){
 
   const origExp = q.explanation && q.explanation.trim().length > 2 ? q.explanation : '';
 
-  // 초기 로딩 표시 (wrong-body, update-body 제거됨)
-  document.getElementById('tip-body').innerHTML = '<span class="loading">Generating exam tip…</span>';
-  document.getElementById('exp-body').innerHTML = origExp || (AI_SETTINGS.explanation ? '<span class="loading">AI generating explanation…</span>' : '—');
+  // PracExam: 사전 생성 콘텐츠 표시 (런타임 AI 없음)
+  document.getElementById('exp-body').innerHTML = origExp || '—';
+  document.getElementById('tip-body').innerHTML = (q.examTip && q.examTip.trim().length > 1) ? q.examTip : '—';
   document.getElementById('correction-box').innerHTML = '';
-
-  await fetchFullExplanation(q, origExp);
-  await fetchAISections(q);
-}
-
-async function fetchFullExplanation(q, origExp){
-  // 이미 AI Enhanced 되어 있다면, 저장된 설명을 바로 표시하고 종료
-  if (q.aiEnhanced) {
-    document.getElementById('exp-body').innerHTML = q.explanation || '—';
-    return;
-  }
-  if (!AI_SETTINGS.explanation) {
-    document.getElementById('exp-body').innerHTML = origExp || '—';
-    return;
-  }
-
-  // 가드: origExp에 이미 "🤖 AI 추가 분석" 마커가 있으면 중복 호출 방지
-  if (origExp && origExp.includes('🤖 AI 추가 분석')) {
-    document.getElementById('exp-body').innerHTML = origExp;
-    q.aiEnhanced = true;
-    return;
-  }
-
-  try{
-    const raw = await callDeepSeek(
-      `당신은 EA 시험 전문 튜터입니다. 아래 JSON 형식으로만 응답하세요.`,
-      `문제: ${q.text}\n보기:\n${q.options.map((o,i)=>String.fromCharCode(65+i)+') '+o).join('\n')}\n문제은행 정답: ${String.fromCharCode(65+q.correct)}) ${q.options[q.correct]}\n\nJSON 키:\n- explanation: 한국어 상세 해설\n- verifiedCorrect: 실제 정답 (A/B/C/D)`
-    );
-    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-
-    const aiCorrectLetter = (parsed.verifiedCorrect||'').toUpperCase().trim();
-    const aiCorrectIdx = 'ABCD'.indexOf(aiCorrectLetter);
-    const answerMismatch = (aiCorrectIdx >= 0 && aiCorrectIdx !== q.correct);
-
-    let displayExplanation = origExp;
-    if (origExp && parsed.explanation) {
-      displayExplanation = origExp + '<br><br><strong style="color:var(--teal);">AI 추가 분석</strong><br>' + parsed.explanation;
-    } else {
-      displayExplanation = parsed.explanation || '';
-    }
-    document.getElementById('exp-body').innerHTML = displayExplanation || '—';
-
-    if(answerMismatch){
-      const correctionBox = document.getElementById('correction-box');
-      correctionBox.innerHTML = `
-        <div style="background:#fff3cd;border:2px solid #f59e0b;border-radius:10px;padding:14px;margin-bottom:1rem;">
-          <div style="font-weight:700;color:#92400e;margin-bottom:8px;">⚠️ AI가 문제은행 정답과 다른 답을 제안했습니다</div>
-          <div style="margin-bottom:10px;font-size:15px;">문제은행 정답: <strong>${String.fromCharCode(65+q.correct)}) ${q.options[q.correct]}</strong><br>AI 제안 정답: <strong style="color:var(--teal);">${aiCorrectLetter}) ${q.options[aiCorrectIdx]}</strong></div>
-          <button class="btn-primary" style="background:#f59e0b;padding:10px 16px;font-size:14px;" onclick="acceptAICorrection('${q.id}', ${aiCorrectIdx}, '${aiCorrectLetter}')">✅ 이 제안을 수락하고 문제은행 수정</button>
-          <button class="btn-ghost" style="margin-left:8px;" onclick="this.parentElement.parentElement.remove()">무시</button>
-        </div>
-      `;
-    }
-
-    q.explanation = displayExplanation;
-    q.aiEnhanced = true;
-    save();
-    fixQuestionInCloud(q, { explanation: true, taxUpdate: false, examTip: false });
-  }catch(e){
-    console.error('AI error:', e);
-    document.getElementById('exp-body').innerHTML = origExp || 'AI 해설을 불러오지 못했습니다.';
-  }
-}
-async function fetchAISections(q){
-  // wrongReasons 섹션은 UI에서 제거되었으므로 DOM 업데이트 생략
-  // taxUpdate 섹션은 deprecated — examTip만 처리
-
-  const needsTip = AI_SETTINGS.examTip && (!q.examTip || q.examTip === '—');
-
-  if (!needsTip) {
-    document.getElementById('tip-body').innerHTML = q.examTip || '—';
-    return;
-  }
-
-  try{
-    const raw = await callDeepSeek(
-      `당신은 EA(Enrolled Agent) 시험 전문 튜터입니다. 모든 답변은 반드시 2025년 미국 세법(2026년 EA 시험 적용 기준)을 따릅니다. 2024년 이전 세법 기준 정보는 절대 사용하지 마세요. 아래 JSON 형식으로만 응답하세요.`,
-      `문제: ${q.text}\n보기:\n${q.options.map((o,i)=>String.fromCharCode(65+i)+') '+o).join('\n')}\n정답: ${String.fromCharCode(65+q.correct)}) ${q.options[q.correct]}\n\nJSON 키:\n- examTip: 반드시 2025년 미국 세법(2026년 EA 시험 적용) 기준으로, 해당 문제와 관련된 구체적인 금액·임계값·세율만 3문장 이내로 간략히 요약 (한국어). 불필요한 설명은 제외하고, 2024년 대비 변경된 수치가 있다면 함께 적어주세요. 답변 시작 시 "📌 2025 기준:" 으로 시작.`
-    );
-    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-
-    q.examTip = (typeof parsed.examTip === 'string') ? parsed.examTip : '—';
-    document.getElementById('tip-body').innerHTML = q.examTip || '—';
-
-    save();
-    await fixQuestionInCloud(q, { explanation: false, taxUpdate: false, examTip: true });
-  }catch(e){
-    console.error('AI sections error:', e);
-    document.getElementById('tip-body').innerHTML = '⚠️ AI 응답 오류';
-  }
 }
 
 window.acceptAICorrection = async function(qid, newCorrectIdx, newLetter){
@@ -2338,20 +2112,6 @@ function toggleFlag(){
   showToast(fl?'Question flagged for review':'Flag removed');
 }
 
-async function sendFollowUp(){
-  const q=curQ(), userQ=document.getElementById('ask-input').value.trim();
-  if(!userQ) return;
-  const box=document.getElementById('ai-answer');
-  box.innerHTML='<span class="loading">Thinking…</span>'; box.classList.add('visible');
-  try{
-    const text=await callDeepSeek(
-      '당신은 EA(Enrolled Agent) 시험 전문 튜터입니다. 중요사항: (1) 반드시 2025년 미국 세법 기준으로 2026년 EA 시험에 맞게 답변하세요. (2) 문제은행 정답이 틀릴 수 있으니 본인 지식으로 문제은행 정답과 다르더라도 당신 답을 제시하세요. (3) 달러 금액, 임계값, 세율을 구체적으로 명시하세요. (4) 300단어 이내로 답변하되 절대 문장 중간에 끊지 마세요. (5) 구체적인 수치가 포함된 경우 "📌 2025 세법 기준:"으로 시작하세요. 모든 답변은 한국어로 하되, 세법 용어(IRC 조항, 양식 번호, 세금 명칭 등)는 영어를 괄호에 병기하세요.',
-      `EA 시험 문제:\n"${q?.text}"\n\n보기:\n${q?.options.map((o,i)=>String.fromCharCode(65+i)+') '+o).join('\n')}\n\n문제은행 정답: ${q?String.fromCharCode(65+q.correct)+') '+q.options[q.correct]:''}\n\n수강생 질문: ${userQ}`
-    );
-    box.innerHTML=text.replace(/\n/g,'<br>');
-  }catch(e){ box.innerHTML='<em>'+e.message+'</em>'; }
-}
-
 // ══════════════════════════════════════════════════════
 // RESULTS
 // ══════════════════════════════════════════════════════
@@ -2409,7 +2169,7 @@ function openModal(id){
   document.getElementById('modal-content').innerHTML=`
     <div style="margin-bottom:.75rem;"><span class="q-badge">${q.part}</span><span class="q-badge-gray" style="margin-left:6px;">${q.topic||'General'}</span></div>
     <div style="font-size:16px;line-height:1.75;margin-bottom:1rem;color:var(--text-main);">${q.text}</div>
-    ${q.options.map((o,i)=>`<div style="padding:10px 12px;border-radius:10px;font-size:14px;margin-bottom:8px;border:1.5px solid ${i===q.correct?'#16a34a':'var(--border-clr)'};background:${i===q.correct?'rgba(22,163,74,.08)':'#f8faff'};color:${i===q.correct?'#15803d':'var(--text-muted)'};">${String.fromCharCode(65+i)}) ${o}</div>`).join('')}
+    ${q.options.map((o,i)=>`<div style="padding:10px 12px;border-radius:10px;font-size:14px;margin-bottom:8px;border:${i===q.correct?'1.5px solid rgba(0,196,167,.35)':'1px solid var(--border-clr)'};background:${i===q.correct?'rgba(0,196,167,.08)':'rgba(255,255,255,.02)'};color:${i===q.correct?'var(--teal)':'var(--text-muted)'};">${String.fromCharCode(65+i)}) ${o}</div>`).join('')}
     ${q.explanation?`<div style="margin-top:1rem;"><div class="exp-label">해설</div><div style="font-size:15px;line-height:1.8;color:var(--text-muted);">${q.explanation}</div></div>`:''}
 
     ${q.examTip?`<div class="tip-box" style="margin-top:.75rem;"><div class="tip-label">EA Exam Tip</div><div class="tip-body" style="font-size:15px; line-height:1.8; color:var(--text-muted);">${q.examTip}</div></div>`:''}
