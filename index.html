@@ -446,12 +446,42 @@ html, body {
   border:1px solid var(--border-clr);
   border-left:3px solid var(--flag-color);
   border-radius:12px;padding:14px 16px;margin-bottom:8px;
-  cursor:pointer;transition:all .15s;
+  transition:all .15s;
 }
 .bookmark-card:hover{background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.3);}
 .bm-q{font-size:16px;line-height:1.6;margin-bottom:8px;color:var(--text-main);}
 .bm-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .bm-tag{font-size:12px;color:var(--text-muted);background:rgba(0,0,0,.03);padding:3px 8px;border-radius:6px;font-weight:500;}
+.bm-footer{display:flex;align-items:center;gap:8px;margin-top:10px;}
+.bm-stats{font-size:12px;color:var(--text-muted);}
+.bm-stats .bm-ok{color:var(--success-color);font-weight:600;}
+.bm-stats .bm-ng{color:var(--danger-color);font-weight:600;}
+
+/* REVIEW TABS */
+.review-tab-bar{display:flex;border-bottom:1.5px solid var(--border-clr);margin-bottom:1.25rem;}
+.review-tab{
+  flex:1;padding:9px 8px;text-align:center;font-size:14px;font-weight:500;
+  color:var(--text-muted);border:none;background:none;cursor:pointer;
+  border-bottom:2.5px solid transparent;margin-bottom:-1.5px;
+  font-family:inherit;transition:color .15s;
+}
+.review-tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+.review-tab-badge{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:1px 6px;border-radius:5px;margin-left:5px;
+  background:rgba(0,0,0,.05);color:var(--text-muted);
+}
+.review-tab.active .review-tab-badge{background:var(--teal-dim);color:var(--teal);}
+
+/* REVIEW SESSION ROWS */
+.rev-sess-row{
+  background:var(--card-bg);border:1px solid var(--border-clr);
+  border-radius:10px;padding:13px 14px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;
+}
+.rev-sess-info{flex:1;}
+.rev-sess-date{font-size:15px;font-weight:600;color:var(--text-main);}
+.rev-sess-meta{font-size:13px;color:var(--text-muted);margin-top:2px;}
 
 /* UPLOAD */
 .upload-zone{
@@ -697,9 +727,10 @@ html, body {
   /* ── Results ── */
   .result-breakdown{grid-template-columns:1fr 1fr;}
 
-  /* ── Bookmarks ── */
+  /* ── Bookmarks / Review ── */
   .bm-q{font-size:16px;}
   .bm-tag{font-size:13px;}
+  .review-tab{font-size:13px;padding:8px 4px;}
 
   /* ── Stats cards (Review 등) ── */
   .unit-stats{font-size:14px;}
@@ -931,8 +962,8 @@ html, body {
       <div class="tip-body" id="tip-body"></div>
     </div>
 
-    <div style="margin-top:1rem;">
-      <button class="btn-navy" style="width:100%;" onclick="nextQuestion()">Next Question →</button>
+    <div id="exp-next-btn-area">
+      <button class="btn-navy" style="width:100%;margin-top:1rem;" onclick="nextQuestion()">Next Question →</button>
     </div>
   </div>
 </div>
@@ -966,7 +997,7 @@ html, body {
     <div class="rb-card"><div class="rb-num" id="r-total" style="color:var(--text-main);"></div><div class="rb-lab">Answered</div></div>
     <div class="rb-card"><div class="rb-num" id="r-flagged" style="color:var(--text-main);"></div><div class="rb-lab">Flagged</div></div>
   </div>
-  <div class="result-btns">
+  <div class="result-btns" id="result-btns-area">
     <button class="btn-navy" style="flex:1;" onclick="showScreen('dashboard')">Dashboard</button>
     <button class="btn-primary" style="flex:1;" onclick="clearLiveQuiz();showScreen('quiz-setup')">New Session →</button>
   </div>
@@ -974,11 +1005,26 @@ html, body {
 
 <!-- ═══ BOOKMARKS ═══ -->
 <div id="screen-bookmarks" class="screen">
-  <div style="margin-bottom:1.5rem;">
-    <div class="section-title">Flagged for Review</div>
-    <div style="font-size:13px;color:var(--text-muted);">Questions you marked as important or frequently missed</div>
+  <div style="margin-bottom:1rem;">
+    <div class="section-title">Review</div>
   </div>
-  <div id="bookmarks-list"></div>
+  <!-- Tab bar -->
+  <div class="review-tab-bar">
+    <button class="review-tab active" id="rev-tab-flagged" onclick="switchReviewTab('flagged')">
+      플래그 문제 <span class="review-tab-badge" id="rev-badge-flagged">0</span>
+    </button>
+    <button class="review-tab" id="rev-tab-sessions" onclick="switchReviewTab('sessions')">
+      최근 세션 <span class="review-tab-badge" id="rev-badge-sessions">0</span>
+    </button>
+  </div>
+  <!-- Flagged panel -->
+  <div id="rev-panel-flagged">
+    <div id="bookmarks-list"></div>
+  </div>
+  <!-- Recent Sessions panel -->
+  <div id="rev-panel-sessions" style="display:none;">
+    <div id="review-sessions-list"></div>
+  </div>
 </div>
 
 <!-- ═══ STATISTICS (Phase 1 skeleton — Phase 4에서 콘텐츠 추가) ═══ -->
@@ -1324,6 +1370,8 @@ const S = {
   quizQueue:[], quizIdx:0, submitted:false, selected:null,
   count:5, filter:'all', part:'all', subset:'all', mode:'normal',
   reviewMode: false,
+  retryFlaggedMode: false,
+  returnTo: null,
   repeatFilter: 'all',
   sessionAnswers: [],   // Phase 3: per-question {selected, submitted, isCorrect}
   results:{correct:0,wrong:0,total:0},
@@ -1572,6 +1620,8 @@ function clearLiveQuiz(){
   S.quizQueue = []; S.quizIdx = 0;
   S.results = {correct:0, wrong:0, total:0};
   S.reviewMode = false;
+  S.retryFlaggedMode = false;
+  S.returnTo = null;
   save();
 }
 
@@ -1585,7 +1635,7 @@ function exportData(){
 function resetData(){
   localStorage.removeItem('ea_prep_v3');
   S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={};
-  S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false;
+  S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.retryFlaggedMode=false;
   if(SB_USER){ sb.from('live_session').delete().eq('user_id', SB_USER.id); }
   renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
   updateResumeBadge();
@@ -1828,8 +1878,6 @@ function renderDashRecent2(){
   }
 
   const rowsHtml = recentItems.map(function(s){
-    const realIdx = S.sessions.indexOf(s);
-    const hasIds = s.question_ids && s.question_ids.length > 0;
     let label = s.date;
     if(s.created_at){
       const d = new Date(s.created_at);
@@ -1837,10 +1885,7 @@ function renderDashRecent2(){
               d.toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', hour12:false });
     }
     const scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
-    const clickable = hasIds
-      ? 'onclick="reviewSession(' + realIdx + ')" title="클릭하여 이 세션 복습"'
-      : 'style="opacity:.55;cursor:default;" title="구버전 세션 (다시보기 불가)"';
-    return '<div class="dash-recent-row" ' + clickable + '>' +
+    return '<div class="dash-recent-row">' +
              '<span class="dash-recent-date">' + label + '</span>' +
              '<span class="dash-recent-meta">' + s.count + '문제</span>' +
              '<span class="dash-recent-score" style="color:' + scoreColor + ';">' + s.pct + '%</span>' +
@@ -1937,27 +1982,29 @@ async function startQuiz(){
 
 // ── 과거 세션 다시보기 (Review 모드) ──
 function reviewSession(sessionIndex){
-  const s = S.sessions[sessionIndex];
+  var s = S.sessions[sessionIndex];
   if(!s || !s.question_ids || s.question_ids.length === 0){
     showToast('⚠️ 이 세션은 문제 ID가 저장되지 않았습니다 (구버전 세션)');
     return;
   }
-  // 세션의 문제 ID들이 현재 questions에 모두 있는지 확인
-  const validIds = s.question_ids.filter(id => S.questions.find(q => q.id === id));
+  var validIds = s.question_ids.filter(function(id){ return S.questions.find(function(q){ return q.id === id; }); });
   if(validIds.length === 0){
     showToast('⚠️ 이 세션의 문제들을 찾을 수 없습니다');
     return;
   }
   S.quizQueue = validIds;
   S.quizIdx = 0; S.submitted = false; S.selected = null;
-  S.reviewMode = true;
+  S.reviewMode = false;
+  S.retryFlaggedMode = false;
+  S.returnTo = 'bookmarks';   // Score 후 Review 탭으로 복귀
   S.mode = 'normal';
   S.sessionAnswers = new Array(validIds.length).fill(null);
   S.results = {correct:0, wrong:0, total:validIds.length};
   save();
   showScreen('quiz');
   loadQuestion();
-  showToast(`${s.date} 세션 복습 시작 (${validIds.length}문제)`);
+  var label = s.date || '이전';
+  showToast(label + ' 세션 다시 풀기 (' + validIds.length + '문제)');
 }
 
 function curQ(){const id=S.quizQueue[S.quizIdx];return id?S.questions.find(q=>q.id===id):null;}
@@ -2030,8 +2077,7 @@ function loadQuestion(){
     });
     document.getElementById('btn-submit').style.display = 'none';
     document.getElementById('btn-skip').style.display = 'none';
-    showExplanation(q, true, false);
-    document.getElementById('q-progress-text').textContent = 'Review ' + (S.quizIdx+1) + ' of ' + S.quizQueue.length;
+    showExplanation(q, null, false);
     document.getElementById('q-session-label').textContent = 'REVIEW · 과거 세션 다시보기';
     document.getElementById('timer-badge').style.display = 'none';
   } else {
@@ -2141,15 +2187,36 @@ function skipQuestion(){
 async function showExplanation(q, isOk, timeout){
   const ec = document.getElementById('explanation-card'); ec.classList.add('visible');
   const banner = document.getElementById('result-banner');
-  if(timeout){ banner.className='result-banner fail'; banner.textContent='⏱ Time\'s up! See the correct answer below'; }
-  else { banner.className='result-banner '+(isOk?'ok':'fail'); banner.textContent=isOk?'✓ Correct! Well done.':'✗ Incorrect — review the explanation below'; }
+  if(isOk === null || isOk === undefined){
+    banner.className = 'result-banner'; banner.textContent = '';
+  } else if(timeout){
+    banner.className='result-banner fail'; banner.textContent='⏱ Time\'s up! See the correct answer below';
+  } else {
+    banner.className='result-banner '+(isOk?'ok':'fail');
+    banner.textContent=isOk?'✓ Correct! Well done.':'✗ Incorrect — review the explanation below';
+  }
 
   const origExp = q.explanation && q.explanation.trim().length > 2 ? q.explanation : '';
-
-  // PracExam: 사전 생성 콘텐츠 표시 (런타임 AI 없음)
   document.getElementById('exp-body').innerHTML = origExp || '—';
   document.getElementById('tip-body').innerHTML = (q.examTip && q.examTip.trim().length > 1) ? q.examTip : '—';
   document.getElementById('correction-box').innerHTML = '';
+
+  // retryFlaggedMode: 하단 버튼 교체
+  const btnArea = document.getElementById('exp-next-btn-area');
+  if(btnArea){
+    if(S.retryFlaggedMode){
+      const hasNext = (S.quizIdx + 1) < S.quizQueue.length;
+      btnArea.innerHTML =
+        '<div style="display:flex;gap:8px;margin-top:1rem;">' +
+          (hasNext
+            ? '<button class="btn-navy" style="flex:1;" onclick="nextRetryFlagged()">다음 Flagged →</button>'
+            : '') +
+          '<button class="btn-ghost" style="flex:1;" onclick="exitRetryFlagged()">Review로 돌아가기</button>' +
+        '</div>';
+    } else {
+      btnArea.innerHTML = '<button class="btn-navy" style="width:100%;margin-top:1rem;" onclick="nextQuestion()">Next Question →</button>';
+    }
+  }
 }
 
 window.acceptAICorrection = async function(qid, newCorrectIdx, newLetter){
@@ -2189,13 +2256,30 @@ window.acceptAICorrection = async function(qid, newCorrectIdx, newLetter){
   document.getElementById('correction-box').innerHTML = '';
 };
 
+function nextRetryFlagged(){
+  gotoQuestion(S.quizIdx + 1);
+}
+
+function exitRetryFlagged(){
+  S.retryFlaggedMode = false;
+  clearLiveQuiz();
+  showScreen('bookmarks');
+  switchReviewTab('flagged');
+}
+
 // Phase 3: 양방향 네비게이션 핵심 함수
 function gotoQuestion(idx){
   clearInterval(S.timerInt);
   if(idx < 0) return;
   if(idx >= S.quizQueue.length){
-    // 마지막 문제 이후 — reviewMode면 대시보드, 아니면 세션 종료 모달
-    if(S.reviewMode){
+    if(S.retryFlaggedMode){
+      // Flagged 모드 종료 — Score Page 스킵, Review로 바로 이동
+      S.retryFlaggedMode = false;
+      clearLiveQuiz();
+      showToast('✅ Flagged 문제 완료!');
+      showScreen('bookmarks');
+      switchReviewTab('flagged');
+    } else if(S.reviewMode){
       clearLiveQuiz(); showToast('✅ 복습 완료'); showScreen('dashboard');
     } else {
       finishSession();
@@ -2214,6 +2298,7 @@ function nextQuestion(){
 function renderQuestionPills(){
   var container = document.getElementById('q-pills');
   if(!container) return;
+  if(S.retryFlaggedMode){ container.style.display='none'; return; }
   if(!S.quizQueue || S.quizQueue.length <= 1){ container.style.display='none'; return; }
   container.style.display = 'flex';
   var html = '';
@@ -2344,7 +2429,6 @@ function showResults(){
   clearInterval(S.timerInt);
   const {correct,wrong,total}=S.results, answered=correct+wrong;
   const pct=answered>0?Math.round(correct/answered*100):0;
-  // 세션 종료 — 풀었던 문제 ID도 함께 저장
   const completedQueue = [...S.quizQueue];
   const sessionRecord = {
     date: new Date().toLocaleDateString('ko-KR',{month:'short',day:'numeric',year:'numeric'}),
@@ -2353,11 +2437,11 @@ function showResults(){
     created_at: new Date().toISOString()
   };
   S.sessions.push(sessionRecord);
-  // 진행 중 세션 정리
+  const returnDest = S.returnTo || null;
   clearLiveQuiz();
+  S.returnTo = null;
   saveSessionToCloud(answered, correct, pct, completedQueue).then(saved=>{
     if(saved && saved.id){
-      // 클라우드에 저장된 id를 로컬 마지막 세션에 매핑
       const last = S.sessions[S.sessions.length-1];
       if(last) last.id = saved.id;
     }
@@ -2368,39 +2452,123 @@ function showResults(){
   document.getElementById('r-total').textContent=answered;
   document.getElementById('r-flagged').textContent=S.flagged.size;
   document.getElementById('r-title').textContent=pct>=80?'훌륭합니다! 🎉':pct>=60?'잘 하고 있어요 👍':'계속 학습하세요 📖';
-  document.getElementById('r-sub').textContent=`${answered}문제 중 ${correct}개 정답`;
+  document.getElementById('r-sub').textContent=answered+'문제 중 '+correct+'개 정답';
+
+  // 결과 버튼: returnTo에 따라 교체
+  const btns = document.getElementById('result-btns-area');
+  if(btns){
+    if(returnDest === 'bookmarks'){
+      btns.innerHTML =
+        '<button class="btn-navy" style="flex:1;" onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">Review로 돌아가기</button>' +
+        '<button class="btn-primary" style="flex:1;" onclick="clearLiveQuiz();showScreen(\'quiz-setup\')">New Session →</button>';
+    } else {
+      btns.innerHTML =
+        '<button class="btn-navy" style="flex:1;" onclick="showScreen(\'dashboard\')">Dashboard</button>' +
+        '<button class="btn-primary" style="flex:1;" onclick="clearLiveQuiz();showScreen(\'quiz-setup\')">New Session →</button>';
+    }
+  }
   showScreen('results');
 }
 
 // ══════════════════════════════════════════════════════
 // BOOKMARKS
 // ══════════════════════════════════════════════════════
+function switchReviewTab(tab){
+  var isFlagged = tab === 'flagged';
+  document.getElementById('rev-tab-flagged').classList.toggle('active', isFlagged);
+  document.getElementById('rev-tab-sessions').classList.toggle('active', !isFlagged);
+  document.getElementById('rev-panel-flagged').style.display = isFlagged ? '' : 'none';
+  document.getElementById('rev-panel-sessions').style.display = isFlagged ? 'none' : '';
+}
+
 function renderBookmarks(){
-  const el=document.getElementById('bookmarks-list');
-  const fqs=S.questions.filter(q=>S.flagged.has(q.id));
-  if(!fqs.length){ el.innerHTML='<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">플래그된 문제 없음</div><div class="empty-sub">학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다</div></div>'; return; }
-  el.innerHTML=fqs.map(q=>{
-    const a=S.answered[q.id]||{times:0,wrong:0};
-    return`<div class="bookmark-card" onclick="openModal('${q.id}')">
-      <div class="bm-q">${q.text.length>110?q.text.slice(0,110)+'…':q.text}</div>
-      <div class="bm-meta"><span class="bm-tag">${q.part}</span><span class="bm-tag">${q.topic||'General'}</span><span style="font-size:12px;color:var(--text-muted);font-weight:600;">${a.wrong}회 오답</span><span style="font-size:12px;color:var(--text-muted);margin-left:auto;">${a.times}회 학습</span></div>
-    </div>`;
+  var el = document.getElementById('bookmarks-list');
+  var badge = document.getElementById('rev-badge-flagged');
+  var fqs = S.questions.filter(function(q){ return S.flagged.has(q.id); });
+  if(badge) badge.textContent = fqs.length;
+
+  if(!fqs.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">플래그된 문제 없음</div><div class="empty-sub">학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다</div></div>';
+    return;
+  }
+  el.innerHTML = fqs.map(function(q){
+    var a = S.answered[q.id] || {times:0, correct:0, wrong:0};
+    var qText = q.text.length > 120 ? q.text.slice(0, 120) + '…' : q.text;
+    return '<div class="bookmark-card">' +
+      '<div class="bm-q">' + qText + '</div>' +
+      '<div class="bm-meta">' +
+        '<span class="bm-tag">' + q.part + '</span>' +
+        '<span class="bm-tag">' + (q.topic || 'General') + '</span>' +
+      '</div>' +
+      '<div class="bm-footer">' +
+        '<div class="bm-stats">' + a.times + '회 학습 · ' +
+          '<span class="bm-ok">✓ ' + a.correct + '</span> ' +
+          '<span class="bm-ng">✗ ' + a.wrong + '</span>' +
+        '</div>' +
+        '<button class="btn-navy" style="margin-left:auto;padding:7px 16px;font-size:13px;" onclick="retryFlagged(\'' + q.id + '\')">다시 풀기 →</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  renderReviewSessions();
+}
+
+function renderReviewSessions(){
+  var el = document.getElementById('review-sessions-list');
+  var badge = document.getElementById('rev-badge-sessions');
+  if(!el) return;
+
+  var validSessions = S.sessions.filter(function(s){ return s.question_ids && s.question_ids.length > 0; });
+  if(badge) badge.textContent = validSessions.length;
+
+  if(!validSessions.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">세션 기록 없음</div><div class="empty-sub">Study 탭에서 학습을 완료하면 여기에 기록됩니다</div></div>';
+    return;
+  }
+
+  el.innerHTML = validSessions.slice(0, 20).map(function(s){
+    var realIdx = S.sessions.indexOf(s);
+    var label = s.date || '';
+    if(s.created_at){
+      var d = new Date(s.created_at);
+      label = d.toLocaleDateString('ko-KR', {month:'short', day:'numeric'}) + ' ' +
+              d.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', hour12:false});
+    }
+    var scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
+    var partLabel = s.part ? ' · ' + s.part : '';
+    return '<div class="rev-sess-row">' +
+      '<div class="rev-sess-info">' +
+        '<div class="rev-sess-date">' + label + '</div>' +
+        '<div class="rev-sess-meta">' + s.count + '문제' + partLabel + '</div>' +
+      '</div>' +
+      '<div style="font-size:18px;font-weight:700;color:' + scoreColor + ';margin-right:8px;">' + s.pct + '%</div>' +
+      '<button class="btn-navy" style="padding:7px 14px;font-size:13px;white-space:nowrap;" onclick="reviewSession(' + realIdx + ')">다시 풀기 →</button>' +
+    '</div>';
   }).join('');
 }
 
-function openModal(id){
-  const q=S.questions.find(x=>x.id===id); if(!q) return;
-  const a=S.answered[id]||{times:0,correct:0,wrong:0};
-  document.getElementById('modal-content').innerHTML=`
-    <div style="margin-bottom:.75rem;"><span class="q-badge">${q.part}</span><span class="q-badge-gray" style="margin-left:6px;">${q.topic||'General'}</span></div>
-    <div style="font-size:16px;line-height:1.75;margin-bottom:1rem;color:var(--text-main);">${q.text}</div>
-    ${q.options.map((o,i)=>`<div style="padding:10px 12px;border-radius:10px;font-size:14px;margin-bottom:8px;border:${i===q.correct?'1.5px solid rgba(26,58,92,.35)':'1px solid var(--border-clr)'};background:${i===q.correct?'rgba(26,58,92,.08)':'rgba(0,0,0,.02)'};color:${i===q.correct?'var(--teal)':'var(--text-muted)'};">${String.fromCharCode(65+i)}) ${o}</div>`).join('')}
-    ${q.explanation?`<div style="margin-top:1rem;"><div class="exp-label">해설</div><div style="font-size:15px;line-height:1.8;color:var(--text-muted);">${q.explanation}</div></div>`:''}
-
-    ${q.examTip?`<div class="tip-box" style="margin-top:.75rem;"><div class="tip-label">EA Exam Tip</div><div class="tip-body" style="font-size:15px; line-height:1.8; color:var(--text-muted);">${q.examTip}</div></div>`:''}
-    <div style="display:flex;gap:12px;font-size:13px;color:var(--text-muted);margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border-clr);"><span>학습 횟수: ${a.times}×</span><span style="color:#16a34a;font-weight:600;">✓ ${a.correct}</span><span style="color:#dc2626;font-weight:600;">✗ ${a.wrong}</span></div>`;
-  document.getElementById('modal-bg').classList.add('open');
+function retryFlagged(id){
+  // Flagged 문제 전체를 큐로 — 선택한 문제부터 시작
+  var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id); });
+  if(!allFlagged.length){ showToast('플래그된 문제가 없습니다'); return; }
+  var startIdx = allFlagged.findIndex(function(q){ return q.id === id; });
+  if(startIdx < 0) startIdx = 0;
+  // 선택 문제를 앞으로 재정렬
+  var queue = allFlagged.slice(startIdx).concat(allFlagged.slice(0, startIdx));
+  S.quizQueue = queue.map(function(q){ return q.id; });
+  S.quizIdx = 0; S.submitted = false; S.selected = null;
+  S.reviewMode = false;
+  S.retryFlaggedMode = true;
+  S.mode = 'normal';
+  S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
+  S.results = {correct:0, wrong:0, total:S.quizQueue.length};
+  save();
+  showScreen('quiz');
+  loadQuestion();
+  showToast('플래그 문제 다시 풀기 시작 (' + S.quizQueue.length + '문제)');
 }
+
+function openModal(id){ /* 미사용 — retryFlagged로 대체됨 */ }
 function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
 
 // ══════════════════════════════════════════════════════
