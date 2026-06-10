@@ -1159,7 +1159,7 @@ async function loadFromCloud(){
       .select('*')
       .eq('user_id', SB_USER.id)
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(200); // Phase 4 통계 왜곡 방지 (기존 20 → 200, 2026-06-09)
     S.sessions = (sRows || []).map(r => ({
       id: r.id,
       created_at: r.created_at,
