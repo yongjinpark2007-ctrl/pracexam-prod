@@ -631,12 +631,12 @@ html, body {
   background:rgba(245,158,11,.1);color:var(--flag-color);border:1px solid rgba(245,158,11,.25);}
 .dash-hero-status.ready{background:rgba(74,222,128,.1);color:var(--success-color);border-color:rgba(74,222,128,.3);}
 .dash-hero-metrics{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1rem 0;}
-.dash-metric-label{font-size:16px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
+.dash-metric-label{font-size:13px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
 .dash-metric-value{font-size:32px;font-weight:700;color:var(--text-main);letter-spacing:-.02em;line-height:1;}
 .dash-metric-value .pct{font-size:18px;color:var(--text-muted);font-weight:600;}
-.dash-metric-sub{font-size:13px;color:var(--text-muted);margin-top:5px;}
-.dash-metric-bar{height:4px;background:rgba(0,0,0,.04);border-radius:2px;margin-top:9px;overflow:hidden;}
-.dash-metric-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--gold-light));transition:width .4s;}
+.dash-metric-sub{font-size:12px;color:var(--text-muted);margin-top:5px;}
+.dash-metric-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;margin-top:9px;overflow:hidden;}
+.dash-metric-bar-fill{height:100%;border-radius:3px;transition:width .4s,background .3s;}
 .dash-hero-target{
   background:rgba(26,58,92,.06);border:1px solid rgba(26,58,92,.18);
   border-radius:10px;padding:13px 16px;font-size:16px;color:var(--text-mid);
@@ -665,37 +665,37 @@ html, body {
 }
 .dash-part-row:hover{border-color:rgba(26,58,92,.3);transform:translateX(3px);}
 .dash-part-row.active{border:1px solid rgba(26,58,92,.4);background:rgba(26,58,92,.06);}
-.dash-part-row-name{display:flex;align-items:center;gap:11px;font-size:18px;font-weight:600;color:var(--text-main);margin-bottom:8px;}
+.dash-part-row-name{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:600;color:var(--text-main);margin-bottom:6px;}
 .dash-part-row.active .dash-part-row-name{color:var(--teal);}
-.dash-part-row-name svg{width:24px;height:24px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
-.dash-part-row-stats{font-size:16px;color:var(--text-mid);margin-bottom:11px;}
-.dash-part-row-bar{height:5px;background:rgba(0,0,0,.04);border-radius:3px;overflow:hidden;}
-.dash-part-row-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--gold-light));}
+.dash-part-row-name svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.dash-part-row-stats{font-size:13px;color:var(--text-mid);margin-bottom:9px;}
+.dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;}
+.dash-part-row-bar-fill{height:100%;border-radius:3px;transition:width .4s,background .3s;}
 
 /* 약점 토픽 위젯 */
 .weak-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:13px 14px;background:rgba(0,0,0,.02);
+  padding:11px 13px;background:rgba(0,0,0,.02);
   border:1px solid var(--border-clr);border-radius:8px;
-  margin-bottom:7px;font-size:17px;
+  margin-bottom:7px;font-size:14px;
 }
 .weak-name{color:var(--text-main);}
-.weak-stat{font-size:15px;font-weight:600;}
+.weak-stat{font-size:13px;font-weight:600;}
 .weak-stat.crit{color:var(--danger-color);}
 .weak-stat.warn{color:var(--flag-color);}
 
 /* 최근 세션 컴팩트 (Dashboard 용 — 2개만) */
 .dash-recent-row{
   display:flex;align-items:center;gap:12px;
-  padding:13px 14px;background:var(--card-bg);
+  padding:11px 13px;background:var(--card-bg);
   border:1px solid var(--border-clr);border-radius:10px;
-  margin-bottom:7px;font-size:16px;
+  margin-bottom:7px;font-size:13px;
   cursor:pointer;transition:border-color .15s;
 }
 .dash-recent-row:hover{border-color:rgba(26,58,92,.2);}
-.dash-recent-date{font-weight:600;color:var(--text-main);font-size:16px;}
-.dash-recent-meta{color:var(--text-muted);font-size:16px;}
-.dash-recent-score{margin-left:auto;font-weight:700;font-size:18px;}
+.dash-recent-date{font-weight:600;color:var(--text-main);font-size:13px;}
+.dash-recent-meta{color:var(--text-muted);font-size:13px;}
+.dash-recent-score{margin-left:auto;font-weight:700;font-size:14px;}
 
 /* ========== END DASHBOARD V2 ========== */
 
@@ -718,19 +718,19 @@ html, body {
   .dash-hero-target{font-size:13px;padding:8px 12px;}
 
   /* ── Dashboard v2 Parts list ── */
-  .dash-parts-section-label{font-size:13px;margin:1.2rem 2px 8px;}
-  .dash-part-row{padding:12px 13px;}
-  .dash-part-row-name{font-size:16px;gap:9px;}
-  .dash-part-row-name svg{width:20px;height:20px;}
-  .dash-part-row-stats{font-size:14px;}
+  .dash-parts-section-label{font-size:12px;margin:1.2rem 2px 8px;}
+  .dash-part-row{padding:11px 12px;}
+  .dash-part-row-name{font-size:14px;gap:8px;}
+  .dash-part-row-name svg{width:18px;height:18px;}
+  .dash-part-row-stats{font-size:12px;}
 
   /* ── Dashboard v2 Weak topics & Recent ── */
-  .weak-row{padding:11px 12px;font-size:15px;}
-  .weak-stat{font-size:13px;}
-  .dash-recent-row{padding:11px 12px;}
-  .dash-recent-date{font-size:14px;}
-  .dash-recent-meta{font-size:14px;}
-  .dash-recent-score{font-size:16px;}
+  .weak-row{padding:10px 11px;font-size:13px;}
+  .weak-stat{font-size:12px;}
+  .dash-recent-row{padding:10px 11px;}
+  .dash-recent-date{font-size:12px;}
+  .dash-recent-meta{font-size:12px;}
+  .dash-recent-score{font-size:13px;}
 
   /* ── Quiz Setup ── */
   .mode-grid{grid-template-columns:repeat(2,1fr);}
@@ -1772,6 +1772,13 @@ function openStudy(){
 // DASHBOARD V2 (Phase 2-2/2-3 — Hero card + section placeholders + recent 2)
 // ══════════════════════════════════════════════════════
 
+// Statistics 바 그래프와 동일한 progress-aware 컬러 스킴 (≥80%=green, ≥60%=amber, <60%=red)
+function progressColor(pct){
+  if(pct >= 80) return 'var(--success-color)';
+  if(pct >= 60) return 'var(--flag-color)';
+  return 'var(--danger-color)';
+}
+
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
   'Part 1': { label: 'Part 1 — 개인세',         icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' },
@@ -1830,7 +1837,7 @@ function renderDashHero(focusPart){
           '<div class="dash-metric-label">진도</div>' +
           '<div class="dash-metric-value">' + progressPct + '<span class="pct">%</span></div>' +
           '<div class="dash-metric-sub">' + done + ' / ' + totalQs + ' 문제</div>' +
-          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + progressPct + '%"></div></div>' +
+          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + progressPct + '%;background:' + progressColor(progressPct) + ';"></div></div>' +
         '</div>' +
         '<div>' +
           '<div class="dash-metric-label">정답률</div>' +
@@ -1838,7 +1845,7 @@ function renderDashHero(focusPart){
           '<div class="dash-metric-sub">' + tCorrect + ' / ' + tAttempts + ' 정답' +
             '<span style="font-size:11px;color:var(--text-muted);opacity:.75;"> - 반복 풀이 포함</span>' +
           '</div>' +
-          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%"></div></div>' +
+          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%;background:' + progressColor(accPct) + ';"></div></div>' +
         '</div>' +
       '</div>' +
       '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
@@ -1878,7 +1885,7 @@ function renderDashPartsGrid(){
     return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
       '<div class="dash-part-row-name">'+(meta.icon||'')+' '+shortLabel+'</div>'+
       '<div class="dash-part-row-stats">진도 '+progressPct+'% · 정답률 '+accLabel+'</div>'+
-      '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%"></div></div>'+
+      '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressColor(progressPct)+';"></div></div>'+
     '</div>';
   }).join('');
 
