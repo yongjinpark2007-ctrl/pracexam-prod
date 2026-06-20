@@ -6,7 +6,7 @@
 
 <!-- ===== PWA Meta Tags ===== -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a3a6b">
+<meta name="theme-color" content="#354649">
 <meta name="application-name" content="PracExam">
 
 <!-- iOS-specific (Add to Home Screen 동작) -->
@@ -24,35 +24,36 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ========== PracExam — DARK SLATE DESIGN ========== */
+/* ========== PracExam — HARBOR DESIGN ========== */
 :root{
-  /* Option B — Warm Professional Light (2026-06-09) */
-  --page-bg:      #e8e6df;
-  --card-bg:      #f5f4ef;
-  /* ── 통일 보더/그림자 토큰 (2026-06-16) ── */
-  --border-clr:   rgba(26,58,92,.1);    /* 기본 카드 보더 */
-  --border-hover: rgba(26,58,92,.28);   /* hover 강조 */
-  --border-active:rgba(26,58,92,.45);   /* 선택/active */
-  /* ── 선택 상태 토큰 (Option A Slate Blue tint) ── */
-  --sel-bg:     #dce8f5;               /* 선택 배경 tint */
-  --sel-border: #4a7fb5;               /* 선택 border */
-  --sel-text:   #1a3a5c;               /* 선택 텍스트 */
-  --card-shadow:  0 1px 4px rgba(0,0,0,.06); /* 통일 그림자 */
-  --text-main:    #1a1a1a;
-  --text-mid:     #4a4a4a;
-  --text-muted:   #888888;
+  /* Harbor 팔레트 (2026-06-19) — 354649 / 6C7A89 / A3C6C4 / E0E7E9 */
+  --page-bg:      #E0E7E9;              /* Pale Mist */
+  --card-bg:      #ffffff;
+  /* ── 통일 보더/그림자 토큰 ── */
+  --border-clr:   rgba(53,70,73,.14);   /* 기본 카드 보더 (Steel Gray 계열) */
+  --border-hover: rgba(53,70,73,.32);   /* hover 강조 */
+  --border-active:rgba(163,198,196,.7); /* 선택/active (Seafoam) */
+  /* ── 선택 상태 토큰 (Seafoam tint) ── */
+  --sel-bg:     #d9ebe9;               /* 선택 배경 — 연한 seafoam tint */
+  --sel-border: #6FA39E;               /* 선택 border — Seafoam (진하게 보정) */
+  --sel-text:   #354649;               /* 선택 텍스트 — Harbor Ink */
+  --card-shadow:  0 1px 4px rgba(53,70,73,.08); /* 통일 그림자 */
+  --text-main:    #232e30;
+  --text-mid:     #4b5759;
+  --text-muted:   #6C7A89;
   --white:        #ffffff;
-  --navy:         #1a3a5c;
-  --navy-mid:     #2d5a8e;
-  --navy-light:   #e4edf6;
-  --teal:         #1a3a5c;
-  --teal-dim:     #e4edf6;
-  --teal-glow:    rgba(26,58,92,.15);
+  --navy:         #354649;              /* Harbor Ink */
+  --navy-mid:     #4d6164;
+  --navy-light:   #e9eeee;
+  --teal:         #354649;
+  --teal-dim:     #e9eeee;
+  --teal-glow:    rgba(53,70,73,.15);
   --success-color:#16a34a;
   --danger-color: #dc2626;
   --flag-color:   #d97706;
-  --gold:         #1a3a5c;
-  --gold-light:   #2d5a8e;
+  --gold:         #6FA39E;              /* Seafoam accent */
+  --gold-light:   #A3C6C4;
+  --silver:       #6C7A89;              /* Steel Gray */
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -89,7 +90,7 @@ html, body {
 
 /* HEADER */
 .header{
-  background:#1a3a5c;
+  background:#354649;
   border-bottom:none;
   padding:env(safe-area-inset-top) 1.25rem 0;
   display:flex;align-items:center;justify-content:space-between;
@@ -124,7 +125,7 @@ html, body {
 .mobile-nav-drawer{
   display:none;position:fixed;
   top:calc(60px + env(safe-area-inset-top));left:0;right:0;
-  background:#1a3a5c;
+  background:#354649;
   border-bottom:1px solid rgba(255,255,255,.12);
   z-index:99;padding:8px 12px 14px;
   box-shadow:0 4px 16px rgba(0,0,0,.18);
@@ -280,13 +281,13 @@ html, body {
   background-size: 16px;
   cursor: pointer;
 }
-.repeat-select:focus{outline:none;border-color:rgba(26,58,92,.4);}
-.repeat-select option{background:#e8e6df;color:var(--text-main);}
+.repeat-select:focus{outline:none;border-color:rgba(53,70,73,.4);}
+.repeat-select option{background:#E0E7E9;color:var(--text-main);}
 
 /* ── iOS 아이콘 그리드 (Study Setup) ── */
 /* max-width 제거 → 부모 .screen(max-width:900px) 그대로 상속 */
 .setup-banner{
-  background:rgba(26,58,92,.05);border:1px solid var(--border-clr);
+  background:rgba(53,70,73,.05);border:1px solid var(--border-clr);
   border-radius:14px;padding:16px 20px;
   display:flex;align-items:center;gap:14px;margin-bottom:1.5rem;
 }
@@ -377,13 +378,13 @@ html, body {
 }
 /* CTA */
 .setup-cta-btn{
-  width:100%;background:linear-gradient(135deg,#1a3a5c,#2d5a8e);
+  width:100%;background:linear-gradient(135deg,#354649,#4d6164);
   color:#fff;border:none;border-radius:14px;padding:17px 24px;
   font-family:inherit;font-size:16px;font-weight:800;
   cursor:pointer;transition:all .18s;display:flex;
   align-items:center;justify-content:center;gap:10px;
 }
-.setup-cta-btn:hover{background:linear-gradient(135deg,#2d5a8e,#1a3a5c);transform:translateY(-1px);}
+.setup-cta-btn:hover{background:linear-gradient(135deg,#4d6164,#354649);transform:translateY(-1px);}
 .setup-cta-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
 .setup-cta-note{font-size:13px;color:var(--text-muted);text-align:center;margin-top:8px;}
 /* 모바일: 아이콘 약간 축소 */
@@ -403,16 +404,16 @@ html, body {
 
 /* BUTTONS */
 .btn-primary{
-  background:linear-gradient(135deg,#1a3a5c,#2d5a8e);
+  background:linear-gradient(135deg,#354649,#4d6164);
   color:#ffffff;border:none;border-radius:12px;
   padding:14px 24px;font-family:inherit;font-size:15px;font-weight:800;
   cursor:pointer;transition:all .18s;width:100%;
   letter-spacing:.01em;
-  box-shadow:0 0 0 rgba(26,58,92,0);
+  box-shadow:0 0 0 rgba(53,70,73,0);
 }
 .btn-primary:hover{
-  background:linear-gradient(135deg,#2d5a8e,#1a3a5c);
-  box-shadow:0 0 18px rgba(26,58,92,.3);
+  background:linear-gradient(135deg,#4d6164,#354649);
+  box-shadow:0 0 18px rgba(53,70,73,.3);
   transform:translateY(-1px);
 }
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
@@ -422,7 +423,7 @@ html, body {
   border-radius:10px;padding:12px 16px;
   font-family:inherit;font-size:13px;cursor:pointer;transition:all .15s;
 }
-.btn-ghost:hover{color:var(--text-main);border-color:rgba(26,58,92,.3);}
+.btn-ghost:hover{color:var(--text-main);border-color:rgba(53,70,73,.3);}
 .btn-navy{
   background:rgba(0,0,0,.03);
   color:var(--text-mid);
@@ -431,7 +432,7 @@ html, body {
   font-family:inherit;font-size:14px;font-weight:600;
   cursor:pointer;transition:all .15s;
 }
-.btn-navy:hover{border-color:rgba(26,58,92,.3);color:var(--teal);}
+.btn-navy:hover{border-color:rgba(53,70,73,.3);color:var(--teal);}
 
 /* QUIZ */
 .quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
@@ -446,7 +447,7 @@ html, body {
 .question-meta{display:flex;align-items:center;gap:6px;margin-bottom:1rem;flex-wrap:wrap;overflow:hidden;}
 
 .q-badge{
-  background:rgba(26,58,92,.12);color:var(--teal);
+  background:rgba(53,70,73,.12);color:var(--teal);
   border:1px solid var(--border-clr);
   border-radius:6px;display:inline-flex;align-items:center;
   height:28px;padding:0 10px;font-family:inherit;font-size:12px;font-weight:700;white-space:nowrap;
@@ -472,7 +473,7 @@ html, body {
   height:28px;padding:0 10px;font-family:inherit;font-size:12px;font-weight:600;
   display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;transition:all .15s;
 }
-.q-copy-btn:hover{background:rgba(26,58,92,.08);border-color:rgba(26,58,92,.3);color:var(--teal);}
+.q-copy-btn:hover{background:rgba(53,70,73,.08);border-color:rgba(53,70,73,.3);color:var(--teal);}
 .q-copy-btn.copied{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2);color:#4ade80;}
 
 .q-flag-btn{
@@ -517,7 +518,7 @@ html, body {
 .dash-part-row:active{opacity:.85;transform:translateX(4px);}
 .dash-hero-cta:active{transform:translateY(0);opacity:.85;}
 /* Selected */
-.option-btn.sel{background:rgba(26,58,92,.07);}
+.option-btn.sel{background:rgba(53,70,73,.07);}
 .option-btn.sel::before{background:var(--teal);}
 .option-btn.sel .opt-letter{color:var(--teal);font-weight:700;}
 .option-btn.sel .opt-text{color:var(--text-main);}
@@ -543,21 +544,21 @@ html, body {
 /* 질문 pills 네비게이터 */
 .q-pills{display:flex;flex-wrap:wrap;gap:5px;padding:8px 0 4px;margin-bottom:2px;}
 .q-pill{width:32px;height:32px;border-radius:7px;font-size:12px;font-weight:700;border:1px solid var(--border-clr);background:rgba(0,0,0,.03);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .15s;}
-.q-pill.current{border-color:var(--teal);background:rgba(26,58,92,.15);color:var(--teal);}
+.q-pill.current{border-color:var(--teal);background:rgba(53,70,73,.15);color:var(--teal);}
 .q-pill.correct{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.35);color:var(--success-color);}
 .q-pill.wrong{background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.35);color:var(--danger-color);}
 .q-pill.flagged{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--flag-color);}
-.q-pill:hover:not(.current){border-color:rgba(26,58,92,.3);}
+.q-pill:hover:not(.current){border-color:rgba(53,70,73,.3);}
 /* End Session 모달 */
 .end-session-modal .btn-primary{justify-content:center;margin-bottom:2px;}
 .end-session-modal .btn-ghost{justify-content:center;}
 .btn-submit{
-  background:linear-gradient(135deg,#1a3a5c,#2d5a8e);
+  background:linear-gradient(135deg,#354649,#4d6164);
   color:#ffffff;border:none;border-radius:12px;
   padding:15px 28px;font-family:inherit;font-size:15px;font-weight:800;
   cursor:pointer;transition:all .18s;flex:1;
 }
-.btn-submit:hover{background:linear-gradient(135deg,#2d5a8e,#1a3a5c);box-shadow:0 0 16px rgba(26,58,92,.3);}
+.btn-submit:hover{background:linear-gradient(135deg,#4d6164,#354649);box-shadow:0 0 16px rgba(53,70,73,.3);}
 .btn-submit:disabled{opacity:.3;cursor:not-allowed;box-shadow:none;}
 
 /* EXPLANATION */
@@ -575,7 +576,7 @@ html, body {
 .update-box{background:rgba(245,158,11,.05);border-left:3px solid var(--flag-color);border-radius:0 8px 8px 0;padding:12px 14px;margin:10px 0;}
 .update-label{font-size:11px;font-weight:700;color:var(--flag-color);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase;}
 .update-body{font-size:17px;line-height:1.8;color:var(--text-mid);word-break:break-word;overflow-wrap:anywhere;}
-.tip-box{background:rgba(26,58,92,.05);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;margin:10px 0;}
+.tip-box{background:rgba(53,70,73,.05);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;margin:10px 0;}
 .tip-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase;}
 .tip-body{font-size:17px;line-height:1.8;color:var(--text-mid);word-break:break-word;overflow-wrap:anywhere;}
 
@@ -586,11 +587,11 @@ html, body {
 .result-hero{text-align:center;padding:2rem 0;}
 .result-circle{
   width:120px;height:120px;border-radius:50%;
-  border:2px solid rgba(26,58,92,.3);
+  border:2px solid rgba(53,70,73,.3);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   margin:0 auto 1rem;
-  background:radial-gradient(circle,rgba(26,58,92,.06) 0%,transparent 70%);
-  box-shadow:0 0 24px rgba(26,58,92,.1),inset 0 0 24px rgba(26,58,92,.04);
+  background:radial-gradient(circle,rgba(53,70,73,.06) 0%,transparent 70%);
+  box-shadow:0 0 24px rgba(53,70,73,.1),inset 0 0 24px rgba(53,70,73,.04);
 }
 .result-pct{font-size:36px;font-weight:700;color:var(--teal);line-height:1;}
 .result-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:1.5rem 0;}
@@ -655,9 +656,9 @@ html, body {
   border:1px dashed var(--border-hover);
   border-radius:16px;padding:2.5rem 1.5rem;text-align:center;
   cursor:pointer;transition:all .2s;margin-bottom:1.5rem;
-  background:rgba(26,58,92,.03);
+  background:rgba(53,70,73,.03);
 }
-.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:rgba(26,58,92,.06);}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:rgba(53,70,73,.06);}
 .upload-item{
   background:var(--card-bg);border:1px solid var(--border-clr);
   border-radius:12px;padding:14px 16px;
@@ -673,8 +674,8 @@ html, body {
   cursor:pointer;font-family:inherit;transition:all .15s;
   display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:var(--text-muted);
 }
-.upload-action-btn.replace{color:var(--teal);border-color:rgba(26,58,92,.2);}
-.upload-action-btn.replace:hover{background:rgba(26,58,92,.08);border-color:rgba(26,58,92,.4);}
+.upload-action-btn.replace{color:var(--teal);border-color:rgba(53,70,73,.2);}
+.upload-action-btn.replace:hover{background:rgba(53,70,73,.08);border-color:rgba(53,70,73,.4);}
 .upload-action-btn.delete{color:#f43f5e;border-color:rgba(244,63,94,.2);}
 .upload-action-btn.delete:hover{background:rgba(244,63,94,.06);border-color:rgba(244,63,94,.4);}
 .upload-item.confirm-delete{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.04);}
@@ -744,11 +745,11 @@ html, body {
   border:1px solid var(--border-clr);border-radius:10px;
   padding:12px 14px;color:var(--text-main);font-family:inherit;font-size:15px;outline:none;margin:8px 0;
 }
-.api-input:focus{border-color:rgba(26,58,92,.4);}
+.api-input:focus{border-color:rgba(53,70,73,.4);}
 
 /* ========== DASHBOARD V2 — Hero + Parts grid + Weak topics + Recent 2 ========== */
 .dash-hero{
-  background:linear-gradient(135deg,#e4edf6 0%,#dce8f4 100%);
+  background:linear-gradient(135deg,#ffffff 0%,#eef2f2 100%);
   border:1px solid var(--border-clr);
   border-left:3px solid var(--teal);
   border-radius:16px;padding:1.5rem;margin-bottom:1rem;
@@ -769,7 +770,7 @@ html, body {
 .dash-metric-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;margin-top:9px;overflow:hidden;}
 .dash-metric-bar-fill{height:100%;border-radius:3px;transition:width .4s,background .3s;}
 .dash-hero-target{
-  background:rgba(26,58,92,.06);border:1px solid rgba(26,58,92,.18);
+  background:rgba(53,70,73,.06);border:1px solid rgba(53,70,73,.18);
   border-radius:10px;padding:13px 16px;font-size:16px;color:var(--text-mid);
   margin:1rem 0;display:flex;align-items:center;gap:9px;
 }
@@ -777,13 +778,13 @@ html, body {
 .dash-hero-target.ready{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.2);color:var(--success-color);}
 .dash-hero-target svg{width:20px;height:20px;flex-shrink:0;stroke-width:2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;}
 .dash-hero-cta{
-  width:100%;background:linear-gradient(135deg,#1a3a5c,#2d5a8e);color:#e8e6df;
+  width:100%;background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;
   border:none;border-radius:12px;padding:16px 24px;margin-top:1.5rem;
   font-family:inherit;font-size:19px;font-weight:800;
   cursor:pointer;transition:all .18s;letter-spacing:.01em;
   display:flex;align-items:center;justify-content:center;gap:9px;
 }
-.dash-hero-cta:hover{background:linear-gradient(135deg,#2d5a8e,#1a3a5c);box-shadow:0 0 18px rgba(26,58,92,.3);transform:translateY(-1px);}
+.dash-hero-cta:hover{background:linear-gradient(135deg,#4d6164,#354649);box-shadow:0 0 18px rgba(53,70,73,.3);transform:translateY(-1px);}
 .dash-hero-cta svg{width:17px;height:17px;fill:currentColor;stroke:none;}
 
 /* Part 목록 — 한 줄씩 세로 정렬 (full-width rows) */
@@ -920,7 +921,7 @@ html, body {
   background:var(--page-bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;
 }
-.lg-logo{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;overflow:hidden;box-shadow:0 0 32px rgba(26,58,92,.3);}
+.lg-logo{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;overflow:hidden;box-shadow:0 0 32px rgba(53,70,73,.3);}
 .lg-title{font-size:26px;font-weight:700;color:var(--text-main);margin-bottom:6px;letter-spacing:-.02em;}
 .lg-sub{font-size:14px;color:var(--teal);margin-bottom:32px;text-align:center;letter-spacing:.06em;text-transform:uppercase;opacity:.8;}
 .lg-card{
@@ -938,17 +939,17 @@ html, body {
   color:var(--text-main);outline:none;font-family:inherit;
   transition:border-color .15s;
 }
-.lg-input:focus{border-color:rgba(26,58,92,.4);background:rgba(26,58,92,.04);}
+.lg-input:focus{border-color:rgba(53,70,73,.4);background:rgba(53,70,73,.04);}
 .lg-input::placeholder{color:rgba(0,0,0,.3);}
 .lg-btn{
   margin-top:18px;width:100%;padding:15px;
-  background:linear-gradient(135deg,#1a3a5c,#2d5a8e);
+  background:linear-gradient(135deg,#354649,#4d6164);
   color:#ffffff;border:none;border-radius:12px;
   font-size:16px;font-weight:800;cursor:pointer;
   font-family:inherit;transition:all .18s;
   letter-spacing:.01em;
 }
-.lg-btn:hover{background:linear-gradient(135deg,#2d5a8e,#1a3a5c);box-shadow:0 0 18px rgba(26,58,92,.3);}
+.lg-btn:hover{background:linear-gradient(135deg,#4d6164,#354649);box-shadow:0 0 18px rgba(53,70,73,.3);}
 .lg-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
 .lg-err{color:#f43f5e;font-size:13px;margin-top:10px;font-weight:600;display:none;text-align:center;}
 .lg-status{color:var(--teal);font-size:13px;margin-top:10px;text-align:center;display:none;}
@@ -1384,7 +1385,7 @@ html, body {
   <div style="background:rgba(0,100,196,.08);border:1.5px solid rgba(0,100,196,.25);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;">
     <div class="exp-label" style="margin-bottom:10px;">CSV 파일 형식 (이 헤더를 그대로 사용하세요)</div>
     <div style="font-size:13px;color:var(--text-mid);margin-bottom:10px;line-height:1.7;">첫 줄은 반드시 아래 헤더여야 합니다. 각 셀의 내용에 쉼표가 포함될 경우 큰따옴표로 감싸주세요.</div>
-    <div style="background:#f0f4f8;border:1px solid rgba(26,58,92,.15);border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12px;color:#1a3a5c;line-height:2;overflow-x:auto;white-space:pre;-webkit-mask-image:linear-gradient(to right,black 80%,transparent 100%);mask-image:linear-gradient(to right,black 80%,transparent 100%);">question_id,text,options_a,options_b,options_c,options_d,correct,explanation,wrong_reasons,tax_update_2025,exam_tip,part,topic,outline_code,difficulty
+    <div style="background:#eef2f2;border:1px solid rgba(53,70,73,.15);border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12px;color:#354649;line-height:2;overflow-x:auto;white-space:pre;-webkit-mask-image:linear-gradient(to right,black 80%,transparent 100%);mask-image:linear-gradient(to right,black 80%,transparent 100%);">question_id,text,options_a,options_b,options_c,options_d,correct,explanation,wrong_reasons,tax_update_2025,exam_tip,part,topic,outline_code,difficulty
 "Q001","Which filing status...","Single","MFJ","Head of Household","QSS","C","HOH applies when...","A: wrong because... B: wrong because...","2025 변경: 표준공제 $22,500으로 인상","EA Exam Tip...","Part 1","Filing Status","",""
 "ab001","The taxpayer's 2024...","$9,000 LT loss","$10,000 ST loss","$4,000 ST loss","$4,000 LT loss","C","2024년에 단기 자본손실...","","","","Part A","Capital Loss Carryover","COP1001","3"</div>
     <div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:5px;letter-spacing:.03em;">← 좌우 스크롤하여 전체 컬럼 확인 →</div>
@@ -1411,7 +1412,7 @@ html, body {
 <div id="screen-settings" class="screen">
   <div class="section-title">Settings</div>
 
-  <div style="background:var(--card-bg);border:1px solid rgba(26,58,92,.2);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+  <div style="background:var(--card-bg);border:1px solid rgba(53,70,73,.2);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
     <div class="exp-label" style="margin-bottom:8px;color:var(--teal);">☁️ 클라우드 동기화</div>
     <div style="font-size:14px;color:var(--text-mid);line-height:1.75;" id="sync-status-text">Supabase 연결 확인 중…</div>
     <button class="btn-ghost" style="margin-top:12px;width:100%;color:#f43f5e;border-color:rgba(244,63,94,.3);" onclick="doLogout()">🚪 로그아웃</button>
@@ -1422,7 +1423,7 @@ html, body {
     <button class="btn-ghost" style="margin-bottom:10px;width:100%;" onclick="exportData()">모든 데이터 내보내기 (JSON)</button>
     <button class="btn-ghost" style="width:100%;color:#dc2626;border-color:rgba(220,38,38,.3);" onclick="if(confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))resetData()">모든 데이터 초기화</button>
   </div>
-  <div style="background:var(--card-bg);border:1px solid rgba(26,58,92,.12);border-radius:14px;padding:1.25rem;margin-top:1rem;">
+  <div style="background:var(--card-bg);border:1px solid rgba(53,70,73,.12);border-radius:14px;padding:1.25rem;margin-top:1rem;">
     <div class="exp-label" style="margin-bottom:8px;">💾 클라우드 저장 안내</div>
     <div style="font-size:14px;color:var(--text-mid);line-height:1.75;">문제은행과 학습 기록은 Supabase 클라우드에 저장됩니다. 어느 기기에서든 로그인하면 동일한 문제와 진도를 볼 수 있습니다.</div>
   </div>
@@ -2990,8 +2991,8 @@ function renderStsTrend(){
 
   wrap.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">' +
     '<defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">' +
-    '<stop offset="0%" stop-color="rgba(26,58,92,.15)"/>' +
-    '<stop offset="100%" stop-color="rgba(26,58,92,0)"/>' +
+    '<stop offset="0%" stop-color="rgba(53,70,73,.15)"/>' +
+    '<stop offset="100%" stop-color="rgba(53,70,73,0)"/>' +
     '</linearGradient></defs>' +
     yLabelsSvg +
     '<path d="'+fillPath+'" fill="url(#trendGrad)"/>' +
