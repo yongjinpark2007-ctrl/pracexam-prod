@@ -447,7 +447,7 @@ html, body {
   box-shadow:0 1px 6px rgba(0,0,0,.08);
   overflow:hidden;
 }
-.question-meta{display:flex;align-items:center;gap:6px;margin-bottom:1rem;flex-wrap:wrap;overflow:hidden;}
+.question-meta{display:flex;align-items:center;gap:6px;margin-bottom:1rem;flex-wrap:wrap;min-width:0;}
 
 .q-badge{
   background:rgba(53,70,73,.12);color:var(--teal);
@@ -458,7 +458,14 @@ html, body {
 .q-badge-gray{
   background:rgba(0,0,0,.03);color:var(--text-muted);
   border:1px solid var(--border-clr);
-  border-radius:6px;display:inline-flex;align-items:center;
+  border-radius:6px;
+  /* FIX: inline-flex → inline-block  
+     text-overflow:ellipsis는 block 컨테이너에서만 작동함.
+     inline-flex에서는 내부 텍스트가 flex-item으로 처리되어 ellipsis가 적용되지 않아
+     긴 토픽명이 카드 밖으로 overflow됨. */
+  display:inline-block;
+  vertical-align:middle;
+  line-height:26px;         /* 28px height - 2px border = 26px 수직 중앙 정렬 */
   height:28px;padding:0 10px;font-family:inherit;font-size:12px;font-weight:600;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   max-width:260px;
@@ -879,7 +886,7 @@ html, body {
   .opt-text{font-size:17px;line-height:1.75;}
   .options-list{margin:1rem -1.5rem 0;}
   .option-btn{padding:14px 1.5rem;}
-  .q-badge-gray{max-width:46vw;}
+  .q-badge-gray{max-width:46vw;min-width:0;}
 
   /* ── Submit bar (5-button) — 모바일 2행 배치 ── */
   .submit-bar{
