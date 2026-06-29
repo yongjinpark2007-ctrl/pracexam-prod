@@ -983,6 +983,7 @@ function doSignup(){
       email: email,
       password: pw,
       data: { first_name: fname, last_name: lname }
+       redirect_to: 'https://pracexam.com/app.html'
     })
   })
   .then(function(res){ return res.json().then(function(d){ return {ok: res.ok, data: d}; }); })
