@@ -1760,7 +1760,7 @@ async function loadFromCloud(){
         wrongReasons: r.wrong_reasons || '',
         taxUpdate2025: r.tax_update_2025 || '',
         examTip: r.exam_tip || '',
-        part: r.part || 'Part 1',
+        part: r.part ? ('Part ' + r.part) : 'Part 1',
         topic: r.topic || 'General',
         outlineCode: r.outline_code || '',
         difficulty: r.difficulty != null ? r.difficulty : null,
@@ -2053,6 +2053,7 @@ function saveLiveSessionToCloud(){
           mode: S.mode,
           results: S.results,
           review_mode: S.reviewMode || false,
+          session_answers: S.sessionAnswers || [],
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' });
       } else {
