@@ -1077,24 +1077,6 @@ html, body {
             </div>
             <div class="setup-icon-label">Part 3</div>
           </button>
-          <button class="setup-icon-btn" onclick="selectPart('partA',this)">
-            <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><text x="18" y="22" font-size="8" font-weight="700" fill="currentColor" stroke="none">A</text></svg>
-            </div>
-            <div class="setup-icon-label">Part A</div>
-          </button>
-          <button class="setup-icon-btn" onclick="selectPart('partB',this)">
-            <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/><text x="18" y="22" font-size="8" font-weight="700" fill="currentColor" stroke="none">B</text></svg>
-            </div>
-            <div class="setup-icon-label">Part B</div>
-          </button>
-          <button class="setup-icon-btn" onclick="selectPart('partC',this)">
-            <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/><text x="18" y="22" font-size="8" font-weight="700" fill="currentColor" stroke="none">C</text></svg>
-            </div>
-            <div class="setup-icon-label">Part C</div>
-          </button>
         </div>
       </div>
 
@@ -1400,11 +1382,11 @@ html, body {
   <div style="background:rgba(0,100,196,.08);border:1.5px solid rgba(0,100,196,.25);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;">
     <div class="exp-label" style="margin-bottom:10px;">CSV 파일 형식 (이 헤더를 그대로 사용하세요)</div>
     <div style="font-size:13px;color:var(--text-mid);margin-bottom:10px;line-height:1.7;">첫 줄은 반드시 아래 헤더여야 합니다. 각 셀의 내용에 쉼표가 포함될 경우 큰따옴표로 감싸주세요.</div>
-    <div style="background:#eef2f2;border:1px solid rgba(53,70,73,.15);border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12px;color:#354649;line-height:2;overflow-x:auto;white-space:pre;-webkit-mask-image:linear-gradient(to right,black 80%,transparent 100%);mask-image:linear-gradient(to right,black 80%,transparent 100%);">question_id,text,options_a,options_b,options_c,options_d,correct,explanation,wrong_reasons,tax_update_2025,exam_tip,part,topic,outline_code,difficulty
+    <div style="background:#eef2f2;border:1px solid rgba(53,70,73,.15);border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12px;color:#354649;line-height:2;overflow-x:auto;white-space:pre;-webkit-mask-image:linear-gradient(to right,black 80%,transparent 100%);mask-image:linear-gradient(to right,black 80%,transparent 100%);">question_id,text,options_a,options_b,options_c,options_d,correct,explanation,wrongreasons,taxupdate2025,examtip,part,topic,outline_code,difficulty
 "Q001","Which filing status...","Single","MFJ","Head of Household","QSS","C","HOH applies when...","A: wrong because... B: wrong because...","2025 변경: 표준공제 $22,500으로 인상","EA Exam Tip...","Part 1","Filing Status","",""
-"ab001","The taxpayer's 2024...","$9,000 LT loss","$10,000 ST loss","$4,000 ST loss","$4,000 LT loss","C","2024년에 단기 자본손실...","","","","Part A","Capital Loss Carryover","COP1001","3"</div>
+"ab001","The taxpayer's 2024...","$9,000 LT loss","$10,000 ST loss","$4,000 ST loss","$4,000 LT loss","C","2024년에 단기 자본손실...","","","","Part 1","Capital Loss Carryover","C1001","3"</div>
     <div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:5px;letter-spacing:.03em;">← 좌우 스크롤하여 전체 컬럼 확인 →</div>
-    <div style="font-size:13px;color:var(--text-mid);margin-top:10px;"><strong>correct</strong>: A/B/C/D 또는 0/1/2/3 · <strong>question_id</strong>: 문제번호 (예: Q001) · <strong>part</strong>: "Part 1/2/3" 또는 "Part A/B/C" · <strong>outline_code</strong>: Part A/B/C 전용 (예: COP1001), Part 1/2/3는 빈 값 · <strong>difficulty</strong>: 1~5 정수 (선택)</div>
+    <div style="font-size:13px;color:var(--text-mid);margin-top:10px;"><strong>correct</strong>: A/B/C/D 또는 0/1/2/3 · <strong>question_id</strong>: 문제번호 (예: Q001) · <strong>part</strong>: "Part 1/2/3" · <strong>outline_code</strong>: COP 기반 문제용(예: C1001), 일반 문제는 빈 값 · <strong>difficulty</strong>: 1~5 정수 (선택)</div>
   </div>
 
   <div class="upload-zone" id="upload-zone"
@@ -1868,7 +1850,7 @@ async function uploadQuestionsToCloud(questions){
   // ⚠️ 2026-06-30 수정: 신규 스키마는 'Part 1' 문자열이 아니라 int2(1/2/3) 사용.
   // 별도 'id' 컬럼 없음(question_id가 PK) — 컬럼명도 소문자/언더스코어 없음으로 통일.
   function partToInt(partStr){
-    var m = { 'Part 1':1, 'Part 2':2, 'Part 3':3, 'Part A':1, 'Part B':2, 'Part C':3 };
+    var m = { 'Part 1':1, 'Part 2':2, 'Part 3':3 };
     return m[partStr] || 1;
   }
   const rows = uniqueQuestions.map(q => ({
@@ -2262,12 +2244,9 @@ function progressColor(pct){
 
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
-  'Part 1': { label: 'Part 1 — 개인세',         icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' },
-  'Part 2': { label: 'Part 2 — 사업세',         icon: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>' },
-  'Part 3': { label: 'Part 3 — 대리인',         icon: '<svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/></svg>' },
-  'Part A': { label: 'Part A — 개인세 (테스트)', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' },
-  'Part B': { label: 'Part B — 사업세 (테스트)', icon: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>' },
-  'Part C': { label: 'Part C — 대리인 (테스트)', icon: '<svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/></svg>' }
+  'Part 1': { label: 'Part 1 — 개인세', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' },
+  'Part 2': { label: 'Part 2 — 사업세', icon: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>' },
+  'Part 3': { label: 'Part 3 — 대리인', icon: '<svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/></svg>' }
 };
 
 // 응시 권장 정답률 임계값 (Phase 2 design decision)
@@ -2338,12 +2317,7 @@ function renderDashHero(focusPart){
 
 // Phase 2-4: 6-Part 미니 그리드 (진도/정답률 + 클릭 → Study 진입)
 function renderDashPartsGrid(){
-  const allParts = ['Part 1','Part 2','Part 3','Part A','Part B','Part C'];
-  // Part 1/2/3 는 항상, A/B/C 는 해당 Part에 문제 있을 때만
-  const parts = allParts.filter(function(pk){
-    if(pk==='Part 1'||pk==='Part 2'||pk==='Part 3') return true;
-    return S.questions.some(function(q){ return q.part===pk; });
-  });
+  const parts = ['Part 1','Part 2','Part 3'];
 
   let focusPart = localStorage.getItem('ea_focus_part') || 'Part 1';
   if(!S.questions.some(function(q){ return q.part===focusPart; })) focusPart = 'Part 1';
@@ -2487,8 +2461,7 @@ function dashStartFocusPart(part){
   if(!canStartQuiz()) return;
   localStorage.setItem('ea_focus_part', part);
   const partVal = {
-    'Part 1':'part1','Part 2':'part2','Part 3':'part3',
-    'Part A':'partA','Part B':'partB','Part C':'partC'
+    'Part 1':'part1','Part 2':'part2','Part 3':'part3'
   }[part] || 'all';
   S.part = partVal;
   showScreen('quiz-setup');
@@ -2536,14 +2509,10 @@ function updateSetupBanner(){
     all:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
     part1:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
     part2:'<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>',
-    part3:'<svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/></svg>',
-    partA:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
-    partB:'<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>',
-    partC:'<svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/></svg>'
+    part3:'<svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4-3 7.5-7 9-4-1.5-7-5-7-9V7l7-4z"/></svg>'
   };
   var LABELS={
-    all:'All Parts',part1:'Part 1 — 개인세',part2:'Part 2 — 사업세',part3:'Part 3 — 대리인',
-    partA:'Part A — 개인세',partB:'Part B — 사업세',partC:'Part C — 대리인'
+    all:'All Parts',part1:'Part 1 — 개인세',part2:'Part 2 — 사업세',part3:'Part 3 — 대리인'
   };
   var p=S.part||'all';
   var iconEl=document.getElementById('setup-banner-icon');
@@ -2554,7 +2523,7 @@ function updateSetupBanner(){
   if(subEl){
     var pool=S.questions||[];
     var filtered=p==='all'?pool:pool.filter(function(q){
-      var map={part1:'Part 1',part2:'Part 2',part3:'Part 3',partA:'Part A',partB:'Part B',partC:'Part C'};
+      var map={part1:'Part 1',part2:'Part 2',part3:'Part 3'};
       return q.part===(map[p]||'');
     });
     var total=filtered.length;
@@ -2600,9 +2569,6 @@ function getPool(){
   if(S.part==='part1') p=p.filter(q=>q.part==='Part 1');
   else if(S.part==='part2') p=p.filter(q=>q.part==='Part 2');
   else if(S.part==='part3') p=p.filter(q=>q.part==='Part 3');
-  else if(S.part==='partA') p=p.filter(q=>q.part==='Part A');
-  else if(S.part==='partB') p=p.filter(q=>q.part==='Part B');
-  else if(S.part==='partC') p=p.filter(q=>q.part==='Part C');
 
   if(S.subset==='unseen') p=p.filter(q=>!S.answered[q.id]);
   else if(S.subset==='practiced') p=p.filter(q=>S.answered[q.id] && (S.answered[q.id].times||0) >= 1);
@@ -3256,7 +3222,7 @@ function renderStsTrend(){
 function renderStsParts(){
   var el = document.getElementById('sts-parts');
   if(!el) return;
-  var parts = ['Part 1','Part 2','Part 3','Part A','Part B','Part C'];
+  var parts = ['Part 1','Part 2','Part 3'];
   var rows = parts.map(function(part){
     var qs = S.questions.filter(function(q){ return q.part === part; });
     if(!qs.length) return null;
