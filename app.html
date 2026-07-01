@@ -16,9 +16,6 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <!-- 일반 favicon 대신 PNG 사용 (옛 브라우저 호환) -->
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <!-- ========================== -->
 
@@ -1746,19 +1743,6 @@ function updateSyncStatus(){
 // ══════════════════════════════════════════════════════
 // CLOUD LOAD / SAVE (페이지네이션 적용)
 // ══════════════════════════════════════════════════════
-// ── 일일 한도 리셋 기준 날짜: 사용자 기기 로컬 시간 (2026-07-01 변경) ──
-// 기존 toISOString()은 UTC 자정 기준이라 한국 사용자는 오전 9시에 리셋됐음.
-// 각 사용자의 로컬 자정 기준으로 "YYYY-MM-DD" 반환 (iOS WebKit 안전: 문자열 연결).
-function localDateStr(){
-  var d = new Date();
-  var y = d.getFullYear();
-  var m = d.getMonth() + 1;
-  var day = d.getDate();
-  var mm = (m < 10 ? '0' : '') + m;
-  var dd = (day < 10 ? '0' : '') + day;
-  return y + '-' + mm + '-' + dd;
-}
-
 // ── 무료 체험 / 결제 상태 조회 (2026-06-29 추가) ──
 // Admin(Jay)은 체험 게이트 대상에서 항상 제외.
 async function loadTrialStatus(){
@@ -1779,7 +1763,7 @@ async function loadTrialStatus(){
     S.trialExpired = !S.isPaid && S.trialEndsAt && (new Date(S.trialEndsAt) < new Date());
 
     // ── 일일 한도: 날짜가 바뀌었으면 0으로 리셋 ──
-    const todayStr = localDateStr();
+    const todayStr = new Date().toISOString().slice(0,10);
     if(data.daily_date !== todayStr){
       S.dailyUsed = 0; S.dailyDate = todayStr;
       sb.from('profiles').update({ daily_used: 0, daily_date: todayStr }).eq('id', SB_USER.id)
@@ -1857,7 +1841,7 @@ function consumeDailyQuota(){
   S.dailyUsed = (S.dailyUsed || 0) + 1;
   updateTrialQuotaBanner();
   if(SB_USER){
-    sb.from('profiles').update({ daily_used: S.dailyUsed, daily_date: S.dailyDate || localDateStr() })
+    sb.from('profiles').update({ daily_used: S.dailyUsed, daily_date: S.dailyDate || new Date().toISOString().slice(0,10) })
       .eq('id', SB_USER.id).then(()=>{}).catch(e=>console.warn('daily quota 반영 실패:', e));
   }
 }
@@ -1900,16 +1884,20 @@ function checkTrialAccess(){
 
 async function loadFromCloud(){
   if(!SB_USER) return;
+  S.isAdminUser = !!(SB_USER && SB_USER.id === ADMIN_UID);
   await loadTrialStatus();
   var localAnsweredCount = Object.keys(S.answered).length;  // Phase 2-9: 클라우드 로드 전 로컬 카운트
   showToast('☁️ 클라우드에서 불러오는 중…');
   try{
     // ── questions 페이지네이션 ──
+    // 보안: 관리자만 베이스 테이블 전량(정답 포함) 로드. 일반 유저는 메타데이터만
+    //       (본문=payload RPC, 정답=check_answer RPC 로 지연 로드).
+    const Q_TABLE = S.isAdminUser ? 'questions' : 'questions_meta';
     let qRows = [];
     const PAGE_SIZE = 1000;
     for (let offset = 0; ; offset += PAGE_SIZE) {
       const { data, error } = await sb
-        .from('questions')
+        .from(Q_TABLE)
         .select('*')
         .order('created_at', { ascending: true })
         .range(offset, offset + PAGE_SIZE - 1);
@@ -2309,7 +2297,7 @@ function save(){
       sessionAnswers: S.sessionAnswers || []
     } : null;
     localStorage.setItem('ea_prep_v3',JSON.stringify({
-      q:S.questions, s:S.sessions, f:[...S.flagged], a:S.answered,
+      q:[], s:S.sessions, f:[...S.flagged], a:S.answered,
       live: liveQuiz,
       repeatFilter: S.repeatFilter || 'all'
     }));
@@ -2889,6 +2877,64 @@ function getPool(){
 // (updateAvailCount is defined above in selectRepeatIcon block)
 
 // ══════════════════════════════════════════════════════
+// 보안: 지연 로드 헬퍼 (본문 payload / 복습 정답)
+//   - 관리자는 베이스 테이블 전량 로드 → 지연 로드 불필요(즉시 true)
+//   - 일반 유저: 메모리 question 객체에 text/options/correct/해설을 "채워 넣음"
+// ══════════════════════════════════════════════════════
+function _chunk(arr, n){ var out=[]; for(var i=0;i<arr.length;i+=n){ out.push(arr.slice(i,i+n)); } return out; }
+function _findQ(id){ return S.questions.find(function(x){ return x.id === id; }); }
+
+// 본문(text, options)만 — 미제출 문제용. RPC: get_question_payload (최대 100/콜)
+async function prefetchPayloads(ids){
+  if(S.isAdminUser) return true;
+  var need = (ids||[]).filter(function(id){ var q=_findQ(id); return q && !q.text; });
+  if(!need.length) return true;
+  try{
+    var groups = _chunk(need, 100);
+    for(var g=0; g<groups.length; g++){
+      var res = await sb.rpc('get_question_payload', { p_ids: groups[g] });
+      if(res.error) throw res.error;
+      (res.data||[]).forEach(function(row){
+        var q=_findQ(row.question_id);
+        if(q){ q.text=row.text; q.options=row.options; }
+      });
+    }
+    return true;
+  }catch(e){ console.error('[payload]', e); return false; }
+}
+
+// 본문+정답+해설 — 이미 푼 문제(복습/북마크/잠금)용. RPC: get_review_payload (최대 200/콜)
+async function prefetchReview(ids){
+  if(S.isAdminUser) return true;
+  try{
+    var groups = _chunk(ids||[], 200);
+    for(var g=0; g<groups.length; g++){
+      var res = await sb.rpc('get_review_payload', { p_ids: groups[g] });
+      if(res.error) throw res.error;
+      (res.data||[]).forEach(function(row){
+        var q=_findQ(row.question_id);
+        if(q){
+          q.text=row.text; q.options=row.options; q.correct=row.correct;
+          q.explanation=row.explanation||''; q.explanationEn=row.explanation_en||'';
+          q.examTip=row.examtip||''; q.examTipEn=row.examtip_en||'';
+        }
+      });
+    }
+    return true;
+  }catch(e){ console.error('[review]', e); return false; }
+}
+
+// 단건 보장: 미제출 → payload / 제출·복습 → review
+async function ensurePayload(q){
+  if(S.isAdminUser || (q && q.text)) return true;
+  return await prefetchPayloads([q.id]);
+}
+async function ensureAnswerData(q){
+  if(S.isAdminUser || (q && q.correct != null && q.text)) return true;
+  return await prefetchReview([q.id]);
+}
+
+// ══════════════════════════════════════════════════════
 // QUIZ
 // ══════════════════════════════════════════════════════
 async function startQuiz(){
@@ -2907,7 +2953,11 @@ async function startQuiz(){
   }
   pool.sort((a,b)=>{const ta=S.answered[a.id]?.times||0,tb=S.answered[b.id]?.times||0;return ta-tb||Math.random()-.5;});
   S.quizQueue=pool.slice(0,S.count).map(q=>q.id);
-  
+
+  // 보안: 세션 큐 본문 배치 프리페치 (일반 유저)
+  var okPayload = await prefetchPayloads(S.quizQueue);
+  if(!okPayload){ showToast('⚠️ 문제 본문 로드 실패 — 네트워크 확인 후 다시 시도해주세요.'); return; }
+
   S.quizIdx=0; S.submitted=false; S.selected=null;
   S.reviewMode = false;
   S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
@@ -2917,7 +2967,7 @@ async function startQuiz(){
 }
 
 // ── 과거 세션 다시보기 (Review 모드) ──
-function reviewSession(sessionIndex){
+async function reviewSession(sessionIndex){
   var s = S.sessions[sessionIndex];
   if(!s || !s.question_ids || s.question_ids.length === 0){
     showToast('⚠️ 이 세션은 문제 ID가 저장되지 않았습니다 (구버전 세션)');
@@ -2929,6 +2979,11 @@ function reviewSession(sessionIndex){
     return;
   }
   S.quizQueue = validIds;
+
+  // 보안: 복습은 본문+정답+해설 필요 → review RPC 로 프리페치 (이미 푼 문제만 서버가 허용)
+  var okRev = await prefetchReview(validIds);
+  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.'); return; }
+
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = false;
   S.retryFlaggedMode = false;
@@ -2945,9 +3000,18 @@ function reviewSession(sessionIndex){
 
 function curQ(){const id=S.quizQueue[S.quizIdx];return id?S.questions.find(q=>q.id===id):null;}
 
-function loadQuestion(){
+async function loadQuestion(){
   clearInterval(S.timerInt);
   const q=curQ(); if(!q){showResults();return;}
+
+  // 보안: 렌더 전 본문/정답 데이터 보장 (일반 유저)
+  const _saPre = S.sessionAnswers && S.sessionAnswers[S.quizIdx];
+  const _willReveal = !!((_saPre && _saPre.submitted) || S.reviewMode);
+  if(!S.isAdminUser){
+    const _ok = _willReveal ? await ensureAnswerData(q) : await ensurePayload(q);
+    if(!_ok || !q.text){ showToast('⚠️ 문제 로드 실패 — 다시 시도해주세요.'); return; }
+  }
+
   const pct=Math.round(S.quizIdx/S.quizQueue.length*100);
   document.getElementById('q-bar').style.width=pct+'%';
   document.getElementById('q-progress-text').textContent=`Question ${S.quizIdx+1} of ${S.quizQueue.length}`;
@@ -3058,37 +3122,90 @@ function selectOption(i,btn){
   document.getElementById('btn-submit').disabled=false;
 }
 
-function autoTimeout(){
+async function autoTimeout(){
   if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
-  S.submitted=true; clearInterval(S.timerInt);
   const q=curQ(); if(!q) return;
+  S.submitted=true; clearInterval(S.timerInt);
+
+  // 서버 채점(오답 처리: 선택 -1 → 절대 일치 안 함). 정답 인덱스/해설도 함께 받음.
+  let resp;
+  try{
+    const { data, error } = await sb.rpc('check_answer', { p_question_id:q.id, p_choice:-1 });
+    if(error) throw error;
+    resp = Array.isArray(data) ? data[0] : data;
+    if(!resp) throw new Error('EMPTY_RESPONSE');
+  }catch(e){
+    const msg=(e&&e.message)?e.message:'';
+    if(msg.indexOf('DAILY_LIMIT')>=0 || msg.indexOf('TRIAL_EXPIRED')>=0){ showDailyQuotaModal(); return; }
+    showToast('⚠️ 처리 실패 — 네트워크 확인 후 다시 시도해주세요.');
+    S.submitted=false; return;
+  }
+
+  q.correct       = resp.correct_index;
+  q.explanation   = resp.explanation    || q.explanation   || '';
+  q.explanationEn = resp.explanation_en || q.explanationEn || '';
+  q.examTip       = resp.examtip        || q.examTip       || '';
+  q.examTipEn     = resp.examtip_en     || q.examTipEn     || '';
+
   if(!S.answered[q.id]) S.answered[q.id]={times:0,correct:0,wrong:0};
   S.answered[q.id].times++; S.answered[q.id].wrong++; S.results.wrong++;
   if(!S.sessionAnswers) S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
   S.sessionAnswers[S.quizIdx] = {selected: -1, submitted: true, isCorrect: false};
   save();
-  saveProgressToCloud(q.id, false);
-  consumeDailyQuota();
+  if(isTrialLimited()){ S.dailyUsed=(S.dailyUsed||0)+1; try{ updateTrialStatusUI(); }catch(e){} }
   document.querySelectorAll('.option-btn').forEach((b,i)=>{b.disabled=true;if(i===q.correct) b.classList.add('reveal');});
   renderQuestionPills();
   renderQuizNavButtons();
   showExplanation(q,false,true);
 }
 
-function submitAnswer(){
+async function submitAnswer(){
   if(S.submitted||S.selected===null) return;
+  // UX 사전 차단 (서버가 최종 권위). 트라이얼 일일 한도.
   if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
-  S.submitted=true; clearInterval(S.timerInt);
   const q=curQ(); if(!q) return;
-  const chosen=S.selected, isOk=chosen===q.correct;
+  const chosen=S.selected;
 
+  // 서버 채점 (로딩 상태)
+  const sbtn=document.getElementById('btn-submit');
+  const _prevTxt=sbtn?sbtn.textContent:'';
+  if(sbtn){ sbtn.disabled=true; sbtn.textContent='채점 중…'; }
+
+  let resp;
+  try{
+    const { data, error } = await sb.rpc('check_answer', { p_question_id:q.id, p_choice:chosen });
+    if(error) throw error;
+    resp = Array.isArray(data) ? data[0] : data;
+    if(!resp) throw new Error('EMPTY_RESPONSE');
+  }catch(e){
+    if(sbtn){ sbtn.disabled=false; sbtn.textContent=_prevTxt||'Submit Answer'; }
+    const msg=(e&&e.message)?e.message:'';
+    if(msg.indexOf('DAILY_LIMIT')>=0 || msg.indexOf('TRIAL_EXPIRED')>=0){ showDailyQuotaModal(); return; }
+    if(msg.indexOf('NO_ACCESS')>=0){ showToast('⚠️ 접근 권한이 없습니다. 구독 상태를 확인해주세요.'); return; }
+    showToast('⚠️ 채점 실패 — 네트워크 확인 후 다시 제출해주세요.');
+    return;  // 실패 시 기록/진행 없음 (데이터 꼬임 방지)
+  }
+
+  // 서버 응답을 메모리 question 객체에 채워 넣음 → 이후 렌더는 기존 로직 그대로
+  // (_en 등은 RPC가 비워 반환해도 기존값 유지: 관리자 베이스테이블 영문 보존)
+  q.correct       = resp.correct_index;
+  q.explanation   = resp.explanation    || q.explanation   || '';
+  q.explanationEn = resp.explanation_en || q.explanationEn || '';
+  q.examTip       = resp.examtip        || q.examTip       || '';
+  q.examTipEn     = resp.examtip_en     || q.examTipEn     || '';
+  q.wrongReasons  = resp.wrongreasons   || q.wrongReasons  || '';
+  const isOk = !!resp.is_correct;
+
+  S.submitted=true; clearInterval(S.timerInt);
+
+  // 진도: 로컬 낙관 갱신(즉시 UI). 서버가 이미 user_progress 기록함(saveProgressToCloud 호출 안 함)
   if(!S.answered[q.id]) S.answered[q.id]={times:0,correct:0,wrong:0};
   S.answered[q.id].times++;
   if(isOk){S.answered[q.id].correct++;S.results.correct++;}
   else{S.answered[q.id].wrong++;S.results.wrong++;}
   save();
-  saveProgressToCloud(q.id, isOk);
-  consumeDailyQuota();
+  // 트라이얼 일일 사용량: 서버가 차감 → 로컬은 표시용으로만 미러링(클라우드 write 안 함)
+  if(isTrialLimited()){ S.dailyUsed=(S.dailyUsed||0)+1; try{ updateTrialStatusUI(); }catch(e){} }
 
   document.querySelectorAll('.option-btn').forEach((b,i)=>{
     b.disabled=true; b.classList.remove('sel');
@@ -3640,7 +3757,7 @@ function switchReviewTab(tab){
   document.getElementById('rev-panel-sessions').style.display = isFlagged ? 'none' : '';
 }
 
-function renderBookmarks(){
+async function renderBookmarks(){
   var el = document.getElementById('bookmarks-list');
   var badge = document.getElementById('rev-badge-flagged');
   var fqs = S.questions.filter(function(q){ return S.flagged.has(q.id); });
@@ -3650,9 +3767,17 @@ function renderBookmarks(){
     el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">플래그된 문제 없음</div><div class="empty-sub">학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다</div></div>';
     return;
   }
+
+  // 보안: 북마크는 본문 미리보기만 필요(정답 X) → payload RPC (본문 전용)
+  if(!S.isAdminUser){
+    var missing = fqs.filter(function(q){ return !q.text; }).map(function(q){ return q.id; });
+    if(missing.length){ await prefetchPayloads(missing); }
+  }
+
   el.innerHTML = fqs.map(function(q){
     var a = S.answered[q.id] || {times:0, correct:0, wrong:0};
-    var qText = q.text.length > 120 ? q.text.slice(0, 120) + '…' : q.text;
+    var qt = q.text || '(본문 로드 실패 — 다시 열어주세요)';
+    var qText = qt.length > 120 ? qt.slice(0, 120) + '…' : qt;
     return '<div class="bookmark-card">' +
       '<div class="bm-q">' + qText + '</div>' +
       '<div class="bm-meta">' +
@@ -3706,7 +3831,7 @@ function renderReviewSessions(){
   }).join('');
 }
 
-function retryFlagged(id){
+async function retryFlagged(id){
   // Flagged 문제 전체를 큐로 — 선택한 문제부터 시작
   var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id); });
   if(!allFlagged.length){ showToast('플래그된 문제가 없습니다'); return; }
@@ -3715,6 +3840,11 @@ function retryFlagged(id){
   // 선택 문제를 앞으로 재정렬
   var queue = allFlagged.slice(startIdx).concat(allFlagged.slice(0, startIdx));
   S.quizQueue = queue.map(function(q){ return q.id; });
+
+  // 보안: 다시 풀기 = 새 채점 → 본문 프리페치 (정답은 제출 시 check_answer)
+  var okP = await prefetchPayloads(S.quizQueue);
+  if(!okP){ showToast('⚠️ 문제 본문 로드 실패 — 다시 시도해주세요.'); return; }
+
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = false;
   S.retryFlaggedMode = true;
