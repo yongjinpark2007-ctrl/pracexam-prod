@@ -108,7 +108,7 @@ html, body {
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;overflow:hidden;
 }
-.header-title{font-size:15px;font-weight:700;color:#DD8F75;letter-spacing:-.01em;}
+.header-title{font-size:15px;font-weight:700;color:#E0E7E9;letter-spacing:-.01em;}
 .header-sub{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;}
 /* Desktop nav */
 .header-nav{display:flex;gap:2px;}
@@ -470,12 +470,12 @@ html, body {
   background:rgba(0,0,0,.03);color:var(--text-muted);
   border:1px solid var(--border-clr);
   border-radius:6px;
-  /* 토픽명이 잘리지 않고 더 보이도록: 전체 폭 사용 + 최대 2줄까지 표시 후 말줄임 */
-  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  /* 토픽명은 1줄로만 표시하고, 길면 …으로 말줄임 (박스 폭은 카드 전체까지 사용) */
+  display:inline-block;
   vertical-align:middle;
   line-height:1.45;
   padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;
-  white-space:normal;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   max-width:100%;
 }
 .q-id-badge{
