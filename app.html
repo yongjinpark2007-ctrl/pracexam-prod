@@ -1109,8 +1109,8 @@ html, body {
 <div id="screen-quiz-setup" class="screen">
     <div id="trial-quota-banner" style="display:none;background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-main);line-height:1.6;"></div>
     <div style="margin-bottom:1.25rem;">
-      <div class="section-title">Study Setup</div>
-      <div style="font-size:14px;color:var(--text-muted);">문제 수, 범위, 반복 횟수, 학습 모드를 선택 후 시작하세요.</div>
+      <div class="section-title" data-i18n="setup_title">Study Setup</div>
+      <div style="font-size:14px;color:var(--text-muted);" data-i18n="setup_subtitle">문제 수, 범위, 반복 횟수, 학습 모드를 선택 후 시작하세요.</div>
     </div>
     <div class="start-card">
 
@@ -1123,7 +1123,7 @@ html, body {
           <div class="setup-banner-title" id="setup-banner-title">All Parts</div>
           <div class="setup-banner-sub" id="setup-banner-sub">전체 문제</div>
         </div>
-        <div class="setup-banner-change" id="setup-banner-change-link" onclick="setupShowPartPicker()">변경 ›</div>
+        <div class="setup-banner-change" id="setup-banner-change-link" data-i18n="setup_change" onclick="setupShowPartPicker()">변경 ›</div>
       </div>
       <!-- Part 변경 picker (기본 숨김) -->
       <div id="setup-part-picker" style="display:none;margin-bottom:1.25rem;">
@@ -1156,23 +1156,23 @@ html, body {
       </div>
 
       <!-- ① 문제 수 -->
-      <div class="setup-section-label">문제 수</div>
+      <div class="setup-section-label" data-i18n="setup_count">문제 수</div>
       <div class="setup-count-grid" style="margin-bottom:0;" id="setup-count-grid">
         <button class="setup-count-card selected" onclick="selectCount(5,this)">
           <span class="setup-count-num">5</span>
-          <div class="setup-count-sub">Quick</div>
+          <div class="setup-count-sub" data-i18n="cnt_quick">Quick</div>
         </button>
         <button class="setup-count-card" onclick="selectCount(10,this)">
           <span class="setup-count-num">10</span>
-          <div class="setup-count-sub">Standard</div>
+          <div class="setup-count-sub" data-i18n="cnt_standard">Standard</div>
         </button>
         <button class="setup-count-card" onclick="selectCount(15,this)">
           <span class="setup-count-num">15</span>
-          <div class="setup-count-sub">Extended</div>
+          <div class="setup-count-sub" data-i18n="cnt_extended">Extended</div>
         </button>
         <button class="setup-count-card" onclick="selectCount(20,this)">
           <span class="setup-count-num">20</span>
-          <div class="setup-count-sub">Full</div>
+          <div class="setup-count-sub" data-i18n="cnt_full">Full</div>
         </button>
       </div>
 
@@ -1180,31 +1180,31 @@ html, body {
       <div class="setup-divider"></div>
 
       <!-- ② 범위 -->
-      <div class="setup-section-label">범위</div>
+      <div class="setup-section-label" data-i18n="setup_subset">범위</div>
       <div class="setup-icon-grid setup-icon-grid-4" id="subset-row">
         <button class="setup-icon-btn selected" onclick="selectSubset('all',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12h3M19 12h3M12 2v3M12 19v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
           </div>
-          <div class="setup-icon-label">Random</div>
+          <div class="setup-icon-label" data-i18n="sub_random">Random</div>
         </button>
         <button class="setup-icon-btn" onclick="selectSubset('unseen',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </div>
-          <div class="setup-icon-label">Unseen</div>
+          <div class="setup-icon-label" data-i18n="sub_unseen">Unseen</div>
         </button>
         <button class="setup-icon-btn" onclick="selectSubset('practiced',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
           </div>
-          <div class="setup-icon-label">Practiced</div>
+          <div class="setup-icon-label" data-i18n="sub_practiced">Practiced</div>
         </button>
         <button class="setup-icon-btn" onclick="selectSubset('flagged',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><path d="M5 3v18M5 3h14l-3 5 3 5H5"/></svg>
           </div>
-          <div class="setup-icon-label">Flagged</div>
+          <div class="setup-icon-label" data-i18n="sub_flagged">Flagged</div>
         </button>
       </div>
 
@@ -1212,73 +1212,74 @@ html, body {
 
       <!-- ③ 반복 횟수 -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div class="setup-section-label" style="margin-bottom:0;">반복 횟수</div>
+        <div class="setup-section-label" style="margin-bottom:0;" data-i18n="setup_repeat">반복 횟수</div>
         <div class="setup-saved-badge" style="margin-bottom:0;">
           <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          기억됨
+          <span data-i18n="setup_saved">기억됨</span>
         </div>
       </div>
       <div class="setup-repeat-grid" id="repeat-row">
         <button class="setup-repeat-btn selected" onclick="selectRepeatIcon('all',this)">
           <div class="setup-repeat-circle">∞</div>
-          <div class="setup-repeat-sub">전체</div>
+          <div class="setup-repeat-sub" data-i18n="rep_all">전체</div>
         </button>
         <button class="setup-repeat-btn" onclick="selectRepeatIcon('le1',this)">
           <div class="setup-repeat-circle">≤1</div>
-          <div class="setup-repeat-sub">1회</div>
+          <div class="setup-repeat-sub" data-i18n="rep_1">1회</div>
         </button>
         <button class="setup-repeat-btn" onclick="selectRepeatIcon('le2',this)">
           <div class="setup-repeat-circle">≤2</div>
-          <div class="setup-repeat-sub">2회</div>
+          <div class="setup-repeat-sub" data-i18n="rep_2">2회</div>
         </button>
         <button class="setup-repeat-btn" onclick="selectRepeatIcon('le3',this)">
           <div class="setup-repeat-circle">≤3</div>
-          <div class="setup-repeat-sub">3회</div>
+          <div class="setup-repeat-sub" data-i18n="rep_3">3회</div>
         </button>
         <button class="setup-repeat-btn" onclick="selectRepeatIcon('le4',this)">
           <div class="setup-repeat-circle">≤4</div>
-          <div class="setup-repeat-sub">4회</div>
+          <div class="setup-repeat-sub" data-i18n="rep_4">4회</div>
         </button>
       </div>
 
+      </div><!-- /setup-advanced-options -->
+
       <div class="setup-divider"></div>
 
-      <!-- ④ 학습 모드 -->
-      <div class="setup-section-label">학습 모드</div>
+      <!-- ④ 학습 모드 — 무료 체험 사용자 포함 항상 노출 (advanced-options 밖) -->
+      <div class="setup-section-label" data-i18n="setup_mode">학습 모드</div>
       <div class="setup-icon-grid setup-icon-grid-4" id="mode-row">
         <button class="setup-icon-btn selected" onclick="selectMode('normal',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           </div>
-          <div class="setup-icon-label">Normal</div>
+          <div class="setup-icon-label" data-i18n="mode_normal">Normal</div>
         </button>
         <button class="setup-icon-btn" onclick="selectMode('tpiq',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><path d="M12 3l1.6 3.9L17.5 8l-3.9 1.6L12 13l-1.6-3.4L6.5 8l3.9-1.1L12 3z"/><path d="M5 15l.9 2.1L8 18l-2.1.9L5 21l-.9-2.1L2 18l2.1-.9L5 15z"/><path d="M19 14l.7 1.6L21.5 16l-1.8.4L19 18l-.7-1.6L16.5 16l1.8-.4L19 14z"/></svg>
           </div>
-          <div class="setup-icon-label">Smart (TPIQ)</div>
+          <div class="setup-icon-label" data-i18n="mode_tpiq">Smart (TPIQ)</div>
         </button>
         <button class="setup-icon-btn" onclick="selectMode('review',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
-          <div class="setup-icon-label">Review Wrong</div>
+          <div class="setup-icon-label" data-i18n="mode_review">Review Wrong</div>
         </button>
         <button class="setup-icon-btn" onclick="selectMode('timed',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 3"/><path d="M9 2h6M12 2v3"/></svg>
           </div>
-          <div class="setup-icon-label">Timed 90s</div>
+          <div class="setup-icon-label" data-i18n="mode_timed">Timed 90s</div>
         </button>
       </div>
-      </div><!-- /setup-advanced-options -->
 
       <div class="setup-divider"></div>
 
       <!-- CTA -->
       <button class="setup-cta-btn" id="start-btn" onclick="startQuiz()">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Start Session
+        <span data-i18n="setup_start">Start Session</span>
       </button>
       <div class="setup-cta-note" id="avail-count"></div>
 
@@ -1386,15 +1387,15 @@ html, body {
 <!-- ═══ BOOKMARKS ═══ -->
 <div id="screen-bookmarks" class="screen">
   <div style="margin-bottom:1rem;">
-    <div class="section-title">Review</div>
+    <div class="section-title" data-i18n="review_title">Review</div>
   </div>
   <!-- Tab bar -->
   <div class="review-tab-bar">
     <button class="review-tab active" id="rev-tab-flagged" onclick="switchReviewTab('flagged')">
-      플래그 문제 <span class="review-tab-badge" id="rev-badge-flagged">0</span>
+      <span data-i18n="rev_tab_flagged">플래그 문제</span> <span class="review-tab-badge" id="rev-badge-flagged">0</span>
     </button>
     <button class="review-tab" id="rev-tab-sessions" onclick="switchReviewTab('sessions')">
-      최근 세션 <span class="review-tab-badge" id="rev-badge-sessions">0</span>
+      <span data-i18n="rev_tab_sessions">최근 세션</span> <span class="review-tab-badge" id="rev-badge-sessions">0</span>
     </button>
   </div>
   <!-- Flagged panel -->
@@ -1410,8 +1411,8 @@ html, body {
 <!-- ═══ STATISTICS (Phase 4 완료 — 2026-06-13) ═══ -->
 <div id="screen-statistics" class="screen">
   <div style="margin-bottom:1.25rem;">
-    <div class="section-title">Statistics</div>
-    <div style="font-size:13px;color:var(--text-muted);">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
+    <div class="section-title" data-i18n="sts_title">Statistics</div>
+    <div style="font-size:13px;color:var(--text-muted);" data-i18n="sts_subtitle">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
   </div>
 
   <!-- 요약 카드 4개 -->
@@ -1419,36 +1420,36 @@ html, body {
 
   <!-- 점수 추세 라인차트 -->
   <div class="sts-section">
-    <div class="sts-section-title">점수 추세 (최근 20세션)</div>
+    <div class="sts-section-title" data-i18n="sts_trend_title">점수 추세 (최근 20세션)</div>
     <div class="sts-chart-wrap" id="sts-trend-wrap">
-      <div class="sts-empty">세션 데이터 로딩 중…</div>
+      <div class="sts-empty" data-i18n="sts_loading_data">세션 데이터 로딩 중…</div>
     </div>
   </div>
 
   <!-- Part별 정답률 -->
   <div class="sts-section">
-    <div class="sts-section-title">Part별 누적 정답률</div>
+    <div class="sts-section-title" data-i18n="sts_parts_title">Part별 누적 정답률</div>
     <div id="sts-parts"></div>
   </div>
 
   <!-- 토픽별 분포표 -->
   <div class="sts-section">
-    <div class="sts-section-title">토픽별 정답률 (5회 이상 시도)</div>
+    <div class="sts-section-title" data-i18n="sts_topics_title">토픽별 정답률 (5회 이상 시도)</div>
     <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;padding:0 .5rem;">
       <table class="sts-topic-table" id="sts-topics">
         <thead><tr>
-          <th>토픽</th><th>Part</th><th style="text-align:right;">시도</th><th style="text-align:right;">정답률</th>
+          <th data-i18n="sts_th_topic">토픽</th><th>Part</th><th style="text-align:right;" data-i18n="sts_th_attempts">시도</th><th style="text-align:right;" data-i18n="sts_th_acc">정답률</th>
         </tr></thead>
-        <tbody id="sts-topics-body"><tr><td colspan="4" class="sts-empty">로딩 중…</td></tr></tbody>
+        <tbody id="sts-topics-body"><tr><td colspan="4" class="sts-empty" data-i18n="sts_loading">로딩 중…</td></tr></tbody>
       </table>
     </div>
   </div>
 
   <!-- 전체 세션 목록 -->
   <div class="sts-section">
-    <div class="sts-section-title">세션 기록 <span id="sts-sess-count" style="font-weight:400;text-transform:none;letter-spacing:0;"></span></div>
+    <div class="sts-section-title"><span data-i18n="sts_sessions_title">세션 기록</span> <span id="sts-sess-count" style="font-weight:400;text-transform:none;letter-spacing:0;"></span></div>
     <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;padding:.5rem 1rem;" id="sts-sessions">
-      <div class="sts-empty">로딩 중…</div>
+      <div class="sts-empty" data-i18n="sts_loading">로딩 중…</div>
     </div>
   </div>
 </div>
@@ -1770,9 +1771,11 @@ function updateSyncStatus(){
   const el = document.getElementById('sync-status-text');
   if(!el) return;
   if(SB_USER){
-    el.textContent = `✅ 클라우드 연결됨 · ${SB_USER.email} · 모든 기기에서 자동 동기화`;
+    el.textContent = (LANG === 'en')
+      ? ('✅ Cloud connected · ' + SB_USER.email + ' · auto-sync across devices')
+      : ('✅ 클라우드 연결됨 · ' + SB_USER.email + ' · 모든 기기에서 자동 동기화');
   } else {
-    el.textContent = '⚠️ 로그인 필요';
+    el.textContent = (LANG === 'en') ? '⚠️ Login required' : '⚠️ 로그인 필요';
   }
 }
 
@@ -1835,8 +1838,10 @@ function applyTrialSetupRestrictions(){
     }
   });
   if(limited){
-    S.count = 5; S.part = 'all'; S.subset = 'all'; S.repeatFilter = 'all'; S.mode = 'normal';
+    // 무료 체험: 문제 수/범위/반복은 Quick 고정, 단 학습 모드는 사용자 선택 유지
+    S.count = 5; S.part = 'all'; S.subset = 'all'; S.repeatFilter = 'all';
     if(typeof updateSetupBanner === 'function') updateSetupBanner();
+    if(typeof syncModeIconUI === 'function') syncModeIconUI();
   }
 }
 
@@ -1847,7 +1852,9 @@ function updateTrialQuotaBanner(){
   if(!isTrialLimited()){ el.style.display = 'none'; return; }
   const left = Math.max(0, 5 - (S.dailyUsed || 0));
   el.style.display = '';
-  el.innerHTML = '🎁 <strong>무료 체험 모드</strong> — 하루 5문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>';
+  el.innerHTML = (LANG === 'en')
+    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 5 Quick questions per day · remaining today: <strong>' + left + '</strong>')
+    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 5문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>');
 }
 
 // 일일 한도 도달 시 모달 표시 (공통 모달 마크업 재사용)
@@ -1855,11 +1862,11 @@ function showDailyQuotaModal(){
   document.getElementById('modal-content').innerHTML =
     '<div style="text-align:center;padding:1rem 0;">' +
       '<div style="font-size:36px;margin-bottom:.75rem;">🌙</div>' +
-      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">오늘의 학습 한도를 모두 사용했습니다</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + t('quota_title') + '</div>' +
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
-        '무료 체험은 하루 5문제까지 이용 가능합니다.<br>내일 다시 만나요! 결제 기능은 준비 중입니다.' +
+        t('quota_body') +
       '</div>' +
-      '<button class="btn-navy" style="width:100%;" onclick="closeModal()">확인</button>' +
+      '<button class="btn-navy" style="width:100%;" onclick="closeModal()">' + t('ok_confirm') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
 }
@@ -1890,13 +1897,17 @@ function updateTrialStatusUI(){
   if(!SB_USER || SB_USER.id === ADMIN_UID){ card.style.display = 'none'; return; }
   card.style.display = '';
   if(S.isPaid){
-    txt.textContent = '✅ 유료 멤버십 — 모든 문제 무제한 이용 가능';
+    txt.textContent = t('trial_paid');
   } else if(S.trialExpired){
-    txt.textContent = '🔒 무료 체험이 종료되었습니다. 새 문제 풀이는 결제 후 이용 가능합니다 (결제 기능 준비 중). 기존 학습 기록·통계는 계속 확인 가능합니다.';
+    txt.textContent = t('trial_expired');
   } else if(S.trialEndsAt){
     var daysLeft = Math.max(0, Math.ceil((new Date(S.trialEndsAt) - new Date()) / (1000*60*60*24)));
     var qLeft = Math.max(0, 5 - (S.dailyUsed || 0));
-    txt.textContent = '🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + new Date(S.trialEndsAt).toLocaleDateString('ko-KR') + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)';
+    var _endLoc = (LANG === 'en') ? 'en-US' : 'ko-KR';
+    var _endDate = new Date(S.trialEndsAt).toLocaleDateString(_endLoc);
+    txt.textContent = (LANG === 'en')
+      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (5/day, Quick mode)')
+      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)');
   } else {
     card.style.display = 'none';
   }
@@ -1908,11 +1919,13 @@ function checkTrialAccess(){
   document.getElementById('modal-content').innerHTML =
     '<div style="text-align:center;padding:1rem 0;">' +
       '<div style="font-size:36px;margin-bottom:.75rem;">🔒</div>' +
-      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">무료 체험이 종료되었습니다</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + (LANG === 'en' ? 'Your free trial has ended' : '무료 체험이 종료되었습니다') + '</div>' +
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
-        '새로운 문제 풀이는 결제 후 이용 가능합니다.<br>기존 학습 기록과 통계는 계속 보실 수 있습니다.<br>결제 기능은 준비 중입니다.' +
+        (LANG === 'en'
+          ? 'New practice requires a paid plan.<br>Your existing history and stats stay available.<br>Payments are coming soon.'
+          : '새로운 문제 풀이는 결제 후 이용 가능합니다.<br>기존 학습 기록과 통계는 계속 보실 수 있습니다.<br>결제 기능은 준비 중입니다.') +
       '</div>' +
-      '<button class="btn-navy" style="width:100%;" onclick="closeModal()">확인</button>' +
+      '<button class="btn-navy" style="width:100%;" onclick="closeModal()">' + t('ok_confirm') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
   return false;
@@ -2267,8 +2280,91 @@ var UI_TEXT = {
   hero_ready:    {ko:'응시 가능', en:'Exam ready'},
   hero_almost:   {ko:'거의 다 왔어요', en:'Almost there'},
   hero_learning: {ko:'학습 중',   en:'In progress'},
-  hero_basics:   {ko:'기초 다지기', en:'Building basics'}
+  hero_basics:   {ko:'기초 다지기', en:'Building basics'},
+  // ── Study Setup 화면 ──
+  setup_title:    {ko:'학습 설정', en:'Study Setup'},
+  setup_subtitle: {ko:'문제 수, 범위, 반복 횟수, 학습 모드를 선택 후 시작하세요.', en:'Choose question count, scope, repeats, and mode, then start.'},
+  setup_change:   {ko:'변경 ›', en:'Change ›'},
+  setup_count:    {ko:'문제 수', en:'Questions'},
+  setup_subset:   {ko:'범위',    en:'Scope'},
+  setup_repeat:   {ko:'반복 횟수', en:'Repeats'},
+  setup_saved:    {ko:'기억됨',  en:'Saved'},
+  setup_mode:     {ko:'학습 모드', en:'Study Mode'},
+  setup_start:    {ko:'세션 시작', en:'Start Session'},
+  mode_normal:    {ko:'일반',    en:'Normal'},
+  mode_tpiq:      {ko:'스마트 (TPIQ)', en:'Smart (TPIQ)'},
+  mode_review:    {ko:'오답 복습', en:'Review Wrong'},
+  mode_timed:     {ko:'타이머 90초', en:'Timed 90s'},
+  cnt_quick:      {ko:'빠르게',  en:'Quick'},
+  cnt_standard:   {ko:'표준',    en:'Standard'},
+  cnt_extended:   {ko:'확장',    en:'Extended'},
+  cnt_full:       {ko:'풀',      en:'Full'},
+  sub_random:     {ko:'무작위',  en:'Random'},
+  sub_unseen:     {ko:'안 푼 문제', en:'Unseen'},
+  sub_practiced:  {ko:'푼 문제', en:'Practiced'},
+  sub_flagged:    {ko:'플래그',  en:'Flagged'},
+  rep_all:        {ko:'전체',    en:'All'},
+  rep_1:          {ko:'1회',     en:'1×'},
+  rep_2:          {ko:'2회',     en:'2×'},
+  rep_3:          {ko:'3회',     en:'3×'},
+  rep_4:          {ko:'4회',     en:'4×'},
+  // ── 대시보드 동적 ──
+  dash_progress:  {ko:'진도',    en:'Progress'},
+  dash_accuracy:  {ko:'정답률',  en:'Accuracy'},
+  dash_incl_rep:  {ko:' - 반복 풀이 포함', en:' - incl. repeats'},
+  dash_continue:  {ko:' 학습 계속하기', en:' — Continue'},
+  dash_allparts:  {ko:'전체 Part · 클릭하여 학습 시작', en:'All Parts · tap to start'},
+  dash_recent:    {ko:'최근 학습', en:'Recent'},
+  dash_recent_empty_t: {ko:'아직 세션 없음', en:'No sessions yet'},
+  dash_recent_empty_s: {ko:'Study 탭에서 학습을 시작하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
+  dash_weak_more:  {ko:'약점 보강 · ', en:'Weak Topics · '},
+  dash_weak_empty_none: {ko:'학습을 시작하면 토픽별 약점이 분석됩니다', en:'Start studying to reveal topic-level weak points'},
+  // ── Review / Bookmarks ──
+  review_title:   {ko:'복습',    en:'Review'},
+  rev_tab_flagged:{ko:'플래그 문제', en:'Flagged'},
+  rev_tab_sessions:{ko:'최근 세션', en:'Recent Sessions'},
+  bm_empty_t:     {ko:'플래그된 문제 없음', en:'No flagged questions'},
+  bm_empty_s:     {ko:'학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다', en:'Flag tough questions with ⚑ during study to review them here'},
+  bm_load_fail:   {ko:'(본문 로드 실패 — 다시 열어주세요)', en:'(Failed to load — please reopen)'},
+  bm_retry:       {ko:'다시 풀기 →', en:'Retry →'},
+  rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
+  rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
+  // ── Statistics ──
+  sts_title:      {ko:'통계',    en:'Statistics'},
+  sts_subtitle:   {ko:'학습 추세 · Part별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy by part · topic analysis'},
+  sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
+  sts_parts_title:{ko:'Part별 누적 정답률', en:'Cumulative Accuracy by Part'},
+  sts_topics_title:{ko:'토픽별 정답률 (5회 이상 시도)', en:'Accuracy by Topic (5+ attempts)'},
+  sts_sessions_title:{ko:'세션 기록', en:'Session History'},
+  sts_th_topic:   {ko:'토픽',    en:'Topic'},
+  sts_th_attempts:{ko:'시도',    en:'Attempts'},
+  sts_th_acc:     {ko:'정답률',  en:'Accuracy'},
+  sts_loading:    {ko:'로딩 중…', en:'Loading…'},
+  sts_loading_data:{ko:'세션 데이터 로딩 중…', en:'Loading session data…'},
+  sts_total_sessions:{ko:'총 세션', en:'Sessions'},
+  sts_total_answered:{ko:'총 풀이', en:'Answered'},
+  sts_avg:        {ko:'평균 정답률', en:'Avg. Score'},
+  sts_best:       {ko:'최고 점수', en:'Best Score'},
+  sts_trend_empty:{ko:'세션이 2개 이상 있어야 추세 차트를 볼 수 있습니다', en:'Need 2+ sessions to show the trend chart'},
+  sts_parts_empty:{ko:'학습 데이터가 없습니다', en:'No study data yet'},
+  sts_topics_empty:{ko:'5회 이상 시도한 토픽이 없습니다', en:'No topics with 5+ attempts yet'},
+  sts_sessions_empty:{ko:'세션 기록이 없습니다', en:'No session records yet'},
+  sts_more:       {ko:'더 보기', en:'Show more'},
+  // ── 무료 체험 / 멤버십 UI ──
+  trial_banner:   {ko:'무료 체험 모드', en:'Free Trial'},
+  trial_paid:     {ko:'✅ 유료 멤버십 — 모든 문제 무제한 이용 가능', en:'✅ Paid membership — unlimited access to all questions'},
+  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 새 문제 풀이는 결제 후 이용 가능합니다 (결제 기능 준비 중). 기존 학습 기록·통계는 계속 확인 가능합니다.', en:'🔒 Your free trial has ended. New practice requires a paid plan (payments coming soon). Your existing history and stats stay available.'},
+  quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
+  quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>내일 다시 만나요! 결제 기능은 준비 중입니다.', en:'The free trial allows up to 5 questions per day.<br>See you tomorrow! Payments are coming soon.'},
+  ok_confirm:     {ko:'확인',    en:'OK'},
+  // 공통 단위 (문제/정답 등은 헬퍼에서 처리)
+  common_all_parts:{ko:'All Parts', en:'All Parts'}
 };
+// 숫자 + 단위 헬퍼 (언어별): "5문제" / "5 Q", "3정답" / "3 correct" 등
+function uQ(n){ return LANG === 'en' ? (n + ' Q') : (n + '문제'); }
+function uQuestions(n){ return LANG === 'en' ? (n + ' questions') : (n + '문제'); }
+function uCorrect(n){ return LANG === 'en' ? (n + ' correct') : (n + ' 정답'); }
+function uAttempts(n){ return LANG === 'en' ? (n + ' attempts') : (n + '회 학습'); }
 function t(key){
   var o = UI_TEXT[key];
   if(!o) return key;
@@ -2313,8 +2409,17 @@ function applyLang(){
       }
     }
   }catch(e){}
-  // 동적으로 그려지는 대시보드 갱신 (히어로 라벨/상태 등)
+  // 동적으로 그려지는 화면 갱신 (현재 보이는 화면이 즉시 반영되도록 전체 재렌더)
   try{ if(S && S.questions) renderDashboard(); }catch(e){}
+  try{ if(typeof renderStatistics === 'function' && S && S.sessions) renderStatistics(); }catch(e){}
+  try{ if(typeof renderBookmarks === 'function' && S && S.questions) renderBookmarks(); }catch(e){}
+  try{ if(typeof updateSetupBanner === 'function') updateSetupBanner(); }catch(e){}
+  try{ if(typeof updateAvailCount === 'function') updateAvailCount(); }catch(e){}
+  try{ if(typeof updateTrialQuotaBanner === 'function') updateTrialQuotaBanner(); }catch(e){}
+  try{ if(typeof updateTrialStatusUI === 'function') updateTrialStatusUI(); }catch(e){}
+  try{ if(typeof updateSyncStatus === 'function') updateSyncStatus(); }catch(e){}
+  // Review 탭 뱃지/세션 목록도 언어 갱신
+  try{ if(typeof renderReviewSessions === 'function') renderReviewSessions(); }catch(e){}
 }
 function toggleLang(){
   LANG = (LANG === 'ko') ? 'en' : 'ko';
@@ -2476,9 +2581,11 @@ function updateResumeBadge(){
     }, { passive: true });
   }
 
-  const tag = S.reviewMode ? '복습' : '학습';
+  const tag = (LANG === 'en')
+    ? (S.reviewMode ? 'Resume review' : 'Resume study')
+    : (S.reviewMode ? '복습 재개' : '학습 재개');
   document.getElementById('resume-badge-label').innerHTML =
-    `▶ ${tag} 재개 <span style="opacity:.85;font-weight:500;">(${S.quizIdx+1}/${S.quizQueue.length})</span>`;
+    `▶ ${tag} <span style="opacity:.85;font-weight:500;">(${S.quizIdx+1}/${S.quizQueue.length})</span>`;
   badge.style.display = 'flex';
 }
 
@@ -2563,16 +2670,19 @@ function openStudy(){
   closeDrawer();
   if(!canStartQuiz()) return;
   if(S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length){
-    if(confirm(`진행 중인 세션이 있습니다 (${S.quizIdx+1}/${S.quizQueue.length}).\n\n[확인] 이어서 풀기\n[취소] 새 세션 시작`)){
+    var _msg = (LANG === 'en')
+      ? ('You have a session in progress (' + (S.quizIdx+1) + '/' + S.quizQueue.length + ').\n\n[OK] Resume\n[Cancel] Start new session')
+      : ('진행 중인 세션이 있습니다 (' + (S.quizIdx+1) + '/' + S.quizQueue.length + ').\n\n[확인] 이어서 풀기\n[취소] 새 세션 시작');
+    if(confirm(_msg)){
       resumeQuiz();
     } else {
       clearLiveQuiz();
       showScreen('quiz-setup');
-      setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); updateAvailCount(); }, 50);
+      setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); }, 50);
     }
   } else {
     showScreen('quiz-setup');
-    setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); updateAvailCount(); }, 50);
+    setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); }, 50);
   }
 }
 
@@ -2589,10 +2699,12 @@ function progressColor(pct){
 
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
-  'Part 1': { label: 'Part 1 — 개인세', icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' },
-  'Part 2': { label: 'Part 2 — 사업세', icon: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>' },
-  'Part 3': { label: 'Part 3 — 대리인', icon: '<svg viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="18" cy="9.7" r="3"/><path d="M23 20v-1.6a4 4 0 0 0-3.5-3.85"/></svg>' }
+  'Part 1': { ko: 'Part 1 — 개인세', en: 'Part 1 — Individuals',    icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>' },
+  'Part 2': { ko: 'Part 2 — 사업세', en: 'Part 2 — Businesses',     icon: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>' },
+  'Part 3': { ko: 'Part 3 — 대리인', en: 'Part 3 — Representation', icon: '<svg viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="18" cy="9.7" r="3"/><path d="M23 20v-1.6a4 4 0 0 0-3.5-3.85"/></svg>' }
 };
+// Part 라벨 — 선택 언어로 반환 (없으면 Part 키 그대로)
+function partLabel(pk){ var m = PART_META[pk]; if(!m) return pk; return (LANG === 'en') ? m.en : m.ko; }
 
 // 응시 권장 정답률 임계값 (Phase 2 design decision)
 const EXAM_READY_THRESHOLD = 90;
@@ -2643,29 +2755,29 @@ function renderDashHero(focusPart){
       '<div class="dash-hero-head">' +
         '<div>' +
           '<div class="dash-hero-label">' + t('hero_focus') + '</div>' +
-          '<div class="dash-hero-title">' + info.icon + ' ' + info.label + '</div>' +
+          '<div class="dash-hero-title">' + info.icon + ' ' + partLabel(focusPart) + '</div>' +
         '</div>' +
         '<span class="dash-hero-status ' + st.cls + '">' + st.text + '</span>' +
       '</div>' +
       '<div class="dash-hero-metrics">' +
         '<div>' +
-          '<div class="dash-metric-label">진도</div>' +
+          '<div class="dash-metric-label">' + t('dash_progress') + '</div>' +
           '<div class="dash-metric-value">' + progressPct + '<span class="pct">%</span></div>' +
-          '<div class="dash-metric-sub">' + done + ' / ' + totalQs + ' 문제</div>' +
+          '<div class="dash-metric-sub">' + done + ' / ' + uQuestions(totalQs) + '</div>' +
           '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + progressPct + '%;background:' + progressColor(progressPct) + ';"></div></div>' +
         '</div>' +
         '<div>' +
-          '<div class="dash-metric-label">정답률</div>' +
+          '<div class="dash-metric-label">' + t('dash_accuracy') + '</div>' +
           '<div class="dash-metric-value">' + accPct + '<span class="pct">%</span></div>' +
-          '<div class="dash-metric-sub">' + tCorrect + ' / ' + tAttempts + ' 정답' +
-            '<span style="font-size:11px;color:var(--text-muted);opacity:.75;"> - 반복 풀이 포함</span>' +
+          '<div class="dash-metric-sub">' + tCorrect + ' / ' + uCorrect(tAttempts) +
+            '<span style="font-size:11px;color:var(--text-muted);opacity:.75;">' + t('dash_incl_rep') + '</span>' +
           '</div>' +
           '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%;background:' + progressColor(accPct) + ';"></div></div>' +
         '</div>' +
       '</div>' +
       '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
         '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>' +
-        focusPart + ' 학습 계속하기' +
+        (focusPart + t('dash_continue')) +
       '</button>' +
     '</div>';
 }
@@ -2689,18 +2801,18 @@ function renderDashPartsGrid(){
     });
     const accPct = tAttempts>0 ? Math.round(tCorrect/tAttempts*100) : 0;
     const accLabel = tAttempts>0 ? accPct+'%' : '—';
-    const meta = PART_META[pk] || { label: pk };
-    const shortLabel = meta.label.replace(' — ', ' · ');
+    const meta = PART_META[pk] || {};
+    const shortLabel = partLabel(pk).replace(' — ', ' · ');
     const isActive = (pk===focusPart);
     return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
       '<div class="dash-part-row-name">'+(meta.icon||'')+' '+shortLabel+'</div>'+
-      '<div class="dash-part-row-stats">진도 '+progressPct+'% · 정답률 '+accLabel+'</div>'+
+      '<div class="dash-part-row-stats">'+t('dash_progress')+' '+progressPct+'% · '+t('dash_accuracy')+' '+accLabel+'</div>'+
       '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressColor(progressPct)+';"></div></div>'+
     '</div>';
   }).join('');
 
   document.getElementById('dash-parts-grid-wrap').innerHTML =
-    '<div class="dash-parts-section-label">전체 Part · 클릭하여 학습 시작</div>' +
+    '<div class="dash-parts-section-label">'+t('dash_allparts')+'</div>' +
     '<div class="dash-parts-list">' + cards + '</div>';
 }
 
@@ -2719,7 +2831,7 @@ function renderDashWeakTopics(){
     if(q.part !== focusPart) return;
     var a = S.answered[q.id];
     if(!a || !(a.times)) return;
-    var t = q.topic || '기타';
+    var t = q.topic || (LANG === 'en' ? 'Other' : '기타');
     if(!topicMap[t]) topicMap[t] = { correct: 0, times: 0 };
     topicMap[t].correct += (a.correct || 0);
     topicMap[t].times   += (a.times   || 0);
@@ -2740,12 +2852,14 @@ function renderDashWeakTopics(){
   var el = document.getElementById('dash-weak-topics');
   if(!el) return;
 
-  var label = '<div class="dash-parts-section-label">약점 보강 · ' + focusPart + ' Top 3</div>';
+  var label = '<div class="dash-parts-section-label">' + t('dash_weak_more') + focusPart + ' Top 3</div>';
 
   if(weak.length === 0){
     var reason = Object.keys(topicMap).length === 0
-      ? '학습을 시작하면 토픽별 약점이 분석됩니다'
-      : focusPart + ' 토픽을 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다';
+      ? t('dash_weak_empty_none')
+      : (LANG === 'en'
+          ? ('Shown after ' + MIN_ATT + '+ attempts on ' + focusPart + ' topics')
+          : (focusPart + ' 토픽을 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
     el.innerHTML = label +
       '<div class="empty" style="padding:1.25rem 1rem;background:var(--card-bg);' +
       'border:1px solid var(--border-clr);border-radius:10px;margin-bottom:1.5rem;">' +
@@ -2775,13 +2889,14 @@ function renderDashRecent2(){
   const el = document.getElementById('dash-recent-2');
   if(!el) return;
 
+  var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
   if(recentItems.length === 0){
     el.innerHTML =
-      '<div class="dash-parts-section-label">최근 학습</div>' +
+      '<div class="dash-parts-section-label">' + t('dash_recent') + '</div>' +
       '<div class="empty" style="padding:1.5rem 1rem;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:10px;">' +
         '<div class="empty-icon">📖</div>' +
-        '<div class="empty-title">아직 세션 없음</div>' +
-        '<div class="empty-sub">Study 탭에서 학습을 시작하면 여기에 기록됩니다</div>' +
+        '<div class="empty-title">' + t('dash_recent_empty_t') + '</div>' +
+        '<div class="empty-sub">' + t('dash_recent_empty_s') + '</div>' +
       '</div>';
     return;
   }
@@ -2790,18 +2905,18 @@ function renderDashRecent2(){
     let label = s.date;
     if(s.created_at){
       const d = new Date(s.created_at);
-      label = d.toLocaleDateString('ko-KR', { month:'short', day:'numeric' }) + ' ' +
-              d.toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit', hour12:false });
+      label = d.toLocaleDateString(_loc, { month:'short', day:'numeric' }) + ' ' +
+              d.toLocaleTimeString(_loc, { hour:'2-digit', minute:'2-digit', hour12:false });
     }
     const scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
     return '<div class="dash-recent-row">' +
              '<span class="dash-recent-date">' + label + '</span>' +
-             '<span class="dash-recent-meta">' + s.count + '문제</span>' +
+             '<span class="dash-recent-meta">' + uQ(s.count) + '</span>' +
              '<span class="dash-recent-score" style="color:' + scoreColor + ';">' + s.pct + '%</span>' +
            '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="dash-parts-section-label">최근 학습</div>' + rowsHtml;
+  el.innerHTML = '<div class="dash-parts-section-label">' + t('dash_recent') + '</div>' + rowsHtml;
 }
 
 // Hero CTA 클릭 → Study 진입 (focus part 저장 + 해당 chip 자동 선택)
@@ -2823,6 +2938,7 @@ function dashStartFocusPart(part){
   setTimeout(function(){
     updateSetupBanner();
     syncRepeatIconUI();
+    syncModeIconUI();
     if(typeof updateAvailCount === 'function') updateAvailCount();
   }, 50);
 }
@@ -2867,7 +2983,7 @@ function updateSetupBanner(){
     part3:'<svg viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="18" cy="9.7" r="3"/><path d="M23 20v-1.6a4 4 0 0 0-3.5-3.85"/></svg>'
   };
   var LABELS={
-    all:'All Parts',part1:'Part 1 — 개인세',part2:'Part 2 — 사업세',part3:'Part 3 — 대리인'
+    all:'All Parts',part1:partLabel('Part 1'),part2:partLabel('Part 2'),part3:partLabel('Part 3')
   };
   var p=S.part||'all';
   var iconEl=document.getElementById('setup-banner-icon');
@@ -2885,7 +3001,7 @@ function updateSetupBanner(){
     var correct=0,attempts=0;
     filtered.forEach(function(q){var a=S.answered[q.id];if(a){correct+=(a.correct||0);attempts+=(a.times||0);}});
     var acc=attempts>0?Math.round(correct/attempts*100):0;
-    subEl.textContent=total+'문제'+(attempts>0?' · 정답률 '+acc+'%':'');
+    subEl.textContent=uQuestions(total)+(attempts>0?' · '+t('dash_accuracy')+' '+acc+'%':'');
   }
   // picker 숨기기
   var picker=document.getElementById('setup-part-picker');
@@ -2903,17 +3019,24 @@ function syncRepeatIconUI(){
   var vals=['all','le1','le2','le3','le4'];
   btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
 }
+// mode-row UI 동기화 (화면 진입 시) — 무료 체험 사용자도 모드 선택 유지
+function syncModeIconUI(){
+  var val=S.mode||'normal';
+  var btns=document.querySelectorAll('#mode-row .setup-icon-btn');
+  var vals=['normal','tpiq','review','timed'];
+  btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
+}
 
 function updateAvailCount(){
   const p=getPool(),avail=p.length,take=Math.min(S.count,avail);
   const el=document.getElementById('avail-count');
   if(!el) return;
   if(avail===0){
-    el.textContent='No questions match this filter';
+    el.textContent = (LANG === 'en') ? 'No questions match this filter' : '조건에 맞는 문제가 없습니다';
   } else {
-    var partLabel=S.part==='all'?'All Parts':(S.part||'All Parts');
-    var repeatLabel=S.repeatFilter==='all'?'전체':S.repeatFilter.replace('le','≤')+'회';
-    el.textContent=avail+' questions available · '+take+' will be used';
+    el.textContent = (LANG === 'en')
+      ? (avail + ' questions available · ' + take + ' will be used')
+      : (uQuestions(avail) + ' 사용 가능 · ' + take + '문제 진행');
   }
   var btn=document.getElementById('start-btn');
   if(btn) btn.disabled=avail===0;
@@ -3076,18 +3199,29 @@ async function startQuiz(){
   let pool=getPool();
   if(!pool.length){
     var hint = '';
-    if(S.subset==='unseen') hint = ' (범위: Unseen — 이미 다 풀어본 문제만 있어서 0개)';
-    else if(S.subset==='practiced') hint = ' (범위: Practiced — 한 번도 안 푼 문제만 있어서 0개)';
-    else if(S.subset==='flagged') hint = ' (범위: Flagged — 깃발 표시한 문제가 없어서 0개)';
-    else if(S.repeatFilter!=='all') hint = ' (반복 횟수 필터: ' + S.repeatFilter + ' 조건에 맞는 문제 없음)';
-    else if(S.mode==='review') hint = ' (학습 모드: Review Wrong — 틀린 문제가 없어서 0개)';
-    showToast('⚠️ 선택한 조건에 맞는 문제가 없습니다.' + hint + ' 범위/모드를 변경해주세요.');
+    if(LANG === 'en'){
+      if(S.subset==='unseen') hint = ' (Scope: Unseen — every question has been attempted)';
+      else if(S.subset==='practiced') hint = ' (Scope: Practiced — no questions attempted yet)';
+      else if(S.subset==='flagged') hint = ' (Scope: Flagged — no flagged questions)';
+      else if(S.repeatFilter!=='all') hint = ' (Repeat filter: no questions match ' + S.repeatFilter + ')';
+      else if(S.mode==='review') hint = ' (Mode: Review Wrong — no wrong answers yet)';
+      showToast('⚠️ No questions match the selected filters.' + hint + ' Try changing scope/mode.');
+    } else {
+      if(S.subset==='unseen') hint = ' (범위: Unseen — 이미 다 풀어본 문제만 있어서 0개)';
+      else if(S.subset==='practiced') hint = ' (범위: Practiced — 한 번도 안 푼 문제만 있어서 0개)';
+      else if(S.subset==='flagged') hint = ' (범위: Flagged — 깃발 표시한 문제가 없어서 0개)';
+      else if(S.repeatFilter!=='all') hint = ' (반복 횟수 필터: ' + S.repeatFilter + ' 조건에 맞는 문제 없음)';
+      else if(S.mode==='review') hint = ' (학습 모드: Review Wrong — 틀린 문제가 없어서 0개)';
+      showToast('⚠️ 선택한 조건에 맞는 문제가 없습니다.' + hint + ' 범위/모드를 변경해주세요.');
+    }
     return;
   }
   if(S.mode==='tpiq'){
     var tpiq = buildTPIQQueue(pool, S.count);
     S.quizQueue = tpiq.queue;
-    showToast('🧠 TPIQ 세션 — COP ' + tpiq.copCount + '개 비중순 인터리빙 · ' + S.quizQueue.length + '문제');
+    showToast(LANG === 'en'
+      ? ('🧠 TPIQ session — ' + tpiq.copCount + ' COPs interleaved by weight · ' + S.quizQueue.length + ' questions')
+      : ('🧠 TPIQ 세션 — COP ' + tpiq.copCount + '개 비중순 인터리빙 · ' + S.quizQueue.length + '문제'));
   } else {
     pool.sort((a,b)=>{const ta=S.answered[a.id]?.times||0,tb=S.answered[b.id]?.times||0;return ta-tb||Math.random()-.5;});
     S.quizQueue=pool.slice(0,S.count).map(q=>q.id);
@@ -3133,8 +3267,10 @@ async function reviewSession(sessionIndex){
   save();
   showScreen('quiz');
   loadQuestion();
-  var label = s.date || '이전';
-  showToast(label + ' 세션 다시 풀기 (' + validIds.length + '문제)');
+  var label = s.date || (LANG === 'en' ? 'Previous' : '이전');
+  showToast(LANG === 'en'
+    ? ('Retrying session from ' + label + ' (' + validIds.length + ' Q)')
+    : (label + ' 세션 다시 풀기 (' + validIds.length + '문제)'));
 }
 
 function curQ(){const id=S.quizQueue[S.quizIdx];return id?S.questions.find(q=>q.id===id):null;}
@@ -3216,7 +3352,7 @@ async function loadQuestion(){
     document.getElementById('btn-submit').style.display = 'none';
     document.getElementById('btn-skip').style.display = 'none';
     showExplanation(q, null, false);
-    document.getElementById('q-session-label').textContent = 'REVIEW · 과거 세션 다시보기';
+    document.getElementById('q-session-label').textContent = (LANG === 'en') ? 'REVIEW · Past Session Replay' : 'REVIEW · 과거 세션 다시보기';
     document.getElementById('timer-badge').style.display = 'none';
   } else {
     // 일반 미제출 상태
@@ -3308,7 +3444,7 @@ async function submitAnswer(){
   // 서버 채점 (로딩 상태)
   const sbtn=document.getElementById('btn-submit');
   const _prevTxt=sbtn?sbtn.textContent:'';
-  if(sbtn){ sbtn.disabled=true; sbtn.textContent='채점 중…'; }
+  if(sbtn){ sbtn.disabled=true; sbtn.textContent=(LANG === 'en' ? 'Grading…' : '채점 중…'); }
 
   let resp;
   try{
@@ -3387,10 +3523,13 @@ async function showExplanation(q, isOk, timeout){
   if(isOk === null || isOk === undefined){
     banner.className = 'result-banner'; banner.textContent = '';
   } else if(timeout){
-    banner.className='result-banner fail'; banner.textContent='⏱ Time\'s up! See the correct answer below';
+    banner.className='result-banner fail';
+    banner.textContent = (LANG === 'en') ? '⏱ Time\'s up! See the correct answer below' : '⏱ 시간 종료! 아래에서 정답을 확인하세요';
   } else {
     banner.className='result-banner '+(isOk?'ok':'fail');
-    banner.textContent=isOk?'✓ Correct! Well done.':'✗ Incorrect — review the explanation below';
+    banner.textContent = (LANG === 'en')
+      ? (isOk ? '✓ Correct! Well done.' : '✗ Incorrect — review the explanation below')
+      : (isOk ? '✓ 정답입니다!' : '✗ 오답 — 아래 해설을 확인하세요');
   }
 
   const expText = pickLang(q.explanation, q.explanationEn);
@@ -3407,9 +3546,9 @@ async function showExplanation(q, isOk, timeout){
       btnArea.innerHTML =
         '<div style="display:flex;gap:8px;margin-top:1rem;">' +
           (hasNext
-            ? '<button class="btn-navy" style="flex:1;" onclick="nextRetryFlagged()">다음 Flagged →</button>'
+            ? '<button class="btn-navy" style="flex:1;" onclick="nextRetryFlagged()">' + (LANG === 'en' ? 'Next Flagged →' : '다음 Flagged →') + '</button>'
             : '') +
-          '<button class="btn-ghost" style="flex:1;" onclick="exitRetryFlagged()">Review로 돌아가기</button>' +
+          '<button class="btn-ghost" style="flex:1;" onclick="exitRetryFlagged()">' + (LANG === 'en' ? 'Back to Review' : 'Review로 돌아가기') + '</button>' +
         '</div>';
     } else {
       btnArea.innerHTML = '<button class="btn-navy" style="width:100%;margin-top:1rem;" onclick="nextQuestion()">Next Question →</button>';
@@ -3418,7 +3557,9 @@ async function showExplanation(q, isOk, timeout){
 }
 
 window.acceptAICorrection = async function(qid, newCorrectIdx, newLetter){
-  if(!confirm(`정답을 ${newLetter}로 수정하시겠습니까?\n현재 세션 점수도 자동 조정됩니다.`)) return;
+  if(!confirm(LANG === 'en'
+      ? ('Change the correct answer to ' + newLetter + '?\nThe current session score will be adjusted automatically.')
+      : ('정답을 ' + newLetter + '로 수정하시겠습니까?\n현재 세션 점수도 자동 조정됩니다.'))) return;
   
   const q = S.questions.find(x=>x.id === qid);
   if(!q) return;
@@ -3445,7 +3586,7 @@ window.acceptAICorrection = async function(qid, newCorrectIdx, newLetter){
         if(i === newCorrectIdx) b.classList.add('correct-ans');
       });
       document.getElementById('result-banner').className = 'result-banner ok';
-      document.getElementById('result-banner').textContent = '✓ 정답이 수정되어 정답 처리되었습니다!';
+      document.getElementById('result-banner').textContent = (LANG === 'en') ? '✓ Answer corrected — marked correct!' : '✓ 정답이 수정되어 정답 처리되었습니다!';
     }
   }
   
@@ -3548,8 +3689,9 @@ function renderQuizNavButtons(){
 function endSession(){
   clearInterval(S.timerInt);
   var done = (S.results.correct||0) + (S.results.wrong||0);
-  document.getElementById('es-progress').textContent =
-    S.quizQueue.length + '문제 · ' + done + '개 완료 · 정답 ' + (S.results.correct||0) + '개';
+  document.getElementById('es-progress').textContent = (LANG === 'en')
+    ? (S.quizQueue.length + ' questions · ' + done + ' done · ' + (S.results.correct||0) + ' correct')
+    : (S.quizQueue.length + '문제 · ' + done + '개 완료 · 정답 ' + (S.results.correct||0) + '개');
   document.getElementById('end-session-bg').classList.add('open');
 }
 
@@ -3563,7 +3705,7 @@ function pauseSession(){
   document.getElementById('end-session-bg').classList.remove('open');
   save();
   showScreen('dashboard');
-  showToast('일시 정지 — 이어 풀기 배지를 누르면 재개됩니다');
+  showToast(LANG === 'en' ? 'Paused — tap the Resume badge to continue' : '일시 정지 — 이어 풀기 배지를 누르면 재개됩니다');
 }
 
 function closeEndSessionModal(){
@@ -3667,7 +3809,7 @@ function showResults(){
   if(btns){
     if(returnDest === 'bookmarks'){
       btns.innerHTML =
-        '<button class="btn-navy" style="flex:1;" onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">Review로 돌아가기</button>' +
+        '<button class="btn-navy" style="flex:1;" onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">' + (LANG === 'en' ? 'Back to Review' : 'Review로 돌아가기') + '</button>' +
         '<button class="btn-primary" style="flex:1;" onclick="clearLiveQuiz();showScreen(\'quiz-setup\')">New Session →</button>';
     } else {
       btns.innerHTML =
@@ -3706,10 +3848,10 @@ function renderStsSummary(){
   var flagCount = S.flagged.size;
 
   el.innerHTML = [
-    {val: totalSessions, lbl: '총 세션'},
-    {val: totalAnswered, lbl: '총 풀이'},
-    {val: avgPct + '%', lbl: '평균 정답률'},
-    {val: bestPct + '%', lbl: '최고 점수'},
+    {val: totalSessions, lbl: t('sts_total_sessions')},
+    {val: totalAnswered, lbl: t('sts_total_answered')},
+    {val: avgPct + '%', lbl: t('sts_avg')},
+    {val: bestPct + '%', lbl: t('sts_best')},
   ].map(function(c){
     return '<div class="sts-card">' +
       '<div class="sts-card-val">' + c.val + '</div>' +
@@ -3728,7 +3870,7 @@ function renderStsTrend(){
   }).slice(0,20).reverse();
 
   if(sorted.length < 2){
-    wrap.innerHTML = '<div class="sts-empty">세션이 2개 이상 있어야 추세 차트를 볼 수 있습니다</div>';
+    wrap.innerHTML = '<div class="sts-empty">' + t('sts_trend_empty') + '</div>';
     return;
   }
 
@@ -3805,7 +3947,7 @@ function renderStsParts(){
   }).filter(Boolean).filter(function(r){ return r.total > 0; });
 
   if(!rows.length){
-    el.innerHTML = '<div class="sts-empty">학습 데이터가 없습니다</div>';
+    el.innerHTML = '<div class="sts-empty">' + t('sts_parts_empty') + '</div>';
     return;
   }
   el.innerHTML = rows.map(function(r){
@@ -3836,7 +3978,7 @@ function renderStsTopics(){
     .sort(function(a,b){ return a.pct - b.pct; }); // 정답률 낮은 순 (약점 우선)
 
   if(!rows.length){
-    tbody.innerHTML = '<tr><td colspan="4" class="sts-empty">5회 이상 시도한 토픽이 없습니다</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="sts-empty">' + t('sts_topics_empty') + '</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(function(r){
@@ -3861,30 +4003,31 @@ function renderStsSessions(){
   var sessions = S.sessions.filter(function(s){ return s.count > 0; }).slice().sort(function(a,b){
     return new Date(b.created_at||0) - new Date(a.created_at||0);
   });
-  if(cnt) cnt.textContent = '(' + sessions.length + '개)';
+  if(cnt) cnt.textContent = '(' + sessions.length + ')';
   if(!sessions.length){
-    el.innerHTML = '<div class="sts-empty">세션 기록이 없습니다</div>';
+    el.innerHTML = '<div class="sts-empty">' + t('sts_sessions_empty') + '</div>';
     return;
   }
+  var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
   var shown = sessions.slice(0, stsSessionsShown);
   var html = shown.map(function(s){
     var label = s.date || '';
     if(s.created_at){
       var d = new Date(s.created_at);
-      label = d.toLocaleDateString('ko-KR',{month:'short',day:'numeric'}) + ' ' +
-              d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false});
+      label = d.toLocaleDateString(_loc,{month:'short',day:'numeric'}) + ' ' +
+              d.toLocaleTimeString(_loc,{hour:'2-digit',minute:'2-digit',hour12:false});
     }
     var color = (s.pct||0)>=80?'var(--success-color)':(s.pct||0)>=60?'var(--flag-color)':'var(--danger-color)';
     return '<div class="sts-sess-row">' +
       '<span class="sts-sess-date">'+label+'</span>' +
-      '<span class="sts-sess-meta">'+(s.part||'All')+' · '+s.count+'문제</span>' +
+      '<span class="sts-sess-meta">'+(s.part||'All')+' · '+uQ(s.count)+'</span>' +
       '<span class="sts-sess-pct" style="color:'+color+';">'+(s.pct||0)+'%</span>' +
     '</div>';
   }).join('');
   if(sessions.length > shown.length){
     html += '<div style="text-align:center;padding-top:12px;">' +
       '<button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="loadMoreStsSessions()">' +
-        '더 보기 (' + shown.length + ' / ' + sessions.length + ')' +
+        t('sts_more') + ' (' + shown.length + ' / ' + sessions.length + ')' +
       '</button>' +
     '</div>';
   }
@@ -3911,7 +4054,7 @@ async function renderBookmarks(){
   if(badge) badge.textContent = fqs.length;
 
   if(!fqs.length){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">플래그된 문제 없음</div><div class="empty-sub">학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">' + t('bm_empty_t') + '</div><div class="empty-sub">' + t('bm_empty_s') + '</div></div>';
     return;
   }
 
@@ -3923,7 +4066,7 @@ async function renderBookmarks(){
 
   el.innerHTML = fqs.map(function(q){
     var a = S.answered[q.id] || {times:0, correct:0, wrong:0};
-    var qt = q.text || '(본문 로드 실패 — 다시 열어주세요)';
+    var qt = q.text || t('bm_load_fail');
     var qText = qt.length > 120 ? qt.slice(0, 120) + '…' : qt;
     return '<div class="bookmark-card">' +
       '<div class="bm-q">' + qText + '</div>' +
@@ -3932,11 +4075,11 @@ async function renderBookmarks(){
         '<span class="bm-tag">' + (q.topic || 'General') + '</span>' +
       '</div>' +
       '<div class="bm-footer">' +
-        '<div class="bm-stats">' + a.times + '회 학습 · ' +
+        '<div class="bm-stats">' + uAttempts(a.times) + ' · ' +
           '<span class="bm-ok">✓ ' + a.correct + '</span> ' +
           '<span class="bm-ng">✗ ' + a.wrong + '</span>' +
         '</div>' +
-        '<button class="btn-navy" style="margin-left:auto;padding:7px 16px;font-size:13px;" onclick="retryFlagged(\'' + q.id + '\')">다시 풀기 →</button>' +
+        '<button class="btn-navy" style="margin-left:auto;padding:7px 16px;font-size:13px;" onclick="retryFlagged(\'' + q.id + '\')">' + t('bm_retry') + '</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -3953,27 +4096,28 @@ function renderReviewSessions(){
   if(badge) badge.textContent = validSessions.length;
 
   if(!validSessions.length){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">세션 기록 없음</div><div class="empty-sub">Study 탭에서 학습을 완료하면 여기에 기록됩니다</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">' + t('rev_sess_empty_t') + '</div><div class="empty-sub">' + t('rev_sess_empty_s') + '</div></div>';
     return;
   }
 
+  var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
   el.innerHTML = validSessions.slice(0, 20).map(function(s){
     var realIdx = S.sessions.indexOf(s);
     var label = s.date || '';
     if(s.created_at){
       var d = new Date(s.created_at);
-      label = d.toLocaleDateString('ko-KR', {month:'short', day:'numeric'}) + ' ' +
-              d.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', hour12:false});
+      label = d.toLocaleDateString(_loc, {month:'short', day:'numeric'}) + ' ' +
+              d.toLocaleTimeString(_loc, {hour:'2-digit', minute:'2-digit', hour12:false});
     }
     var scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
-    var partLabel = s.part ? ' · ' + s.part : '';
+    var partLbl = s.part ? ' · ' + s.part : '';
     return '<div class="rev-sess-row">' +
       '<div class="rev-sess-info">' +
         '<div class="rev-sess-date">' + label + '</div>' +
-        '<div class="rev-sess-meta">' + s.count + '문제' + partLabel + '</div>' +
+        '<div class="rev-sess-meta">' + uQ(s.count) + partLbl + '</div>' +
       '</div>' +
       '<div style="font-size:18px;font-weight:700;color:' + scoreColor + ';margin-right:8px;">' + s.pct + '%</div>' +
-      '<button class="btn-navy" style="padding:7px 14px;font-size:13px;white-space:nowrap;" onclick="reviewSession(' + realIdx + ')">다시 풀기 →</button>' +
+      '<button class="btn-navy" style="padding:7px 14px;font-size:13px;white-space:nowrap;" onclick="reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>' +
     '</div>';
   }).join('');
 }
@@ -3981,7 +4125,7 @@ function renderReviewSessions(){
 async function retryFlagged(id){
   // Flagged 문제 전체를 큐로 — 선택한 문제부터 시작
   var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id); });
-  if(!allFlagged.length){ showToast('플래그된 문제가 없습니다'); return; }
+  if(!allFlagged.length){ showToast(LANG === 'en' ? 'No flagged questions' : '플래그된 문제가 없습니다'); return; }
   var startIdx = allFlagged.findIndex(function(q){ return q.id === id; });
   if(startIdx < 0) startIdx = 0;
   // 선택 문제를 앞으로 재정렬
@@ -4002,7 +4146,9 @@ async function retryFlagged(id){
   save();
   showScreen('quiz');
   loadQuestion();
-  showToast('플래그 문제 다시 풀기 시작 (' + S.quizQueue.length + '문제)');
+  showToast(LANG === 'en'
+    ? ('Retrying flagged questions (' + S.quizQueue.length + ' Q)')
+    : ('플래그 문제 다시 풀기 시작 (' + S.quizQueue.length + '문제)'));
 }
 
 function openModal(id){ /* 미사용 — retryFlagged로 대체됨 */ }
@@ -4319,7 +4465,34 @@ function cell(row, idx){
   return (idx>=0 && idx<row.length) ? row[idx].trim() : '';
 }
 
+// EN 토스트 번역 레이어 — 개별 호출부 수정 없이 패턴 매칭으로 영어 변환
+var TOAST_EN = [
+  [/^학습 재개 버튼이 숨겨졌습니다\..*$/, 'Resume button hidden. It reappears on the Dashboard.'],
+  [/^⚠️ 저장된 세션 문제를 찾을 수 없습니다$/, '⚠️ Saved session questions not found'],
+  [/^⚠️ 삭제된 문제 (\d+)개 제외됨$/, '⚠️ $1 deleted question(s) excluded'],
+  [/^⚠️ 문제 본문 로드 실패 — 네트워크 확인 후 다시 시도해주세요\.$/, '⚠️ Failed to load questions — check your network and retry.'],
+  [/^⚠️ 문제 본문 로드 실패 — 다시 시도해주세요\.$/, '⚠️ Failed to load questions — please retry.'],
+  [/^⚠️ 이 세션은 문제 ID가 저장되지 않았습니다.*$/, '⚠️ This session has no saved question IDs (legacy session)'],
+  [/^⚠️ 이 세션의 문제들을 찾을 수 없습니다$/, "⚠️ This session's questions could not be found"],
+  [/^⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요\.$/, '⚠️ Failed to load review data — please retry.'],
+  [/^⚠️ 문제 로드 실패 — 다시 시도해주세요\.$/, '⚠️ Failed to load the question — please retry.'],
+  [/^⚠️ 처리 실패 — 네트워크 확인 후 다시 시도해주세요\.$/, '⚠️ Action failed — check your network and retry.'],
+  [/^⚠️ 접근 권한이 없습니다\..*$/, '⚠️ No access. Please check your subscription.'],
+  [/^⚠️ 채점 실패 — 네트워크 확인 후 다시 제출해주세요\.$/, '⚠️ Grading failed — check your network and resubmit.'],
+  [/^✅ 정답이 (.+)로 수정되었습니다\.$/, '✅ Correct answer changed to $1.'],
+  [/^✅ Flagged 문제 완료!$/, '✅ Flagged questions complete!'],
+  [/^✅ 복습 완료$/, '✅ Review complete'],
+  [/^✓ 문제가 복사되었습니다$/, '✓ Question copied'],
+  [/^⚠️ 로그인 필요$/, '⚠️ Login required'],
+  [/^☁️ 클라우드에서 불러오는 중…$/, '☁️ Loading from cloud…'],
+  [/^✅ (\d+)개 문제 로드 완료$/, '✅ $1 questions loaded']
+];
 function showToast(msg){
+  if(LANG === 'en' && typeof msg === 'string'){
+    for(var i=0;i<TOAST_EN.length;i++){
+      if(TOAST_EN[i][0].test(msg)){ msg = msg.replace(TOAST_EN[i][0], TOAST_EN[i][1]); break; }
+    }
+  }
   const t=document.getElementById('toast'); t.textContent=msg;
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800);
 }
