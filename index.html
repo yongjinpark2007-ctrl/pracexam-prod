@@ -608,6 +608,16 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 .footer-links{display:flex; gap:20px;}
 .footer-links a{text-decoration:none; color:var(--text-muted);}
 .footer-links a:hover{color:var(--navy);}
+.footer-legal{width:100%; margin-top:14px; padding-top:14px; border-top:1px solid var(--border-clr); font-size:12px; line-height:1.7; color:var(--text-muted);}
+
+/* ── about ─────────────────────────────────────────────── */
+#about{background:var(--card-bg); border-top:1px solid var(--border-clr);}
+.about-card{max-width:720px; margin:0 auto; background:var(--page-bg); border:1px solid var(--border-clr); border-radius:var(--radius); padding:28px 32px;}
+.about-card p{color:var(--text-mid); margin-bottom:14px;}
+.about-list{display:grid; grid-template-columns:auto 1fr; gap:8px 20px; margin-top:6px; font-size:15px;}
+.about-list dt{color:var(--text-muted); font-weight:600;}
+.about-list dd{color:var(--text-main);}
+@media (max-width:560px){ .about-card{padding:22px 20px;} .about-list{grid-template-columns:1fr; gap:2px 0;} .about-list dd{margin-bottom:10px;} }
 
 /* ── modal ─────────────────────────────────────────────── */
 .modal-bg{
@@ -1111,14 +1121,49 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
   </div>
 </section>
 
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow"><span class="ko">회사 소개</span><span class="en">ABOUT</span></span>
+      <h2><span class="ko">PracExam 소개</span><span class="en">About PracExam</span></h2>
+    </div>
+    <div class="about-card">
+      <p>
+        <span class="ko">PracExam은 미국 IRS 등록 세무사(Enrolled Agent, EA) 시험을 준비하는 수험생을 위한 온라인 학습 플랫폼입니다. 최신 미국 세법과 IRS Content Outline을 반영한 Part 1·2·3 실전 문제 4,000개 이상과 한·영 상세 해설을 제공합니다.</span>
+        <span class="en">PracExam is an online exam-preparation platform for the U.S. IRS Enrolled Agent (EA) exam. It offers 4,000+ practice questions with detailed bilingual (Korean &amp; English) explanations across Parts 1, 2, and 3, based on current U.S. tax law.</span>
+      </p>
+      <dl class="about-list">
+        <dt><span class="ko">운영 법인</span><span class="en">Legal entity</span></dt>
+        <dd>dxd investment group LLC</dd>
+        <dt><span class="ko">사업자명 (DBA / FBN)</span><span class="en">Doing Business As (DBA / FBN)</span></dt>
+        <dd>PracExam</dd>
+        <dt><span class="ko">등록지</span><span class="en">Registered</span></dt>
+        <dd>San Diego County, California, USA</dd>
+        <dt><span class="ko">사업장 주소</span><span class="en">Business address</span></dt>
+        <dd>1401 Air Wing Rd, San Diego, CA 92154, USA</dd>
+        <dt><span class="ko">전화</span><span class="en">Phone</span></dt>
+        <dd><a href="tel:+16195002223">+1 619-500-2223</a></dd>
+        <dt><span class="ko">문의</span><span class="en">Contact</span></dt>
+        <dd><a href="mailto:hello@pracexam.com">hello@pracexam.com</a></dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="wrap footer-inner">
-    <span>© 2026 PracExam. <span class="ko">All rights reserved.</span><span class="en">All rights reserved.</span></span>
+    <span>© 2026 dxd investment group LLC. <span class="ko">All rights reserved.</span><span class="en">All rights reserved.</span></span>
     <div class="footer-links">
+      <a href="#about"><span class="ko">회사 소개</span><span class="en">About</span></a>
       <a href="mailto:hello@pracexam.com">Contact</a>
-      <a href="#"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
+      <a href="privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
     </div>
+    <p class="footer-legal">
+      <span class="ko">PracExam은 dxd investment group LLC(미국 캘리포니아 샌디에이고 카운티 등록)의 등록 가상 사업명(DBA)입니다.</span>
+      <span class="en">PracExam is a registered Fictitious Business Name (DBA) of dxd investment group LLC, San Diego County, California, USA.</span>
+    </p>
   </div>
 </footer>
 

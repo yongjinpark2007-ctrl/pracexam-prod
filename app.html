@@ -167,6 +167,12 @@ html, body {
 .screen{display:none;padding:1.5rem;max-width:900px;margin:0 auto;word-break:break-word;}
 .screen.active{display:block;}
 
+/* APP FOOTER — 법인/DBA 명시 (Google 검증용) */
+.app-footer{max-width:900px;margin:0 auto;padding:20px 1.5rem 8px;border-top:1px solid var(--border-clr);font-size:12px;line-height:1.7;color:var(--text-muted);text-align:center;}
+.app-footer a{color:var(--text-muted);}
+.app-footer a:hover{color:var(--navy);}
+.app-footer .app-footer-sep{margin:0 8px;opacity:.5;}
+
 /* TYPOGRAPHY */
 .section-title{font-size:19px;font-weight:700;margin-bottom:1rem;color:var(--text-main);letter-spacing:-.01em;}
 .exp-label{font-size:11px;color:var(--teal);letter-spacing:.1em;margin-bottom:8px;font-weight:700;text-transform:uppercase;}
@@ -1505,6 +1511,16 @@ html, body {
     <div style="font-size:14px;color:var(--text-mid);line-height:1.75;">문제은행과 학습 기록은 Supabase 클라우드에 저장됩니다. 어느 기기에서든 로그인하면 동일한 문제와 진도를 볼 수 있습니다.</div>
   </div>
 </div>
+
+<!-- APP FOOTER — 법인/DBA 명시 -->
+<footer class="app-footer">
+  © 2026 dxd investment group LLC. All rights reserved.<br>
+  PracExam is a registered Fictitious Business Name (DBA) of dxd investment group LLC.<br>
+  1401 Air Wing Rd, San Diego, CA 92154, USA · <a href="tel:+16195002223">+1 619-500-2223</a>
+  <span class="app-footer-sep">·</span><a href="index.html#about">About</a>
+  <span class="app-footer-sep">·</span><a href="privacy.html">Privacy</a>
+  <span class="app-footer-sep">·</span><a href="mailto:hello@pracexam.com">Contact</a>
+</footer>
 
 </div><!-- /content -->
 </div><!-- /app -->
