@@ -119,6 +119,9 @@ body{
   color:var(--text-main);
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
+  /* CJK(한국어) 어절 단위 줄바꿈 — 조사가 앞말과 함께 개행 */
+  word-break:keep-all;
+  overflow-wrap:break-word;
 }
 img,svg{display:block;}
 a{color:inherit;}
@@ -492,9 +495,6 @@ section{padding:88px 0;}
 .tpiq-section{
   background:linear-gradient(180deg, var(--navy-light) 0%, #cde3e1 100%);
   position:relative; overflow:hidden;
-  /* CJK 어절 단위 줄바꿈 — 조사가 앞말과 함께 개행되도록 */
-  word-break:keep-all;
-  overflow-wrap:break-word;
 }
 .tpiq-section::before{
   content:''; position:absolute;
