@@ -1086,8 +1086,8 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">상세한 학습 성과 분석</span><span class="en">Adaptive practice &amp; performance stats</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">취약 영역 분석 및 집중 복습</span><span class="en">Weak-area analysis & targeted review</span></span></li>
         </ul>
-        <button class="btn btn-ghost" style="width:100%;" disabled>
-          <span class="ko">출시 알림 받기 (준비 중)</span><span class="en">Notify me (coming soon)</span>
+        <button class="btn btn-ghost" style="width:100%;" onclick="openModal('waitlist')">
+          <span class="ko">출시 알림 받기</span><span class="en">Notify me</span>
         </button>
       </div>
     </div>
@@ -1172,6 +1172,24 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <div class="modal-switch">
         <span class="ko">계정이 없나요?</span><span class="en">No account yet?</span>
         <button onclick="switchModal('signup')"><span class="ko">무료 가입</span><span class="en">Sign Up</span></button>
+      </div>
+    </div>
+
+    <div id="modal-waitlist" style="display:none;">
+      <h3><span class="ko">Pro 출시 알림 받기</span><span class="en">Notify me when Pro launches</span></h3>
+      <p class="sub">
+        <span class="ko">Pro 요금제가 출시되면 이메일로 가장 먼저 알려드립니다. 이메일 주소만 남겨주세요.</span>
+        <span class="en">We'll email you the moment Pro is available. Just leave your email below.</span>
+      </p>
+      <label><span class="ko">이메일</span><span class="en">Email</span></label>
+      <input type="email" id="wl-email" autocomplete="email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doWaitlist()">
+      <button class="btn btn-primary" onclick="doWaitlist()">
+        <span class="ko">알림 신청</span><span class="en">Notify Me</span>
+      </button>
+      <div class="modal-msg" id="wl-msg"></div>
+      <div class="modal-switch">
+        <span class="ko">지금 무료로 시작할 수도 있어요.</span><span class="en">You can also start free right now.</span>
+        <button onclick="switchModal('signup')"><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></button>
       </div>
     </div>
   </div>
@@ -1352,8 +1370,9 @@ function closeModal(){
   document.getElementById('modal-bg').classList.remove('open');
 }
 function switchModal(which){
-  document.getElementById('modal-signup').style.display = (which === 'signup') ? 'block' : 'none';
-  document.getElementById('modal-login').style.display = (which === 'login') ? 'block' : 'none';
+  document.getElementById('modal-signup').style.display   = (which === 'signup')   ? 'block' : 'none';
+  document.getElementById('modal-login').style.display    = (which === 'login')    ? 'block' : 'none';
+  document.getElementById('modal-waitlist').style.display = (which === 'waitlist') ? 'block' : 'none';
 }
 
 // ── Supabase signup (direct REST — iOS-safe, no supabase-js) ──
@@ -1414,6 +1433,80 @@ function doSignup(){
   })
   .catch(function(){
     showMsg(lang === 'ko' ? '네트워크 오류가 발생했습니다. 다시 시도해주세요.' : 'Network error. Please try again.', false);
+  });
+}
+
+// ── Pro waitlist (direct REST, iOS-safe) ──
+// 범용 메시지 헬퍼 (su-msg / wl-msg 공용)
+function showMsgEl(id, text, ok){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = text;
+  el.className = 'modal-msg show ' + (ok ? 'ok' : 'err');
+}
+
+function doWaitlist(){
+  var email = document.getElementById('wl-email').value.trim();
+  var lang  = document.getElementById('html-root').className.indexOf('lang-en') > -1 ? 'en' : 'ko';
+
+  // 이메일 형식 검증
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRe.test(email)) {
+    showMsgEl('wl-msg',
+      lang === 'ko' ? '올바른 이메일 주소를 입력해주세요.' : 'Please enter a valid email address.',
+      false);
+    return;
+  }
+
+  fetch(SUPABASE_URL + '/rest/v1/pro_waitlist', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON,
+      'Authorization': 'Bearer ' + SUPABASE_ANON,
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({
+      email: email,
+      language: lang,
+      source: 'landing_pro'
+    })
+  })
+  .then(function(res){
+    if (res.ok || res.status === 201) {
+      showMsgEl('wl-msg',
+        lang === 'ko'
+          ? '감사합니다! Pro 요금제 출시 시 이메일로 알려드리겠습니다.'
+          : "Thank you! We'll email you when Pro launches.",
+        true);
+      document.getElementById('wl-email').value = '';
+      return;
+    }
+    // 중복 이메일 등 서버 오류 파싱
+    return res.json().then(function(d){
+      var isDup = (res.status === 409) || (d && d.code === '23505');
+      if (isDup) {
+        // 중복은 UX상 성공으로 처리 (이미 등록됨)
+        showMsgEl('wl-msg',
+          lang === 'ko'
+            ? '이미 등록된 이메일입니다. 출시 시 알려드리겠습니다.'
+            : "You're already on the waitlist. We'll notify you when Pro launches.",
+          true);
+      } else {
+        var msg = (d && (d.message || d.msg || d.error_description))
+               || (lang === 'ko' ? '오류가 발생했습니다. 다시 시도해주세요.' : 'An error occurred. Please try again.');
+        showMsgEl('wl-msg', msg, false);
+      }
+    }).catch(function(){
+      showMsgEl('wl-msg',
+        lang === 'ko' ? '오류가 발생했습니다. 다시 시도해주세요.' : 'An error occurred. Please try again.',
+        false);
+    });
+  })
+  .catch(function(){
+    showMsgEl('wl-msg',
+      lang === 'ko' ? '네트워크 오류가 발생했습니다. 다시 시도해주세요.' : 'Network error. Please try again.',
+      false);
   });
 }
 </script>
