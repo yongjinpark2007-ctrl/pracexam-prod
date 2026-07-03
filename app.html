@@ -3211,29 +3211,34 @@ function buildTPIQQueue(pool, count){
     if(ga.tier !== gb.tier) return ga.tier - gb.tier;
     return (ga.code < gb.code) ? -1 : (ga.code > gb.code) ? 1 : 0;
   });
-  // 3b) 주제 인터리빙 — 인접 COP 코드는 IRS Content Outline상 같은 주제 그룹인
-  //     경우가 많으므로, 우선순위를 최대한 지키면서 '연속으로 같은 주제 그룹'이
-  //     오지 않게 그리디 재배열한다. 그룹 판정: cop_reference.topic_name 우선,
-  //     없으면 코드 끝자리를 뗀 근사 그룹(예: 1001~1009 → '100').
-  function tpiqGroupKey(code){
-    var g = groups[code];
-    if(g && g.topic) return 'T:' + g.topic;
-    var c = (code || '').toString();
-    return 'C:' + (c.length > 1 ? c.slice(0, -1) : c);
+  // 3b) 숫자 지그재그 — 인접한 COP 코드는 비슷한 주제인 경우가 많으므로,
+  //     '지금 뽑을 차례'인 상위 후보창(같은 빈도 레벨의 due 그룹, W=6)
+  //     안에서 직전 COP와 코드 숫자가 가장 먼 것을 다음으로 선택한다.
+  //     → 낮은 숫자 ↔ 높은 숫자를 크게 오가며 출제. 로테이션(소비점수
+  //     우선순위)은 후보창으로 보존: 창 밖 후순위 COP를 당겨오지 않는다.
+  function tpiqCopNum(code){
+    var d = ((code || '') + '').match(/\d+/g);
+    d = d ? d.join('') : '';
+    return d ? parseInt(d, 10) : 0;
   }
   (function(){
+    var ZIG_W = 6;                 // 후보창 크기 (같은 빈도 레벨 근사)
     var remaining = codes.slice();
     var out = [];
-    var lastKey = null;
+    var lastNum = null;
     while(remaining.length){
-      var pick = -1;
-      for(var r=0; r<remaining.length; r++){
-        if(tpiqGroupKey(remaining[r]) !== lastKey){ pick = r; break; }
+      var pick = 0;
+      if(lastNum !== null){
+        var lim = Math.min(ZIG_W, remaining.length);
+        var bestD = -1;
+        for(var z=0; z<lim; z++){
+          var dist = Math.abs(tpiqCopNum(remaining[z]) - lastNum);
+          if(dist > bestD){ bestD = dist; pick = z; }
+        }
       }
-      if(pick < 0) pick = 0;   // 남은 게 전부 같은 그룹이면 우선순위대로
-      out.push(remaining[pick]);
-      lastKey = tpiqGroupKey(remaining[pick]);
-      remaining.splice(pick, 1);
+      var chosen = remaining.splice(pick, 1)[0];
+      out.push(chosen);
+      lastNum = tpiqCopNum(chosen);
     }
     codes = out;
   })();
