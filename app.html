@@ -1999,7 +1999,8 @@ async function loadFromCloud(){
         else if(r.frequency_pct != null) w = Number(r.frequency_pct);
         copMap[code] = {
           tier: (r.frequency_tier != null ? Number(r.frequency_tier) : null),
-          weight: (w != null && !isNaN(w) ? w : 0)
+          weight: (w != null && !isNaN(w) ? w : 0),
+          topic: ((r.topic_name || '') + '').trim() || null   // TPIQ 주제 인터리빙용
         };
       });
       S.copRef = copMap;
@@ -3146,7 +3147,8 @@ function tpiqCopMeta(code){
   var ref = (S.copRef && code) ? S.copRef[code] : null;
   var tier = (ref && ref.tier >= 1 && ref.tier <= 4) ? ref.tier : 3;      // 기본 T3
   var weight = (ref && typeof ref.weight === 'number') ? ref.weight : 0;  // 기본 0
-  return { tier: tier, weight: weight };
+  var topic = (ref && ref.topic) ? ref.topic : null;                      // 주제 그룹
+  return { tier: tier, weight: weight, topic: topic };
 }
 
 function buildTPIQQueue(pool, count){
@@ -3161,6 +3163,7 @@ function buildTPIQQueue(pool, count){
       var meta = tpiqCopMeta(raw);   // _UNMAPPED는 빈 코드로 조회 → 기본값
       groups[code] = {
         code: code, tier: meta.tier, weight: meta.weight,
+        topic: meta.topic,
         quota: (TPIQ_TIER_QUOTA[meta.tier] || 2), items: [], cursor: 0
       };
     }
@@ -3208,6 +3211,32 @@ function buildTPIQQueue(pool, count){
     if(ga.tier !== gb.tier) return ga.tier - gb.tier;
     return (ga.code < gb.code) ? -1 : (ga.code > gb.code) ? 1 : 0;
   });
+  // 3b) 주제 인터리빙 — 인접 COP 코드는 IRS Content Outline상 같은 주제 그룹인
+  //     경우가 많으므로, 우선순위를 최대한 지키면서 '연속으로 같은 주제 그룹'이
+  //     오지 않게 그리디 재배열한다. 그룹 판정: cop_reference.topic_name 우선,
+  //     없으면 코드 끝자리를 뗀 근사 그룹(예: 1001~1009 → '100').
+  function tpiqGroupKey(code){
+    var g = groups[code];
+    if(g && g.topic) return 'T:' + g.topic;
+    var c = (code || '').toString();
+    return 'C:' + (c.length > 1 ? c.slice(0, -1) : c);
+  }
+  (function(){
+    var remaining = codes.slice();
+    var out = [];
+    var lastKey = null;
+    while(remaining.length){
+      var pick = -1;
+      for(var r=0; r<remaining.length; r++){
+        if(tpiqGroupKey(remaining[r]) !== lastKey){ pick = r; break; }
+      }
+      if(pick < 0) pick = 0;   // 남은 게 전부 같은 그룹이면 우선순위대로
+      out.push(remaining[pick]);
+      lastKey = tpiqGroupKey(remaining[pick]);
+      remaining.splice(pick, 1);
+    }
+    codes = out;
+  })();
   // 4) 라운드로빈 인터리빙: 라운드마다 우선순위 순서로 COP당 quota개씩
   var queue = [];
   var progressed = true;
