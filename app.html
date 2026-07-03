@@ -4111,16 +4111,20 @@ function renderReviewSessions(){
   var badge = document.getElementById('rev-badge-sessions');
   if(!el) return;
 
-  var validSessions = S.sessions.filter(function(s){ return s.question_ids && s.question_ids.length > 0; });
-  if(badge) badge.textContent = validSessions.length;
+  // 완료된 세션 전부 표시. question_ids가 있는 세션만 개별 복습 가능
+  // (구버전 세션은 문제 ID가 저장되지 않아 목록엔 보이되 복습 버튼은 비활성)
+  var sessions = S.sessions.filter(function(s){ return (s.count || 0) > 0; });
+  if(badge) badge.textContent = sessions.length;
 
-  if(!validSessions.length){
+  if(!sessions.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">' + t('rev_sess_empty_t') + '</div><div class="empty-sub">' + t('rev_sess_empty_s') + '</div></div>';
     return;
   }
 
+  var ordered = sessions.slice().sort(function(a,b){ return new Date(b.created_at||0) - new Date(a.created_at||0); });
+
   var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
-  el.innerHTML = validSessions.slice(0, 20).map(function(s){
+  el.innerHTML = ordered.slice(0, 20).map(function(s){
     var realIdx = S.sessions.indexOf(s);
     var label = s.date || '';
     if(s.created_at){
@@ -4130,13 +4134,17 @@ function renderReviewSessions(){
     }
     var scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
     var partLbl = s.part ? ' · ' + s.part : '';
+    var hasIds = s.question_ids && s.question_ids.length > 0;
+    var actionHtml = hasIds
+      ? '<button class="btn-navy" style="padding:7px 14px;font-size:13px;white-space:nowrap;" onclick="reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>'
+      : '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;opacity:.75;" title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않았습니다') + '">' + (LANG === 'en' ? 'History only' : '기록만 · 복습 불가') + '</span>';
     return '<div class="rev-sess-row">' +
       '<div class="rev-sess-info">' +
         '<div class="rev-sess-date">' + label + '</div>' +
         '<div class="rev-sess-meta">' + uQ(s.count) + partLbl + '</div>' +
       '</div>' +
       '<div style="font-size:18px;font-weight:700;color:' + scoreColor + ';margin-right:8px;">' + s.pct + '%</div>' +
-      '<button class="btn-navy" style="padding:7px 14px;font-size:13px;white-space:nowrap;" onclick="reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>' +
+      actionHtml +
     '</div>';
   }).join('');
 }
