@@ -3094,8 +3094,10 @@ async function prefetchPayloads(ids){
 }
 
 // 본문+정답+해설 — 이미 푼 문제(복습/북마크/잠금)용. RPC: get_review_payload (최대 200/콜)
+var LAST_REVIEW_ERR = '';
 async function prefetchReview(ids){
   if(S.isAdminUser) return true;
+  LAST_REVIEW_ERR = '';
   try{
     var groups = _chunk(ids||[], 200);
     for(var g=0; g<groups.length; g++){
@@ -3111,7 +3113,11 @@ async function prefetchReview(ids){
       });
     }
     return true;
-  }catch(e){ console.error('[review]', e); return false; }
+  }catch(e){
+    console.error('[review]', e);
+    LAST_REVIEW_ERR = (e && (e.message || e.hint || e.code)) ? String(e.message || e.hint || e.code) : '';
+    return false;
+  }
 }
 
 // 단건 보장: 미제출 → payload / 제출·복습 → review
@@ -3258,7 +3264,7 @@ async function reviewSession(sessionIndex){
 
   // 보안: 복습은 본문+정답+해설 필요 → review RPC 로 프리페치 (이미 푼 문제만 서버가 허용)
   var okRev = await prefetchReview(validIds);
-  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.'); return; }
+  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : '')); return; }
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = true;          // 채점 없이 정답·해설만 보기 (일일 한도 무관)
@@ -4161,7 +4167,7 @@ async function retryFlagged(id){
 
   // 복습(보기 전용): 본문+정답+해설 프리페치 (채점 없음 → 일일 한도 무관)
   var okRev = await prefetchReview(S.quizQueue);
-  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.'); return; }
+  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : '')); return; }
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = true;          // 채점 없이 정답·해설만 보기
@@ -4501,7 +4507,7 @@ var TOAST_EN = [
   [/^⚠️ 문제 본문 로드 실패 — 다시 시도해주세요\.$/, '⚠️ Failed to load questions — please retry.'],
   [/^⚠️ 이 세션은 문제 ID가 저장되지 않았습니다.*$/, '⚠️ This session has no saved question IDs (legacy session)'],
   [/^⚠️ 이 세션의 문제들을 찾을 수 없습니다$/, "⚠️ This session's questions could not be found"],
-  [/^⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요\.$/, '⚠️ Failed to load review data — please retry.'],
+  [/^⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요\.(.*)$/, '⚠️ Failed to load review data — please retry.$1'],
   [/^⚠️ 문제 로드 실패 — 다시 시도해주세요\.$/, '⚠️ Failed to load the question — please retry.'],
   [/^⚠️ 처리 실패 — 네트워크 확인 후 다시 시도해주세요\.$/, '⚠️ Action failed — check your network and retry.'],
   [/^⚠️ 접근 권한이 없습니다\..*$/, '⚠️ No access. Please check your subscription.'],
