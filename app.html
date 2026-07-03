@@ -3175,10 +3175,36 @@ function buildTPIQQueue(pool, count){
       return (ta - tb) || (Math.random() - 0.5);
     });
   }
-  // 3) COP 우선순위: weight 내림차순 → tier 오름차순(T1 먼저) → code 사전순
+  // 3) COP 우선순위 — 세션 간 로테이션 (비중 비례 공정 분배):
+  //    '지금까지 푼 총 횟수 ÷ weight' 소비 점수가 낮은 COP부터 뽑는다.
+  //    첫 세션엔 전부 0 → 기존과 동일한 weight 순. 이후 세션마다
+  //    많이 다룬 COP는 뒤로, 덜 다룬 COP가 앞으로 → 장기적으로
+  //    COP별 출제량이 시험 비중에 비례 수렴. (S.answered = user_progress
+  //    기반이라 클라우드 동기화 — 기기 간에도 로테이션 유지)
+  var copTimes = {};
+  for(var qi=0; qi<S.questions.length; qi++){
+    var qq = S.questions[qi];
+    var cc = ((qq.outlineCode || '') + '').trim() || '_UNMAPPED';
+    var an = S.answered[qq.id];
+    if(an && an.times) copTimes[cc] = (copTimes[cc] || 0) + an.times;
+  }
+  // weight=0(미매핑) COP의 대체 가중치: 매핑된 최소 양수 weight의 절반
+  //   → 점수 스케일을 실제 weight와 맞추면서도 미매핑은 항상 후순위 유지
+  var minW = Infinity;
+  for(var mi=0; mi<codes.length; mi++){
+    var gw = groups[codes[mi]].weight;
+    if(gw > 0 && gw < minW) minW = gw;
+  }
+  if(!isFinite(minW)) minW = 1;
+  var fallbackW = minW / 2;
   codes.sort(function(a,b){
     var ga = groups[a], gb = groups[b];
-    if(gb.weight !== ga.weight) return gb.weight - ga.weight;
+    var wa = ga.weight > 0 ? ga.weight : fallbackW;
+    var wb = gb.weight > 0 ? gb.weight : fallbackW;
+    var sa = (copTimes[ga.code] || 0) / wa;
+    var sb = (copTimes[gb.code] || 0) / wb;
+    if(sa !== sb) return sa - sb;                       // 소비 점수 낮은 COP 우선
+    if(gb.weight !== ga.weight) return gb.weight - ga.weight;  // 동점 → 비중 큰 순
     if(ga.tier !== gb.tier) return ga.tier - gb.tier;
     return (ga.code < gb.code) ? -1 : (ga.code > gb.code) ? 1 : 0;
   });
