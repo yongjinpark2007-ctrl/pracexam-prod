@@ -3242,18 +3242,33 @@ function buildTPIQQueue(pool, count){
     }
     codes = out;
   })();
-  // 4) 라운드로빈 인터리빙: 라운드마다 우선순위 순서로 COP당 quota개씩
-  var queue = [];
+  // 4a) 배분 — 지그재그 우선순위 순서로 라운드마다 COP당 quota개씩
+  //     '어떤 COP에서 몇 문제 뽑을지'만 정한다 (선정 로직은 기존과 동일)
+  var alloc = {};   // code -> [questionId,...]
+  var allocOrder = [];  // 배정된 COP의 지그재그 순서
+  var totalAlloc = 0;
   var progressed = true;
-  while(queue.length < count && progressed){
+  while(totalAlloc < count && progressed){
     progressed = false;
-    for(var k=0;k<codes.length && queue.length<count;k++){
+    for(var k=0;k<codes.length && totalAlloc<count;k++){
       var g = groups[codes[k]];
       var taken = 0;
-      while(taken < g.quota && g.cursor < g.items.length && queue.length < count){
-        queue.push(g.items[g.cursor].id);
-        g.cursor++; taken++; progressed = true;
+      while(taken < g.quota && g.cursor < g.items.length && totalAlloc < count){
+        if(!alloc[g.code]){ alloc[g.code] = []; allocOrder.push(g.code); }
+        alloc[g.code].push(g.items[g.cursor].id);
+        g.cursor++; taken++; totalAlloc++; progressed = true;
       }
+    }
+  }
+  // 4b) 방출 — 같은 COP 문제가 연속되지 않도록 COP당 1문제씩
+  //     지그재그 순서로 라운드로빈 인터리빙 (예: A,B,C,D,A,B,C,A,B,C)
+  var queue = [];
+  var emitted = true;
+  while(queue.length < totalAlloc && emitted){
+    emitted = false;
+    for(var e2=0; e2<allocOrder.length && queue.length<totalAlloc; e2++){
+      var lst = alloc[allocOrder[e2]];
+      if(lst && lst.length){ queue.push(lst.shift()); emitted = true; }
     }
   }
   return { queue: queue, copCount: codes.length };
