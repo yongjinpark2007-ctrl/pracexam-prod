@@ -2216,7 +2216,9 @@ async function loadFromCloud(){
         copMap[code] = {
           tier: (r.frequency_tier != null ? Number(r.frequency_tier) : null),
           weight: (w != null && !isNaN(w) ? w : 0),
-          topic: ((r.topic_name || '') + '').trim() || null   // TPIQ 주제 인터리빙용
+          // 주제명: 실제 DB 컬럼은 CSV 그대로 topic_name_en (2026-07-04 확인).
+          // 구/신 스키마 호환 폴백 체인: topic_name → topic_name_en → topic_name_ko
+          topic: (((r.topic_name || r.topic_name_en || r.topic_name_ko || '') + '').trim() || null)   // TPIQ 주제 인터리빙 + 약점 위젯 표시명
         };
       });
       S.copRef = copMap;
