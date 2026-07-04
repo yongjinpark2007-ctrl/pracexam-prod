@@ -3181,6 +3181,23 @@ function startCopSession(code){
        '<strong>' + nm + '</strong><br>' +
        n + '문제 (안 푼 문제 우선' + (unseen ? ' · 미학습 ' + unseen + '개' : '') + ')');
 
+  // 진행 중 세션 경고 (2026-07-04): 미니 세션 시작 = 기존 세션 큐 덮어쓰기(복구 불가).
+  //   판정 조건은 Resume 배지/openStudy와 동일 기준. 이미 푼 문제 기록(user_progress)은
+  //   제출 즉시 저장되므로 손실 없음 — 사라지는 건 "이어 풀기"뿐.
+  var inProgress = S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length;
+  var warn = '';
+  if(inProgress){
+    var pos = (S.quizIdx + 1) + '/' + S.quizQueue.length;
+    warn =
+      '<div style="font-size:13px;color:var(--danger-color);line-height:1.6;' +
+        'background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.25);' +
+        'border-radius:8px;padding:9px 11px;margin-bottom:1rem;text-align:left;">' +
+        (LANG === 'en'
+          ? ('⚠️ You have a session in progress (' + pos + '). Starting this will discard it — you won\'t be able to resume. (Answers you already submitted are saved.)')
+          : ('⚠️ 진행 중인 세션(' + pos + ')이 있습니다. 시작하면 기존 세션은 이어 풀 수 없게 됩니다. (이미 제출한 답의 기록은 저장되어 있습니다)')) +
+      '</div>';
+  }
+
   document.getElementById('modal-content').innerHTML =
     '<div style="text-align:center;padding:1rem 0;">' +
       '<div style="font-size:36px;margin-bottom:.75rem;">🎯</div>' +
@@ -3189,6 +3206,7 @@ function startCopSession(code){
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
         body +
       '</div>' +
+      warn +
       '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="_copSessionGo(\'' + code + '\')">' +
         (LANG === 'en' ? 'Start' : '시작하기') + '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' +
