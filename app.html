@@ -1722,14 +1722,14 @@ async function renderAnomaly(){
   var html = ''+
     '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'+
     '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:640px;">'+
-    '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);">'+
+    '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
       '<th style="padding:8px 10px;">위험도</th>'+
       '<th style="padding:8px 10px;">사용자</th>'+
       '<th style="padding:8px 10px;">상태</th>'+
       '<th style="padding:8px 10px;text-align:right;">30분</th>'+
-      '<th style="padding:8px 10px;text-align:right;">기간</th>'+
-      '<th style="padding:8px 10px;text-align:right;">세션최대</th>'+
-      '<th style="padding:8px 10px;text-align:right;">누적</th>'+
+      '<th style="padding:8px 10px;text-align:right;">문제수<br>(기간내)</th>'+
+      '<th style="padding:8px 10px;text-align:right;">세션<br>최대 문제수</th>'+
+      '<th style="padding:8px 10px;text-align:right;">누적<br>문제수</th>'+
       '<th style="padding:8px 10px;text-align:right;">소진</th>'+
       '<th style="padding:8px 10px;"></th>'+
     '</tr></thead><tbody>';
