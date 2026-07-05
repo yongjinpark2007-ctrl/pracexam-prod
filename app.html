@@ -348,6 +348,13 @@ html, body {
 .setup-count-card.selected .setup-count-num{color:var(--sel-text);}
 .setup-count-sub{font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.04em;text-transform:uppercase;margin-top:4px;}
 .setup-count-card.selected .setup-count-sub{color:var(--sel-text);opacity:.75;}
+/* 무료 체험: 잠긴(비활성) 옵션 — 보이지만 선택 불가 */
+.setup-locked{position:relative;opacity:.42;filter:grayscale(.65);}
+.setup-locked::after{content:'🔒';position:absolute;top:2px;right:5px;font-size:11px;line-height:1;pointer-events:none;}
+.setup-count-card.setup-locked.selected{background:var(--card-bg);border-color:var(--border-clr);}
+.setup-count-card.setup-locked.selected .setup-count-num,
+.setup-count-card.setup-locked.selected .setup-count-sub{color:var(--text-muted);}
+@media(hover:hover){.setup-locked:hover{border-color:var(--border-clr);}}
 /* 아이콘 원형 그리드 */
 .setup-icon-grid{display:grid;gap:12px;margin-bottom:0;}
 .setup-icon-grid-4{grid-template-columns:repeat(4,1fr);}
@@ -2123,23 +2130,55 @@ function applyTrialSetupRestrictions(){
   const limited = isTrialLimited();
   const adv = document.getElementById('setup-advanced-options');
   const changeLink = document.getElementById('setup-banner-change-link');
-  const countBtns = document.querySelectorAll('#setup-count-grid .setup-count-card');
-  if(adv) adv.style.display = limited ? 'none' : '';
-  if(changeLink) changeLink.style.display = limited ? 'none' : '';
-  countBtns.forEach((btn, i)=>{
-    if(limited){
-      btn.style.display = (i===0) ? '' : 'none';
-      btn.classList.toggle('selected', i===0);
-    } else {
-      btn.style.display = '';
-    }
-  });
+
+  // 프로모션: 무료 사용자에게도 전 옵션을 "노출"한다 (숨기지 않음)
+  if(adv) adv.style.display = '';
+  if(changeLink) changeLink.style.display = '';
+
   if(limited){
-    // 무료 체험: 문제 수/범위/반복은 Quick 고정, 단 학습 모드는 사용자 선택 유지
-    S.count = 5; S.part = 'all'; S.subset = 'all'; S.repeatFilter = 'all';
+    // 무료 고정: 문제수 5·반복 무제한. Part는 자유(All/1/2/3), 범위는 전체·Unseen만 허용.
+    S.count = 5; S.repeatFilter = 'all';
+    if(S.subset !== 'all' && S.subset !== 'unseen') S.subset = 'all';
+    if(S.mode !== 'normal' && S.mode !== 'tpiq') S.mode = 'normal';
     if(typeof updateSetupBanner === 'function') updateSetupBanner();
+    if(typeof syncRepeatIconUI === 'function') syncRepeatIconUI();
+    if(typeof syncSubsetIconUI === 'function') syncSubsetIconUI();
     if(typeof syncModeIconUI === 'function') syncModeIconUI();
+    if(typeof updateAvailCount === 'function') updateAvailCount();
   }
+
+  // 잠금 표시 적용 (활성/비활성). 유료·관리자는 전부 해제됨.
+  applyTrialLocks(limited);
+}
+
+// 무료 체험 잠금: 허용 옵션만 활성, 나머지는 보이되 선택 불가(🔒).
+// 허용 = 문제수 '5/Quick', 학습모드 '일반'·'스마트(TPIQ)'.
+function applyTrialLocks(limited){
+  var groups = [
+    ['#setup-count-grid .setup-count-card', [0]],       // 5 / Quick
+    ['#mode-row .setup-icon-btn',           [0,1]],      // Normal, Smart(TPIQ)
+    ['#part-row .setup-icon-btn',           [0,1,2,3]],  // Part: All·1·2·3 모두 허용
+    ['#subset-row .setup-icon-btn',         [0,1]],      // 범위: Random(전체)·Unseen 허용
+    ['#repeat-row .setup-repeat-btn',       []]          // 반복: 전부 잠금
+  ];
+  groups.forEach(function(g){
+    var btns  = document.querySelectorAll(g[0]);
+    var allow = g[1];
+    btns.forEach(function(b, i){
+      b.style.display = '';   // 구버전 잔여 숨김 해제 (항상 노출)
+      if(limited && allow.indexOf(i) === -1) b.classList.add('setup-locked');
+      else b.classList.remove('setup-locked');
+    });
+  });
+}
+
+// 잠긴 옵션 클릭 시: 선택을 막고 업그레이드 안내 토스트
+function _trialLockGuard(btn){
+  if(btn && btn.classList && btn.classList.contains('setup-locked')){
+    showToast(LANG === 'en' ? '🔒 Paid members only' : '🔒 유료 회원 전용 옵션입니다');
+    return true;
+  }
+  return false;
 }
 
 // Quiz Setup 상단 체험 안내 배너 갱신
@@ -3003,7 +3042,7 @@ function openStudy(){
 // Quiz Setup 화면 진입 공통 헬퍼
 function _openStudySetup(){
   showScreen('quiz-setup');
-  setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); }, 50);
+  setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); applyTrialSetupRestrictions(); }, 50);
 }
 
 // 진행 중 세션 재개/새 세션 선택 모달 (기존 confirm 대체)
@@ -3453,8 +3492,9 @@ function dashStartFocusPart(part){
 // ══════════════════════════════════════════════════════
 // QUIZ SETUP
 // ══════════════════════════════════════════════════════
-function selectCount(n,btn){S.count=n;document.querySelectorAll('.setup-count-card').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');updateAvailCount();}
+function selectCount(n,btn){if(_trialLockGuard(btn))return;S.count=n;document.querySelectorAll('.setup-count-card').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');updateAvailCount();}
 function selectPart(p,btn){
+  if(_trialLockGuard(btn))return;
   S.part=p;
   document.querySelectorAll('#part-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -3462,17 +3502,20 @@ function selectPart(p,btn){
   updateAvailCount();
 }
 function selectSubset(s,btn){
+  if(_trialLockGuard(btn))return;
   S.subset=s;save();
   document.querySelectorAll('#subset-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   updateAvailCount();
 }
 function selectMode(m,btn){
+  if(_trialLockGuard(btn))return;
   S.mode=m;
   document.querySelectorAll('#mode-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
 }
 function selectRepeatIcon(val,btn){
+  if(_trialLockGuard(btn))return;
   S.repeatFilter=val;save();
   document.querySelectorAll('#repeat-row .setup-repeat-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -3531,6 +3574,13 @@ function syncModeIconUI(){
   var val=S.mode||'normal';
   var btns=document.querySelectorAll('#mode-row .setup-icon-btn');
   var vals=['normal','tpiq','review','timed'];
+  btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
+}
+// subset-row(범위) UI 동기화
+function syncSubsetIconUI(){
+  var val=S.subset||'all';
+  var btns=document.querySelectorAll('#subset-row .setup-icon-btn');
+  var vals=['all','unseen','practiced','flagged'];
   btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
 }
 
