@@ -874,8 +874,9 @@ html, body {
 .ann-item-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text-main);}
 .ann-tag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
 .ann-dot{width:8px;height:8px;border-radius:50%;background:var(--danger-color);flex:0 0 auto;}
-.ann-body{color:var(--text-mid);font-size:12.5px;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.ann-body{color:var(--text-mid);font-size:12.5px;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
 .ann-item.open .ann-body{-webkit-line-clamp:unset;}
+.ann-date-inline{font-size:11px;color:var(--text-muted);white-space:nowrap;flex:0 0 auto;}
 .ann-date{font-size:11px;color:var(--text-muted);margin-top:7px;}
 .ann-empty{color:var(--text-muted);font-size:13px;text-align:center;padding:10px 0;}
 /* ── 관리자: 서브탭 + 공지 작성/목록 ── */
@@ -1180,11 +1181,11 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <!-- Hero: Current Focus Part -->
   <div id="dash-hero"></div>
 
-  <!-- 공지사항 (Announcements) -->
-  <div id="dash-announcements"></div>
-
   <!-- All Parts grid (Phase 2-4 에서 활성화) -->
   <div id="dash-parts-grid-wrap"></div>
+
+  <!-- 공지사항 (Announcements) — Part 선택 버튼 아래 배치 -->
+  <div id="dash-announcements"></div>
 
   <!-- Weak topics widget (Phase 2-5 에서 활성화) -->
   <div id="dash-weak-topics"></div>
@@ -3336,10 +3337,10 @@ function paintAnnouncements(){
     return '<div class="ann-item'+(a.pinned?' pin':'')+'" onclick="annToggle('+a.id+',this)">'+
       '<div class="ann-item-top">'+ icon +
         '<span class="ann-item-title">'+ _annEsc(title) +'</span>'+ tag +
+        (dateTxt ? '<span class="ann-date-inline">'+ dateTxt +'</span>' : '')+
         (isUnread ? '<span class="ann-dot"></span>' : '')+
       '</div>'+
       (body ? '<div class="ann-body">'+ _annEsc(body) +'</div>' : '')+
-      (dateTxt ? '<div class="ann-date">'+ dateTxt +'</div>' : '')+
     '</div>';
   }).join('');
 
