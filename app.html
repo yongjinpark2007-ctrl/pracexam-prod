@@ -2414,37 +2414,59 @@ function checkTrialAccess(){
 // 초기 로딩 병렬화 헬퍼 (2026-07-05)
 //  - 순차 await 7~9회 → Promise.all 동시 취득으로 라운드트립 합산 제거
 //  - questions: 1페이지 + count 선취득 후 나머지 페이지 병렬 요청
-//  - 관리자: 부팅은 메타 컴럼만(경량) → 본문/해설은 백그라운드 백필
+//  - 관리자: 부팅은 메타 컸럼만(경량) → 본문/해설은 백그라운드 백필
 //  - 보안 구조는 기존과 동일: 일반 유저는 questions_meta만,
 //    본문=get_question_payload / 정답=check_answer RPC 지연 로드
 // ══════════════════════════════════════════════════
 const CLOUD_PAGE_SIZE = 1000;
-// 관리자 부팅용 경량 메타 컴럼 (questions 베이스 테이블에 모두 존재 확인됨)
-const Q_META_COLS = 'question_id, source, part, topic, outline_code, difficulty, created_at';
+// 관리자 부팅용 경량 메타 컸럼 — 스키마 대조 완료 (2026-07-05)
+// ⚠️ questions 에 'source' 컸럼은 없음(source_qid만 존재). 매핑의 r.source 는
+//    기존 select('*') 시절부터 undefined → 'cloud' 폴백으로 동작해 왔으므로 제외.
+const Q_META_COLS = 'question_id, part, topic, outline_code, difficulty, created_at';
 let ADMIN_BACKFILL = null;   // 관리자 본문 백필 Promise (ensure*/prefetch* 가 완료 대기)
 
 async function fetchQuestionMetaRows(){
-  // 관리자도 부팅 시엔 메타 컴럼만 로드 (본문은 adminBackfillContent 가 채움)
-  function pageQuery(withCount){
-    var q = S.isAdminUser
-      ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined)
-      : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
-    return q.order('created_at', { ascending: true });
+  // 관리자도 부팅 시엔 메타 컸럼만 로드 (본문은 adminBackfillContent 가 채움)
+  const Q_TABLE = S.isAdminUser ? 'questions' : 'questions_meta';
+  try{
+    function pageQuery(withCount){
+      var q = S.isAdminUser
+        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined)
+        : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
+      return q.order('created_at', { ascending: true });
+    }
+    const first = await pageQuery(true).range(0, CLOUD_PAGE_SIZE - 1);
+    if (first.error) throw first.error;
+    let rows = first.data || [];
+    const total = (first.count != null) ? first.count : rows.length;
+    if (total > rows.length) {
+      const jobs = [];
+      for (let offset = CLOUD_PAGE_SIZE; offset < total; offset += CLOUD_PAGE_SIZE) {
+        jobs.push(pageQuery(false).range(offset, offset + CLOUD_PAGE_SIZE - 1));
+      }
+      const pages = await Promise.all(jobs);   // 나머지 페이지 병렬 취득
+      for (const p of pages) {
+        if (p.error) throw p.error;
+        rows = rows.concat(p.data || []);
+      }
+    }
+    return rows;
+  }catch(e){
+    // 폴백: 검증된 레거시 경로 (select * 순차 페이지네이션) — 부팅 보장
+    console.warn('[Load] questions 빠른 경로 실패 → 레거시 폴백:', e && e.message);
+    return await _legacyPaginate(function(){ return sb.from(Q_TABLE).select('*').order('created_at', { ascending: true }); });
   }
-  const first = await pageQuery(true).range(0, CLOUD_PAGE_SIZE - 1);
-  if (first.error) throw first.error;
-  let rows = first.data || [];
-  const total = (first.count != null) ? first.count : rows.length;
-  if (total > rows.length) {
-    const jobs = [];
-    for (let offset = CLOUD_PAGE_SIZE; offset < total; offset += CLOUD_PAGE_SIZE) {
-      jobs.push(pageQuery(false).range(offset, offset + CLOUD_PAGE_SIZE - 1));
-    }
-    const pages = await Promise.all(jobs);   // 나머지 페이지 병렬 취득
-    for (const p of pages) {
-      if (p.error) throw p.error;
-      rows = rows.concat(p.data || []);
-    }
+}
+
+// 레거시 순차 페이지네이션 (기존 검증된 방식) — 폴백 전용
+async function _legacyPaginate(makeQuery){
+  let rows = [];
+  for (let offset = 0; ; offset += CLOUD_PAGE_SIZE) {
+    const { data, error } = await makeQuery().range(offset, offset + CLOUD_PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    rows = rows.concat(data);
+    if (data.length < CLOUD_PAGE_SIZE) break;
   }
   return rows;
 }
@@ -2462,30 +2484,37 @@ async function fetchCopRows(){
 }
 
 async function fetchProgressRows(){
-  let rows = [];
-  for (let offset = 0; ; offset += CLOUD_PAGE_SIZE) {
-    const { data, error } = await sb
-      .from('user_progress')
-      .select('question_id, times, correct_count, wrong_count, flagged')
-      .eq('user_id', SB_USER.id)
-      .range(offset, offset + CLOUD_PAGE_SIZE - 1);
-    if (error) throw error;
-    if (!data || data.length === 0) break;
-    rows = rows.concat(data);
-    if (data.length < CLOUD_PAGE_SIZE) break;
+  try{
+    return await _legacyPaginate(function(){
+      return sb.from('user_progress')
+        .select('question_id, times, correct_count, wrong_count, flagged')
+        .eq('user_id', SB_USER.id);
+    });
+  }catch(e){
+    console.warn('[Load] user_progress 명시 컸럼 실패 → select(*) 폴백:', e && e.message);
+    return await _legacyPaginate(function(){
+      return sb.from('user_progress').select('*').eq('user_id', SB_USER.id);
+    });
   }
-  return rows;
 }
 
 async function fetchSessionRows(){
-  // 비치명적: 실패해도 부팅은 계속 (기존 동작과 동일하게 error 무시)
-  const { data } = await sb
+  // 비치명적: 모든 경로 실패 시에도 빈 배열 반환 (부팅은 계속)
+  const fast = await sb
     .from('sessions')
     .select('id, created_at, count, correct, pct, question_ids')
     .eq('user_id', SB_USER.id)
     .order('created_at', { ascending: false })
     .limit(200); // Phase 4 통계 왜곡 방지 (기존 20 → 200, 2026-06-09)
-  return data || [];
+  if (!fast.error) return fast.data || [];
+  console.warn('[Load] sessions 명시 컸럼 실패 → select(*) 폴백:', fast.error.message);
+  const legacy = await sb
+    .from('sessions')
+    .select('*')
+    .eq('user_id', SB_USER.id)
+    .order('created_at', { ascending: false })
+    .limit(200);
+  return legacy.data || [];
 }
 
 // 관리자 전용: 본문/정답/해설을 백그라운드에서 채움 (부팅 비차단)
