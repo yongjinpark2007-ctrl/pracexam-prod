@@ -2410,30 +2410,133 @@ function checkTrialAccess(){
   return false;
 }
 
+// ══════════════════════════════════════════════════
+// 초기 로딩 병렬화 헬퍼 (2026-07-05)
+//  - 순차 await 7~9회 → Promise.all 동시 취득으로 라운드트립 합산 제거
+//  - questions: 1페이지 + count 선취득 후 나머지 페이지 병렬 요청
+//  - 관리자: 부팅은 메타 컴럼만(경량) → 본문/해설은 백그라운드 백필
+//  - 보안 구조는 기존과 동일: 일반 유저는 questions_meta만,
+//    본문=get_question_payload / 정답=check_answer RPC 지연 로드
+// ══════════════════════════════════════════════════
+const CLOUD_PAGE_SIZE = 1000;
+// 관리자 부팅용 경량 메타 컴럼 (questions 베이스 테이블에 모두 존재 확인됨)
+const Q_META_COLS = 'question_id, source, part, topic, outline_code, difficulty, created_at';
+let ADMIN_BACKFILL = null;   // 관리자 본문 백필 Promise (ensure*/prefetch* 가 완료 대기)
+
+async function fetchQuestionMetaRows(){
+  // 관리자도 부팅 시엔 메타 컴럼만 로드 (본문은 adminBackfillContent 가 채움)
+  function pageQuery(withCount){
+    var q = S.isAdminUser
+      ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined)
+      : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
+    return q.order('created_at', { ascending: true });
+  }
+  const first = await pageQuery(true).range(0, CLOUD_PAGE_SIZE - 1);
+  if (first.error) throw first.error;
+  let rows = first.data || [];
+  const total = (first.count != null) ? first.count : rows.length;
+  if (total > rows.length) {
+    const jobs = [];
+    for (let offset = CLOUD_PAGE_SIZE; offset < total; offset += CLOUD_PAGE_SIZE) {
+      jobs.push(pageQuery(false).range(offset, offset + CLOUD_PAGE_SIZE - 1));
+    }
+    const pages = await Promise.all(jobs);   // 나머지 페이지 병렬 취득
+    for (const p of pages) {
+      if (p.error) throw p.error;
+      rows = rows.concat(p.data || []);
+    }
+  }
+  return rows;
+}
+
+async function fetchCopRows(){
+  // 비치명적: 실패 시 null 반환 (TPIQ는 기본 티어/가중치로 폴백)
+  try{
+    const { data, error } = await sb.from('cop_reference').select('*');
+    if (error) throw error;
+    return data || [];
+  }catch(e){
+    console.warn('[TPIQ] cop_reference load skipped:', e && e.message);
+    return null;
+  }
+}
+
+async function fetchProgressRows(){
+  let rows = [];
+  for (let offset = 0; ; offset += CLOUD_PAGE_SIZE) {
+    const { data, error } = await sb
+      .from('user_progress')
+      .select('question_id, times, correct_count, wrong_count, flagged')
+      .eq('user_id', SB_USER.id)
+      .range(offset, offset + CLOUD_PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    rows = rows.concat(data);
+    if (data.length < CLOUD_PAGE_SIZE) break;
+  }
+  return rows;
+}
+
+async function fetchSessionRows(){
+  // 비치명적: 실패해도 부팅은 계속 (기존 동작과 동일하게 error 무시)
+  const { data } = await sb
+    .from('sessions')
+    .select('id, created_at, count, correct, pct, question_ids')
+    .eq('user_id', SB_USER.id)
+    .order('created_at', { ascending: false })
+    .limit(200); // Phase 4 통계 왜곡 방지 (기존 20 → 200, 2026-06-09)
+  return data || [];
+}
+
+// 관리자 전용: 본문/정답/해설을 백그라운드에서 채움 (부팅 비차단)
+async function adminBackfillContent(){
+  try{
+    const byId = {};
+    S.questions.forEach(function(q){ byId[q.id] = q; });
+    for (let offset = 0; ; offset += CLOUD_PAGE_SIZE) {
+      const { data, error } = await sb
+        .from('questions')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .range(offset, offset + CLOUD_PAGE_SIZE - 1);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      data.forEach(function(r){
+        const q = byId[r.question_id];
+        if(!q) return;
+        q.text = r.text;
+        q.options = r.options;
+        q.correct = r.correct;
+        q.explanation = r.explanation || '';
+        q.explanationEn = r.explanation_en || '';
+        q.wrongReasons = r.wrongreasons || '';
+        q.taxUpdate2025 = r.taxupdate2025 || '';
+        q.examTip = r.examtip || '';
+        q.examTipEn = r.examtip_en || r.exam_tip_en || '';
+      });
+      if (data.length < CLOUD_PAGE_SIZE) break;
+    }
+    console.log('[Admin] 본문 백필 완료');
+  }catch(e){
+    console.warn('[Admin] 본문 백필 실패:', e && e.message);
+  }
+}
+
 async function loadFromCloud(){
   if(!SB_USER) return;
   S.isAdminUser = !!(SB_USER && SB_USER.id === ADMIN_UID);
-  await loadTrialStatus();
   var localAnsweredCount = Object.keys(S.answered).length;  // Phase 2-9: 클라우드 로드 전 로컬 카운트
   showToast('☁️ 클라우드에서 불러오는 중…');
   try{
-    // ── questions 페이지네이션 ──
-    // 보안: 관리자만 베이스 테이블 전량(정답 포함) 로드. 일반 유저는 메타데이터만
-    //       (본문=payload RPC, 정답=check_answer RPC 로 지연 로드).
-    const Q_TABLE = S.isAdminUser ? 'questions' : 'questions_meta';
-    let qRows = [];
-    const PAGE_SIZE = 1000;
-    for (let offset = 0; ; offset += PAGE_SIZE) {
-      const { data, error } = await sb
-        .from(Q_TABLE)
-        .select('*')
-        .order('created_at', { ascending: true })
-        .range(offset, offset + PAGE_SIZE - 1);
-      if (error) throw error;
-      if (!data || data.length === 0) break;
-      qRows = qRows.concat(data);
-      if (data.length < PAGE_SIZE) break;   // 마지막 페이지
-    }
+    // ── 병렬 로드 (2026-07-05): 순차 await → Promise.all 로 라운드트립 합산 제거 ──
+    const [ , qRows, copRows, pRows, sRows, liveCloud ] = await Promise.all([
+      loadTrialStatus(),           // 내부 try/catch — 실패해도 부팅 계속
+      fetchQuestionMetaRows(),     // 실패 시 throw → 아래 catch
+      fetchCopRows(),              // 실패 시 null (비치명적)
+      fetchProgressRows(),         // 실패 시 throw → 아래 catch
+      fetchSessionRows(),          // 실패 시 빈 배열 (비치명적)
+      loadLiveSessionFromCloud()   // 실패 시 null
+    ]);
 
     if(qRows && qRows.length > 0){
       S.questions = qRows.map(r => ({
@@ -2462,10 +2565,7 @@ async function loadFromCloud(){
     // 비치명적: 실패/빈배열이어도 TPIQ는 기본 티어(3)/가중치(0)로 폴백 동작.
     // weight는 weight_pct 우선, 없으면 frequency_pct 사용 (스키마 전환기 호환).
     try {
-      const { data: copRows, error: copErr } = await sb
-        .from('cop_reference')
-        .select('*');
-      if (copErr) throw copErr;
+      if (copRows == null) throw new Error('cop_reference fetch failed');
       // ── 주제명 컬럼 자동 탐지 (2026-07-04) ──
       // 스키마 변형('topic_name'/'topic_name_en'/'topic_name_ko' 등)에 관계없이
       // 실제 내려온 행의 키에서 'topic' 포함 컬럼을 찾는다. 알려진 이름 우선.
@@ -2508,20 +2608,7 @@ async function loadFromCloud(){
       console.warn('[TPIQ] cop_reference load skipped:', copE && copE.message);
     }
 
-    // ── user_progress 페이지네이션 ──
-    let pRows = [];
-    for (let offset = 0; ; offset += PAGE_SIZE) {
-      const { data, error } = await sb
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', SB_USER.id)
-        .range(offset, offset + PAGE_SIZE - 1);
-      if (error) throw error;
-      if (!data || data.length === 0) break;
-      pRows = pRows.concat(data);
-      if (data.length < PAGE_SIZE) break;
-    }
-
+    // ── user_progress (fetchProgressRows 에서 병렬 취득 완료) ──
     S.answered = {};
     S.flagged  = new Set();
     (pRows || []).forEach(r => {
@@ -2536,13 +2623,7 @@ async function loadFromCloud(){
       console.warn('[Safety] Local answered:', localAnsweredCount, '/ Cloud:', cloudAnsweredCount);
     }
 
-    // ── sessions ──
-    const { data: sRows } = await sb
-      .from('sessions')
-      .select('*')
-      .eq('user_id', SB_USER.id)
-      .order('created_at', { ascending: false })
-      .limit(200); // Phase 4 통계 왜곡 방지 (기존 20 → 200, 2026-06-09)
+    // ── sessions (fetchSessionRows 에서 병렬 취득 완료) ──
     S.sessions = (sRows || []).map(r => ({
       id: r.id,
       created_at: r.created_at,
@@ -2551,8 +2632,7 @@ async function loadFromCloud(){
       question_ids: r.question_ids || []
     }));
 
-    // ── 진행 중 세션 (live_session) ──
-    const liveCloud = await loadLiveSessionFromCloud();
+    // ── 진행 중 세션 (loadLiveSessionFromCloud 에서 병렬 취득 완료) ──
     if(liveCloud){
       // 클라우드에 진행 중 세션이 있으면 → 로컬보다 우선 (모바일↔PC 동기화)
       S.quizQueue = liveCloud.queue || [];
@@ -2562,6 +2642,9 @@ async function loadFromCloud(){
       S.reviewMode = liveCloud.review_mode || false;
       S.sessionAnswers = liveCloud.session_answers || new Array(S.quizQueue.length).fill(null);
     }
+
+    // 관리자: 본문/해설은 백그라운드로 채움 (필요 시 ensure*/prefetch* 가 완료 대기)
+    if(S.isAdminUser){ ADMIN_BACKFILL = adminBackfillContent(); }
 
     renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
     updateResumeBadge();
@@ -4044,7 +4127,7 @@ function _findQ(id){ return S.questions.find(function(x){ return x.id === id; })
 
 // 본문(text, options)만 — 미제출 문제용. RPC: get_question_payload (최대 100/콜)
 async function prefetchPayloads(ids){
-  if(S.isAdminUser) return true;
+  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
   var need = (ids||[]).filter(function(id){ var q=_findQ(id); return q && !q.text; });
   if(!need.length) return true;
   try{
@@ -4064,7 +4147,7 @@ async function prefetchPayloads(ids){
 // 본문+정답+해설 — 이미 푼 문제(복습/북마크/잠금)용. RPC: get_review_payload (최대 200/콜)
 var LAST_REVIEW_ERR = '';
 async function prefetchReview(ids){
-  if(S.isAdminUser) return true;
+  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
   LAST_REVIEW_ERR = '';
   try{
     var groups = _chunk(ids||[], 200);
@@ -4090,11 +4173,13 @@ async function prefetchReview(ids){
 
 // 단건 보장: 미제출 → payload / 제출·복습 → review
 async function ensurePayload(q){
-  if(S.isAdminUser || (q && q.text)) return true;
+  if(q && q.text) return true;
+  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
   return await prefetchPayloads([q.id]);
 }
 async function ensureAnswerData(q){
-  if(S.isAdminUser || (q && q.correct != null && q.text)) return true;
+  if(q && q.correct != null && q.text) return true;
+  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
   return await prefetchReview([q.id]);
 }
 
@@ -4330,10 +4415,10 @@ async function loadQuestion(){
   clearInterval(S.timerInt);
   const q=curQ(); if(!q){showResults();return;}
 
-  // 보안: 렌더 전 본문/정답 데이터 보장 (일반 유저)
+  // 보안: 렌더 전 본문/정답 데이터 보장 (관리자는 백필 완료 대기)
   const _saPre = S.sessionAnswers && S.sessionAnswers[S.quizIdx];
   const _willReveal = !!((_saPre && _saPre.submitted) || S.reviewMode);
-  if(!S.isAdminUser){
+  {
     const _ok = _willReveal ? await ensureAnswerData(q) : await ensurePayload(q);
     if(!_ok || !q.text){ showToast('⚠️ 문제 로드 실패 — 다시 시도해주세요.'); return; }
   }
@@ -5131,10 +5216,9 @@ async function renderBookmarks(){
   }
 
   // 보안: 북마크는 본문 미리보기만 필요(정답 X) → payload RPC (본문 전용)
-  if(!S.isAdminUser){
-    var missing = fqs.filter(function(q){ return !q.text; }).map(function(q){ return q.id; });
-    if(missing.length){ await prefetchPayloads(missing); }
-  }
+  //       관리자는 prefetchPayloads 내부에서 백필 완료를 대기
+  var missing = fqs.filter(function(q){ return !q.text; }).map(function(q){ return q.id; });
+  if(missing.length){ await prefetchPayloads(missing); }
 
   el.innerHTML = fqs.map(function(q){
     var a = S.answered[q.id] || {times:0, correct:0, wrong:0};
