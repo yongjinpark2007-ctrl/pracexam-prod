@@ -222,6 +222,9 @@ html, body {
 .sts-topic-table th{text-align:left;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border-bottom:1.5px solid var(--border-clr);}
 .sts-topic-table td{padding:8px 8px;border-bottom:1px solid var(--border-clr);color:var(--text-main);vertical-align:middle;}
 .sts-topic-table tr:last-child td{border-bottom:none;}
+/* 숫자·Part 열은 줄바꿈 금지(모바일 세로 깨짐 방지), 토픽 열만 줄바꿈 허용 */
+.sts-topic-table th,.sts-topic-table td{white-space:nowrap;}
+.sts-topic-table th:first-child,.sts-topic-table td:first-child{white-space:normal;word-break:break-word;}
 .sts-topic-pct{display:inline-block;font-weight:700;}
 .sts-topic-bar{display:inline-block;height:6px;border-radius:3px;background:var(--teal);margin-left:6px;vertical-align:middle;}
 
@@ -980,6 +983,8 @@ html, body {
   .sts-bar-label{width:44px;font-size:12px;}
   .sts-sess-date{flex:0 0 80px;}
   .sts-topic-table{font-size:12px;}
+  .sts-topic-table th,.sts-topic-table td{padding:7px 5px;}
+  .sts-topic-bar{display:none;}
 }
 </style>
 </head>
@@ -1468,7 +1473,7 @@ html, body {
 
   <!-- 토픽별 분포표 -->
   <div class="sts-section">
-    <div class="sts-section-title" data-i18n="sts_topics_title">주제(COP)별 정답률 (3회 이상 시도)</div>
+    <div class="sts-section-title" data-i18n="sts_topics_title">주제별 정답률 (3회 이상 시도)</div>
     <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;padding:0 .5rem;">
       <table class="sts-topic-table" id="sts-topics">
         <thead><tr>
@@ -2693,7 +2698,7 @@ var UI_TEXT = {
   sts_subtitle:   {ko:'학습 추세 · Part별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy by part · topic analysis'},
   sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
   sts_parts_title:{ko:'Part별 누적 정답률', en:'Cumulative Accuracy by Part'},
-  sts_topics_title:{ko:'주제(COP)별 정답률 (3회 이상 시도)', en:'Accuracy by Topic (3+ attempts)'},
+  sts_topics_title:{ko:'주제별 정답률 (3회 이상 시도)', en:'Accuracy by Topic (3+ attempts)'},
   sts_sessions_title:{ko:'세션 기록', en:'Session History'},
   sts_th_topic:   {ko:'토픽',    en:'Topic'},
   sts_th_attempts:{ko:'시도',    en:'Attempts'},
@@ -2706,7 +2711,7 @@ var UI_TEXT = {
   sts_best:       {ko:'최고 점수', en:'Best Score'},
   sts_trend_empty:{ko:'세션이 2개 이상 있어야 추세 차트를 볼 수 있습니다', en:'Need 2+ sessions to show the trend chart'},
   sts_parts_empty:{ko:'학습 데이터가 없습니다', en:'No study data yet'},
-  sts_topics_empty:{ko:'3회 이상 시도한 주제(COP)가 없습니다', en:'No topics with 3+ attempts yet'},
+  sts_topics_empty:{ko:'3회 이상 시도한 주제가 없습니다', en:'No topics with 3+ attempts yet'},
   sts_sessions_empty:{ko:'세션 기록이 없습니다', en:'No session records yet'},
   sts_more:       {ko:'더 보기', en:'Show more'},
   // ── 무료 체험 / 멤버십 UI ──
@@ -3267,8 +3272,8 @@ function renderDashWeakTopics(){
     var reason = Object.keys(copMap).length === 0
       ? t('dash_weak_empty_none')
       : (LANG === 'en'
-          ? ('Shown after ' + MIN_ATT + '+ attempts on a ' + focusPart + ' topic (COP)')
-          : (focusPart + ' 주제(COP)를 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
+          ? ('Shown after ' + MIN_ATT + '+ attempts on a ' + focusPart + ' topic')
+          : (focusPart + ' 주제를 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
     el.innerHTML = label +
       '<div class="empty" style="padding:1.25rem 1rem;background:var(--card-bg);' +
       'border:1px solid var(--border-clr);border-radius:10px;margin-bottom:1.5rem;">' +
@@ -3320,7 +3325,7 @@ function startCopSession(code){
   if(!pool.length){
     showToast(LANG === 'en'
       ? '⚠️ No questions found for this topic.'
-      : '⚠️ 이 주제(COP)의 문제를 찾을 수 없습니다.');
+      : '⚠️ 이 주제의 문제를 찾을 수 없습니다.');
     return;
   }
 
@@ -3383,7 +3388,7 @@ async function _copSessionGo(code){
   if(!pool.length){
     showToast(LANG === 'en'
       ? '⚠️ No questions found for this topic.'
-      : '⚠️ 이 주제(COP)의 문제를 찾을 수 없습니다.');
+      : '⚠️ 이 주제의 문제를 찾을 수 없습니다.');
     return;
   }
 
