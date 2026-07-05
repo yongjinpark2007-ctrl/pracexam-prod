@@ -856,6 +856,49 @@ html, body {
 .dash-part-row-name svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .dash-part-row-stats{font-size:13px;color:var(--text-mid);margin-bottom:9px;}
 .dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;}
+/* ── 공지사항 (Announcements) ── */
+.ann-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
+.ann-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.ann-head-l{display:flex;align-items:center;gap:9px;}
+.ann-title-lbl{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--text-main);}
+.ann-title-lbl svg{width:18px;height:18px;stroke:var(--hero-gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.ann-pill{background:#fae7df;color:#b23c22;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;}
+.ann-mark{background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:4px 6px;border-radius:6px;}
+.ann-mark:hover{background:rgba(0,0,0,.04);color:var(--text-mid);}
+.ann-item{border:1px solid var(--border-clr);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:border-color .15s;}
+.ann-item:last-of-type{margin-bottom:0;}
+.ann-item:hover{border-color:var(--border-hover);}
+.ann-item.pin{border-left:3px solid var(--hero-gold);border-radius:0 10px 10px 0;}
+.ann-item-top{display:flex;align-items:center;gap:8px;}
+.ann-item-top svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.ann-item-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text-main);}
+.ann-tag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+.ann-dot{width:8px;height:8px;border-radius:50%;background:var(--danger-color);flex:0 0 auto;}
+.ann-body{color:var(--text-mid);font-size:12.5px;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.ann-item.open .ann-body{-webkit-line-clamp:unset;}
+.ann-date{font-size:11px;color:var(--text-muted);margin-top:7px;}
+.ann-empty{color:var(--text-muted);font-size:13px;text-align:center;padding:10px 0;}
+/* ── 관리자: 서브탭 + 공지 작성/목록 ── */
+.admin-tabs{display:flex;gap:10px;margin-bottom:1.25rem;border-bottom:1px solid var(--border-clr);}
+.admin-tab{background:none;border:none;border-bottom:2px solid transparent;padding:9px 4px;margin-bottom:-1px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text-muted);cursor:pointer;}
+.admin-tab.active{color:var(--text-main);border-bottom-color:var(--hero-gold);}
+.ann-form-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:16px 18px;box-shadow:var(--card-shadow);}
+.admin-sub-title{font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:12px;}
+.ann-field{margin-bottom:11px;}
+.ann-field label{display:block;font-size:12px;color:var(--text-mid);margin-bottom:4px;font-weight:600;}
+.ann-input{width:100%;box-sizing:border-box;border:1px solid var(--border-clr);border-radius:8px;padding:8px 11px;font-family:inherit;font-size:13.5px;color:var(--text-main);background:var(--card-bg);}
+.ann-input:focus{outline:none;border-color:var(--hero-gold);}
+textarea.ann-input{resize:vertical;min-height:60px;}
+.ann-row2{display:flex;gap:11px;flex-wrap:wrap;}
+.ann-row2 .ann-field{flex:1;min-width:140px;}
+.ann-form-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:4px;}
+.admin-ann-row{display:flex;align-items:center;gap:10px;border:1px solid var(--border-clr);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.admin-ann-row.off{opacity:.55;}
+.admin-ann-row .a-t{flex:1;font-size:13.5px;color:var(--text-main);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.admin-ann-btn{background:none;border:1px solid var(--border-clr);border-radius:7px;padding:5px 10px;font-family:inherit;font-size:12px;color:var(--text-mid);cursor:pointer;white-space:nowrap;}
+.admin-ann-btn:hover{border-color:var(--border-hover);}
+.admin-ann-btn.danger{color:var(--danger-color);border-color:rgba(220,38,38,.35);}
+.admin-ann-btn.danger:hover{border-color:var(--danger-color);background:rgba(220,38,38,.05);}
 .dash-part-row-bar-fill{height:100%;border-radius:3px;transition:width .4s,background .3s;}
 
 /* 약점 토픽 위젯 */
@@ -1107,7 +1150,7 @@ html, body {
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
       <button class="nav-btn" onclick="showScreen('upload');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="nav_upload">Upload</span></button>
       <button class="nav-btn" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
-      <button class="nav-btn" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>이상탐지</span></button>
+      <button class="nav-btn" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
     </div>
     <div class="lang-seg" id="lang-seg" role="group" aria-label="Language">
       <button id="lang-ko" type="button" onclick="setLang('ko')">KO</button>
@@ -1127,7 +1170,7 @@ html, body {
   <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
   <button class="mobile-nav-item" id="mob-upload" onclick="showScreen('upload');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="mob_upload">Upload</span></button>
   <button class="mobile-nav-item" id="mob-settings" onclick="showScreen('settings');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
-  <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>이상탐지</span></button>
+  <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
 </div>
 
 <div class="content">
@@ -1136,6 +1179,9 @@ html, body {
 <div id="screen-dashboard" class="screen active">
   <!-- Hero: Current Focus Part -->
   <div id="dash-hero"></div>
+
+  <!-- 공지사항 (Announcements) -->
+  <div id="dash-announcements"></div>
 
   <!-- All Parts grid (Phase 2-4 에서 활성화) -->
   <div id="dash-parts-grid-wrap"></div>
@@ -1557,31 +1603,78 @@ html, body {
 
 <!-- ═══ ANOMALY DETECTION (Admin only · Layer 3) ═══ -->
 <div id="screen-anomaly" class="screen">
-  <div style="margin-bottom:1.25rem;">
-    <div class="section-title">🛡 이상 사용 탐지</div>
-    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;">
+  <div style="margin-bottom:1rem;">
+    <div class="section-title">관리자</div>
+  </div>
+
+  <div class="admin-tabs">
+    <button id="atab-notices" class="admin-tab active" onclick="adminTab('notices')">공지 관리</button>
+    <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
+  </div>
+
+  <!-- ═══ 공지 관리 ═══ -->
+  <div id="admin-panel-notices">
+    <div class="ann-form-card">
+      <div class="admin-sub-title" id="ann-form-title">새 공지 작성</div>
+      <input type="hidden" id="ann-f-id" value="">
+      <div class="ann-row2">
+        <div class="ann-field"><label>제목 (한국어) *</label><input class="ann-input" id="ann-f-title-ko" placeholder="예) 2025 세법 개정 반영 완료"></div>
+        <div class="ann-field"><label>제목 (English)</label><input class="ann-input" id="ann-f-title-en" placeholder="e.g. 2025 tax law updates applied"></div>
+      </div>
+      <div class="ann-field"><label>내용 (한국어)</label><textarea class="ann-input" id="ann-f-body-ko" placeholder="공지 본문을 입력하세요"></textarea></div>
+      <div class="ann-field"><label>내용 (English)</label><textarea class="ann-input" id="ann-f-body-en" placeholder="Announcement body"></textarea></div>
+      <div class="ann-row2">
+        <div class="ann-field"><label>분류</label>
+          <select class="ann-input" id="ann-f-cat">
+            <option value="notice">일반 (종 아이콘)</option>
+            <option value="content">신규 문제/콘텐츠 (신규 태그)</option>
+            <option value="maintenance">점검 안내 (회색)</option>
+          </select>
+        </div>
+        <div class="ann-field" style="flex:0 0 auto;min-width:0;">
+          <label>옵션</label>
+          <div style="display:flex;gap:16px;align-items:center;height:37px;">
+            <label style="display:flex;gap:6px;align-items:center;font-size:13px;color:var(--text-mid);font-weight:500;cursor:pointer;"><input type="checkbox" id="ann-f-pinned" style="width:15px;height:15px;accent-color:var(--hero-gold);"> 상단 고정</label>
+            <label style="display:flex;gap:6px;align-items:center;font-size:13px;color:var(--text-mid);font-weight:500;cursor:pointer;"><input type="checkbox" id="ann-f-active" checked style="width:15px;height:15px;accent-color:var(--success-color);"> 게시(활성)</label>
+          </div>
+        </div>
+      </div>
+      <div class="ann-form-actions">
+        <button class="btn-navy" style="padding:9px 18px;" onclick="adminAnnSave()">저장</button>
+        <button class="admin-ann-btn" style="padding:9px 14px;" onclick="adminAnnNew()">새로 작성</button>
+        <span id="ann-form-msg" style="font-size:12.5px;margin-left:4px;"></span>
+      </div>
+    </div>
+
+    <div class="admin-sub-title" style="margin-top:1.5rem;">등록된 공지</div>
+    <div id="admin-ann-list"><div class="ann-empty">불러오는 중…</div></div>
+  </div>
+
+  <!-- ═══ 이상 탐지 ═══ -->
+  <div id="admin-panel-anomaly" style="display:none;">
+    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
       유료·체험 사용자의 학습 패턴을 감시합니다. 짧은 시간에 대량 풀이, 24시간 연속 활동, 문제은행 과다 소진 등
       스크래핑 의심 패턴을 위험도로 표시합니다. <strong>임계값은 실제 분포를 보고 조정</strong>하세요.
     </div>
-  </div>
 
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
-    <label style="font-size:13px;color:var(--text-mid);">감시 기간</label>
-    <select id="anom-window" onchange="renderAnomaly()" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-clr);background:var(--card-bg);color:var(--text-main);font-size:13px;">
-      <option value="24">최근 24시간</option>
-      <option value="72">최근 3일</option>
-      <option value="168">최근 7일</option>
-      <option value="720">최근 30일</option>
-    </select>
-    <button class="btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="renderAnomaly()">🔄 새로고침</button>
-    <div id="anom-summary" style="font-size:13px;color:var(--text-muted);margin-left:auto;"></div>
-  </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
+      <label style="font-size:13px;color:var(--text-mid);">감시 기간</label>
+      <select id="anom-window" onchange="renderAnomaly()" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-clr);background:var(--card-bg);color:var(--text-main);font-size:13px;">
+        <option value="24">최근 24시간</option>
+        <option value="72">최근 3일</option>
+        <option value="168">최근 7일</option>
+        <option value="720">최근 30일</option>
+      </select>
+      <button class="btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="renderAnomaly()">🔄 새로고침</button>
+      <div id="anom-summary" style="font-size:13px;color:var(--text-muted);margin-left:auto;"></div>
+    </div>
 
-  <div id="anom-body"><div style="padding:2rem;text-align:center;color:var(--text-muted);">불러오는 중…</div></div>
+    <div id="anom-body"><div style="padding:2rem;text-align:center;color:var(--text-muted);">불러오는 중…</div></div>
 
-  <div style="margin-top:1.25rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
-    <strong>판정 기준(현재 설정)</strong> — 아래 값을 넘으면 위험 신호가 켜집니다. 조정은 <code>ANOMALY_CFG</code>에서.
-    <div id="anom-thresholds" style="margin-top:6px;"></div>
+    <div style="margin-top:1.25rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
+      <strong>판정 기준(현재 설정)</strong> — 아래 값을 넘으면 위험 신호가 켜집니다. 조정은 <code>ANOMALY_CFG</code>에서.
+      <div id="anom-thresholds" style="margin-top:6px;"></div>
+    </div>
   </div>
 </div>
 
@@ -3045,7 +3138,7 @@ function showScreen(name){
   if(name==='dashboard') { renderDashboard(); resetResumeBadgeDismiss(); }
   if(name==='bookmarks') renderBookmarks();
   if(name==='statistics') renderStatistics();
-  if(name==='anomaly') renderAnomaly();
+  if(name==='anomaly') openAdmin();
   // 화면 전환 후에도 Resume 배지 상태 갱신
   updateResumeBadge();
 }
@@ -3153,6 +3246,270 @@ function renderDashboard(){
   renderDashPartsGrid();
   renderDashWeakTopics();
   renderDashRecent2();
+  renderAnnouncements();
+}
+
+// ══════════════════════════════════════════════════════
+// 공지사항 (Announcements) — 읽기 렌더 + KO/EN + 안 읽음 뱃지
+//   · 읽기: get_announcements() RPC (SECURITY DEFINER, 활성 공지만)
+//   · 안 읽음: localStorage에 읽은 공지 id 집합만 저장 (서버 부담 0)
+//   · 미배포/오류 시 카드를 숨겨 대시보드를 깨끗하게 유지
+// ══════════════════════════════════════════════════════
+var _ANN = null;              // 캐시 (한 번만 fetch)
+var _ANN_READ_KEY = 'pracexam_ann_read';
+
+function annReadSet(){
+  try{ return new Set(JSON.parse(localStorage.getItem(_ANN_READ_KEY) || '[]')); }
+  catch(e){ return new Set(); }
+}
+function annSaveRead(set){
+  try{ localStorage.setItem(_ANN_READ_KEY, JSON.stringify(Array.from(set))); }catch(e){}
+}
+function annMarkRead(id){
+  var s = annReadSet(); s.add(id); annSaveRead(s); paintAnnouncements();
+}
+function annMarkAll(){
+  var s = annReadSet(); (_ANN||[]).forEach(function(a){ s.add(a.id); }); annSaveRead(s); paintAnnouncements();
+}
+function annToggle(id, el){
+  el.classList.toggle('open');
+  var s = annReadSet();
+  if(!s.has(id)){ s.add(id); annSaveRead(s); paintAnnouncements(); }
+}
+
+async function renderAnnouncements(){
+  if(_ANN === null){ await loadAnnouncements(); }
+  else { paintAnnouncements(); }
+}
+async function loadAnnouncements(){
+  var el = document.getElementById('dash-announcements');
+  if(!el) return;
+  try{
+    var res = await sb.rpc('get_announcements');
+    if(res.error) throw res.error;
+    _ANN = res.data || [];
+  }catch(e){
+    // 미배포(42883/PGRST202)·오류 시 조용히 숨김
+    _ANN = [];
+    el.innerHTML = '';
+    return;
+  }
+  paintAnnouncements();
+}
+
+function _annIcon(cat){
+  if(cat === 'content') return '<svg viewBox="0 0 24 24" style="stroke:var(--accent);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
+  if(cat === 'maintenance') return '<svg viewBox="0 0 24 24" style="stroke:var(--text-muted);"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 0 1 5.4-5.4l-2.6 2.6-2-2z"/></svg>';
+  return '<svg viewBox="0 0 24 24" style="stroke:var(--hero-gold);"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+}
+function _annPin(){ return '<svg viewBox="0 0 24 24" style="stroke:var(--hero-gold);"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14l-1.5-4.5V5a2 2 0 0 0-2-2H8.5a2 2 0 0 0-2 2v7.5z"/></svg>'; }
+
+function paintAnnouncements(){
+  var el = document.getElementById('dash-announcements');
+  if(!el) return;
+  var rows = _ANN || [];
+  if(!rows.length){ el.innerHTML = ''; return; }   // 공지 없으면 카드 자체를 숨김
+
+  var en = (LANG === 'en');
+  var readSet = annReadSet();
+  var unread = rows.filter(function(a){ return !readSet.has(a.id); }).length;
+
+  var head =
+    '<div class="ann-head">'+
+      '<div class="ann-head-l">'+
+        '<span class="ann-title-lbl"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'+ (en ? 'Notices' : '공지사항') +'</span>'+
+        (unread ? '<span class="ann-pill">'+ (en ? (unread+' unread') : (unread+'개 안 읽음')) +'</span>' : '')+
+      '</div>'+
+      (unread ? '<button class="ann-mark" onclick="annMarkAll()">'+ (en ? 'Mark all read' : '모두 읽음') +'</button>' : '')+
+    '</div>';
+
+  var items = rows.map(function(a){
+    var isUnread = !readSet.has(a.id);
+    var title = en ? (a.title_en || a.title_ko || '') : (a.title_ko || a.title_en || '');
+    var body  = en ? (a.body_en  || a.body_ko  || '') : (a.body_ko  || a.body_en  || '');
+    var d = a.published_at ? new Date(a.published_at) : null;
+    var dateTxt = d ? (d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')) : '';
+    var tag = '';
+    if(a.pinned) tag = '<span class="ann-tag" style="background:rgba(198,161,91,.16);color:#8a5e22;">'+ (en ? 'Pinned' : '고정') +'</span>';
+    else if(a.category === 'content') tag = '<span class="ann-tag" style="background:var(--accent-tint);color:#b25a3a;">'+ (en ? 'New' : '신규') +'</span>';
+    var icon = a.pinned ? _annPin() : _annIcon(a.category);
+    return '<div class="ann-item'+(a.pinned?' pin':'')+'" onclick="annToggle('+a.id+',this)">'+
+      '<div class="ann-item-top">'+ icon +
+        '<span class="ann-item-title">'+ _annEsc(title) +'</span>'+ tag +
+        (isUnread ? '<span class="ann-dot"></span>' : '')+
+      '</div>'+
+      (body ? '<div class="ann-body">'+ _annEsc(body) +'</div>' : '')+
+      (dateTxt ? '<div class="ann-date">'+ dateTxt +'</div>' : '')+
+    '</div>';
+  }).join('');
+
+  el.innerHTML = '<div class="ann-card">'+ head + items +'</div>';
+}
+function _annEsc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ══════════════════════════════════════════════════════
+// 관리자 화면: 서브탭(공지 관리 / 이상 탐지) + 공지 CRUD
+//   · 목록: admin_list_announcements() (관리자 전용, 활성/비활성 모두)
+//   · 저장: upsert_announcement(...) (관리자 UID 가드)
+// ══════════════════════════════════════════════════════
+var _ADMIN_ANN = [];
+
+function openAdmin(){ adminTab('notices'); }
+
+function adminTab(name){
+  var nP = document.getElementById('admin-panel-notices');
+  var aP = document.getElementById('admin-panel-anomaly');
+  var nT = document.getElementById('atab-notices');
+  var aT = document.getElementById('atab-anomaly');
+  var isNotices = (name === 'notices');
+  if(nP) nP.style.display = isNotices ? '' : 'none';
+  if(aP) aP.style.display = isNotices ? 'none' : '';
+  if(nT) nT.classList.toggle('active', isNotices);
+  if(aT) aT.classList.toggle('active', !isNotices);
+  if(isNotices) renderAdminAnnList();
+  else renderAnomaly();
+}
+
+function _annMsg(txt, ok){
+  var m = document.getElementById('ann-form-msg'); if(!m) return;
+  m.textContent = txt || '';
+  m.style.color = ok ? 'var(--success-color)' : 'var(--danger-color)';
+}
+
+async function renderAdminAnnList(){
+  var el = document.getElementById('admin-ann-list');
+  if(!el) return;
+  try{
+    var res = await sb.rpc('admin_list_announcements');
+    if(res.error) throw res.error;
+    _ADMIN_ANN = res.data || [];
+  }catch(e){
+    var msg = (e && (e.message||'')) + '';
+    var code = (e && (e.code||'')) + '';
+    if(code==='42883' || code==='PGRST202' || /does not exist|could not find/i.test(msg)){
+      el.innerHTML = '<div class="ann-empty">⚙️ <code>admin_list_announcements</code> 함수가 아직 배포되지 않았습니다. 아래 SQL을 실행하세요.</div>';
+    } else if(/NOT_AUTHORIZED/.test(msg)){
+      el.innerHTML = '<div class="ann-empty">권한 없음 (관리자 전용)</div>';
+    } else {
+      el.innerHTML = '<div class="ann-empty">목록 로드 실패: '+_annEsc(msg)+'</div>';
+    }
+    return;
+  }
+  if(!_ADMIN_ANN.length){ el.innerHTML = '<div class="ann-empty">등록된 공지가 없습니다.</div>'; return; }
+  el.innerHTML = _ADMIN_ANN.map(function(a){
+    var d = a.published_at ? new Date(a.published_at) : null;
+    var dt = d ? (String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')) : '';
+    var badges = (a.pinned ? '<span class="ann-tag" style="background:rgba(198,161,91,.16);color:#8a5e22;">고정</span> ' : '')
+               + (!a.is_active ? '<span class="ann-tag" style="background:rgba(53,70,73,.08);color:var(--text-muted);">비활성</span>' : '');
+    return '<div class="admin-ann-row'+(a.is_active?'':' off')+'">'+
+      '<span class="a-t">'+ _annEsc(a.title_ko || a.title_en || '(제목 없음)') +'</span>'+
+      badges +
+      '<span style="font-size:11px;color:var(--text-muted);">'+dt+'</span>'+
+      '<button class="admin-ann-btn" onclick="adminAnnEdit('+a.id+')">수정</button>'+
+      '<button class="admin-ann-btn" onclick="adminAnnToggleActive('+a.id+')">'+(a.is_active?'비활성화':'다시 게시')+'</button>'+
+      '<button class="admin-ann-btn danger" onclick="adminAnnDelete('+a.id+')">삭제</button>'+
+    '</div>';
+  }).join('');
+}
+
+function adminAnnNew(){
+  ['ann-f-id','ann-f-title-ko','ann-f-title-en','ann-f-body-ko','ann-f-body-en'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.value='';
+  });
+  var cat=document.getElementById('ann-f-cat'); if(cat) cat.value='notice';
+  var pin=document.getElementById('ann-f-pinned'); if(pin) pin.checked=false;
+  var act=document.getElementById('ann-f-active'); if(act) act.checked=true;
+  var t=document.getElementById('ann-form-title'); if(t) t.textContent='새 공지 작성';
+  _annMsg('');
+}
+
+function adminAnnEdit(id){
+  var a = _ADMIN_ANN.filter(function(x){ return x.id===id; })[0];
+  if(!a) return;
+  document.getElementById('ann-f-id').value = a.id;
+  document.getElementById('ann-f-title-ko').value = a.title_ko || '';
+  document.getElementById('ann-f-title-en').value = a.title_en || '';
+  document.getElementById('ann-f-body-ko').value = a.body_ko || '';
+  document.getElementById('ann-f-body-en').value = a.body_en || '';
+  document.getElementById('ann-f-cat').value = a.category || 'notice';
+  document.getElementById('ann-f-pinned').checked = !!a.pinned;
+  document.getElementById('ann-f-active').checked = !!a.is_active;
+  document.getElementById('ann-form-title').textContent = '공지 수정 (#'+a.id+')';
+  _annMsg('');
+  try{ document.getElementById('screen-anomaly').scrollTop = 0; window.scrollTo(0,0); }catch(e){}
+}
+
+async function _annUpsert(payload){
+  var res = await sb.rpc('upsert_announcement', payload);
+  if(res.error) throw res.error;
+  _ANN = null;   // 대시보드 공개 캐시 무효화 → 다음 렌더 시 재조회
+  return res.data;
+}
+
+async function adminAnnSave(){
+  var idVal = (document.getElementById('ann-f-id').value || '').trim();
+  var titleKo = (document.getElementById('ann-f-title-ko').value || '').trim();
+  if(!titleKo){ _annMsg('제목(한국어)을 입력하세요.', false); return; }
+  var payload = {
+    p_id: idVal ? Number(idVal) : null,
+    p_title_ko: titleKo,
+    p_title_en: (document.getElementById('ann-f-title-en').value || '').trim() || null,
+    p_body_ko:  (document.getElementById('ann-f-body-ko').value || '').trim() || null,
+    p_body_en:  (document.getElementById('ann-f-body-en').value || '').trim() || null,
+    p_category: document.getElementById('ann-f-cat').value || 'notice',
+    p_pinned:   !!document.getElementById('ann-f-pinned').checked,
+    p_is_active:!!document.getElementById('ann-f-active').checked
+  };
+  _annMsg('저장 중…', true);
+  try{
+    await _annUpsert(payload);
+    _annMsg('저장되었습니다 ✓', true);
+    adminAnnNew();
+    renderAdminAnnList();
+  }catch(e){
+    var msg=(e && (e.message||''))+'';
+    if(/NOT_AUTHORIZED/.test(msg)) _annMsg('권한 없음 (관리자 전용)', false);
+    else if(/does not exist|could not find/i.test(msg)) _annMsg('upsert_announcement 함수가 아직 배포되지 않았습니다.', false);
+    else _annMsg('저장 실패: '+msg, false);
+  }
+}
+
+async function adminAnnToggleActive(id){
+  var a = _ADMIN_ANN.filter(function(x){ return x.id===id; })[0];
+  if(!a) return;
+  try{
+    await _annUpsert({
+      p_id: a.id, p_title_ko: a.title_ko, p_title_en: a.title_en,
+      p_body_ko: a.body_ko, p_body_en: a.body_en, p_category: a.category || 'notice',
+      p_pinned: !!a.pinned, p_is_active: !a.is_active
+    });
+    renderAdminAnnList();
+  }catch(e){
+    _annMsg('상태 변경 실패: '+((e && e.message)||''), false);
+  }
+}
+
+async function adminAnnDelete(id){
+  var a = _ADMIN_ANN.filter(function(x){ return x.id===id; })[0];
+  if(!a) return;
+  var title = a.title_ko || a.title_en || ('#'+id);
+  if(!confirm('이 공지를 영구 삭제하시겠습니까?\n\n"'+title+'"\n\n삭제하면 되돌릴 수 없습니다. (감추기만 하려면 "비활성화"를 사용하세요.)')) return;
+  try{
+    var res = await sb.rpc('delete_announcement', { p_id: a.id });
+    if(res.error) throw res.error;
+    _ANN = null;   // 대시보드 공개 캐시 무효화
+    _annMsg('삭제되었습니다 ✓', true);
+    renderAdminAnnList();
+  }catch(e){
+    var msg=(e && (e.message||''))+'';
+    if(/NOT_AUTHORIZED/.test(msg)) _annMsg('권한 없음 (관리자 전용)', false);
+    else if(/does not exist|could not find/i.test(msg)) _annMsg('delete_announcement 함수가 아직 배포되지 않았습니다.', false);
+    else _annMsg('삭제 실패: '+msg, false);
+  }
 }
 
 function renderDashHero(focusPart){
