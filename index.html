@@ -304,7 +304,7 @@ section{padding:88px 0;}
 .hero-demo-opt.correct .dot{color:var(--success-color);}
 .hero-demo-opt.correct .tick{margin-left:auto; width:15px; height:15px; stroke:var(--success-color); fill:none; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto;}
 .hero-demo-exp{border-top:1px dashed var(--border-strong); padding-top:11px;}
-.hero-demo-lang{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; line-height:1.55; color:var(--text-mid);}
+.hero-demo-lang{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; line-height:1.6; color:var(--text-mid);}
 .hero-demo-lang + .hero-demo-lang{margin-top:7px;}
 .hero-demo-lang .tag{
   flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:.06em;
@@ -320,7 +320,8 @@ section{padding:88px 0;}
   display:block; font-size:10px; font-weight:700; color:var(--terracotta-deep);
   letter-spacing:.08em; text-transform:uppercase; margin-bottom:3px;
 }
-.hero-demo-tip .tip-body{font-size:12.5px; line-height:1.55; color:var(--text-mid);}
+.hero-demo-tip .tip-body{display:block; font-size:12.5px; line-height:1.6; color:var(--text-mid);}
+.hero-demo-tip .tip-body > span{display:block; line-height:inherit;} /* 인라인 스팬 행간 오차 제거 — 해설과 동일 간격 */
 .hero-demo-more{
   display:inline-flex; align-items:center; gap:5px; margin-top:12px;
   font-size:13px; font-weight:700; color:#43706B; text-decoration:none;
