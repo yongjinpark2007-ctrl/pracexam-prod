@@ -64,6 +64,12 @@
   /* 공지사항 — 학습 카드(흰색)와 구분되는 차분한 슬레이트 톤 (2026-07-05) */
   --ann-bg:       #eaeff4;              /* 슬레이트 블루 배경 */
   --ann-bd:       #d9e1ea;              /* 슬레이트 보더 */
+  /* 진행률 바 — 완주도는 "낮아도 나쁜 게 아님" → 경고색 대신 차분한 브랜드 색 (2026-07-05) */
+  --progress-bar: #5B9089;              /* Deep Seafoam — 진행률(완주도) 전용 */
+  /* 정답률 바 — 성과 구간별 색상 (앰버 → 틸 → 그린) */
+  --acc-low:      #D99A2B;              /* 50% 미만 — 앰버 (개선 필요) */
+  --acc-mid:      #2F8F87;              /* 50–69% — 틸 (향상 중) */
+  --acc-high:     #3E9B5F;              /* 70% 이상 — 그린 (응시 가능 수준) */
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -3227,11 +3233,18 @@ function _newSessionGo(){
 // ══════════════════════════════════════════════════════
 
 // Statistics 바 그래프와 동일한 progress-aware 컬러 스킴 (≥80%=green, ≥60%=amber, <60%=red)
-function progressColor(pct){
-  if(pct >= 80) return 'var(--success-color)';
-  if(pct >= 60) return 'var(--flag-color)';
-  return 'var(--danger-color)';
+// 진행률(완주도) 바 색상 — 항상 차분한 브랜드 색. 완주도가 낮은 것은 "실패"가 아니므로 경고색을 쓰지 않는다.
+function progressBarColor(){
+  return 'var(--progress-bar)';
 }
+// 정답률 바 색상 — 성과 구간별(밴드) 색상. 실력이 오르면 앰버→틸→그린으로 자연스럽게 상승.
+function accuracyColor(pct){
+  if(pct >= 70) return 'var(--acc-high)';  // 응시 가능 수준
+  if(pct >= 50) return 'var(--acc-mid)';   // 향상 중
+  return 'var(--acc-low)';                  // 개선 필요
+}
+// 하위 호환: 기존 호출부가 남아 있어도 안전하게 진행률 색을 반환
+function progressColor(){ return progressBarColor(); }
 
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
@@ -3564,7 +3577,7 @@ function renderDashHero(focusPart){
           '<div class="dash-metric-label">' + t('dash_progress') + '</div>' +
           '<div class="dash-metric-value">' + progressPct + '<span class="pct">%</span></div>' +
           '<div class="dash-metric-sub">' + done + ' / ' + uQuestions(totalQs) + '</div>' +
-          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + progressPct + '%;background:' + progressColor(progressPct) + ';"></div></div>' +
+          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + progressPct + '%;background:' + progressBarColor() + ';"></div></div>' +
         '</div>' +
         '<div>' +
           '<div class="dash-metric-label">' + t('dash_accuracy') + '</div>' +
@@ -3572,7 +3585,7 @@ function renderDashHero(focusPart){
           '<div class="dash-metric-sub">' + tCorrect + ' / ' + uCorrect(tAttempts) +
             '<span style="font-size:11px;color:var(--text-muted);opacity:.75;">' + t('dash_incl_rep') + '</span>' +
           '</div>' +
-          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%;background:' + progressColor(accPct) + ';"></div></div>' +
+          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%;background:' + accuracyColor(accPct) + ';"></div></div>' +
         '</div>' +
       '</div>' +
       '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
@@ -3607,7 +3620,7 @@ function renderDashPartsGrid(){
     return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
       '<div class="dash-part-row-name">'+(meta.icon||'')+' '+shortLabel+'</div>'+
       '<div class="dash-part-row-stats">'+t('dash_progress')+' '+progressPct+'% · '+t('dash_accuracy')+' '+accLabel+'</div>'+
-      '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressColor(progressPct)+';"></div></div>'+
+      '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressBarColor()+';"></div></div>'+
     '</div>';
   }).join('');
 
@@ -4996,7 +5009,7 @@ function renderStsParts(){
       if(a && a.times){ total += a.times; correct += (a.correct||0); }
     });
     var pct = total>0 ? Math.round(correct/total*100) : 0;
-    var color = pct>=80?'var(--success-color)':pct>=60?'var(--flag-color)':'var(--danger-color)';
+    var color = accuracyColor(pct);
     return {part:part, pct:pct, total:total, color:color};
   }).filter(Boolean).filter(function(r){ return r.total > 0; });
 
