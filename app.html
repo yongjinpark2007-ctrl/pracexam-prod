@@ -780,9 +780,10 @@ html, body {
 
 /* ========== DASHBOARD V2 — Hero + Parts grid + Weak topics + Recent 2 ========== */
 .dash-hero{
-  background:linear-gradient(135deg,#ffffff 0%,#eef2f2 100%);
-  border:1px solid var(--border-clr);
-  border-left:3px solid var(--teal);
+  /* 배경·왼쪽 강조선을 해설의 Exam Tip 박스(.tip-box)와 동일하게 통일 (2026-07-05) */
+  background:var(--accent-tint);
+  border:1px solid var(--accent-border);
+  border-left:3px solid var(--accent);
   border-radius:16px;padding:1.5rem;margin-bottom:1rem;
   box-shadow:var(--card-shadow);
 }
@@ -831,7 +832,8 @@ html, body {
   transition:border-color .2s,transform .15s;
 }
 .dash-part-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
-.dash-part-row.active{border:1.5px solid var(--sel-border);background:var(--sel-bg);}
+/* 선택된 Part 박스를 히어로와 같은 색으로 연결 (2026-07-05: Exam Tip 계열 tint + 강조선) */
+.dash-part-row.active{border:1.5px solid var(--accent-border);border-left:3px solid var(--accent);background:var(--accent-tint);}
 .dash-part-row-name{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:600;color:var(--text-main);margin-bottom:6px;}
 .dash-part-row.active .dash-part-row-name{color:var(--sel-text);}
 .dash-part-row-name svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
@@ -846,10 +848,11 @@ html, body {
   border:1px solid var(--border-clr);border-radius:10px;
   box-shadow:var(--card-shadow);
   margin-bottom:7px;font-size:14px;
-  transition:border-color .2s;
+  transition:border-color .2s,transform .15s;
   cursor:pointer;   /* COP 미니 세션 시작 (클릭) */
 }
-.weak-row:hover{border-color:var(--border-hover);}
+/* 전체 Part 행과 동일한 hover 강조 — 살짝 이동 (2026-07-05) */
+.weak-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
 .weak-name{color:var(--text-main);}
 .weak-stat{font-size:13px;font-weight:600;}
 .weak-stat.crit{color:var(--danger-color);}
@@ -862,9 +865,13 @@ html, body {
   border:1px solid var(--border-clr);border-radius:14px;
   box-shadow:var(--card-shadow);
   margin-bottom:7px;font-size:13px;
-  cursor:pointer;transition:border-color .15s;
+  cursor:pointer;transition:border-color .15s,transform .15s;
 }
-.dash-recent-row:hover{border-color:var(--border-hover);}
+/* 전체 Part 행과 동일한 hover 강조 — 살짝 이동 (2026-07-05) */
+.dash-recent-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
+/* 복습 불가(구버전 세션) 행은 클릭·이동 강조 비활성 */
+.dash-recent-row.no-review{cursor:default;}
+.dash-recent-row.no-review:hover{transform:none;border-color:var(--border-clr);}
 .dash-recent-date{font-weight:600;color:var(--text-main);font-size:13px;}
 .dash-recent-score{margin-left:auto;font-weight:700;font-size:14px;}
 
@@ -2911,24 +2918,61 @@ function showScreen(name){
 }
 
 // Study 탭 진입 라우터: 진행 중 세션 있으면 Quiz로, 아니면 Setup으로
+//   2026-07-05: 브라우저 confirm() → 앱 공용 모달(#modal-bg)로 통일. COP 미니 세션 모달과 동일 패턴.
 function openStudy(){
   closeDrawer();
   if(!canStartQuiz()) return;
   if(S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length){
-    var _msg = (LANG === 'en')
-      ? ('You have a session in progress (' + (S.quizIdx+1) + '/' + S.quizQueue.length + ').\n\n[OK] Resume\n[Cancel] Start new session')
-      : ('진행 중인 세션이 있습니다 (' + (S.quizIdx+1) + '/' + S.quizQueue.length + ').\n\n[확인] 이어서 풀기\n[취소] 새 세션 시작');
-    if(confirm(_msg)){
-      resumeQuiz();
-    } else {
-      clearLiveQuiz();
-      showScreen('quiz-setup');
-      setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); }, 50);
-    }
+    showResumeSessionModal();
   } else {
-    showScreen('quiz-setup');
-    setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); }, 50);
+    _openStudySetup();
   }
+}
+
+// Quiz Setup 화면 진입 공통 헬퍼
+function _openStudySetup(){
+  showScreen('quiz-setup');
+  setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); }, 50);
+}
+
+// 진행 중 세션 재개/새 세션 선택 모달 (기존 confirm 대체)
+function showResumeSessionModal(){
+  var pos = (S.quizIdx + 1) + '/' + S.quizQueue.length;
+  document.getElementById('modal-content').innerHTML =
+    '<div style="text-align:center;padding:1rem 0;">' +
+      '<div style="font-size:36px;margin-bottom:.75rem;">📚</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' +
+        (LANG === 'en' ? 'Session in Progress' : '진행 중인 세션') + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
+        (LANG === 'en'
+          ? ('You have a session in progress (<strong>' + pos + '</strong>).<br>Resume it, or start a new one?')
+          : ('진행 중인 세션(<strong>' + pos + '</strong>)이 있습니다.<br>이어서 풀까요, 아니면 새 세션을 시작할까요?')) +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-muted);line-height:1.6;background:rgba(53,70,73,.05);' +
+        'border-radius:8px;padding:8px 11px;margin-bottom:1rem;text-align:left;">' +
+        (LANG === 'en'
+          ? '💡 Starting a new session discards the one in progress — you won\'t be able to resume it. (Answers you already submitted are saved.)'
+          : '💡 새 세션을 시작하면 진행 중인 세션은 이어 풀 수 없게 됩니다. (이미 제출한 답의 기록은 저장되어 있습니다)') +
+      '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="_resumeSessionGo()">' +
+        (LANG === 'en' ? 'Resume' : '이어서 풀기') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="_newSessionGo()">' +
+        (LANG === 'en' ? 'Start new session' : '새 세션 시작') + '</button>' +
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// 이어서 풀기
+function _resumeSessionGo(){
+  closeModal();
+  resumeQuiz();
+}
+
+// 새 세션 시작 (진행 중 세션 큐 폐기 → Setup)
+function _newSessionGo(){
+  closeModal();
+  clearLiveQuiz();
+  _openStudySetup();
 }
 
 // ══════════════════════════════════════════════════════
@@ -3286,9 +3330,24 @@ function renderDashRecent2(){
               d.toLocaleTimeString(_loc, { hour:'2-digit', minute:'2-digit', hour12:false });
     }
     const scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
-    return '<div class="dash-recent-row">' +
+    // 2026-07-05: 최근 학습 박스 클릭 → 복습 메뉴 최근 세션과 동일하게 reviewSession() 활성화.
+    //   question_ids 없는 구버전 세션은 복습 불가 → no-review(비활성) + '기록만' 표시.
+    var realIdx = S.sessions.indexOf(s);
+    var hasIds = s.question_ids && s.question_ids.length > 0;
+    var clickable = hasIds && realIdx >= 0;
+    var rowCls = clickable ? 'dash-recent-row' : 'dash-recent-row no-review';
+    var rowAttr = clickable
+      ? ' onclick="reviewSession(' + realIdx + ')" role="button" tabindex="0"' +
+        ' title="' + (LANG === 'en' ? 'Review this session' : '이 세션 복습하기') + '"'
+      : ' title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않아 복습할 수 없습니다') + '"';
+    var histHint = clickable
+      ? ''
+      : '<span style="font-size:11px;color:var(--text-muted);opacity:.75;margin-left:8px;white-space:nowrap;">' +
+        (LANG === 'en' ? 'History only' : '기록만') + '</span>';
+    return '<div class="' + rowCls + '"' + rowAttr + '>' +
              '<span class="dash-recent-date">' + label + '</span>' +
              '<span class="dash-recent-meta">' + uQ(s.count) + '</span>' +
+             histHint +
              '<span class="dash-recent-score" style="color:' + scoreColor + ';">' + s.pct + '%</span>' +
            '</div>';
   }).join('');
