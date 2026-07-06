@@ -4462,7 +4462,23 @@ async function reviewSession(sessionIndex){
     showToast('⚠️ 이 세션의 문제들을 찾을 수 없습니다');
     return;
   }
-  confirmDiscardStudyThen(function(){ _reviewSessionGo(s, validIds); });
+  // 2026-07-06: 제출 기록(user_progress)이 있는 문항만 복습 가능 —
+  //   스킵/중도 종료로 미제출된 문항은 서버(get_review_payload)가 정답 제공을 거부함
+  //   (미제출 문항 정답 공개 = 일일 한도 우회 구멍이므로 서버 정책은 의도된 것)
+  var reviewableIds = validIds.filter(function(id){ return S.answered[id] && S.answered[id].times > 0; });
+  var excluded = validIds.length - reviewableIds.length;
+  if(reviewableIds.length === 0){
+    showToast(LANG === 'en'
+      ? '⚠️ No submitted questions in this session — nothing to review'
+      : '⚠️ 이 세션에는 제출된 문항이 없어 복습할 수 없습니다');
+    return;
+  }
+  if(excluded > 0){
+    showToast(LANG === 'en'
+      ? ('ℹ️ ' + excluded + ' unsubmitted question(s) excluded from review')
+      : ('ℹ️ 제출되지 않은 문항 ' + excluded + '개는 복습에서 제외됩니다'));
+  }
+  confirmDiscardStudyThen(function(){ _reviewSessionGo(s, reviewableIds); });
 }
 async function _reviewSessionGo(s, validIds){
   S.quizQueue = validIds;
@@ -4664,7 +4680,14 @@ async function revealReviewAnswer(){
   const ok = await ensureAnswerData(q);
   if(!ok || q.correct == null){
     if(sbtn){ sbtn.disabled = false; sbtn.textContent = _prevTxt || ((LANG === 'en') ? 'Check Answer' : '정답 확인'); }
-    showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : ''));
+    if(ok && q.correct == null){
+      // 서버가 에러 없이 데이터를 제외 = 이 문항의 제출 기록이 없음 (정답 열람 불가)
+      showToast(LANG === 'en'
+        ? '⚠️ No submission history for this question — answer unavailable. Solve it in a study session first.'
+        : '⚠️ 이 문항은 제출 기록이 없어 정답을 볼 수 없습니다. 학습 세션에서 먼저 풀어주세요.');
+    } else {
+      showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : ''));
+    }
     return;
   }
 
@@ -5061,7 +5084,12 @@ function showResults(){
   clearInterval(S.timerInt);
   const {correct,wrong,total}=S.results, answered=correct+wrong;
   const pct=answered>0?Math.round(correct/answered*100):0;
-  const completedQueue = [...S.quizQueue];
+  // 2026-07-06: question_ids는 '제출된' 문항만 저장 — 스킵/중도 종료 문항은
+  //   서버가 복습 정답 제공을 거부하므로 저장해도 복습 불가 (실패 토스트 원인이었음)
+  const completedQueue = S.quizQueue.filter(function(id, i){
+    var sa = S.sessionAnswers && S.sessionAnswers[i];
+    return !!(sa && sa.submitted);
+  });
   const sessionRecord = {
     date: new Date().toLocaleDateString('ko-KR',{month:'short',day:'numeric',year:'numeric'}),
     count: answered, correct, pct,
@@ -5431,7 +5459,21 @@ async function retryFlagged(id){
   if(startIdx < 0) startIdx = 0;
   // 선택 문제를 앞으로 재정렬
   var queue = allFlagged.slice(startIdx).concat(allFlagged.slice(0, startIdx));
-  var ids = queue.map(function(q){ return q.id; });
+  // 2026-07-06: 제출 기록이 있는 문항만 — 플래그만 달고 미제출한 문항은 서버가 정답 제공 거부
+  var ids = queue.map(function(q){ return q.id; })
+                 .filter(function(id){ return S.answered[id] && S.answered[id].times > 0; });
+  var excluded = queue.length - ids.length;
+  if(ids.length === 0){
+    showToast(LANG === 'en'
+      ? '⚠️ Flagged questions have no submission history — nothing to review'
+      : '⚠️ 플래그 문항에 제출 기록이 없어 복습할 수 없습니다');
+    return;
+  }
+  if(excluded > 0){
+    showToast(LANG === 'en'
+      ? ('ℹ️ ' + excluded + ' unsubmitted question(s) excluded from review')
+      : ('ℹ️ 제출되지 않은 문항 ' + excluded + '개는 복습에서 제외됩니다'));
+  }
   confirmDiscardStudyThen(function(){ _retryFlaggedGo(ids); });
 }
 async function _retryFlaggedGo(ids){
