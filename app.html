@@ -2935,7 +2935,7 @@ var UI_TEXT = {
   bm_empty_t:     {ko:'플래그된 문제 없음', en:'No flagged questions'},
   bm_empty_s:     {ko:'학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다', en:'Flag tough questions with ⚑ during study to review them here'},
   bm_load_fail:   {ko:'(본문 로드 실패 — 다시 열어주세요)', en:'(Failed to load — please reopen)'},
-  bm_retry:       {ko:'복습 보기 →', en:'Review →'},
+  bm_retry:       {ko:'다시 풀기 →', en:'Solve Again →'},
   rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   // ── Statistics ──
@@ -3298,24 +3298,36 @@ function _openStudySetup(){
 // 진행 중 세션 재개/새 세션 선택 모달 (기존 confirm 대체)
 function showResumeSessionModal(){
   var pos = (S.quizIdx + 1) + '/' + S.quizQueue.length;
+  var isRev = !!S.reviewMode;   // 2026-07-06: 복습(다시 풀기)과 학습을 문구로 구분
+  var title = isRev
+    ? (LANG === 'en' ? 'Review in Progress' : '진행 중인 복습')
+    : (LANG === 'en' ? 'Session in Progress' : '진행 중인 세션');
+  var body = isRev
+    ? (LANG === 'en'
+        ? ('You have a review in progress (<strong>' + pos + '</strong>).<br>Continue it, or start a new study session?')
+        : ('진행 중인 복습(<strong>' + pos + '</strong>)이 있습니다.<br>복습을 이어서 할까요, 아니면 새 학습 세션을 시작할까요?'))
+    : (LANG === 'en'
+        ? ('You have a session in progress (<strong>' + pos + '</strong>).<br>Resume it, or start a new one?')
+        : ('진행 중인 세션(<strong>' + pos + '</strong>)이 있습니다.<br>이어서 풀까요, 아니면 새 세션을 시작할까요?'));
+  var hint = isRev
+    ? (LANG === 'en'
+        ? '💡 Starting a new session ends this review. Review answers are not saved to your records, so nothing is lost.'
+        : '💡 새 세션을 시작하면 진행 중인 복습은 종료됩니다. 복습 답안은 기록에 반영되지 않으므로 손실되는 데이터는 없습니다.')
+    : (LANG === 'en'
+        ? '💡 Starting a new session discards the one in progress — you won\'t be able to resume it. (Answers you already submitted are saved.)'
+        : '💡 새 세션을 시작하면 진행 중인 세션은 이어 풀 수 없게 됩니다. (이미 제출한 답의 기록은 저장되어 있습니다)');
+  var resumeLabel = isRev
+    ? (LANG === 'en' ? 'Continue review' : '복습 이어서 하기')
+    : (LANG === 'en' ? 'Resume' : '이어서 풀기');
   document.getElementById('modal-content').innerHTML =
     '<div style="text-align:center;padding:1rem 0;">' +
-      '<div style="font-size:36px;margin-bottom:.75rem;">📚</div>' +
-      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' +
-        (LANG === 'en' ? 'Session in Progress' : '진행 중인 세션') + '</div>' +
-      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
-        (LANG === 'en'
-          ? ('You have a session in progress (<strong>' + pos + '</strong>).<br>Resume it, or start a new one?')
-          : ('진행 중인 세션(<strong>' + pos + '</strong>)이 있습니다.<br>이어서 풀까요, 아니면 새 세션을 시작할까요?')) +
-      '</div>' +
+      '<div style="font-size:36px;margin-bottom:.75rem;">' + (isRev ? '🔁' : '📚') + '</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + title + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' + body + '</div>' +
       '<div style="font-size:12px;color:var(--text-muted);line-height:1.6;background:rgba(53,70,73,.05);' +
-        'border-radius:8px;padding:8px 11px;margin-bottom:1rem;text-align:left;">' +
-        (LANG === 'en'
-          ? '💡 Starting a new session discards the one in progress — you won\'t be able to resume it. (Answers you already submitted are saved.)'
-          : '💡 새 세션을 시작하면 진행 중인 세션은 이어 풀 수 없게 됩니다. (이미 제출한 답의 기록은 저장되어 있습니다)') +
-      '</div>' +
+        'border-radius:8px;padding:8px 11px;margin-bottom:1rem;text-align:left;">' + hint + '</div>' +
       '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="_resumeSessionGo()">' +
-        (LANG === 'en' ? 'Resume' : '이어서 풀기') + '</button>' +
+        resumeLabel + '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="_newSessionGo()">' +
         (LANG === 'en' ? 'Start new session' : '새 세션 시작') + '</button>' +
     '</div>';
@@ -3969,7 +3981,7 @@ function renderDashRecent2(){
     var rowCls = clickable ? 'dash-recent-row' : 'dash-recent-row no-review';
     var rowAttr = clickable
       ? ' onclick="reviewSession(' + realIdx + ')" role="button" tabindex="0"' +
-        ' title="' + (LANG === 'en' ? 'Review this session' : '이 세션 복습하기') + '"'
+        ' title="' + (LANG === 'en' ? 'Solve this session again' : '이 세션 다시 풀기') + '"'
       : ' title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않아 복습할 수 없습니다') + '"';
     var histHint = clickable
       ? ''
@@ -4399,7 +4411,46 @@ async function startQuiz(){
   showScreen('quiz'); loadQuestion();
 }
 
-// ── 과거 세션 다시보기 (Review 모드) ──
+// ── 진행 중 '학습' 세션 보호 가드 (2026-07-06) ──
+//   복습 시작은 S.quizQueue를 덮어써 진행 중 학습 세션을 소실시키므로 폐기 확인 후 진행.
+//   (복습→복습 전환은 기록 손실이 없어 확인 없이 통과)
+var _pendingReviewGo = null;
+function confirmDiscardStudyThen(onProceed){
+  var hasStudy = S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length && !S.reviewMode;
+  if(!hasStudy){ onProceed(); return; }
+  _pendingReviewGo = onProceed;
+  var pos = (S.quizIdx + 1) + '/' + S.quizQueue.length;
+  document.getElementById('modal-content').innerHTML =
+    '<div style="text-align:center;padding:1rem 0;">' +
+      '<div style="font-size:36px;margin-bottom:.75rem;">📚</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' +
+        (LANG === 'en' ? 'Study Session in Progress' : '진행 중인 학습 세션') + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
+        (LANG === 'en'
+          ? ('You have a study session in progress (<strong>' + pos + '</strong>).<br>Starting a review will discard it — you won\'t be able to resume it.')
+          : ('진행 중인 학습 세션(<strong>' + pos + '</strong>)이 있습니다.<br>복습을 시작하면 이 세션은 이어 풀 수 없게 됩니다.')) +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-muted);line-height:1.6;background:rgba(53,70,73,.05);' +
+        'border-radius:8px;padding:8px 11px;margin-bottom:1rem;text-align:left;">' +
+        (LANG === 'en'
+          ? '💡 Answers you already submitted are saved.'
+          : '💡 이미 제출한 답의 기록은 저장되어 있습니다.') +
+      '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="_discardStudyGo()">' +
+        (LANG === 'en' ? 'Discard and start review' : '학습 세션 폐기하고 복습 시작') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal();_pendingReviewGo=null;">' +
+        (LANG === 'en' ? 'Cancel' : '취소') + '</button>' +
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+function _discardStudyGo(){
+  closeModal();
+  clearLiveQuiz();
+  var f = _pendingReviewGo; _pendingReviewGo = null;
+  if(f) f();
+}
+
+// ── 과거 세션 다시 풀기 (Review 모드) ──
 async function reviewSession(sessionIndex){
   var s = S.sessions[sessionIndex];
   if(!s || !s.question_ids || s.question_ids.length === 0){
@@ -4411,14 +4462,17 @@ async function reviewSession(sessionIndex){
     showToast('⚠️ 이 세션의 문제들을 찾을 수 없습니다');
     return;
   }
+  confirmDiscardStudyThen(function(){ _reviewSessionGo(s, validIds); });
+}
+async function _reviewSessionGo(s, validIds){
   S.quizQueue = validIds;
 
-  // 보안: 복습은 본문+정답+해설 필요 → review RPC 로 프리페치 (이미 푼 문제만 서버가 허용)
-  var okRev = await prefetchReview(validIds);
-  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : '')); return; }
+  // 보안: 본문(text/options)만 선로드 — 정답·해설은 '정답 확인' 시 문항 단위 지연 로드
+  var okPayload = await prefetchPayloads(validIds);
+  if(!okPayload){ showToast('⚠️ 문제 본문 로드 실패 — 다시 시도해주세요.'); return; }
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
-  S.reviewMode = true;          // 채점 없이 정답·해설만 보기 (일일 한도 무관)
+  S.reviewMode = true;          // 다시 풀기 (로컬 채점 · 일일 한도 무관)
   S.retryFlaggedMode = false;
   S.returnTo = 'bookmarks';   // Score 후 Review 탭으로 복귀
   S.mode = 'normal';
@@ -4429,8 +4483,8 @@ async function reviewSession(sessionIndex){
   loadQuestion();
   var label = s.date || (LANG === 'en' ? 'Previous' : '이전');
   showToast(LANG === 'en'
-    ? ('Reviewing session from ' + label + ' (' + validIds.length + ' Q)')
-    : (label + ' 세션 복습 (정답·해설 보기 · ' + validIds.length + '문제)'));
+    ? ('Solving session from ' + label + ' again (' + validIds.length + ' Q · answers shown after submit)')
+    : (label + ' 세션 다시 풀기 (' + validIds.length + '문제 · 정답은 제출 후 공개)'));
 }
 
 function curQ(){const id=S.quizQueue[S.quizIdx];return id?S.questions.find(q=>q.id===id):null;}
@@ -4440,8 +4494,10 @@ async function loadQuestion(){
   const q=curQ(); if(!q){showResults();return;}
 
   // 보안: 렌더 전 본문/정답 데이터 보장 (관리자는 백필 완료 대기)
+  //   2026-07-06: 복습(다시 풀기)도 미제출 문항은 본문만 로드 — 정답·해설은 '정답 확인' 시
+  //   문항 단위로만 지연 로드 (대량 선노출 방지). 제출된 문항만 정답 데이터 필요.
   const _saPre = S.sessionAnswers && S.sessionAnswers[S.quizIdx];
-  const _willReveal = !!((_saPre && _saPre.submitted) || S.reviewMode);
+  const _willReveal = !!(_saPre && _saPre.submitted);
   {
     const _ok = _willReveal ? await ensureAnswerData(q) : await ensurePayload(q);
     if(!_ok || !q.text){ showToast('⚠️ 문제 로드 실패 — 다시 시도해주세요.'); return; }
@@ -4450,7 +4506,9 @@ async function loadQuestion(){
   const pct=Math.round(S.quizIdx/S.quizQueue.length*100);
   document.getElementById('q-bar').style.width=pct+'%';
   document.getElementById('q-progress-text').textContent=`Question ${S.quizIdx+1} of ${S.quizQueue.length}`;
-  document.getElementById('q-session-label').textContent=S.mode.toUpperCase()+' SESSION · 2026 EA EXAM';
+  document.getElementById('q-session-label').textContent = S.reviewMode
+    ? ((LANG === 'en') ? 'REVIEW · Solve Again' : 'REVIEW · 다시 풀기')
+    : (S.mode.toUpperCase()+' SESSION · 2026 EA EXAM');
   document.getElementById('q-part').textContent=q.part;
   document.getElementById('q-text').textContent=q.text;
 
@@ -4502,17 +4560,13 @@ async function loadQuestion(){
     showExplanation(q, sa.isCorrect, false);
     document.getElementById('timer-badge').style.display = 'none';
   } else if(S.reviewMode){
-    // Review 모드 — 정답 즉시 공개
-    S.submitted = false; S.selected = null;
+    // Review 모드 — 다시 풀기: 보기 활성, 정답·해설은 '정답 확인' 제출 시에만 공개
+    //   (로컬 채점 — check_answer 미호출 → 일일 한도·user_progress·TPIQ 무관)
+    S.selected = null; S.submitted = false;
+    document.getElementById('btn-submit').disabled = true;
+    document.getElementById('btn-submit').textContent = (LANG === 'en') ? 'Check Answer' : '정답 확인';
+    document.getElementById('btn-submit').style.display = '';
     document.getElementById('explanation-card').classList.remove('visible');
-    document.querySelectorAll('.option-btn').forEach(function(b,i){
-      b.disabled = true;
-      if(i === q.correct) b.classList.add('reveal');
-    });
-    document.getElementById('btn-submit').style.display = 'none';
-    document.getElementById('btn-skip').style.display = 'none';
-    showExplanation(q, null, false);
-    document.getElementById('q-session-label').textContent = (LANG === 'en') ? 'REVIEW · Past Session Replay' : 'REVIEW · 과거 세션 다시보기';
     document.getElementById('timer-badge').style.display = 'none';
   } else {
     // 일반 미제출 상태
@@ -4594,8 +4648,49 @@ async function autoTimeout(){
   showExplanation(q,false,true);
 }
 
+// ── Review 모드 로컬 채점 (2026-07-06) ──
+//   · check_answer 미호출 → 일일 한도 미소모 / user_progress·TPIQ 미반영 / sessions 미저장
+//   · 정답·해설은 제출 순간 문항 단위로만 get_review_payload 지연 로드 (대량 선노출 방지)
+//   · 서버 권한: get_review_payload는 이미 푼 문제만 허용 — 복습 대상은 항상 기제출 문항
+async function revealReviewAnswer(){
+  if(S.submitted || S.selected === null) return;
+  const q = curQ(); if(!q) return;
+  const chosen = S.selected;
+
+  const sbtn = document.getElementById('btn-submit');
+  const _prevTxt = sbtn ? sbtn.textContent : '';
+  if(sbtn){ sbtn.disabled = true; sbtn.textContent = (LANG === 'en' ? 'Loading…' : '확인 중…'); }
+
+  const ok = await ensureAnswerData(q);
+  if(!ok || q.correct == null){
+    if(sbtn){ sbtn.disabled = false; sbtn.textContent = _prevTxt || ((LANG === 'en') ? 'Check Answer' : '정답 확인'); }
+    showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : ''));
+    return;
+  }
+
+  const isOk = (chosen === q.correct);
+  S.submitted = true;
+
+  // 세션 내 표시용 상태만 기록 — S.answered/일일 한도/클라우드 진도는 건드리지 않음
+  if(isOk){ S.results.correct++; } else { S.results.wrong++; }
+  if(!S.sessionAnswers) S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
+  S.sessionAnswers[S.quizIdx] = {selected: chosen, submitted: true, isCorrect: isOk};
+  save();
+
+  document.querySelectorAll('.option-btn').forEach(function(b,i){
+    b.disabled = true; b.classList.remove('sel');
+    if(i === q.correct) b.classList.add(isOk && i === chosen ? 'correct-ans' : 'reveal');
+    else if(i === chosen && !isOk) b.classList.add('wrong-ans');
+  });
+
+  renderQuestionPills();
+  renderQuizNavButtons();
+  showExplanation(q, isOk, false);
+}
+
 async function submitAnswer(){
   if(S.submitted||S.selected===null) return;
+  if(S.reviewMode){ return revealReviewAnswer(); }   // 복습 = 로컬 채점 (한도 무관)
   // UX 사전 차단 (서버가 최종 권위). 트라이얼 일일 한도.
   if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
   const q=curQ(); if(!q) return;
@@ -4779,8 +4874,17 @@ function gotoQuestion(idx){
       showScreen('bookmarks');
       switchReviewTab('flagged');
     } else if(S.reviewMode){
+      // 다시 풀기 복습 종료 — 참고용 점수만 표시 (sessions/진도에 저장 안 함)
+      var _rDone = 0, _rCor = 0;
+      (S.sessionAnswers || []).forEach(function(sa){ if(sa && sa.submitted){ _rDone++; if(sa.isCorrect) _rCor++; } });
       clearLiveQuiz();
-      showToast(LANG === 'en' ? '✅ Review complete' : '✅ 복습 완료');
+      if(_rDone > 0){
+        showToast((LANG === 'en')
+          ? ('✅ Review complete — ' + _rCor + '/' + _rDone + ' correct (not saved to records)')
+          : ('✅ 복습 완료 — ' + _rDone + '문제 중 ' + _rCor + '개 정답 (기록에는 반영되지 않습니다)'));
+      } else {
+        showToast(LANG === 'en' ? '✅ Review complete' : '✅ 복습 완료');
+      }
       showScreen('bookmarks');
     } else {
       finishSession();
@@ -4829,8 +4933,8 @@ function renderQuizNavButtons(){
   if(prev) prev.disabled = isFirst;
 
   if(S.reviewMode){
-    // 보기 전용 복습 — 채점 버튼 없이 이전/다음으로만 이동
-    if(submit) submit.style.display = 'none';
+    // 다시 풀기 복습 — 미제출: '정답 확인' + 다음(건너뛰기 겸용) / 제출됨: 다음만
+    if(submit) submit.style.display = isSubmitted ? 'none' : '';
     if(skip) skip.style.display = 'none';
     if(next){
       next.style.display = '';
@@ -4868,12 +4972,19 @@ function endSession(){
   document.getElementById('es-progress').textContent = (LANG === 'en')
     ? (S.quizQueue.length + ' questions · ' + done + ' done · ' + (S.results.correct||0) + ' correct')
     : (S.quizQueue.length + '문제 · ' + done + '개 완료 · 정답 ' + (S.results.correct||0) + '개');
+  // 2026-07-06: 복습(다시 풀기)은 결과 페이지/세션 저장이 없으므로 라벨을 복습 문구로 교체
+  var esFinish = document.querySelector('#end-session-bg [data-i18n="es_finish"]');
+  var esPause  = document.querySelector('#end-session-bg [data-i18n="es_pause"]');
+  if(esFinish) esFinish.textContent = S.reviewMode ? (LANG === 'en' ? 'End review' : '복습 종료') : t('es_finish');
+  if(esPause)  esPause.textContent  = S.reviewMode ? (LANG === 'en' ? 'Continue review later' : '이어서 복습 (나중에 계속)') : t('es_pause');
   document.getElementById('end-session-bg').classList.add('open');
 }
 
 function finishSession(){
   var bg = document.getElementById('end-session-bg');
   if(bg) bg.classList.remove('open');
+  // 복습은 세션 기록을 남기지 않음 — 복습 종료 경로(참고용 점수 토스트)로 라우팅
+  if(S.reviewMode){ gotoQuestion(S.quizQueue.length); return; }
   showResults();
 }
 
@@ -4945,6 +5056,8 @@ function toggleFlag(){
 // PHASE 5: Study 반복 횟수 시스템 (목표 반복 제거됨 — repeatFilter 유지)
 
 function showResults(){
+  // 방어: 복습(다시 풀기)은 어떤 경로로도 sessions에 저장되지 않아야 함
+  if(S.reviewMode){ gotoQuestion(S.quizQueue.length); return; }
   clearInterval(S.timerInt);
   const {correct,wrong,total}=S.results, answered=correct+wrong;
   const pct=answered>0?Math.round(correct/answered*100):0;
@@ -5318,25 +5431,29 @@ async function retryFlagged(id){
   if(startIdx < 0) startIdx = 0;
   // 선택 문제를 앞으로 재정렬
   var queue = allFlagged.slice(startIdx).concat(allFlagged.slice(0, startIdx));
-  S.quizQueue = queue.map(function(q){ return q.id; });
+  var ids = queue.map(function(q){ return q.id; });
+  confirmDiscardStudyThen(function(){ _retryFlaggedGo(ids); });
+}
+async function _retryFlaggedGo(ids){
+  S.quizQueue = ids;
 
-  // 복습(보기 전용): 본문+정답+해설 프리페치 (채점 없음 → 일일 한도 무관)
-  var okRev = await prefetchReview(S.quizQueue);
-  if(!okRev){ showToast('⚠️ 복습 데이터 로드 실패 — 다시 시도해주세요.' + (LAST_REVIEW_ERR ? ' [' + LAST_REVIEW_ERR + ']' : '')); return; }
+  // 보안: 본문만 선로드 — 정답·해설은 '정답 확인' 시 문항 단위 지연 로드
+  var okPayload = await prefetchPayloads(ids);
+  if(!okPayload){ showToast('⚠️ 문제 본문 로드 실패 — 다시 시도해주세요.'); return; }
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
-  S.reviewMode = true;          // 채점 없이 정답·해설만 보기
+  S.reviewMode = true;          // 다시 풀기 (로컬 채점 · 일일 한도 무관)
   S.retryFlaggedMode = false;
   S.returnTo = 'bookmarks';
   S.mode = 'normal';
-  S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
-  S.results = {correct:0, wrong:0, total:S.quizQueue.length};
+  S.sessionAnswers = new Array(ids.length).fill(null);
+  S.results = {correct:0, wrong:0, total:ids.length};
   save();
   showScreen('quiz');
   loadQuestion();
   showToast(LANG === 'en'
-    ? ('Reviewing flagged questions (' + S.quizQueue.length + ' Q)')
-    : ('플래그 문제 복습 (정답·해설 보기 · ' + S.quizQueue.length + '문제)'));
+    ? ('Solving flagged questions again (' + ids.length + ' Q · answers shown after submit)')
+    : ('플래그 문제 다시 풀기 (' + ids.length + '문제 · 정답은 제출 후 공개)'));
 }
 
 function openModal(id){ /* 미사용 — retryFlagged로 대체됨 */ }
