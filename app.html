@@ -4314,50 +4314,139 @@ function buildTPIQQueue(pool, count){
     var remaining = codes.slice();
     var out = [];
     var lastNum = null;
+    var lastTopic = null;
     while(remaining.length){
       var pick = 0;
       if(lastNum !== null){
         var lim = Math.min(ZIG_W, remaining.length);
+        var bestT = -1;   // 1=직전과 다른 topic(우선), 0=같은 topic
         var bestD = -1;
         for(var z=0; z<lim; z++){
+          var gz = groups[remaining[z]];
+          var diffT = (lastTopic && gz.topic && gz.topic === lastTopic) ? 0 : 1;
           var dist = Math.abs(tpiqCopNum(remaining[z]) - lastNum);
-          if(dist > bestD){ bestD = dist; pick = z; }
+          // 1순위: topic이 다른 후보 / 2순위: 코드 숫자 거리 최대
+          if(diffT > bestT || (diffT === bestT && dist > bestD)){
+            bestT = diffT; bestD = dist; pick = z;
+          }
         }
       }
       var chosen = remaining.splice(pick, 1)[0];
       out.push(chosen);
       lastNum = tpiqCopNum(chosen);
+      lastTopic = groups[chosen].topic || null;
     }
     codes = out;
   })();
-  // 4a) 배분 — 지그재그 우선순위 순서로 라운드마다 COP당 quota개씩
-  //     '어떤 COP에서 몇 문제 뽑을지'만 정한다 (선정 로직은 기존과 동일)
-  var alloc = {};   // code -> [questionId,...]
-  var allocOrder = [];  // 배정된 COP의 지그재그 순서
-  var totalAlloc = 0;
-  var progressed = true;
-  while(totalAlloc < count && progressed){
-    progressed = false;
-    for(var k=0;k<codes.length && totalAlloc<count;k++){
-      var g = groups[codes[k]];
-      var taken = 0;
-      while(taken < g.quota && g.cursor < g.items.length && totalAlloc < count){
-        if(!alloc[g.code]){ alloc[g.code] = []; allocOrder.push(g.code); }
-        alloc[g.code].push(g.items[g.cursor].id);
-        g.cursor++; taken++; totalAlloc++; progressed = true;
-      }
-    }
+  // 4a) 가중 비례 배분 — 세션에 들어올 COP 슬롯을 시험 빈도(weight)에
+  //     비례하는 확률로 count회 복원추출한다. 고빈도 COP는 한 세션에 여러
+  //     번 배정될 수 있고(→ 빈도 우선), 세션마다 추출 결과가 달라져 조합
+  //     다양성도 유지된다. 표본추출 가중치에 deficit(예상 대비 덜 다룬 정도)
+  //     을 곱해 3)의 세션 간 로테이션 철학을 흡수 — 저빈도 COP도 장기적으로
+  //     빈도 비례로 등장하고, 편중이 스스로 교정된다. (실제 인접 차단은
+  //     4b 방출 단계가 담당하므로 여기선 '몇 개 뽑을지'만 정한다.)
+  //     ⚠️ iOS WebKit: optional chaining/복잡 템플릿 미사용, var/기본 문법만.
+  var baseW = {};        // code -> 유효 weight (미매핑은 fallbackW)
+  var sumBaseW = 0;
+  for(var bw=0; bw<codes.length; bw++){
+    var gbw = groups[codes[bw]];
+    var w1 = gbw.weight > 0 ? gbw.weight : fallbackW;
+    baseW[gbw.code] = w1; sumBaseW += w1;
   }
-  // 4b) 방출 — 같은 COP 문제가 연속되지 않도록 COP당 1문제씩
-  //     지그재그 순서로 라운드로빈 인터리빙 (예: A,B,C,D,A,B,C,A,B,C)
-  var queue = [];
-  var emitted = true;
-  while(queue.length < totalAlloc && emitted){
-    emitted = false;
-    for(var e2=0; e2<allocOrder.length && queue.length<totalAlloc; e2++){
-      var lst = alloc[allocOrder[e2]];
-      if(lst && lst.length){ queue.push(lst.shift()); emitted = true; }
+  if(sumBaseW <= 0) sumBaseW = 1;
+  var drawn = {};        // code -> 이번 세션 배정 수
+  var consumed = {};     // code -> 누적 소비(세션 간 copTimes + 이번 세션)
+  var consTot = 0;
+  for(var cs0=0; cs0<codes.length; cs0++){
+    var cc0 = codes[cs0];
+    drawn[cc0] = 0;
+    consumed[cc0] = copTimes[cc0] || 0;
+    consTot += consumed[cc0];
+  }
+  var alloc = {};        // code -> [questionId,...]
+  var allocOrder = [];   // 배정된 COP의 지그재그 순서 (방출 시작 순서)
+  var totalAlloc = 0;
+  while(totalAlloc < count){
+    // 남은 용량이 있는 COP만 후보로, effW = baseW * (1 + deficit)
+    var effW = {}, sumEff = 0, hasCap = false;
+    for(var ci=0; ci<codes.length; ci++){
+      var cc = codes[ci];
+      var g0 = groups[cc];
+      if(g0.cursor + drawn[cc] >= g0.items.length) continue;  // 용량 소진
+      hasCap = true;
+      var expc = (consTot > 0) ? (consTot * baseW[cc] / sumBaseW) : 0;
+      var def = (expc > 0) ? Math.max(0, (expc - consumed[cc]) / expc) : 0;
+      var ew = baseW[cc] * (1 + def);
+      effW[cc] = ew; sumEff += ew;
     }
+    if(!hasCap || sumEff <= 0) break;   // 더 뽑을 문제 없음 → 미달 허용
+    // effW 비례 복원추출
+    var r = Math.random() * sumEff, pick = null;
+    for(var pj=0; pj<codes.length; pj++){
+      var pc = codes[pj];
+      if(effW[pc] === undefined) continue;
+      r -= effW[pc];
+      if(r <= 0){ pick = pc; break; }
+    }
+    if(pick === null){  // 부동소수 잔차 방어: 용량 있는 마지막 후보
+      for(var pk=0; pk<codes.length; pk++){ if(effW[codes[pk]] !== undefined) pick = codes[pk]; }
+    }
+    var gp = groups[pick];
+    if(!alloc[pick]){ alloc[pick] = []; allocOrder.push(pick); }
+    alloc[pick].push(gp.items[gp.cursor + drawn[pick]].id);
+    drawn[pick]++; consumed[pick]++; consTot++; totalAlloc++;
+  }
+  // allocOrder를 지그재그(codes) 순서로 정렬 — 방출 라운드로빈이 인접 없이
+  //   퍼지도록 시작 순서를 보존
+  allocOrder.sort(function(a,b){ return codes.indexOf(a) - codes.indexOf(b); });
+  // 4b) 방출 — 안전 라운드로빈(same-COP 인접 원천 차단):
+  //     지그재그 순서 라운드로빈을 기본으로 하되, 매 방출 전에 '이 COP를
+  //     지금 뽑아도 남은 슬롯에서 인접 없이 완주 가능한가'를 검사한다.
+  //     배분이 치우친 경우([4,2,1,1,1,1] 등) 잉여 COP를 필요한 시점에만
+  //     앞당겨 뽑아 …A,B,A,A 같은 꼬리 인접을 방지. 인접이 수학적으로
+  //     불가피한 경우(예: COP 1개뿐)에만 같은 COP 연속을 허용한다.
+  var remCnt = {};   // code -> 남은 배정 수
+  for(var r0=0; r0<allocOrder.length; r0++){ remCnt[allocOrder[r0]] = alloc[allocOrder[r0]].length; }
+  // c를 지금 방출한 뒤에도 무인접 완주가 가능한지:
+  //   남은 최대치 m이 c 이외 COP에도 있으면 m ≤ ceil(n/2),
+  //   c만이 최대치면(직후엔 c를 못 뽑으므로) m ≤ floor(n/2)
+  function tpiqFeasibleAfter(c){
+    var n = 0, m = 0, mOnlyC = true;
+    for(var fi=0; fi<allocOrder.length; fi++){
+      var fc = allocOrder[fi];
+      var v = remCnt[fc] - (fc === c ? 1 : 0);
+      n += v;
+      if(v > m){ m = v; mOnlyC = (fc === c); }
+      else if(v === m && m > 0 && fc !== c){ mOnlyC = false; }
+    }
+    return mOnlyC ? (m <= Math.floor(n / 2)) : (m <= Math.ceil(n / 2));
+  }
+  var queue = [];
+  var lastC = null;
+  var rrPos = 0;
+  while(queue.length < totalAlloc){
+    var picked = null;
+    // 1차: 라운드로빈 순서로, 직전 COP 제외 + 완주 가능성 통과 후보
+    for(var st=0; st<allocOrder.length; st++){
+      var ix = (rrPos + st) % allocOrder.length;
+      var cc2 = allocOrder[ix];
+      if(!remCnt[cc2] || cc2 === lastC) continue;
+      if(tpiqFeasibleAfter(cc2)){ picked = cc2; rrPos = (ix + 1) % allocOrder.length; break; }
+    }
+    // 2차(폴백): 직전 제외 최다 잔여 COP → 그것도 없으면 직전 COP(불가피)
+    if(!picked){
+      var bestN = -1;
+      for(var fb=0; fb<allocOrder.length; fb++){
+        var cf = allocOrder[fb];
+        if(!remCnt[cf] || cf === lastC) continue;
+        if(remCnt[cf] > bestN){ bestN = remCnt[cf]; picked = cf; }
+      }
+      if(!picked && lastC && remCnt[lastC]) picked = lastC;
+    }
+    if(!picked) break;   // 방어: 잔여 없음
+    queue.push(alloc[picked].shift());
+    remCnt[picked]--;
+    lastC = picked;
   }
   return { queue: queue, copCount: codes.length };
 }
