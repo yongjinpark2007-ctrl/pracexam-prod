@@ -968,6 +968,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .header-sub{display:none;}
   .header-nav{display:none;}
   .hamburger-btn{display:flex;}
+  /* 모바일: 부제목이 숨겨져 단일 라인이 되면 로고 워드마크가 제목·메뉴보다 살짝 낮게 보임 → 위로 미세 조정 */
+  .header-brand img{transform:translateY(-2px);}
 
   /* ── Dashboard v2 Hero ── */
   .dash-hero{padding:1.1rem 1.1rem 1rem;}
@@ -1444,6 +1446,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div id="exp-next-btn-area">
       <button class="btn-navy" data-i18n="quiz_next_q" style="width:100%;margin-top:1rem;" onclick="nextQuestion()">Next Question →</button>
     </div>
+
+    <div class="exp-copyright" data-i18n="exp_copyright" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border-clr);font-size:11px;line-height:1.6;color:var(--text-muted);text-align:center;letter-spacing:.01em;">© 2026 PracExam · 본 문제 및 해설의 무단 복제·배포·이용을 금지합니다.</div>
   </div>
 </div>
 
@@ -2878,6 +2882,7 @@ var UI_TEXT = {
   q_flag:        {ko:'플래그',   en:'Flag'},
   exp_explanation:{ko:'해설',    en:'Explanation'},
   exp_tip:       {ko:'EA 시험 팁 · 2025 세법 기준', en:'EA Exam Tip · 2025 Tax Law'},
+  exp_copyright: {ko:'© 2026 PracExam · 본 문제 및 해설의 무단 복제·배포·이용을 금지합니다.', en:'© 2026 PracExam · Unauthorized reproduction, distribution, or use of these questions and explanations is prohibited.'},
   // 세션 종료 모달
   es_title:      {ko:'세션 종료', en:'End Session'},
   es_finish:     {ko:'종료하고 결과 보기', en:'Finish & view results'},
