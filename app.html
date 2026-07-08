@@ -467,6 +467,29 @@ html, body {
   transform:translateY(-1px);
 }
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+/* ── 마케팅 옵트인 배너 (결제MP §12-1b) — Terracotta 계열, CTA는 네이비 btn-primary와 명확히 구분 ── */
+.mkt-banner{
+  background:var(--accent-tint);
+  border:1.5px solid var(--accent);
+  border-radius:14px;
+  padding:1rem 1.25rem;
+  margin-bottom:1rem;
+  animation:mktGlow 2.4s ease-in-out infinite;
+}
+@keyframes mktGlow{
+  0%,100%{ box-shadow:0 0 0 rgba(221,143,117,0); }
+  50%    { box-shadow:0 0 16px rgba(221,143,117,.55); }
+}
+@media (prefers-reduced-motion: reduce){
+  .mkt-banner{ animation:none; box-shadow:0 0 10px rgba(221,143,117,.35); }
+}
+.mkt-banner-cta{
+  background:var(--accent);
+  color:#ffffff;border:none;border-radius:9px;
+  padding:8px 18px;font-family:inherit;font-size:13.5px;font-weight:800;
+  cursor:pointer;transition:all .18s;
+}
+.mkt-banner-cta:hover{ filter:brightness(.93); transform:translateY(-1px); }
 .btn-ghost{
   background:transparent;color:var(--text-muted);
   border:1px solid var(--border-clr);
@@ -1189,21 +1212,21 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 <!-- ═══ DASHBOARD V2 ═══ -->
 <div id="screen-dashboard" class="screen active">
-  <!-- 📬 마케팅 옵트인 배너 (결제MP §12-1b) — 미동의 일반 유저에게 1회 노출 -->
-  <div id="mkt-banner" style="display:none;background:var(--card-bg);border:1px solid var(--teal);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1rem;">
-    <div style="font-weight:700;font-size:14.5px;color:var(--text-dark);margin-bottom:4px;" id="mkt-banner-title"></div>
-    <div style="font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:10px;" id="mkt-banner-body"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn-primary" style="padding:8px 16px;font-size:13.5px;border-radius:9px;" id="mkt-banner-yes" onclick="acceptMarketingBanner()"></button>
-      <button class="btn-ghost" style="padding:8px 16px;font-size:13.5px;border-radius:9px;" id="mkt-banner-no" onclick="declineMarketingBanner()"></button>
-    </div>
-  </div>
-
   <!-- Hero: Current Focus Part -->
   <div id="dash-hero"></div>
 
   <!-- All Parts grid (Phase 2-4 에서 활성화) -->
   <div id="dash-parts-grid-wrap"></div>
+
+  <!-- 📬 마케팅 옵트인 배너 (결제MP §12-1b) — 공지 영역과 한 구역, Terracotta로 시각 구분 -->
+  <div id="mkt-banner" class="mkt-banner" style="display:none;">
+    <div style="font-weight:700;font-size:14.5px;color:var(--text-main);margin-bottom:4px;" id="mkt-banner-title"></div>
+    <div style="font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:10px;" id="mkt-banner-body"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="mkt-banner-cta" id="mkt-banner-yes" onclick="acceptMarketingBanner()"></button>
+      <button class="btn-ghost" style="padding:8px 16px;font-size:13.5px;border-radius:9px;" id="mkt-banner-no" onclick="declineMarketingBanner()"></button>
+    </div>
+  </div>
 
   <!-- 공지사항 (Announcements) — Part 선택 버튼 아래 배치 -->
   <div id="dash-announcements"></div>
