@@ -1604,6 +1604,16 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div style="font-size:14px;color:var(--text-mid);line-height:1.75;" id="trial-status-text"></div>
   </div>
 
+  <!-- 📬 마케팅 수신 동의 토글 (결제MP §12-1b 방식 A) — 이메일 옵트인 버튼의 착지점 -->
+  <div id="settings-marketing" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;display:none;">
+    <div class="exp-label" style="margin-bottom:8px;" id="mkt-title">📬 이메일 수신 설정</div>
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+      <input type="checkbox" id="mkt-toggle" onchange="toggleMarketingConsent(this)" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;">
+      <span style="font-size:14px;color:var(--text-mid);line-height:1.6;" id="mkt-label"></span>
+    </label>
+    <div id="mkt-msg" style="font-size:12.5px;margin-top:8px;display:none;"></div>
+  </div>
+
   <div id="settings-data-mgmt" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
     <div class="exp-label" style="margin-bottom:10px;">데이터 관리</div>
     <button class="btn-ghost" style="margin-bottom:10px;width:100%;" onclick="exportData()">모든 데이터 내보내기 (JSON)</button>
@@ -2249,6 +2259,19 @@ function updateSyncStatus(){
     el.textContent = (LANG === 'en')
       ? ('✅ Cloud connected · ' + SB_USER.email + ' · auto-sync across devices')
       : ('✅ 클라우드 연결됨 · ' + SB_USER.email + ' · 모든 기기에서 자동 동기화');
+    // ── 딥링크: app.html?screen=settings (이메일 옵트인 버튼 착지) ──
+    // 로그인 완료 후 1회만 실행. 화이트리스트로 제한.
+    try{
+      if(!window._deeplinkDone){
+        var _sp = new URLSearchParams(window.location.search);
+        var _scr = _sp.get('screen');
+        if(_scr === 'settings'){
+          window._deeplinkDone = true;
+          showScreen('settings');
+          history.replaceState(null, '', window.location.pathname);
+        }
+      }
+    }catch(e){}
   } else {
     el.textContent = (LANG === 'en') ? '⚠️ Login required' : '⚠️ 로그인 필요';
   }
@@ -2267,12 +2290,13 @@ async function loadTrialStatus(){
   try{
     const { data, error } = await sb
       .from('profiles')
-      .select('trial_ends_at, is_paid, daily_used, daily_date')
+      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent')
       .eq('id', SB_USER.id)
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
     if(!data) return;  // profiles row 없으면(과거 가입자 등) 기존 동작 유지(미차단)
     S.isPaid = !!data.is_paid;
+    S.marketingConsent = !!data.marketing_consent;
     S.trialEndsAt = data.trial_ends_at;
     S.trialExpired = !S.isPaid && S.trialEndsAt && (new Date(S.trialEndsAt) < new Date());
 
@@ -2393,6 +2417,7 @@ function canStartQuiz(){
 
 // Settings 화면의 멤버십 카드 갱신 (Admin은 표시 안 함)
 function updateTrialStatusUI(){
+  try{ updateMarketingConsentUI(); }catch(e){}  // 마케팅 토글도 함께 갱신 (early return 전에)
   var card = document.getElementById('settings-trial-status');
   var txt  = document.getElementById('trial-status-text');
   if(!card || !txt) return;
@@ -2412,6 +2437,44 @@ function updateTrialStatusUI(){
       : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)');
   } else {
     card.style.display = 'none';
+  }
+}
+
+// ── 마케팅 수신 동의 토글 (결제MP §12-1b 방식 A) ──
+// [§0b 예외] profiles 클라 write 금지 원칙의 유일한 예외: marketing_consent 2개 컬럼만
+// 컬럼 단위 GRANT로 본인 UPDATE 허용 (is_paid/trial_ends_at 등은 계속 차단).
+function updateMarketingConsentUI(){
+  var card = document.getElementById('settings-marketing');
+  if(!card) return;
+  if(!SB_USER || SB_USER.id === ADMIN_UID){ card.style.display = 'none'; return; }
+  card.style.display = '';
+  var titleEl = document.getElementById('mkt-title');
+  var labelEl = document.getElementById('mkt-label');
+  if(titleEl) titleEl.textContent = t('mkt_title');
+  if(labelEl) labelEl.textContent = t('mkt_label');
+  var tg = document.getElementById('mkt-toggle');
+  if(tg) tg.checked = !!S.marketingConsent;
+}
+
+async function toggleMarketingConsent(el){
+  if(!SB_USER || !el) return;
+  var want = !!el.checked;
+  el.disabled = true;
+  var msg = document.getElementById('mkt-msg');
+  try{
+    // marketing_consent_at = 마지막 변경 시각 (동의/해지 모두 기록)
+    const { error } = await sb.from('profiles')
+      .update({ marketing_consent: want, marketing_consent_at: new Date().toISOString() })
+      .eq('id', SB_USER.id);
+    if(error) throw error;
+    S.marketingConsent = want;
+    if(msg){ msg.style.display = 'block'; msg.style.color = 'var(--teal)'; msg.textContent = t(want ? 'mkt_saved_on' : 'mkt_saved_off'); }
+  }catch(e){
+    console.warn('marketing consent 저장 실패:', e);
+    el.checked = !want;  // UI 롤백
+    if(msg){ msg.style.display = 'block'; msg.style.color = '#dc2626'; msg.textContent = t('mkt_error'); }
+  }finally{
+    el.disabled = false;
   }
 }
 
@@ -2998,6 +3061,12 @@ var UI_TEXT = {
   trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 새 문제 풀이는 결제 후 이용 가능합니다 (결제 기능 준비 중). 기존 학습 기록·통계는 계속 확인 가능합니다.', en:'🔒 Your free trial has ended. New practice requires a paid plan (payments coming soon). Your existing history and stats stay available.'},
   quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
   quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>내일 다시 만나요! 결제 기능은 준비 중입니다.', en:'The free trial allows up to 5 questions per day.<br>See you tomorrow! Payments are coming soon.'},
+  // ── 마케팅 수신 동의 (결제MP §12-1b) ──
+  mkt_title:      {ko:'📬 이메일 수신 설정', en:'📬 Email Preferences'},
+  mkt_label:      {ko:'학습 팁, 할인 코드, 시험 정보를 이메일로 받아봅니다. 언제든지 해지할 수 있습니다.', en:'Receive study tips, discount codes, and exam updates by email. You can opt out anytime.'},
+  mkt_saved_on:   {ko:'✅ 수신 동의가 저장되었습니다.', en:'✅ You are opted in.'},
+  mkt_saved_off:  {ko:'수신 동의가 해제되었습니다.', en:'You have opted out.'},
+  mkt_error:      {ko:'저장에 실패했습니다. 잠시 후 다시 시도해주세요.', en:'Failed to save. Please try again.'},
   ok_confirm:     {ko:'확인',    en:'OK'},
   // 공통 단위 (문제/정답 등은 헬퍼에서 처리)
   common_all_parts:{ko:'All Parts', en:'All Parts'}
