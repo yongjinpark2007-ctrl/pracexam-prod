@@ -1264,17 +1264,24 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div>
           <label><span class="ko">이름</span><span class="en">First Name</span></label>
-          <input type="text" id="su-fname" autocomplete="given-name" placeholder="Jay">
+          <input type="text" id="su-fname" autocomplete="given-name" placeholder="John">
         </div>
         <div>
           <label><span class="ko">성</span><span class="en">Last Name</span></label>
-          <input type="text" id="su-lname" autocomplete="family-name" placeholder="Kim">
+          <input type="text" id="su-lname" autocomplete="family-name" placeholder="Doe">
         </div>
       </div>
       <label><span class="ko">이메일</span><span class="en">Email</span></label>
       <input type="email" id="su-email" autocomplete="email" placeholder="you@example.com">
       <label><span class="ko">비밀번호</span><span class="en">Password</span></label>
       <input type="password" id="su-pw" autocomplete="new-password" placeholder="••••••••">
+      <label for="su-marketing" style="display:flex; align-items:flex-start; gap:9px; margin-top:14px; margin-bottom:2px; font-size:13px; line-height:1.5; color:var(--text-mid); font-weight:400; cursor:pointer;">
+        <input type="checkbox" id="su-marketing" style="width:16px; height:16px; margin-top:1px; flex-shrink:0; accent-color:var(--navy); cursor:pointer;">
+        <span>
+          <span class="ko">학습 팁, 할인 코드, 시험 정보를 이메일로 받아볼게요. 선택 사항이며 언제든지 수신을 해지할 수 있습니다.</span>
+          <span class="en">Send me study tips, discount codes, and exam updates by email. Optional, and you can unsubscribe anytime.</span>
+        </span>
+      </label>
       <button class="btn btn-primary" onclick="doSignup()">
         <span class="ko">계정 만들기</span><span class="en">Create Account</span>
       </button>
@@ -1517,6 +1524,8 @@ function doSignup(){
   var email = document.getElementById('su-email').value.trim();
   var pw    = document.getElementById('su-pw').value;
   var lang  = document.getElementById('html-root').className.indexOf('lang-en') > -1 ? 'en' : 'ko';
+  var mktEl = document.getElementById('su-marketing');
+  var marketingConsent = !!(mktEl && mktEl.checked);
 
   if (!fname || !lname) {
     showMsg(lang === 'ko' ? '이름을 입력해주세요.' : 'Please enter your name.', false);
@@ -1537,7 +1546,13 @@ function doSignup(){
     body: JSON.stringify({
       email: email,
       password: pw,
-      data: { first_name: fname, last_name: lname, language: lang },
+      data: {
+        first_name: fname,
+        last_name: lname,
+        language: lang,
+        marketing_consent: marketingConsent,
+        marketing_consent_at: marketingConsent ? new Date().toISOString() : null
+      },
       redirect_to: 'https://pracexam.com/app.html'
     })
   })
