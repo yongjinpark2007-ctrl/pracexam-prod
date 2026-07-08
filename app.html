@@ -1624,6 +1624,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div class="admin-tabs">
     <button id="atab-notices" class="admin-tab active" onclick="adminTab('notices')">공지 관리</button>
     <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
+    <button id="atab-qc" class="admin-tab" onclick="adminTab('qc')">문제 검토</button>
   </div>
 
   <!-- ═══ 공지 관리 ═══ -->
@@ -1688,6 +1689,29 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div style="margin-top:1.25rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
       <strong>판정 기준(현재 설정)</strong> — 아래 값을 넘으면 위험 신호가 켜집니다. 조정은 <code>ANOMALY_CFG</code>에서.
       <div id="anom-thresholds" style="margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══ 문제 검토 (QC) ═══ -->
+  <div id="admin-panel-qc" style="display:none;">
+    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
+      수정한 문제가 앱에서 실제로 어떻게 보이는지 <strong>문제 풀이 화면 그대로</strong> 검토합니다.
+      로컬 채점(다시 풀기 방식)이므로 일일 한도·학습 기록·세션 저장에 <strong>전혀 반영되지 않습니다</strong>.
+    </div>
+    <div class="ann-form-card">
+      <div class="admin-sub-title">question_id로 검토 시작</div>
+      <div class="ann-field">
+        <label>question_id (쉼표·공백·줄바꿈으로 여러 개 입력 가능)</label>
+        <textarea class="ann-input" id="qc-ids-input" placeholder="예) P1-0342, P2-0087 Q1105&#10;P3-0511" style="min-height:74px;"></textarea>
+      </div>
+      <div class="ann-form-actions">
+        <button class="btn-navy" style="padding:9px 18px;" onclick="adminQcStart()">문제 풀이로 열기</button>
+        <span id="qc-form-msg" style="font-size:12.5px;margin-left:4px;"></span>
+      </div>
+    </div>
+    <div style="margin-top:1rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
+      💡 문제를 풀고 <strong>정답 확인</strong>을 누르면 정답·해설·오답 이유·시험 팁이 실제 화면 그대로 표시됩니다.
+      검토를 마치면(마지막 문제 다음으로 이동) 자동으로 이 화면으로 돌아옵니다.
     </div>
   </div>
 </div>
@@ -2781,6 +2805,7 @@ const S = {
   quizQueue:[], quizIdx:0, submitted:false, selected:null,
   count:5, filter:'all', part:'all', subset:'all', mode:'normal',
   reviewMode: false,
+  adminQcMode: false,   // 관리자 QC 검토 모드 (로컬 채점 · 기록/한도 무관 · 종료 시 관리자 화면 복귀)
   retryFlaggedMode: false,
   returnTo: null,
   repeatFilter: 'all',
@@ -3071,7 +3096,8 @@ function init(){
 
 function save(){
   try{
-    const liveQuiz = (S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length) ? {
+    // QC 검토(adminQcMode)는 일회성 — live 세션으로 저장하지 않음 (resume 배지·클라우드 미반영)
+    const liveQuiz = (!S.adminQcMode && S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length) ? {
       queue: S.quizQueue,
       idx: S.quizIdx,
       mode: S.mode,
@@ -3096,7 +3122,7 @@ function saveLiveSessionToCloud(){
   clearTimeout(_liveSaveTimer);
   _liveSaveTimer = setTimeout(async ()=>{
     try{
-      if(S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length){
+      if(!S.adminQcMode && S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length){
         await sb.from('live_session').upsert({
           user_id: SB_USER.id,
           queue: S.quizQueue,
@@ -3238,6 +3264,7 @@ function clearLiveQuiz(){
   S.quizQueue = []; S.quizIdx = 0;
   S.results = {correct:0, wrong:0, total:0};
   S.reviewMode = false;
+  S.adminQcMode = false;
   S.retryFlaggedMode = false;
   S.returnTo = null;
   save();
@@ -3519,17 +3546,95 @@ var _ADMIN_ANN = [];
 function openAdmin(){ adminTab('notices'); }
 
 function adminTab(name){
-  var nP = document.getElementById('admin-panel-notices');
-  var aP = document.getElementById('admin-panel-anomaly');
-  var nT = document.getElementById('atab-notices');
-  var aT = document.getElementById('atab-anomaly');
-  var isNotices = (name === 'notices');
-  if(nP) nP.style.display = isNotices ? '' : 'none';
-  if(aP) aP.style.display = isNotices ? 'none' : '';
-  if(nT) nT.classList.toggle('active', isNotices);
-  if(aT) aT.classList.toggle('active', !isNotices);
-  if(isNotices) renderAdminAnnList();
-  else renderAnomaly();
+  // 알 수 없는 탭 이름은 공지 관리로 폴백 (기존 동작 보존)
+  if(name !== 'notices' && name !== 'anomaly' && name !== 'qc') name = 'notices';
+  var panels = { notices:'admin-panel-notices', anomaly:'admin-panel-anomaly', qc:'admin-panel-qc' };
+  var tabs   = { notices:'atab-notices',        anomaly:'atab-anomaly',        qc:'atab-qc' };
+  Object.keys(panels).forEach(function(k){
+    var p = document.getElementById(panels[k]);
+    var t = document.getElementById(tabs[k]);
+    if(p) p.style.display = (k === name) ? '' : 'none';
+    if(t) t.classList.toggle('active', k === name);
+  });
+  if(name === 'notices') renderAdminAnnList();
+  else if(name === 'anomaly') renderAnomaly();
+}
+
+// ── 관리자 QC: question_id로 문제 풀이식 검토 (2026-07-08) ──
+//   · 관리자 백필(adminBackfillContent) 완료 데이터만 사용 — 추가 DB 조회 없음
+//   · 로컬 채점(revealReviewAnswer 재사용) — check_answer 미호출 →
+//     일일 한도 미소모 / user_progress·sessions 미기록
+function _qcMsg(txt, ok){
+  var m = document.getElementById('qc-form-msg'); if(!m) return;
+  m.textContent = txt || '';
+  m.style.color = ok ? 'var(--success-color)' : 'var(--danger-color)';
+}
+
+async function adminQcStart(){
+  if(!S.isAdminUser){ _qcMsg('권한 없음 (관리자 전용)', false); return; }
+  var input = document.getElementById('qc-ids-input');
+  var raw = input ? (input.value || '') : '';
+  // 쉼표/공백/줄바꿈/세미콜론 구분 + 중복 제거 (입력 순서 유지)
+  var seen = {};
+  var ids = raw.split(/[\s,;]+/).filter(function(t){
+    if(!t) return false;
+    var k = t.toLowerCase();
+    if(seen[k]) return false;
+    seen[k] = true; return true;
+  });
+  if(ids.length === 0){ _qcMsg('question_id를 입력하세요', false); return; }
+
+  // 관리자 본문 백필 완료 대기 (부팅 직후 진입 대비)
+  _qcMsg('문제 데이터 확인 중…', true);
+  try{ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; }catch(e){}
+
+  // 검증: 정확 일치 우선, 대소문자 무시 폴백
+  var lowerMap = {};
+  S.questions.forEach(function(q){
+    var k = (q.question_id || q.id || '').toString().toLowerCase();
+    if(k && !lowerMap[k]) lowerMap[k] = q;
+  });
+  var found = [], missing = [];
+  ids.forEach(function(id){
+    var q = S.questions.find(function(x){ return x.id === id || x.question_id === id; })
+         || lowerMap[id.toLowerCase()];
+    if(q){ if(found.indexOf(q.id) < 0) found.push(q.id); }
+    else missing.push(id);
+  });
+  if(found.length === 0){
+    _qcMsg('일치하는 문제가 없습니다: ' + missing.join(', '), false);
+    return;
+  }
+  // 백필 미완료 등으로 본문이 비어 있으면 시작 불가 (빈 화면 방지)
+  var noBody = found.filter(function(fid){
+    var q = S.questions.find(function(x){ return x.id === fid; });
+    return !q || !q.text || !q.options || q.options.length === 0;
+  });
+  if(noBody.length > 0){
+    _qcMsg('본문 로드가 아직 안 된 문항이 있습니다 — 잠시 후 다시 시도하세요: ' + noBody.join(', '), false);
+    return;
+  }
+  _qcMsg(missing.length > 0
+    ? ('✓ ' + found.length + '문항 시작 · 미발견 ' + missing.length + '건: ' + missing.join(', '))
+    : ('✓ ' + found.length + '문항 검토 시작'), missing.length === 0);
+
+  confirmDiscardStudyThen(function(){ _adminQcGo(found); });
+}
+
+function _adminQcGo(ids){
+  S.quizQueue = ids.slice();
+  S.quizIdx = 0; S.submitted = false; S.selected = null;
+  S.reviewMode = true;          // 로컬 채점 경로 재사용 (한도·기록 무관)
+  S.adminQcMode = true;         // 종료 시 관리자 화면 복귀 + 라벨 구분
+  S.retryFlaggedMode = false;
+  S.returnTo = null;
+  S.mode = 'normal';
+  S.sessionAnswers = new Array(ids.length).fill(null);
+  S.results = {correct:0, wrong:0, total:ids.length};
+  save();
+  showScreen('quiz');
+  loadQuestion();
+  showToast('🔍 QC 검토 시작 — ' + ids.length + '문항 (기록·한도에 반영되지 않습니다)');
 }
 
 function _annMsg(txt, ok){
@@ -4616,9 +4721,11 @@ async function loadQuestion(){
   const pct=Math.round(S.quizIdx/S.quizQueue.length*100);
   document.getElementById('q-bar').style.width=pct+'%';
   document.getElementById('q-progress-text').textContent=`Question ${S.quizIdx+1} of ${S.quizQueue.length}`;
-  document.getElementById('q-session-label').textContent = S.reviewMode
-    ? ((LANG === 'en') ? 'REVIEW · Solve Again' : 'REVIEW · 다시 풀기')
-    : (S.mode.toUpperCase()+' SESSION · 2026 EA EXAM');
+  document.getElementById('q-session-label').textContent = S.adminQcMode
+    ? 'ADMIN QC · 문제 검토'
+    : (S.reviewMode
+      ? ((LANG === 'en') ? 'REVIEW · Solve Again' : 'REVIEW · 다시 풀기')
+      : (S.mode.toUpperCase()+' SESSION · 2026 EA EXAM'));
   document.getElementById('q-part').textContent=q.part;
   document.getElementById('q-text').textContent=q.text;
 
@@ -4990,6 +5097,14 @@ function gotoQuestion(idx){
       showToast('✅ Flagged 문제 완료!');
       showScreen('bookmarks');
       switchReviewTab('flagged');
+    } else if(S.adminQcMode){
+      // 관리자 QC 검토 종료 — 관리자 화면(문제 검토 탭)으로 복귀 (기록 저장 없음)
+      var _qDone = 0;
+      (S.sessionAnswers || []).forEach(function(sa){ if(sa && sa.submitted) _qDone++; });
+      clearLiveQuiz();
+      showToast('✅ QC 검토 완료 — ' + _qDone + '문항 확인 (기록에 반영되지 않았습니다)');
+      showScreen('anomaly');
+      adminTab('qc');
     } else if(S.reviewMode){
       // 다시 풀기 복습 종료 — 참고용 점수만 표시 (sessions/진도에 저장 안 함)
       var _rDone = 0, _rCor = 0;
@@ -5092,8 +5207,14 @@ function endSession(){
   // 2026-07-06: 복습(다시 풀기)은 결과 페이지/세션 저장이 없으므로 라벨을 복습 문구로 교체
   var esFinish = document.querySelector('#end-session-bg [data-i18n="es_finish"]');
   var esPause  = document.querySelector('#end-session-bg [data-i18n="es_pause"]');
-  if(esFinish) esFinish.textContent = S.reviewMode ? (LANG === 'en' ? 'End review' : '복습 종료') : t('es_finish');
-  if(esPause)  esPause.textContent  = S.reviewMode ? (LANG === 'en' ? 'Continue review later' : '이어서 복습 (나중에 계속)') : t('es_pause');
+  if(S.adminQcMode){
+    // QC 검토는 일시정지(이어풀기) 개념이 없음 — 저장되지 않으므로 버튼 숨김
+    if(esFinish) esFinish.textContent = 'QC 검토 종료';
+    if(esPause)  esPause.style.display = 'none';
+  } else {
+    if(esFinish) esFinish.textContent = S.reviewMode ? (LANG === 'en' ? 'End review' : '복습 종료') : t('es_finish');
+    if(esPause){ esPause.style.display = ''; esPause.textContent = S.reviewMode ? (LANG === 'en' ? 'Continue review later' : '이어서 복습 (나중에 계속)') : t('es_pause'); }
+  }
   document.getElementById('end-session-bg').classList.add('open');
 }
 
