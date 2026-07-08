@@ -1802,18 +1802,23 @@ function applyAdminVisibility(){
   if(mobUpload) mobUpload.style.display = isAdmin ? '' : 'none';
 
   // ── Settings(Admin) vs Sign Out(일반 유저) ──
-  // ── Settings: 전체 유저 개방 (2026-07-08, 결제MP §12-1b) ──
-  // 기존엔 일반 유저에게 Sign Out으로 치환했으나, 마케팅 수신 토글·멤버십 카드의
-  // 진입점이 필요해 개방. 로그아웃은 Settings 첫 카드의 "🚪 로그아웃" 버튼이 담당.
-  // 관리자 전용 요소(데이터 관리 카드 등)는 아래에서 계속 개별 숨김 처리.
+  // ── Settings(Admin) vs Sign Out(일반 유저) ── (2026-07-08 원복: 일반 유저 진입점은 배너+이메일 딥링크로 대체)
   if(navBtns[5]){
-    navBtns[5].innerHTML = navSvg('settings') + '<span>Settings</span>';
-    navBtns[5].onclick = function(){ showScreen('settings'); closeDrawer(); };
+    navBtns[5].innerHTML = isAdmin
+      ? (navSvg('settings') + '<span>Settings</span>')
+      : (navSvg('signout')  + '<span>Sign Out</span>');
+    navBtns[5].onclick = isAdmin
+      ? function(){ showScreen('settings'); closeDrawer(); }
+      : function(){ doLogout(); };
   }
   var mobSettings = document.getElementById('mob-settings');
   if(mobSettings){
-    mobSettings.innerHTML = navSvg('settings','mob-ico') + '<span>Settings</span>';
-    mobSettings.onclick = function(){ showScreen('settings'); closeDrawer(); };
+    mobSettings.innerHTML = isAdmin
+      ? (navSvg('settings','mob-ico') + '<span>Settings</span>')
+      : (navSvg('signout','mob-ico')  + '<span>Sign Out</span>');
+    mobSettings.onclick = isAdmin
+      ? function(){ showScreen('settings'); closeDrawer(); }
+      : function(){ doLogout(); };
   }
 
   // ── 데이터 관리 / Copy 버튼: Admin 전용 ──
