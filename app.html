@@ -2966,6 +2966,9 @@ var UI_TEXT = {
   bm_empty_s:     {ko:'학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다', en:'Flag tough questions with ⚑ during study to review them here'},
   bm_load_fail:   {ko:'(본문 로드 실패 — 다시 열어주세요)', en:'(Failed to load — please reopen)'},
   bm_retry:       {ko:'다시 풀기 →', en:'Solve Again →'},
+  bm_set:         {ko:'세트', en:'Set'},
+  bm_misses:      {ko:'오답 이력', en:'Prev. misses'},
+  bm_reviewable:  {ko:'복습 가능', en:'Reviewable'},
   rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   // ── Statistics ──
@@ -4927,7 +4930,16 @@ async function submitAnswer(){
 
   let resp;
   try{
+    // ── 진단 계측: check_answer 왕복 시간(ms) 측정 ──
+    //    콘솔에서 이 값을 보면 "네트워크/서버" vs "클라이언트" 구분 가능.
+    //    · 800ms↑ 반복 → 서버(RPC 실행)·네트워크(리전 RTT)·free-tier 콜드 이슈
+    //    · 150~300ms인데 체감 느림 → 렌더/다른 경로 (여기선 해당 없음)
+    var _gT0 = (window.performance && performance.now) ? performance.now() : Date.now();
     const { data, error } = await sb.rpc('check_answer', { p_question_id:q.id, p_choice:chosen });
+    var _gT1 = (window.performance && performance.now) ? performance.now() : Date.now();
+    var _gMs = Math.round(_gT1 - _gT0);
+    if(_gMs >= 800) console.warn('[grade] check_answer 왕복 ' + _gMs + 'ms (느림 — 서버/네트워크 확인)');
+    else console.log('[grade] check_answer 왕복 ' + _gMs + 'ms');
     if(error) throw error;
     resp = Array.isArray(data) ? data[0] : data;
     if(!resp) throw new Error('EMPTY_RESPONSE');
@@ -5584,43 +5596,138 @@ function switchReviewTab(tab){
   document.getElementById('rev-panel-sessions').style.display = isFlagged ? 'none' : '';
 }
 
+// ── Flagged 복습: 파트별 그룹 + N개 세트 배치 ──
+var FLAG_BATCH_SIZE = 20;   // 한 세트(세션) 문항 수
+
+// flagged + 제출 이력이 있는 문항만 part별로 그룹화.
+// 안정 정렬(part → id)이라 render/retry가 항상 같은 세트 경계를 만든다.
+// ※ 제출 이력이 없는 flagged는 서버가 정답 제공을 거부 → 복습 불가하므로 제외.
+function flaggedSubmittableByPart(){
+  var arr = S.questions.filter(function(q){
+    return S.flagged.has(q.id) && S.answered[q.id] && S.answered[q.id].times > 0;
+  });
+  arr.sort(function(a,b){
+    var pa = a.part || '', pb = b.part || '';
+    if(pa !== pb) return pa < pb ? -1 : 1;
+    return (a.id < b.id) ? -1 : (a.id > b.id ? 1 : 0);
+  });
+  var groups = {};
+  for(var i=0;i<arr.length;i++){
+    var p = arr[i].part || 'Part 1';
+    if(!groups[p]) groups[p] = [];
+    groups[p].push(arr[i]);
+  }
+  return groups;
+}
+
 async function renderBookmarks(){
   var el = document.getElementById('bookmarks-list');
   var badge = document.getElementById('rev-badge-flagged');
-  var fqs = S.questions.filter(function(q){ return S.flagged.has(q.id); });
-  if(badge) badge.textContent = fqs.length;
+  var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id); });
+  if(badge) badge.textContent = allFlagged.length;
 
-  if(!fqs.length){
+  if(!allFlagged.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">' + t('bm_empty_t') + '</div><div class="empty-sub">' + t('bm_empty_s') + '</div></div>';
+    renderReviewSessions();
     return;
   }
 
-  // 보안: 북마크는 본문 미리보기만 필요(정답 X) → payload RPC (본문 전용)
-  //       관리자는 prefetchPayloads 내부에서 백필 완료를 대기
-  var missing = fqs.filter(function(q){ return !q.text; }).map(function(q){ return q.id; });
-  if(missing.length){ await prefetchPayloads(missing); }
+  var groups = flaggedSubmittableByPart();
+  var partKeys = [];
+  var submittableTotal = 0;
+  for(var k in groups){ if(groups.hasOwnProperty(k)){ partKeys.push(k); submittableTotal += groups[k].length; } }
+  partKeys.sort();  // 'Part 1' < 'Part 2' < 'Part 3'
+  var pendingCount = allFlagged.length - submittableTotal;
 
-  el.innerHTML = fqs.map(function(q){
-    var a = S.answered[q.id] || {times:0, correct:0, wrong:0};
-    var qt = q.text || t('bm_load_fail');
-    var qText = qt.length > 120 ? qt.slice(0, 120) + '…' : qt;
-    return '<div class="bookmark-card">' +
-      '<div class="bm-q">' + qText + '</div>' +
-      '<div class="bm-meta">' +
-        '<span class="bm-tag">' + q.part + '</span>' +
-        '<span class="bm-tag">' + (q.topic || 'General') + '</span>' +
-      '</div>' +
-      '<div class="bm-footer">' +
-        '<div class="bm-stats">' + uAttempts(a.times) + ' · ' +
-          '<span class="bm-ok">✓ ' + a.correct + '</span> ' +
-          '<span class="bm-ng">✗ ' + a.wrong + '</span>' +
-        '</div>' +
-        '<button class="btn-navy" style="margin-left:auto;padding:7px 16px;font-size:13px;" onclick="retryFlagged(\'' + q.id + '\')">' + t('bm_retry') + '</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
+  var html = '';
 
+  // 요약 바
+  html += '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;' +
+            'padding:10px 12px;margin-bottom:14px;border-radius:10px;' +
+            'background:var(--teal-dim);border:1px solid var(--border-clr);">' +
+            '<span style="font-weight:700;color:var(--teal);">⚑ ' + allFlagged.length + '</span>' +
+            '<span style="font-size:12.5px;color:var(--text-mid);">' +
+              t('bm_reviewable') + ' ' + submittableTotal +
+              ' · ' + t('bm_set') + ' ' + FLAG_BATCH_SIZE + (LANG==='en'?'/set':'개 단위') +
+            '</span>' +
+          '</div>';
+
+  if(!submittableTotal){
+    html += '<div class="empty" style="padding:1.5rem 1rem;">' +
+              '<div class="empty-icon">📝</div>' +
+              '<div class="empty-title">' + (LANG==='en' ? 'Nothing to review yet' : '아직 복습할 문항이 없습니다') + '</div>' +
+              '<div class="empty-sub">' + (LANG==='en'
+                ? 'Answer your flagged questions at least once in Study to review them here.'
+                : '플래그한 문항을 Study에서 한 번 이상 풀면 여기서 복습할 수 있습니다.') + '</div>' +
+            '</div>';
+  } else {
+    for(var pi=0; pi<partKeys.length; pi++){
+      var part = partKeys[pi];
+      var qs = groups[part];
+      var nBatches = Math.ceil(qs.length / FLAG_BATCH_SIZE);
+
+      html += '<div style="margin-bottom:18px;">';
+      html +=   '<div style="display:flex;align-items:baseline;gap:8px;margin:0 2px 8px;">' +
+                  '<span style="font-size:15px;font-weight:700;color:var(--text-dark,#222);">' + part + '</span>' +
+                  '<span style="font-size:12px;color:var(--text-muted);">' + uQ(qs.length) + '</span>' +
+                '</div>';
+
+      for(var bi=0; bi<nBatches; bi++){
+        var start = bi * FLAG_BATCH_SIZE;
+        var end   = Math.min(start + FLAG_BATCH_SIZE, qs.length);
+        var slice = qs.slice(start, end);
+        var wrongSum = 0;
+        for(var si=0; si<slice.length; si++){
+          var a = S.answered[slice[si].id];
+          if(a) wrongSum += (a.wrong || 0);
+        }
+        var rangeLbl = (start + 1) + '–' + end;
+
+        html += '<div style="display:flex;align-items:center;gap:12px;' +
+                  'padding:12px 14px;margin-bottom:8px;border-radius:10px;' +
+                  'background:var(--card-bg,#fff);border:1px solid var(--border-clr);">' +
+                  '<div style="flex:1;min-width:0;">' +
+                    '<div style="font-size:14px;font-weight:600;color:var(--text-dark,#222);">' +
+                      t('bm_set') + ' ' + (bi + 1) +
+                      '<span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:7px;">' + rangeLbl + '</span>' +
+                    '</div>' +
+                    '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">' +
+                      uQ(slice.length) + ' · ' + t('bm_misses') + ' ' + wrongSum +
+                    '</div>' +
+                  '</div>' +
+                  '<button class="btn-navy" style="padding:8px 16px;font-size:13px;white-space:nowrap;" ' +
+                    'onclick="retryFlaggedBatch(\'' + part + '\',' + bi + ')">' + t('bm_retry') + '</button>' +
+                '</div>';
+      }
+      html += '</div>';
+    }
+  }
+
+  if(pendingCount > 0){
+    html += '<div style="font-size:12px;color:var(--text-muted);line-height:1.6;' +
+              'background:rgba(53,70,73,.05);border-radius:8px;padding:9px 12px;margin-top:4px;">' +
+              (LANG==='en'
+                ? ('ℹ️ ' + pendingCount + ' flagged question(s) have no attempt yet — answer them once in Study to review here.')
+                : ('ℹ️ 플래그 문항 중 ' + pendingCount + '개는 아직 제출 기록이 없어 복습할 수 없습니다. Study에서 한 번 풀면 나타납니다.')) +
+            '</div>';
+  }
+
+  el.innerHTML = html;
   renderReviewSessions();
+}
+
+// 특정 파트의 특정 세트(20문항)만 복습 시작
+function retryFlaggedBatch(part, batchIdx){
+  var groups = flaggedSubmittableByPart();
+  var qs = groups[part] || [];
+  var start = batchIdx * FLAG_BATCH_SIZE;
+  var slice = qs.slice(start, start + FLAG_BATCH_SIZE);
+  var ids = slice.map(function(q){ return q.id; });
+  if(!ids.length){
+    showToast(LANG==='en' ? 'This set is empty' : '이 세트에 문제가 없습니다');
+    return;
+  }
+  confirmDiscardStudyThen(function(){ _retryFlaggedGo(ids); });
 }
 
 function renderReviewSessions(){
