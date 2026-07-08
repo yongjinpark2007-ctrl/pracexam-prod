@@ -1189,6 +1189,16 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 <!-- ═══ DASHBOARD V2 ═══ -->
 <div id="screen-dashboard" class="screen active">
+  <!-- 📬 마케팅 옵트인 배너 (결제MP §12-1b) — 미동의 일반 유저에게 1회 노출 -->
+  <div id="mkt-banner" style="display:none;background:var(--card-bg);border:1px solid var(--teal);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1rem;">
+    <div style="font-weight:700;font-size:14.5px;color:var(--text-dark);margin-bottom:4px;" id="mkt-banner-title"></div>
+    <div style="font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:10px;" id="mkt-banner-body"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-primary" style="padding:8px 16px;font-size:13.5px;border-radius:9px;" id="mkt-banner-yes" onclick="acceptMarketingBanner()"></button>
+      <button class="btn-ghost" style="padding:8px 16px;font-size:13.5px;border-radius:9px;" id="mkt-banner-no" onclick="declineMarketingBanner()"></button>
+    </div>
+  </div>
+
   <!-- Hero: Current Focus Part -->
   <div id="dash-hero"></div>
 
@@ -1769,22 +1779,18 @@ function applyAdminVisibility(){
   if(mobUpload) mobUpload.style.display = isAdmin ? '' : 'none';
 
   // ── Settings(Admin) vs Sign Out(일반 유저) ──
+  // ── Settings: 전체 유저 개방 (2026-07-08, 결제MP §12-1b) ──
+  // 기존엔 일반 유저에게 Sign Out으로 치환했으나, 마케팅 수신 토글·멤버십 카드의
+  // 진입점이 필요해 개방. 로그아웃은 Settings 첫 카드의 "🚪 로그아웃" 버튼이 담당.
+  // 관리자 전용 요소(데이터 관리 카드 등)는 아래에서 계속 개별 숨김 처리.
   if(navBtns[5]){
-    navBtns[5].innerHTML = isAdmin
-      ? (navSvg('settings') + '<span>Settings</span>')
-      : (navSvg('signout')  + '<span>Sign Out</span>');
-    navBtns[5].onclick = isAdmin
-      ? function(){ showScreen('settings'); closeDrawer(); }
-      : function(){ doLogout(); };
+    navBtns[5].innerHTML = navSvg('settings') + '<span>Settings</span>';
+    navBtns[5].onclick = function(){ showScreen('settings'); closeDrawer(); };
   }
   var mobSettings = document.getElementById('mob-settings');
   if(mobSettings){
-    mobSettings.innerHTML = isAdmin
-      ? (navSvg('settings','mob-ico') + '<span>Settings</span>')
-      : (navSvg('signout','mob-ico')  + '<span>Sign Out</span>');
-    mobSettings.onclick = isAdmin
-      ? function(){ showScreen('settings'); closeDrawer(); }
-      : function(){ doLogout(); };
+    mobSettings.innerHTML = navSvg('settings','mob-ico') + '<span>Settings</span>';
+    mobSettings.onclick = function(){ showScreen('settings'); closeDrawer(); };
   }
 
   // ── 데이터 관리 / Copy 버튼: Admin 전용 ──
@@ -2418,6 +2424,7 @@ function canStartQuiz(){
 // Settings 화면의 멤버십 카드 갱신 (Admin은 표시 안 함)
 function updateTrialStatusUI(){
   try{ updateMarketingConsentUI(); }catch(e){}  // 마케팅 토글도 함께 갱신 (early return 전에)
+  try{ renderMarketingBanner(); }catch(e){}     // 대시보드 옵트인 배너도 함께 갱신
   var card = document.getElementById('settings-trial-status');
   var txt  = document.getElementById('trial-status-text');
   if(!card || !txt) return;
@@ -2476,6 +2483,48 @@ async function toggleMarketingConsent(el){
   }finally{
     el.disabled = false;
   }
+}
+
+// ── 마케팅 옵트인 배너 (대시보드, 결제MP §12-1b) ──
+// 노출: 로그인 + 일반 유저 + 미동의 + 거절 기록 없음. 문구는 유료/무료에 따라 자동 분기.
+var MKT_BANNER_DISMISS_KEY = 'ea_mkt_banner_dismissed';
+function renderMarketingBanner(){
+  var bn = document.getElementById('mkt-banner');
+  if(!bn) return;
+  var show = SB_USER && SB_USER.id !== ADMIN_UID && !S.marketingConsent
+             && !localStorage.getItem(MKT_BANNER_DISMISS_KEY);
+  if(!show){ bn.style.display = 'none'; return; }
+  var paid = !!S.isPaid;
+  document.getElementById('mkt-banner-title').textContent = t(paid ? 'mkt_bn_title_paid' : 'mkt_bn_title');
+  document.getElementById('mkt-banner-body').textContent  = t(paid ? 'mkt_bn_body_paid'  : 'mkt_bn_body');
+  document.getElementById('mkt-banner-yes').textContent   = t(paid ? 'mkt_bn_yes_paid'   : 'mkt_bn_yes');
+  document.getElementById('mkt-banner-no').textContent    = t('mkt_bn_no');
+  bn.style.display = '';
+}
+async function acceptMarketingBanner(){
+  if(!SB_USER) return;
+  var bn = document.getElementById('mkt-banner');
+  try{
+    const { error } = await sb.from('profiles')
+      .update({ marketing_consent: true, marketing_consent_at: new Date().toISOString() })
+      .eq('id', SB_USER.id);
+    if(error) throw error;
+    S.marketingConsent = true;
+    localStorage.setItem(MKT_BANNER_DISMISS_KEY, '1');
+    if(bn){
+      bn.innerHTML = '<div style="font-size:14px;color:var(--teal);font-weight:600;">' + t('mkt_bn_done') + '</div>';
+      setTimeout(function(){ bn.style.display = 'none'; }, 2500);
+    }
+    try{ updateMarketingConsentUI(); }catch(e){}  // 설정 토글도 켜진 상태로 동기화
+  }catch(e){
+    console.warn('배너 동의 저장 실패:', e);
+    showToast(t('mkt_error'));
+  }
+}
+function declineMarketingBanner(){
+  localStorage.setItem(MKT_BANNER_DISMISS_KEY, '1');
+  var bn = document.getElementById('mkt-banner');
+  if(bn) bn.style.display = 'none';
 }
 
 // 새 퀴즈 시작 가능 여부 확인. 막힌 경우 모달을 띄우고 false 반환.
@@ -3067,6 +3116,15 @@ var UI_TEXT = {
   mkt_saved_on:   {ko:'✅ 수신 동의가 저장되었습니다.', en:'✅ You are opted in.'},
   mkt_saved_off:  {ko:'수신 동의가 해제되었습니다.', en:'You have opted out.'},
   mkt_error:      {ko:'저장에 실패했습니다. 잠시 후 다시 시도해주세요.', en:'Failed to save. Please try again.'},
+  // ── 마케팅 옵트인 배너 (대시보드 1회 노출) ──
+  mkt_bn_title:      {ko:'🎁 곧 출시되는 유료 플랜, 할인 코드 받아보실래요?', en:'🎁 Want a discount code for the upcoming paid plan?'},
+  mkt_bn_body:       {ko:'출시 할인 코드와 시험 정보·학습 팁을 이메일로 알려드립니다.', en:'We\'ll email you launch discount codes, exam updates, and study tips.'},
+  mkt_bn_title_paid: {ko:'📬 시험 소식과 학습 팁을 이메일로 받아보세요', en:'📬 Get exam updates and study tips by email'},
+  mkt_bn_body_paid:  {ko:'EA 시험 일정·세법 개정 소식과 학습 팁을 보내드립니다. 언제든 해지 가능합니다.', en:'EA exam dates, tax law changes, and study tips. Unsubscribe anytime.'},
+  mkt_bn_yes:        {ko:'네, 알려주세요', en:'Yes, notify me'},
+  mkt_bn_yes_paid:   {ko:'받아볼게요', en:'Sign me up'},
+  mkt_bn_no:         {ko:'괜찮아요', en:'No thanks'},
+  mkt_bn_done:       {ko:'✅ 설정되었습니다. 반가운 소식으로 찾아뵐게요!', en:'✅ All set — good things coming your way!'},
   ok_confirm:     {ko:'확인',    en:'OK'},
   // 공통 단위 (문제/정답 등은 헬퍼에서 처리)
   common_all_parts:{ko:'All Parts', en:'All Parts'}
