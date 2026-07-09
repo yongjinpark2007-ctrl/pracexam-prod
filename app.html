@@ -856,23 +856,24 @@ html, body {
 .dash-hero-cta:hover{background:linear-gradient(135deg,#4d6164,#354649);box-shadow:0 0 18px rgba(53,70,73,.3);transform:translateY(-1px);}
 .dash-hero-cta svg{width:17px;height:17px;fill:currentColor;stroke:none;}
 
-/* Part 목록 — 한 줄씩 세로 정렬 (full-width rows) */
+/* Part 목록 — 3개 타일 한 줄 정렬 (tile grid) */
 .dash-parts-section-label{font-size:15px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin:1.5rem 4px 10px;}
-.dash-parts-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;}
+.dash-parts-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;}
 .dash-part-row{
   background:var(--card-bg);border:1px solid var(--border-clr);
-  border-radius:14px;padding:16px 18px;cursor:pointer;
+  border-radius:14px;padding:16px 15px;cursor:pointer;
   box-shadow:var(--card-shadow);
-  transition:border-color .2s,transform .15s;
+  display:flex;flex-direction:column;
+  transition:border-color .2s,transform .15s,box-shadow .2s;
 }
-.dash-part-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
-/* 선택된 Part 박스를 히어로와 같은 크림+골드로 연결 (2026-07-05) */
-.dash-part-row.active{border:1.5px solid var(--hero-gold-bd);border-left:3px solid var(--hero-gold);background:var(--hero-cream);}
-.dash-part-row-name{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:600;color:var(--text-main);margin-bottom:6px;}
+.dash-part-row:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+/* 선택된 Part 타일을 히어로와 같은 크림+골드로 연결 (2026-07-05) */
+.dash-part-row.active{border:1.5px solid var(--hero-gold-bd);border-top:3px solid var(--hero-gold);background:var(--hero-cream);}
+.dash-part-row-name{display:flex;flex-direction:column;align-items:flex-start;gap:9px;font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;line-height:1.3;}
 .dash-part-row.active .dash-part-row-name{color:var(--sel-text);}
-.dash-part-row-name svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
-.dash-part-row-stats{font-size:13px;color:var(--text-mid);margin-bottom:9px;}
-.dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;}
+.dash-part-row-name svg{width:26px;height:26px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.dash-part-row-stats{font-size:12.5px;color:var(--text-mid);margin-bottom:11px;}
+.dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;margin-top:auto;}
 /* ── 공지사항 (Announcements) ── */
 .ann-card{background:var(--ann-bg);border:1px solid var(--ann-bd);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
 .ann-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -989,12 +990,13 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-hero-cta{font-size:15px;padding:11px 18px;}
   .dash-hero-target{font-size:13px;padding:8px 12px;}
 
-  /* ── Dashboard v2 Parts list ── */
+  /* ── Dashboard v2 Parts list (모바일 타일 3열) ── */
   .dash-parts-section-label{font-size:12px;margin:1.2rem 2px 8px;}
-  .dash-part-row{padding:11px 12px;}
-  .dash-part-row-name{font-size:14px;gap:8px;}
-  .dash-part-row-name svg{width:18px;height:18px;}
-  .dash-part-row-stats{font-size:12px;}
+  .dash-parts-list{gap:8px;}
+  .dash-part-row{padding:12px 10px;border-radius:12px;}
+  .dash-part-row-name{font-size:12.5px;gap:7px;margin-bottom:7px;}
+  .dash-part-row-name svg{width:22px;height:22px;}
+  .dash-part-row-stats{font-size:11px;margin-bottom:9px;}
 
   /* ── Dashboard v2 Weak topics & Recent ── */
   .weak-row{padding:10px 11px;font-size:13px;}
