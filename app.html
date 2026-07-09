@@ -997,6 +997,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-part-row-name{font-size:12.5px;gap:7px;margin-bottom:7px;}
   .dash-part-row-name svg{width:22px;height:22px;}
   .dash-part-row-stats{font-size:11px;margin-bottom:9px;}
+  .dash-part-row-acc{display:none;}  /* 모바일: 진도만 표시, 정확도 숨김 */
 
   /* ── Dashboard v2 Weak topics & Recent ── */
   .weak-row{padding:10px 11px;font-size:13px;}
@@ -3994,7 +3995,7 @@ function renderDashPartsGrid(){
     const isActive = (pk===focusPart);
     return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
       '<div class="dash-part-row-name">'+(meta.icon||'')+' '+shortLabel+'</div>'+
-      '<div class="dash-part-row-stats">'+t('dash_progress')+' '+progressPct+'% · '+t('dash_accuracy')+' '+accLabel+'</div>'+
+      '<div class="dash-part-row-stats">'+t('dash_progress')+' '+progressPct+'%<span class="dash-part-row-acc"> · '+t('dash_accuracy')+' '+accLabel+'</span></div>'+
       '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressBarColor()+';"></div></div>'+
     '</div>';
   }).join('');
