@@ -2504,6 +2504,18 @@ function maybeShowMarketingModal(){
   if(!bg || !mc) return;
   if(bg.classList.contains('open')) return;  // 다른 모달 열려 있으면 양보
   window._mktModalShown = true;
+  // ── 언어 결정 (2026-07-08): 유저의 명시적 선택(ea_lang)이 없으면 계정 언어를 참조.
+  //    계정 언어가 'ko'로 확실할 때만 한글, 그 외(en/누락/불명)는 전부 영어.
+  //    (영어 사용자에게 한글이 가는 것이 최악 — 애매하면 영어. Jay 정책)
+  //    ※ _mktModalShown을 먼저 세팅했으므로 applyLang()의 재진입은 위 가드에서 차단됨.
+  try{
+    if(!localStorage.getItem('ea_lang')){
+      var _meta = (SB_USER.user_metadata || {});
+      var _acct = (_meta.language === 'ko') ? 'ko' : 'en';
+      if(LANG !== _acct){ LANG = _acct; applyLang(); }
+      try{ localStorage.setItem('ea_lang', LANG); }catch(e){}
+    }
+  }catch(e){}
   var paid = !!S.isPaid;
   var title = t(paid ? 'mkt_bn_title_paid' : 'mkt_bn_title').replace(/^[^\s]+\s/, '');  // 선두 이모지 분리
   mc.innerHTML =
