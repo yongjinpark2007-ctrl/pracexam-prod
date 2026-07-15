@@ -26,12 +26,13 @@ body{font-family:var(--font-sans);background:var(--page-bg);color:var(--text-mai
 .nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border-clr);}
 .nav-inner{max-width:820px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
-.logo{font-weight:700;font-size:18px;color:var(--navy);text-decoration:none;}
-.lang-btns{display:flex;gap:6px;}
-.lang-btns button{border:1px solid var(--border-clr);background:var(--white);border-radius:8px;
-  padding:4px 10px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;}
-.lang-btns button.active{background:var(--navy);color:#fff;border-color:var(--navy);}
-main{padding:48px 0 72px;}
+.logo{display:flex;align-items:center;text-decoration:none;}
+.logo img{height:30px;width:auto;display:block;}
+.lang-toggle{display:flex;border:1.5px solid rgba(53,70,73,.22);border-radius:8px;overflow:hidden;flex:0 0 auto;}
+.lang-toggle button{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:.05em;
+  padding:6px 11px;border:none;background:var(--white);color:var(--text-muted);cursor:pointer;}
+.lang-toggle button.active{background:var(--navy);color:var(--white);}
+main.wrap{padding:56px 24px 88px;}
 h1{font-size:clamp(26px,4.5vw,36px);line-height:1.2;letter-spacing:-.02em;margin-bottom:6px;}
 .updated{font-size:13px;color:var(--text-muted);margin-bottom:34px;}
 h2{font-size:19px;margin:34px 0 10px;letter-spacing:-.01em;}
@@ -41,8 +42,9 @@ li{margin-bottom:6px;}
 a{color:var(--accent);}
 .callout{background:var(--white);border:1px solid var(--border-clr);border-radius:var(--radius);
   padding:16px 18px;margin:18px 0;font-size:14px;color:var(--text-mid);}
-footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;color:var(--text-muted);}
-.footer-links{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;}
+footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;color:var(--text-muted);text-align:center;}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.footer-dba{margin-top:10px;font-size:12px;color:var(--text-muted);}
 .footer-links a{color:var(--text-muted);text-decoration:none;}
 .footer-links a:hover{color:var(--navy);}
 </style>
@@ -50,9 +52,9 @@ footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;colo
 <body>
 
 <nav class="nav"><div class="nav-inner">
-  <a class="logo" href="index.html">PracExam</a>
-  <div class="lang-btns">
-    <button id="btn-ko" onclick="setLang('ko')">한국어</button>
+  <a class="logo" href="index.html"><img src="PracExam_logo_dark_transparent.png" alt="PracExam" height="30"></a>
+  <div class="lang-toggle">
+    <button id="btn-ko" onclick="setLang('ko')">KO</button>
     <button id="btn-en" onclick="setLang('en')">EN</button>
   </div>
 </div></nav>
@@ -136,6 +138,10 @@ footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;colo
     <a href="privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
     <a href="refund.html"><span class="ko">환불정책</span><span class="en">Refunds</span></a>
   </div>
+  <p class="footer-dba">
+    <span class="ko">PracExam은 dxd investment group LLC(미국 캘리포니아 샌디에이고 카운티 등록)의 등록 가상 사업명(DBA)입니다.</span>
+    <span class="en">PracExam is a registered Fictitious Business Name (DBA) of dxd investment group LLC, San Diego County, California, USA.</span>
+  </p>
 </div></footer>
 
 <script>

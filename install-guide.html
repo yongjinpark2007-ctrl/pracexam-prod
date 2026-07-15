@@ -33,10 +33,10 @@ img,svg{display:block;}
 .nav-inner{max-width:820px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
 .logo{display:flex;align-items:center;text-decoration:none;}
 .logo img{height:30px;width:auto;display:block;}
-.lang-btns{display:flex;gap:6px;}
-.lang-btns button{border:1px solid var(--border-clr);background:var(--white);border-radius:8px;
-  padding:4px 10px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;}
-.lang-btns button.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.lang-toggle{display:flex;border:1.5px solid rgba(53,70,73,.22);border-radius:8px;overflow:hidden;flex:0 0 auto;}
+.lang-toggle button{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:.05em;
+  padding:6px 11px;border:none;background:var(--white);color:var(--text-muted);cursor:pointer;}
+.lang-toggle button.active{background:var(--navy);color:var(--white);}
 main.wrap{padding:56px 24px 88px;}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy-mid);margin-bottom:10px;}
 h1{font-size:clamp(26px,4.5vw,36px);line-height:1.2;letter-spacing:-.02em;margin-bottom:12px;}
@@ -130,8 +130,8 @@ footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;colo
 
 <nav class="nav"><div class="nav-inner">
   <a class="logo" href="index.html"><img src="PracExam_logo_dark_transparent.png" alt="PracExam" height="30"></a>
-  <div class="lang-btns">
-    <button id="btn-ko" onclick="setLang('ko')">한국어</button>
+  <div class="lang-toggle">
+    <button id="btn-ko" onclick="setLang('ko')">KO</button>
     <button id="btn-en" onclick="setLang('en')">EN</button>
   </div>
 </div></nav>
