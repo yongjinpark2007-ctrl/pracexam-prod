@@ -2351,12 +2351,13 @@ async function loadTrialStatus(){
   try{
     const { data, error } = await sb
       .from('profiles')
-      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name')
+      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled')
       .eq('id', SB_USER.id)
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
     if(!data) return;  // profiles row 없으면(과거 가입자 등) 기존 동작 유지(미차단)
     S.isPaid = !!data.is_paid;
+    S.subCanceled = !!data.sub_canceled;   // 해지 예정(기간말 해지 신청됨) — 멤버십 카드 표시용
     S.marketingConsent = !!data.marketing_consent;
     S.paidUntil = data.paid_until || null;   // 유료 만료/다음결제일 표시용
     S.planCode  = data.plan_code || null;
@@ -2499,7 +2500,12 @@ function updateTrialStatusUI(){
   if(S.isPaid){
     var _paidLoc  = (LANG === 'en') ? 'en-US' : 'ko-KR';
     var _until    = S.paidUntil ? new Date(S.paidUntil).toLocaleDateString(_paidLoc) : null;
-    txt.textContent = t('trial_paid') + (_until ? (' · ' + t('paid_until_label') + ' ' + _until) : '');
+    if(S.subCanceled && _until){
+      var _cxUI = (LANG === 'en') ? ('Access until ' + _until + ' (cancels)') : (_until + '까지 이용 (해지 예정)');
+      txt.textContent = t('trial_paid') + ' · ' + _cxUI;
+    } else {
+      txt.textContent = t('trial_paid') + (_until ? (' · ' + t('paid_until_label') + ' ' + _until) : '');
+    }
     if(act) act.innerHTML = '<button class="btn-navy" style="width:100%;margin-bottom:6px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
       '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('manage_portal_note') + '</div>';
   } else if(S.trialExpired){
