@@ -23,6 +23,8 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Paddle.js (결제 · Live). 토큰/가격은 Live 값, Environment.set 미호출(Live 기본) — 스크립트 URL은 sandbox/live 동일 -->
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <style>
 /* ========== PracExam — HARBOR DESIGN ========== */
 :root{
@@ -195,7 +197,7 @@ html, body {
 
 /* TYPOGRAPHY */
 .section-title{font-size:19px;font-weight:700;margin-bottom:1rem;color:var(--text-main);letter-spacing:-.01em;}
-.exp-label{font-size:11px;color:var(--teal);letter-spacing:.1em;margin-bottom:8px;font-weight:700;text-transform:uppercase;}
+.exp-label{font-size:15px;color:var(--teal);letter-spacing:0;margin-bottom:8px;font-weight:700;}
 
 /* CARDS */
 .stat-card{
@@ -349,7 +351,7 @@ html, body {
 }
 .setup-divider{height:1px;background:var(--border-clr);margin:1.25rem 0;}
 /* 문제 수 카드 */
-.setup-count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:0;}
+.setup-count-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:0;}
 .setup-count-card{
   background:var(--card-bg);border:1px solid var(--border-clr);
   border-radius:16px;padding:20px 8px 16px;text-align:center;
@@ -381,7 +383,7 @@ html, body {
 }
 .setup-icon-btn:active .setup-icon-circle{transform:scale(.94);}
 .setup-icon-circle{
-  width:72px;height:72px;border-radius:50%;
+  width:64px;height:64px;border-radius:50%;
   background:var(--card-bg);border:1px solid var(--border-clr);
   display:flex;align-items:center;justify-content:center;
   transition:all .15s;position:relative;
@@ -397,7 +399,7 @@ html, body {
 .setup-icon-label{font-size:15px;font-weight:600;color:var(--text-muted);text-align:center;line-height:1.2;}
 .setup-icon-btn.selected .setup-icon-label{color:var(--sel-text);font-weight:700;}
 /* 반복 횟수 원형 버튼 */
-.setup-repeat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:0;}
+.setup-repeat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:0;}
 .setup-repeat-btn{
   display:flex;flex-direction:column;align-items:center;gap:8px;
   cursor:pointer;background:none;border:none;font-family:inherit;padding:0;
@@ -439,8 +441,8 @@ html, body {
 .setup-cta-note{font-size:13px;color:var(--text-muted);text-align:center;margin-top:8px;}
 /* 모바일: 아이콘 약간 축소 */
 @media(max-width:640px){
-  .setup-icon-circle{width:54px;height:54px;}
-  .setup-icon-circle svg{width:24px;height:24px;}
+  .setup-icon-circle{width:48px;height:48px;}
+  .setup-icon-circle svg{width:22px;height:22px;}
   .setup-icon-label{font-size:12px;}
   .setup-repeat-circle{width:48px;height:48px;font-size:15px;}
   .setup-repeat-sub{font-size:12px;}
@@ -1346,10 +1348,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
           <div class="setup-repeat-circle">≤3</div>
           <div class="setup-repeat-sub" data-i18n="rep_3">3회</div>
         </button>
-        <button class="setup-repeat-btn" onclick="selectRepeatIcon('le4',this)">
-          <div class="setup-repeat-circle">≤4</div>
-          <div class="setup-repeat-sub" data-i18n="rep_4">4회</div>
-        </button>
       </div>
 
       </div><!-- /setup-advanced-options -->
@@ -1602,38 +1600,32 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 <!-- ═══ SETTINGS ═══ -->
 <div id="screen-settings" class="screen">
-  <div class="section-title">Settings</div>
+  <div class="section-title" id="settings-screen-title">Settings</div>
 
   <div style="background:var(--card-bg);border:1px solid rgba(53,70,73,.2);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
-    <div class="exp-label" style="margin-bottom:8px;color:var(--teal);">☁️ 클라우드 동기화</div>
-    <div style="font-size:14px;color:var(--text-mid);line-height:1.75;" id="sync-status-text">Supabase 연결 확인 중…</div>
-    <button class="btn-ghost" style="margin-top:12px;width:100%;color:#f43f5e;border-color:rgba(244,63,94,.3);" onclick="doLogout()">🚪 로그아웃</button>
+    <div class="exp-label" style="color:var(--teal);" data-i18n="acct_info_title">👤 계정 정보</div>
+    <div style="font-size:14px;color:var(--text-mid);line-height:1.6;" id="sync-status-text">…</div>
   </div>
 
   <div id="settings-trial-status" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;display:none;">
-    <div class="exp-label" style="margin-bottom:8px;">🎓 멤버십</div>
+    <div class="exp-label" style="margin-bottom:8px;" data-i18n="acct_membership_title">🎓 멤버십</div>
     <div style="font-size:14px;color:var(--text-mid);line-height:1.75;" id="trial-status-text"></div>
+    <div id="trial-status-action" style="margin-top:12px;"></div>
   </div>
 
-  <!-- 📬 마케팅 수신 동의 토글 (결제MP §12-1b 방식 A) — 이메일 옵트인 버튼의 착지점 -->
-  <div id="settings-marketing" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;display:none;">
-    <div class="exp-label" style="margin-bottom:8px;" id="mkt-title">📬 이메일 수신 설정</div>
-    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
-      <input type="checkbox" id="mkt-toggle" onchange="toggleMarketingConsent(this)" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:var(--teal);cursor:pointer;">
-      <span style="font-size:14px;color:var(--text-mid);line-height:1.6;" id="mkt-label"></span>
-    </label>
-    <div id="mkt-msg" style="font-size:12.5px;margin-top:8px;display:none;"></div>
-  </div>
-
+  <!-- 이메일 수신 설정 카드 제거(2026-07-11): 인앱 토글 대신 이메일 하단 unsubscribe 링크로 옵트아웃. 옵트인 모달·동의 로직은 유지. -->
   <div id="settings-data-mgmt" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
     <div class="exp-label" style="margin-bottom:10px;">데이터 관리</div>
     <button class="btn-ghost" style="margin-bottom:10px;width:100%;" onclick="exportData()">모든 데이터 내보내기 (JSON)</button>
     <button class="btn-ghost" style="width:100%;color:#dc2626;border-color:rgba(220,38,38,.3);" onclick="if(confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))resetData()">모든 데이터 초기화</button>
   </div>
-  <div style="background:var(--card-bg);border:1px solid rgba(53,70,73,.12);border-radius:14px;padding:1.25rem;margin-top:1rem;">
-    <div class="exp-label" style="margin-bottom:8px;">💾 클라우드 저장 안내</div>
-    <div style="font-size:14px;color:var(--text-mid);line-height:1.75;">문제은행과 학습 기록은 Supabase 클라우드에 저장됩니다. 어느 기기에서든 로그인하면 동일한 문제와 진도를 볼 수 있습니다.</div>
+  <!-- 💾 클라우드 저장 안내 카드 제거(2026-07-11): 불필요한 안내문. -->
+
+  <!-- 로그아웃 (맨 아래, 눈에 잘 띄게) -->
+  <div style="margin-top:1.5rem;">
+    <button style="width:100%;background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;border:none;border-radius:12px;padding:14px 24px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .18s;" onclick="doLogout()" data-i18n="acct_logout">로그아웃</button>
   </div>
+
 </div>
 
 <!-- ═══ ANOMALY DETECTION (Admin only · Layer 3) ═══ -->
@@ -1761,10 +1753,24 @@ var _sessionHandled = false;  // 세션 중복 처리 방지 플래그
 //   Jay 계정 이메일 옆 UUID 복사 후 아래에 입력
 const ADMIN_UID = 'f80cf93f-066f-415d-8925-a2e848dccaa3';
 
+// ── PADDLE 결제 (LIVE) ──────────────────────────────
+// Live 기본 환경이므로 Paddle.Environment.set 호출 없음(sandbox일 때만 set('sandbox')).
+// ⚠️ 아래 CLIENT_TOKEN 은 반드시 live_ 클라토큰으로 채워야 결제창이 열림.
+const PADDLE_CLIENT_TOKEN  = 'live_13e12161088dff9b5cd055f1aba';    // Live 클라이언트 토큰 (공개돼도 안전)
+const PADDLE_PRICE_MONTHLY = 'pri_01kxdeyzxqyph78xpzt81w2qxb';      // Live $29/월 · 수량1고정 (웹훅 PRICE_TO_PLAN·서버 상수와 동일)
+try{
+  if(window.Paddle){
+    Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN, eventCallback: onPaddleEvent });
+  } else {
+    console.warn('Paddle.js 미로드 — 결제 버튼 비활성');
+  }
+}catch(e){ console.warn('Paddle 초기화 실패:', e); }
+
 // 네비게이션 아이콘(라인 SVG) — 동적 토글(설정/로그아웃)에 사용
 var NAV_ICONS = {
   settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
-  signout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>'
+  signout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+  account:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
 };
 function navSvg(name, cls){
   return '<svg class="'+(cls||'nav-ico')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(NAV_ICONS[name]||'')+'</svg>';
@@ -1783,21 +1789,20 @@ function applyAdminVisibility(){
   // ── Settings(Admin) vs Sign Out(일반 유저) ── (2026-07-08 원복: 일반 유저 진입점은 배너+이메일 딥링크로 대체)
   if(navBtns[5]){
     navBtns[5].innerHTML = isAdmin
-      ? (navSvg('settings') + '<span>Settings</span>')
-      : (navSvg('signout')  + '<span>Sign Out</span>');
-    navBtns[5].onclick = isAdmin
-      ? function(){ showScreen('settings'); closeDrawer(); }
-      : function(){ doLogout(); };
+      ? (navSvg('settings') + '<span>' + t('nav_settings') + '</span>')
+      : (navSvg('account')  + '<span>' + t('nav_account') + '</span>');
+    navBtns[5].onclick = function(){ showScreen('settings'); closeDrawer(); };
   }
   var mobSettings = document.getElementById('mob-settings');
   if(mobSettings){
     mobSettings.innerHTML = isAdmin
-      ? (navSvg('settings','mob-ico') + '<span>Settings</span>')
-      : (navSvg('signout','mob-ico')  + '<span>Sign Out</span>');
-    mobSettings.onclick = isAdmin
-      ? function(){ showScreen('settings'); closeDrawer(); }
-      : function(){ doLogout(); };
+      ? (navSvg('settings','mob-ico') + '<span>' + t('nav_settings') + '</span>')
+      : (navSvg('account','mob-ico')  + '<span>' + t('nav_account') + '</span>');
+    mobSettings.onclick = function(){ showScreen('settings'); closeDrawer(); };
   }
+  // 계정/설정 화면 제목: 관리자=설정 / 일반=내 계정
+  var _setTitle = document.getElementById('settings-screen-title');
+  if(_setTitle) _setTitle.textContent = isAdmin ? t('nav_settings') : t('nav_account');
 
   // ── 데이터 관리 / Copy 버튼: Admin 전용 ──
   var dataMgmt = document.getElementById('settings-data-mgmt');
@@ -2205,6 +2210,16 @@ async function confirmLogout(){
   catch(e){ location.reload(); }
 }
 
+// ── 구독 의도 조기 캡처 (index Pro 카드 → app.html?intent=subscribe) ──
+// 인증 콜백이 로그인 완료 시 history.replaceState(pathname)으로 URL을 정리하면서
+// ?intent=subscribe 도 함께 지워버린다(특히 이메일 인증 링크 복귀 경로).
+// → URL이 살아있는 페이지 로드 시점에 sessionStorage에 저장해 로그인 완료까지 보존.
+try{
+  if(new URLSearchParams(window.location.search).get('intent') === 'subscribe'){
+    sessionStorage.setItem('pendingIntent', 'subscribe');
+  }
+}catch(e){}
+
 // ── SESSION 초기화 (이메일 인증 링크 자동 로그인 + 기존 세션 복원) ──
 
 // ⓪ 비밀번호 재설정 메일 링크(type=recovery)로 진입한 경우:
@@ -2264,13 +2279,24 @@ sb.auth.onAuthStateChange(function(event, session){
   }
 })();
 
+function _escHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
 function updateSyncStatus(){
   const el = document.getElementById('sync-status-text');
   if(!el) return;
   if(SB_USER){
-    el.textContent = (LANG === 'en')
-      ? ('✅ Cloud connected · ' + SB_USER.email + ' · auto-sync across devices')
-      : ('✅ 클라우드 연결됨 · ' + SB_USER.email + ' · 모든 기기에서 자동 동기화');
+    var _meta = SB_USER.user_metadata || {};
+    var _nm = (((S.firstName || _meta.first_name || '') + ' ' + (S.lastName || _meta.last_name || '')).trim());
+    if(!_nm){ _nm = (SB_USER.email || '').split('@')[0]; }
+    var _tp = S.isPaid ? t('acct_type_paid') : (S.trialExpired ? t('acct_type_expired') : t('acct_type_trial'));
+    function _acctRow(lbl, val, strong){
+      return '<div style="display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--border-clr);">' +
+        '<span style="color:var(--text-muted);flex-shrink:0;">' + lbl + '</span>' +
+        '<span style="' + (strong ? 'color:var(--teal);font-weight:700;' : 'color:var(--text-main);font-weight:600;') + 'text-align:right;word-break:break-all;">' + _escHtml(val) + '</span></div>';
+    }
+    el.innerHTML =
+      _acctRow((LANG==='en'?'Name':'이름'), _nm, false) +
+      _acctRow((LANG==='en'?'Email':'이메일'), (SB_USER.email||''), false) +
+      _acctRow((LANG==='en'?'Plan':'계정 유형'), _tp, true);
     // ── 딥링크: app.html?screen=settings (이메일 옵트인 버튼 착지) ──
     // 로그인 완료 후 1회만 실행. 화이트리스트로 제한.
     try{
@@ -2281,6 +2307,29 @@ function updateSyncStatus(){
           window._deeplinkDone = true;
           showScreen('settings');
           history.replaceState(null, '', window.location.pathname);
+        }
+        // 결제 복귀 폴백: 오버레이 이벤트콜백이 1차지만, 리다이렉트/재로드로 온 경우 대비
+        var _chk = _sp.get('checkout');
+        if(_chk === 'success' && !window._checkoutHandled){
+          window._checkoutHandled = true;
+          history.replaceState(null, '', window.location.pathname);
+          showToast(t('checkout_processing'));
+          try{ pollEntitlement(0); }catch(e){}
+        }
+        // ── 구독 의도 딥링크: index Pro 카드 → app.html?intent=subscribe ──
+        // 로그인/가입 완료 후 결제창 자동 오픈. 이미 유료·관리자면 조용히 통과.
+        // URL이 인증 콜백에 의해 이미 지워졌을 수 있으므로 sessionStorage 값도 확인.
+        var _intent = _sp.get('intent');
+        if(_intent !== 'subscribe'){
+          try{ if(sessionStorage.getItem('pendingIntent') === 'subscribe'){ _intent = 'subscribe'; } }catch(e){}
+        }
+        if(_intent === 'subscribe' && !window._intentHandled){
+          window._intentHandled = true;
+          try{ sessionStorage.removeItem('pendingIntent'); }catch(e){}
+          history.replaceState(null, '', window.location.pathname);
+          if(SB_USER.id !== ADMIN_UID && !S.isPaid){
+            setTimeout(function(){ try{ showPricingModal(); }catch(e){} }, 500);
+          }
         }
       }
     }catch(e){}
@@ -2302,13 +2351,17 @@ async function loadTrialStatus(){
   try{
     const { data, error } = await sb
       .from('profiles')
-      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent')
+      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name')
       .eq('id', SB_USER.id)
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
     if(!data) return;  // profiles row 없으면(과거 가입자 등) 기존 동작 유지(미차단)
     S.isPaid = !!data.is_paid;
     S.marketingConsent = !!data.marketing_consent;
+    S.paidUntil = data.paid_until || null;   // 유료 만료/다음결제일 표시용
+    S.planCode  = data.plan_code || null;
+    S.firstName = data.first_name || null;
+    S.lastName  = data.last_name || null;
     S.trialEndsAt = data.trial_ends_at;
     S.trialExpired = !S.isPaid && S.trialEndsAt && (new Date(S.trialEndsAt) < new Date());
 
@@ -2325,6 +2378,7 @@ async function loadTrialStatus(){
   updateTrialStatusUI();
   applyTrialSetupRestrictions();
   updateTrialQuotaBanner();
+  try{ updateSyncStatus(); }catch(e){}
 }
 
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
@@ -2392,12 +2446,14 @@ function _trialLockGuard(btn){
 function updateTrialQuotaBanner(){
   const el = document.getElementById('trial-quota-banner');
   if(!el) return;
+  // 체험(무료) 유저에게만 배너 노출. 유료·관리자·비로그인 → 숨김(멤버십은 '내 계정'에서 관리).
   if(!isTrialLimited()){ el.style.display = 'none'; return; }
   const left = Math.max(0, 5 - (S.dailyUsed || 0));
   el.style.display = '';
-  el.innerHTML = (LANG === 'en')
+  el.innerHTML = ((LANG === 'en')
     ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 5 Quick questions per day · remaining today: <strong>' + left + '</strong>')
-    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 5문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>');
+    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 5문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
+    ' <button class="btn-navy" style="margin-left:8px;padding:3px 12px;font-size:12.5px;vertical-align:middle;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';
 }
 
 // 일일 한도 도달 시 모달 표시 (공통 모달 마크업 재사용)
@@ -2409,7 +2465,8 @@ function showDailyQuotaModal(){
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
         t('quota_body') +
       '</div>' +
-      '<button class="btn-navy" style="width:100%;" onclick="closeModal()">' + t('ok_confirm') + '</button>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="showPricingModal()">' + t('upgrade_now') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('ok_confirm') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
 }
@@ -2433,13 +2490,21 @@ function updateTrialStatusUI(){
   try{ maybeShowMarketingModal(); }catch(e){}    // 옵트인 모달 (조건 충족 시 1회)
   var card = document.getElementById('settings-trial-status');
   var txt  = document.getElementById('trial-status-text');
+  var act  = document.getElementById('trial-status-action');
   if(!card || !txt) return;
   if(!SB_USER || SB_USER.id === ADMIN_UID){ card.style.display = 'none'; return; }
   card.style.display = '';
+  if(act) act.innerHTML = '';
+  var _upgradeBtn = '<button class="btn-navy" style="width:100%;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';
   if(S.isPaid){
-    txt.textContent = t('trial_paid');
+    var _paidLoc  = (LANG === 'en') ? 'en-US' : 'ko-KR';
+    var _until    = S.paidUntil ? new Date(S.paidUntil).toLocaleDateString(_paidLoc) : null;
+    txt.textContent = t('trial_paid') + (_until ? (' · ' + t('paid_until_label') + ' ' + _until) : '');
+    if(act) act.innerHTML = '<button class="btn-navy" style="width:100%;margin-bottom:6px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
+      '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('manage_portal_note') + '</div>';
   } else if(S.trialExpired){
     txt.textContent = t('trial_expired');
+    if(act) act.innerHTML = _upgradeBtn;
   } else if(S.trialEndsAt){
     var daysLeft = Math.max(0, Math.ceil((new Date(S.trialEndsAt) - new Date()) / (1000*60*60*24)));
     var qLeft = Math.max(0, 5 - (S.dailyUsed || 0));
@@ -2448,6 +2513,7 @@ function updateTrialStatusUI(){
     txt.textContent = (LANG === 'en')
       ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (5/day, Quick mode)')
       : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)');
+    if(act) act.innerHTML = _upgradeBtn;
   } else {
     card.style.display = 'none';
   }
@@ -2565,13 +2631,120 @@ function checkTrialAccess(){
       '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + (LANG === 'en' ? 'Your free trial has ended' : '무료 체험이 종료되었습니다') + '</div>' +
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
         (LANG === 'en'
-          ? 'New practice requires a paid plan.<br>Your existing history and stats stay available.<br>Payments are coming soon.'
-          : '새로운 문제 풀이는 결제 후 이용 가능합니다.<br>기존 학습 기록과 통계는 계속 보실 수 있습니다.<br>결제 기능은 준비 중입니다.') +
+          ? 'Upgrade to unlock unlimited practice.<br>Your existing history and stats stay available.'
+          : '업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.<br>기존 학습 기록과 통계는 계속 보실 수 있습니다.') +
       '</div>' +
-      '<button class="btn-navy" style="width:100%;" onclick="closeModal()">' + t('ok_confirm') + '</button>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
   return false;
+}
+
+// ══════════════════════════════════════════════════
+// PADDLE 결제 (오버레이 · Live) — 결제MP §6 / Phase 4
+//   결제창만 연다. is_paid 는 우리가 못 켬 — 서명검증 웹훅(payment-webhook)만 켠다.
+//   카드정보는 Paddle 화면에서만 입력(우리 앱은 안 받음 · PCI 위임).
+// ══════════════════════════════════════════════════
+function openCheckout(){
+  if(!SB_USER){ showToast(t('login_required')); return; }
+  if(SB_USER.id === ADMIN_UID){ showToast(t('admin_no_pay')); return; }
+  if(!window.Paddle){ showToast(t('checkout_unavailable')); return; }
+  try{
+    Paddle.Checkout.open({
+      items: [{ priceId: PADDLE_PRICE_MONTHLY, quantity: 1 }],
+      customData: { user_id: SB_USER.id },              // 웹훅이 누구 결제인지 매칭하는 핵심
+      customer: SB_USER.email ? { email: SB_USER.email } : undefined
+    });
+  }catch(e){
+    console.warn('Paddle.Checkout.open 실패:', e);
+    showToast(t('checkout_unavailable'));
+  }
+}
+
+// Paddle 이벤트 콜백 — 결제 완료 감지 → 웹훅 반영 폴링 → UI 갱신
+function onPaddleEvent(ev){
+  try{
+    if(ev && ev.name === 'checkout.completed'){
+      try{ closeModal(); }catch(e){}
+      showToast(t('checkout_processing'));
+      pollEntitlement(0);
+    }
+  }catch(e){ console.warn('Paddle 이벤트 처리 오류:', e); }
+}
+
+// is_paid 가 켜질 때까지 loadTrialStatus 재조회 (웹훅 지연 대비 · 최대 ~16초).
+// 복귀 신뢰 지점은 프론트가 아니라 서버 값 — S.isPaid 는 DB에서 읽은 값(웹훅이 씀).
+function pollEntitlement(tries){
+  if(S.isPaid){ showToast(t('checkout_success')); return; }
+  if(tries >= 8){ showToast(t('checkout_pending')); return; }  // 실패해도 다음 로그인 시 반영
+  setTimeout(function(){
+    try{
+      loadTrialStatus().then(function(){
+        if(S.isPaid){ showToast(t('checkout_success')); }
+        else { pollEntitlement(tries + 1); }
+      }).catch(function(){ pollEntitlement(tries + 1); });
+    }catch(e){ pollEntitlement(tries + 1); }
+  }, 2000);
+}
+
+// 가격/혜택 안내 모달 — "구독하기" → openCheckout
+function showPricingModal(){
+  if(!SB_USER){ showToast(t('login_required')); return; }
+  if(SB_USER.id === ADMIN_UID){ showToast(t('admin_no_pay')); return; }
+  var mc = document.getElementById('modal-content');
+  if(!mc) return;
+  mc.innerHTML =
+    '<div style="text-align:center;padding:1rem 0;">' +
+      '<div style="font-size:36px;margin-bottom:.4rem;">🚀</div>' +
+      '<div style="font-size:19px;font-weight:800;margin-bottom:.2rem;">' + t('pricing_title') + '</div>' +
+      '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' + t('pricing_price') + '</div>' +
+      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.9;margin:.75rem auto 1.1rem;text-align:left;display:inline-block;">' +
+        t('pricing_benefits') +
+      '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="openCheckout()">' + t('pricing_subscribe') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
+      '<div style="font-size:11.5px;color:var(--text-mid);margin-top:10px;line-height:1.6;">' + t('pricing_fineprint') + '</div>' +
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// 유료 멤버 — 구독 상태 + 결제/해지 관리 안내 (설정 메뉴 대체 진입점)
+function showMembershipModal(){
+  if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+  var mc = document.getElementById('modal-content');
+  if(!mc) return;
+  var _loc   = (LANG === 'en') ? 'en-US' : 'ko-KR';
+  var _until = S.paidUntil ? new Date(S.paidUntil).toLocaleDateString(_loc) : null;
+  mc.innerHTML =
+    '<div style="text-align:center;padding:1rem 0;">' +
+      '<div style="font-size:36px;margin-bottom:.4rem;">✅</div>' +
+      '<div style="font-size:18px;font-weight:800;margin-bottom:.3rem;">' + t('membership_title') + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid);line-height:1.8;margin-bottom:1rem;">' +
+        t('trial_paid') +
+        (_until ? ('<br>' + t('paid_until_label') + ': <strong>' + _until + '</strong>') : '') +
+      '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
+      '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;margin-bottom:1.1rem;">' + t('manage_portal_note') + '</div>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('close') + '</button>' +
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// 고객 포털 열기 — Paddle 보안 페이지(해지·카드변경·영수증)로 인증된 링크 발급 후 새 탭
+async function openCustomerPortal(){
+  if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+  showToast(t('portal_opening'));
+  try{
+    const { data, error } = await sb.functions.invoke('customer-portal');
+    if(error) throw error;
+    var url = (data && (data.cancel || data.overview)) || null;
+    if(url){ window.open(url, '_blank', 'noopener'); }
+    else { showToast(t('portal_error')); }
+  }catch(e){
+    console.warn('customer-portal 오류:', e);
+    showToast(t('portal_error'));
+  }
 }
 
 // ══════════════════════════════════════════════════
@@ -3035,6 +3208,14 @@ var UI_TEXT = {
   mob_statistics:{ko:'통계',     en:'Statistics'},
   mob_upload:    {ko:'업로드',   en:'Upload'},
   mob_settings:  {ko:'설정',     en:'Settings'},
+  nav_account:   {ko:'내 계정',  en:'My Account'},
+  nav_settings:  {ko:'설정',     en:'Settings'},
+  acct_info_title:{ko:'👤 계정 정보', en:'👤 Account Info'},
+  acct_membership_title:{ko:'🎓 멤버십', en:'🎓 Membership'},
+  acct_logout:   {ko:'로그아웃', en:'Log out'},
+  acct_type_paid:{ko:'유료 멤버십', en:'Paid membership'},
+  acct_type_trial:{ko:'무료 체험', en:'Free trial'},
+  acct_type_expired:{ko:'무료 (체험 종료)', en:'Free (trial ended)'},
   // 문제 풀이 화면
   quiz_session:  {ko:'세션',     en:'Session'},
   quiz_end:      {ko:'세션 종료',en:'End Session'},
@@ -3136,9 +3317,34 @@ var UI_TEXT = {
   // ── 무료 체험 / 멤버십 UI ──
   trial_banner:   {ko:'무료 체험 모드', en:'Free Trial'},
   trial_paid:     {ko:'✅ 유료 멤버십 — 모든 문제 무제한 이용 가능', en:'✅ Paid membership — unlimited access to all questions'},
-  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 새 문제 풀이는 결제 후 이용 가능합니다 (결제 기능 준비 중). 기존 학습 기록·통계는 계속 확인 가능합니다.', en:'🔒 Your free trial has ended. New practice requires a paid plan (payments coming soon). Your existing history and stats stay available.'},
+  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다. 기존 학습 기록·통계는 계속 확인 가능합니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice. Your existing history and stats stay available.'},
   quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
-  quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>내일 다시 만나요! 결제 기능은 준비 중입니다.', en:'The free trial allows up to 5 questions per day.<br>See you tomorrow! Payments are coming soon.'},
+  quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 5 questions per day.<br>Upgrade now for unlimited practice.'},
+  // ── 결제 / 업그레이드 (Phase 4) ──
+  upgrade_cta:    {ko:'🚀 업그레이드', en:'🚀 Upgrade'},
+  upgrade_now:    {ko:'🚀 지금 업그레이드하고 무제한', en:'🚀 Upgrade now for unlimited'},
+  later:          {ko:'나중에', en:'Later'},
+  login_required: {ko:'로그인이 필요합니다.', en:'Please log in first.'},
+  admin_no_pay:   {ko:'관리자 계정은 결제가 필요 없습니다.', en:'Admin account does not need to pay.'},
+  checkout_unavailable:{ko:'결제창을 열 수 없습니다. 잠시 후 다시 시도해주세요.', en:'Cannot open checkout. Please try again shortly.'},
+  checkout_processing: {ko:'⏳ 결제 확인 중… 잠시만요.', en:'⏳ Confirming your payment…'},
+  checkout_success:{ko:'✅ 결제 완료! 이제 무제한으로 이용하실 수 있습니다.', en:'✅ Payment complete! You now have unlimited access.'},
+  checkout_pending:{ko:'결제가 접수되었습니다. 반영까지 잠시 걸릴 수 있어요 (다음 로그인 시 적용).', en:'Payment received. It may take a moment to apply (or on next login).'},
+  pricing_title:  {ko:'전체 문제은행 무제한', en:'Unlimited Full Question Bank'},
+  pricing_price:  {ko:'$29 / 월', en:'$29 / month'},
+  pricing_benefits:{ko:'• 4,000+ 전 문항 무제한 풀이<br>• Part 1·2·3 전 영역<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 4,000+ questions<br>• All of Part 1, 2, 3<br>• Korean/English explanations<br>• Cancel anytime · 14-day money-back'},
+  pricing_subscribe:{ko:'구독하기 ($29/월)', en:'Subscribe ($29/mo)'},
+  pricing_fineprint:{ko:'매월 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews monthly · cancel anytime. Payments securely handled by Paddle.'},
+  paid_until_label:{ko:'다음 결제일', en:'Renews'},
+  manage_billing: {ko:'결제·해지 관리: 구매 시 받은 Paddle 영수증 메일 또는 hello@pracexam.com', en:'Manage/cancel billing: your Paddle receipt email or hello@pracexam.com'},
+  member_active:  {ko:'멤버십 이용 중', en:'Membership active'},
+  manage_cta:     {ko:'관리', en:'Manage'},
+  membership_title:{ko:'내 멤버십', en:'My Membership'},
+  manage_portal:  {ko:'구독 관리 / 해지', en:'Manage / cancel subscription'},
+  manage_portal_note:{ko:'카드 변경·해지·영수증을 Paddle 보안 페이지에서 직접 처리합니다.', en:"Manage your card, cancellation, and invoices on Paddle's secure page."},
+  portal_opening: {ko:'⏳ 관리 페이지 여는 중…', en:'⏳ Opening your billing page…'},
+  portal_error:   {ko:'관리 페이지를 열 수 없습니다. 잠시 후 다시 시도해주세요.', en:'Could not open the billing page. Please try again.'},
+  close:          {ko:'닫기', en:'Close'},
   // ── 마케팅 수신 동의 (결제MP §12-1b) ──
   mkt_title:      {ko:'📬 이메일 수신 설정', en:'📬 Email Preferences'},
   mkt_label:      {ko:'학습 팁, 할인 코드, 시험 정보를 이메일로 받아봅니다. 언제든지 해지할 수 있습니다.', en:'Receive study tips, discount codes, and exam updates by email. You can opt out anytime.'},
@@ -3215,6 +3421,7 @@ function applyLang(){
   try{ if(typeof updateAvailCount === 'function') updateAvailCount(); }catch(e){}
   try{ if(typeof updateTrialQuotaBanner === 'function') updateTrialQuotaBanner(); }catch(e){}
   try{ if(typeof updateTrialStatusUI === 'function') updateTrialStatusUI(); }catch(e){}
+  try{ if(typeof applyAdminVisibility === 'function') applyAdminVisibility(); }catch(e){}
   try{ if(typeof updateSyncStatus === 'function') updateSyncStatus(); }catch(e){}
   // Review 탭 뱃지/세션 목록도 언어 갱신
   try{ if(typeof renderReviewSessions === 'function') renderReviewSessions(); }catch(e){}
