@@ -1599,8 +1599,8 @@ function doSignup(){
     if (result.ok) {
       showMsg(
         lang === 'ko'
-          ? '가입 완료! 확인 이메일을 발송했습니다. 받은 편지함을 확인하고 링크를 클릭해주세요.'
-          : 'Account created! Please check your email and click the confirmation link.',
+          ? '가입 완료! 확인 이메일을 발송했습니다. 받은 편지함에 없으면 스팸함(정크메일함)도 꼭 확인해주세요.'
+          : "Account created! We've sent you a confirmation email — if it's not in your inbox, please check your spam/junk folder.",
         true
       );
     } else {
