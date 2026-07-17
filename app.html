@@ -1779,8 +1779,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-chip b{color:var(--text-main);}
   .mk-locked{display:flex;align-items:center;gap:10px;background:#f2f5f6;border:1px dashed var(--border-hover);border-radius:12px;padding:14px;margin-top:14px;font-size:13px;color:var(--text-muted);}
   /* 응시 바 */
-  .mk-exam-bar{position:sticky;top:0;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;box-shadow:var(--card-shadow);padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:12px;z-index:5;}
-  .mk-timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--text-main);border:1px solid var(--border-clr);border-radius:8px;padding:4px 10px;}
+  .mk-exam-bar{position:sticky;top:0;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;box-shadow:var(--card-shadow);padding:10px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-bottom:12px;z-index:5;}
+  .mk-timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--text-main);border:1px solid var(--border-clr);border-radius:8px;padding:4px 10px;flex:none;}
   .mk-timer.low{color:var(--danger-color);border-color:var(--danger-color);background:#fef2f2;}
   .mk-progtext{font-size:13px;color:var(--text-mid);} .mk-progtext b{color:var(--text-main);}
   .mk-exam-bar .sp{flex:1;}
@@ -1862,6 +1862,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     .mk-weak{grid-template-columns:1fr;}
     .mk-dom{grid-template-columns:minmax(120px,1.8fr) 1fr 46px;}
     .mk-actions .btn-navy{order:-1;width:100%;}
+    /* 상단 바 2행 정리 (2026-07-17): 1행=타이머+검토버튼, 2행=진행 텍스트 (모바일 겹침 수정) */
+    .mk-exam-bar{padding:9px 12px;gap:7px 10px;}
+    .mk-exam-bar .mk-timer{order:1;}
+    .mk-exam-bar .sp{order:2;}
+    .mk-exam-bar>button{order:3;flex:none;}
+    .mk-exam-bar .mk-progtext{order:4;flex-basis:100%;width:100%;font-size:12.5px;}
   }
 </style>
 
