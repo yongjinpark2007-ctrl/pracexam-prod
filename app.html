@@ -1701,13 +1701,13 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
       <label style="font-size:13px;color:var(--text-mid);">감시 기간</label>
-      <select id="anom-window" onchange="renderAnomaly()" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-clr);background:var(--card-bg);color:var(--text-main);font-size:13px;">
+      <select id="anom-window" onchange="renderAnomaly();renderMockActivity()" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border-clr);background:var(--card-bg);color:var(--text-main);font-size:13px;">
         <option value="24">최근 24시간</option>
         <option value="72">최근 3일</option>
         <option value="168">최근 7일</option>
         <option value="720">최근 30일</option>
       </select>
-      <button class="btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="renderAnomaly()">🔄 새로고침</button>
+      <button class="btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="renderAnomaly();renderMockActivity()">🔄 새로고침</button>
       <div id="anom-summary" style="font-size:13px;color:var(--text-muted);margin-left:auto;"></div>
     </div>
 
@@ -1716,6 +1716,21 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div style="margin-top:1.25rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
       <strong>판정 기준(현재 설정)</strong> — 아래 값을 넘으면 위험 신호가 켜집니다. 조정은 <code>ANOMALY_CFG</code>에서.
       <div id="anom-thresholds" style="margin-top:6px;"></div>
+    </div>
+
+    <!-- ═══ 모의고사 활동 모니터 (학습 탐지와 별개, mock_attempts 기반) 2026-07-17 ═══ -->
+    <div style="margin-top:1.75rem;border-top:2px solid var(--border-clr);padding-top:1.25rem;">
+      <div style="font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">🎯 모의고사 활동 모니터</div>
+      <div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
+        학습 이상탐지와 <strong>별개</strong>로 모의고사 응시를 감시합니다. 3.5시간 시험을 수 분 만에 채점(봇),
+        응시 폭주, <strong>연습은 적은데 모의고사만 대량</strong>(정답 수집 정황) 등을 위험도로 표시합니다.
+        <em>(관리자 본인 테스트 응시도 잡히니 참고)</em>
+      </div>
+      <div id="mock-anom-summary" style="font-size:13px;color:var(--text-muted);margin-bottom:.75rem;"></div>
+      <div id="mock-anom-body"><div style="padding:1.5rem;text-align:center;color:var(--text-muted);">불러오는 중…</div></div>
+      <div style="margin-top:1rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
+        <strong>판정 기준</strong> — <span id="mock-anom-thresholds"></span> 조정은 <code>MOCK_ANOMALY_CFG</code>.
+      </div>
     </div>
   </div>
 
@@ -2036,6 +2051,78 @@ function _anomTier(score){
 }
 
 var _ANOM_ROWS = [];  // 상세 모달용 캐시
+
+// ══════════════════════════════════════════════════════
+// 모의고사 활동 모니터 (2026-07-17) — mock_attempts 기반, 학습 이상탐지와 별개
+//   RPC: get_mock_activity_report(p_hours) → 사용자별 raw 지표(숫자)만. 임계값은 여기서.
+// ══════════════════════════════════════════════════════
+var MOCK_ANOMALY_CFG = {
+  fastGradeSec:   300,  // 채점 소요 < 5분 = 3.5h 시험 불가(봇/스크립트)
+  fastGradeCount: 2,    // 그런 초고속 채점 2건 이상
+  velocity:       8,    // 감시기간 내 응시 시작 8회 초과
+  ratioAttempts:  5,    // 모의고사 5회 이상인데
+  ratioStudyUnder:20    // 연습(user_progress) 20개 미만 = 콘텐츠 수집 정황
+};
+function computeMockRisk(r){
+  var C=MOCK_ANOMALY_CFG, reasons=[], score=0;
+  if((r.fast_grades||0) >= C.fastGradeCount){ reasons.push({k:'초고속 채점', v:r.fast_grades+'건 (<5분)'}); score+=45; }
+  if((r.started_win||0) > C.velocity){ reasons.push({k:'응시 폭주', v:r.started_win+'회/기간'}); score+=30; }
+  if((r.total_attempts||0) >= C.ratioAttempts && (r.study_answered||0) < C.ratioStudyUnder){
+    reasons.push({k:'연습 대비 과다', v:'응시 '+r.total_attempts+' / 연습 '+r.study_answered}); score+=30; }
+  if(score>100)score=100;
+  return { score:score, reasons:reasons };
+}
+async function renderMockActivity(){
+  if(!(SB_USER && SB_USER.id === ADMIN_UID)) return;
+  var body=document.getElementById('mock-anom-body'); if(!body) return;
+  var sum=document.getElementById('mock-anom-summary');
+  var thEl=document.getElementById('mock-anom-thresholds');
+  if(thEl){ var C=MOCK_ANOMALY_CFG; thEl.innerHTML='빠른채점(&lt;'+Math.round(C.fastGradeSec/60)+'분) ≥ '+C.fastGradeCount+
+    ' · 기간 응시 &gt; '+C.velocity+' · 응시 ≥ '+C.ratioAttempts+' &amp; 연습 &lt; '+C.ratioStudyUnder+'.'; }
+  var hours=parseInt((document.getElementById('anom-window')||{}).value||'24',10);
+  body.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--text-muted);">불러오는 중…</div>';
+  if(sum) sum.textContent='';
+  var res;
+  try{
+    res=await sb.rpc('get_mock_activity_report',{ p_hours:hours });
+    if(res.error) throw res.error;
+  }catch(e){
+    var code=(e&&(e.code||''))+'', msg=(e&&(e.message||''))+'';
+    if(code==='42883'||code==='PGRST202'||/function .*does not exist|could not find/i.test(msg)){
+      body.innerHTML='<div style="padding:1.25rem;border:1px dashed var(--border-clr);border-radius:12px;color:var(--text-mid);line-height:1.8;font-size:14px;">⚙️ 아직 <code>get_mock_activity_report</code> RPC가 배포되지 않았습니다. <code>migration_mock_only_profiles.sql</code> 재실행 후 채워집니다.</div>';
+      return;
+    }
+    body.innerHTML='<div style="padding:1.25rem;color:#dc2626;">조회 실패: '+_anomEsc(msg||'오류')+'</div>'; return;
+  }
+  var rows=(res.data||[]).map(function(r){ var risk=computeMockRisk(r); r._score=risk.score; r._reasons=risk.reasons; return r; });
+  rows.sort(function(a,b){ return b._score-a._score || (b.total_attempts||0)-(a.total_attempts||0); });
+  var flagged=rows.filter(function(r){ return r._score>=30; }).length;
+  if(sum) sum.textContent='모의고사 응시자 '+rows.length+'명 · 주의 이상 '+flagged+'명';
+  if(!rows.length){ body.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--text-muted);">이 기간에 모의고사 응시가 없습니다.</div>'; return; }
+  var html='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:620px;">'+
+    '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
+    '<th style="padding:8px 10px;">위험도</th><th style="padding:8px 10px;">사용자</th><th style="padding:8px 10px;">상태</th>'+
+    '<th style="padding:8px 10px;text-align:right;">응시<br>(기간)</th><th style="padding:8px 10px;text-align:right;">응시<br>(누적)</th>'+
+    '<th style="padding:8px 10px;text-align:right;">빠른<br>채점</th><th style="padding:8px 10px;text-align:right;">최단<br>(분)</th>'+
+    '<th style="padding:8px 10px;text-align:right;">연습<br>문항수</th><th style="padding:8px 10px;">신호</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    var t=_anomTier(r._score);
+    var rs=r._reasons.map(function(x){ return x.k; }).join(', ')||'—';
+    var mind=(r.min_dur_sec&&r.min_dur_sec>0)?Math.round(r.min_dur_sec/60):'—';
+    html+='<tr style="border-bottom:1px solid rgba(53,70,73,.08);background:'+t.bg+';">'+
+      '<td style="padding:8px 10px;white-space:nowrap;"><span style="display:inline-block;min-width:34px;text-align:center;font-weight:700;color:'+t.color+';">'+r._score+'</span> <span style="color:'+t.color+';font-size:11px;">'+t.label+'</span></td>'+
+      '<td style="padding:8px 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(r.email||r.user_id)+'</td>'+
+      '<td style="padding:8px 10px;">'+(r.is_paid?'유료':'체험')+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;">'+(r.started_win||0)+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;">'+(r.total_attempts||0)+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+((r.fast_grades||0)>=MOCK_ANOMALY_CFG.fastGradeCount?'#dc2626':'inherit')+';">'+(r.fast_grades||0)+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;">'+mind+'</td>'+
+      '<td style="padding:8px 10px;text-align:right;">'+(r.study_answered||0)+'</td>'+
+      '<td style="padding:8px 10px;font-size:12px;color:'+t.color+';">'+_anomEsc(rs)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  body.innerHTML=html;
+}
 
 async function renderAnomaly(){
   if(!(SB_USER && SB_USER.id === ADMIN_UID)) return;
@@ -4213,7 +4300,7 @@ function adminTab(name){
     if(t) t.classList.toggle('active', k === name);
   });
   if(name === 'notices') renderAdminAnnList();
-  else if(name === 'anomaly') renderAnomaly();
+  else if(name === 'anomaly'){ renderAnomaly(); renderMockActivity(); }
   else if(name === 'unconfirmed') renderUnconfirmed();
 }
 
