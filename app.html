@@ -1637,6 +1637,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div class="admin-tabs">
     <button id="atab-notices" class="admin-tab active" onclick="adminTab('notices')">공지 관리</button>
     <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
+    <button id="atab-unconfirmed" class="admin-tab" onclick="adminTab('unconfirmed')">미확인 가입자</button>
     <button id="atab-qc" class="admin-tab" onclick="adminTab('qc')">문제 검토</button>
   </div>
 
@@ -1703,6 +1704,23 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <strong>판정 기준(현재 설정)</strong> — 아래 값을 넘으면 위험 신호가 켜집니다. 조정은 <code>ANOMALY_CFG</code>에서.
       <div id="anom-thresholds" style="margin-top:6px;"></div>
     </div>
+  </div>
+
+  <!-- ═══ 미확인 가입자 (이메일 미인증) ═══ -->
+  <div id="admin-panel-unconfirmed" style="display:none;">
+    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
+      가입은 했지만 <strong>확인 이메일 링크를 아직 클릭하지 않은</strong> 사용자 목록입니다. 대개 확인 메일이
+      스팸함으로 가서 못 본 경우이니, 아래 <strong>이메일을 복사해 안내 메일</strong>(스팸함 확인 요청)을 보내세요.
+      링크를 클릭하면 이 목록에서 자동으로 사라집니다. <em>(읽기 전용 · 이 화면은 아무것도 변경하지 않습니다)</em>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="btn-ghost" style="padding:7px 14px;font-size:13px;" onclick="renderUnconfirmed()">🔄 새로고침</button>
+      <button class="btn-navy" style="padding:7px 14px;font-size:13px;" onclick="copyUnconfirmedEmails()">📋 이메일 전체 복사 (BCC용)</button>
+      <div id="unconf-summary" style="font-size:13px;color:var(--text-muted);margin-left:auto;"></div>
+    </div>
+
+    <div id="unconf-body"><div style="padding:2rem;text-align:center;color:var(--text-muted);">불러오는 중…</div></div>
   </div>
 
   <!-- ═══ 문제 검토 (QC) ═══ -->
@@ -3917,11 +3935,100 @@ var _ADMIN_ANN = [];
 
 function openAdmin(){ adminTab('notices'); }
 
+// ── 관리자: 미확인 가입자(이메일 미인증) 목록 ──
+//   · get_unconfirmed_users() RPC(SECURITY DEFINER, 관리자 체크 내장)를 호출만 함
+//   · 함수 미배포 시 안내만 표시 → 앱 손상 없음 (이상탐지 패턴과 동일)
+var _UNCONF_ROWS = [];
+async function renderUnconfirmed(){
+  if(!(SB_USER && SB_USER.id === ADMIN_UID)) return;
+  var body = document.getElementById('unconf-body');
+  var summary = document.getElementById('unconf-summary');
+  body.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">불러오는 중…</div>';
+  if(summary) summary.textContent = '';
+  _UNCONF_ROWS = [];
+
+  var res;
+  try{
+    res = await sb.rpc('get_unconfirmed_users');
+    if(res.error) throw res.error;
+  }catch(e){
+    var code = (e && (e.code || '')) + '';
+    var msg  = (e && (e.message || '')) + '';
+    if(code === '42883' || code === 'PGRST202' || /function .*does not exist|could not find/i.test(msg)){
+      body.innerHTML =
+        '<div style="padding:1.5rem;border:1px dashed var(--border-clr);border-radius:12px;color:var(--text-mid);line-height:1.8;font-size:14px;">'+
+        '⚙️ 아직 조회 함수가 배포되지 않았습니다.<br>'+
+        '<code>get_unconfirmed_users()</code> 함수를 Supabase에서 실행하면 이 화면이 채워집니다.<br>'+
+        '(이 함수는 <em>읽기 전용</em>이라 기존 경로에 영향 없음)</div>';
+      return;
+    }
+    if(/NOT_AUTHORIZED/.test(msg)){
+      body.innerHTML = '<div style="padding:1.5rem;color:#dc2626;">권한이 없습니다 (관리자 전용).</div>';
+      return;
+    }
+    body.innerHTML = '<div style="padding:1.5rem;color:#dc2626;">조회 실패: '+_anomEsc(msg||'알 수 없는 오류')+'</div>';
+    return;
+  }
+
+  var rows = res.data || [];
+  _UNCONF_ROWS = rows;
+  if(summary) summary.textContent = '미확인 가입자 ' + rows.length + '명';
+
+  if(!rows.length){
+    body.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">이메일 미확인 가입자가 없습니다. 👍</div>';
+    return;
+  }
+
+  function fmtDate(s){
+    if(!s) return '—';
+    try{ var d = new Date(s); return d.toLocaleString(); }catch(e){ return _anomEsc(s); }
+  }
+
+  var html = ''+
+    '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:560px;">'+
+    '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
+      '<th style="padding:8px 10px;">이메일</th>'+
+      '<th style="padding:8px 10px;">이름</th>'+
+      '<th style="padding:8px 10px;">언어</th>'+
+      '<th style="padding:8px 10px;">가입 시각</th>'+
+    '</tr></thead><tbody>';
+  rows.forEach(function(r){
+    var name = [r.first_name, r.last_name].filter(Boolean).join(' ') || '—';
+    html +=
+      '<tr style="border-bottom:1px solid var(--border-clr);">'+
+        '<td style="padding:8px 10px;font-weight:600;color:var(--text-main);word-break:break-all;">'+_anomEsc(r.email)+'</td>'+
+        '<td style="padding:8px 10px;color:var(--text-mid);">'+_anomEsc(name)+'</td>'+
+        '<td style="padding:8px 10px;color:var(--text-muted);">'+_anomEsc(r.language||'—')+'</td>'+
+        '<td style="padding:8px 10px;color:var(--text-muted);white-space:nowrap;">'+fmtDate(r.created_at)+'</td>'+
+      '</tr>';
+  });
+  html += '</tbody></table></div>';
+  body.innerHTML = html;
+}
+
+function copyUnconfirmedEmails(){
+  if(!_UNCONF_ROWS.length){ showToast('복사할 이메일이 없습니다.'); return; }
+  var emails = _UNCONF_ROWS.map(function(r){ return r.email; }).filter(Boolean).join(', ');
+  function done(){ showToast(_UNCONF_ROWS.length + '개 이메일을 복사했습니다 (BCC에 붙여넣기).'); }
+  function fallback(){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = emails; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta); done();
+    }catch(e){ showToast('복사 실패 — 수동으로 선택해 복사하세요.'); }
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(emails).then(done).catch(fallback);
+  }else{ fallback(); }
+}
+
 function adminTab(name){
   // 알 수 없는 탭 이름은 공지 관리로 폴백 (기존 동작 보존)
-  if(name !== 'notices' && name !== 'anomaly' && name !== 'qc') name = 'notices';
-  var panels = { notices:'admin-panel-notices', anomaly:'admin-panel-anomaly', qc:'admin-panel-qc' };
-  var tabs   = { notices:'atab-notices',        anomaly:'atab-anomaly',        qc:'atab-qc' };
+  if(name !== 'notices' && name !== 'anomaly' && name !== 'unconfirmed' && name !== 'qc') name = 'notices';
+  var panels = { notices:'admin-panel-notices', anomaly:'admin-panel-anomaly', unconfirmed:'admin-panel-unconfirmed', qc:'admin-panel-qc' };
+  var tabs   = { notices:'atab-notices',        anomaly:'atab-anomaly',        unconfirmed:'atab-unconfirmed',        qc:'atab-qc' };
   Object.keys(panels).forEach(function(k){
     var p = document.getElementById(panels[k]);
     var t = document.getElementById(tabs[k]);
@@ -3930,6 +4037,7 @@ function adminTab(name){
   });
   if(name === 'notices') renderAdminAnnList();
   else if(name === 'anomaly') renderAnomaly();
+  else if(name === 'unconfirmed') renderUnconfirmed();
 }
 
 // ── 관리자 QC: question_id로 문제 풀이식 검토 (2026-07-08) ──
