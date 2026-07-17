@@ -1171,6 +1171,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div class="header-nav">
       <button class="nav-btn active" onclick="showScreen('dashboard');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span data-i18n="nav_dashboard">Dashboard</span></button>
       <button class="nav-btn" onclick="openStudy()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="nav_study">Study</span></button>
+      <button class="nav-btn" id="nav-mock" onclick="showScreen('mock');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="nav_mock">Mock Exam</span></button>
       <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
       <button class="nav-btn" onclick="showScreen('upload');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="nav_upload">Upload</span></button>
@@ -1191,11 +1192,20 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 <div class="mobile-nav-drawer" id="mobile-nav-drawer">
   <button class="mobile-nav-item active" id="mob-dashboard" onclick="showScreen('dashboard');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span data-i18n="mob_dashboard">Dashboard</span></button>
   <button class="mobile-nav-item" id="mob-study" onclick="openStudy()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="mob_study">Study</span></button>
+  <button class="mobile-nav-item" id="mob-mock" onclick="showScreen('mock');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="mob_mock">Mock Exam</span></button>
   <button class="mobile-nav-item" id="mob-review" onclick="showScreen('bookmarks');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="mob_review">Review</span></button>
   <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
   <button class="mobile-nav-item" id="mob-upload" onclick="showScreen('upload');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="mob_upload">Upload</span></button>
   <button class="mobile-nav-item" id="mob-settings" onclick="showScreen('settings');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
   <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
+</div>
+
+<!-- 모의고사 진행 중 전역 배너 (응시 화면 외 모든 화면 상단, 2026-07-17 피드백 5) -->
+<div id="mock-global-banner" style="display:none;background:var(--accent-tint);border-bottom:1px solid var(--accent-border);padding:8px 16px;font-size:13px;color:var(--text-main);line-height:1.5;">
+  <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span id="mock-global-banner-text" style="flex:1;min-width:200px;"></span>
+    <button class="btn-navy" style="padding:5px 14px;font-size:12.5px;white-space:nowrap;" onclick="mockResume()" data-i18n="mock_banner_resume">이어하기</button>
+  </div>
 </div>
 
 <div class="content">
@@ -1207,6 +1217,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
   <!-- All Parts grid (Phase 2-4 에서 활성화) -->
   <div id="dash-parts-grid-wrap"></div>
+
+  <!-- 모의고사 진입 카드 — 전체 Part(학습 시작) 섹션 아래 (2026-07-17 피드백 4) -->
+  <div id="dash-mock"></div>
 
   <!-- 공지사항 (Announcements) — Part 선택 버튼 아래 배치 -->
   <div id="dash-announcements"></div>
@@ -1747,6 +1760,144 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   </div>
 </div>
 
+<!-- ═══ MOCK EXAM (모의고사) — 실전 모의고사 (2026-07-17) ═══ -->
+<style>
+  /* 모의고사 전용 (Harbor 토큰 재사용) */
+  .mk-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);}
+  .mk-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+  .mk-badge{display:inline-block;background:var(--teal);color:#fff;font-size:11.5px;font-weight:700;border-radius:6px;padding:3px 9px;letter-spacing:.04em;}
+  .mk-part-tabs{display:flex;gap:8px;margin:14px 0;}
+  .mk-part-tab{flex:1;text-align:center;border:1.5px solid var(--border-clr);border-radius:12px;padding:10px 6px;cursor:pointer;background:var(--card-bg);font:inherit;}
+  .mk-part-tab .pt-n{font-size:15px;font-weight:800;color:var(--text-main);}
+  .mk-part-tab .pt-l{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+  .mk-part-tab.selected{background:var(--sel-bg);border-color:var(--sel-border);}
+  .mk-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text-mid);margin:6px 0 16px;}
+  .mk-meta b{color:var(--text-main);}
+  .mk-resume{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13.5px;color:#7c4a2d;}
+  .mk-lastscores{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .mk-chip{border:1px solid var(--border-clr);border-radius:8px;padding:6px 10px;font-size:12.5px;color:var(--text-mid);}
+  .mk-chip b{color:var(--text-main);}
+  .mk-locked{display:flex;align-items:center;gap:10px;background:#f2f5f6;border:1px dashed var(--border-hover);border-radius:12px;padding:14px;margin-top:14px;font-size:13px;color:var(--text-muted);}
+  /* 응시 바 */
+  .mk-exam-bar{position:sticky;top:0;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;box-shadow:var(--card-shadow);padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:12px;z-index:5;}
+  .mk-timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;color:var(--text-main);border:1px solid var(--border-clr);border-radius:8px;padding:4px 10px;}
+  .mk-timer.low{color:var(--danger-color);border-color:var(--danger-color);background:#fef2f2;}
+  .mk-progtext{font-size:13px;color:var(--text-mid);} .mk-progtext b{color:var(--text-main);}
+  .mk-exam-bar .sp{flex:1;}
+  .mk-prog-track{height:3px;background:var(--border-clr);border-radius:2px;overflow:hidden;margin:-6px 0 12px;}
+  .mk-prog-fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold-light));transition:width .2s;}
+  .mk-qcard{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:16px;box-shadow:var(--card-shadow);padding:20px;}
+  .mk-qmeta{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+  .mk-flagbtn{margin-left:auto;border:1px solid var(--border-clr);background:none;border-radius:8px;padding:5px 12px;font:inherit;font-size:12.5px;font-weight:700;color:var(--text-muted);cursor:pointer;}
+  .mk-flagbtn.on{color:var(--flag-color);border-color:var(--flag-color);background:#fef8ec;}
+  .mk-qtext{font-size:16.5px;color:var(--text-main);line-height:1.65;}
+  .mk-opts{margin-top:16px;display:flex;flex-direction:column;gap:9px;}
+  /* 보기: 좌측 바 하일라이트 제거(2026-07-17 피드백 2) · 문자/본문 폰트를 문제 본문(16.5px)과 통일(피드백 1·3) */
+  .mk-opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--border-clr);background:var(--card-bg);border-radius:12px;padding:13px 15px;cursor:pointer;font:inherit;}
+  .mk-opt:hover{border-color:var(--border-hover);}
+  .mk-opt.sel{background:var(--sel-bg);border-color:var(--sel-border);}
+  .mk-opt-l{flex:none;font-weight:800;color:var(--text-muted);font-size:16.5px;line-height:1.65;}
+  .mk-opt.sel .mk-opt-l{color:var(--sel-text);}
+  .mk-opt-t{font-size:16.5px;color:var(--text-mid);line-height:1.65;}
+  .mk-opt.sel .mk-opt-t{color:var(--sel-text);}
+  .mk-actions{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap;align-items:center;}
+  .mk-actions .sp{flex:1;}
+  /* 검토 화면 (별도) */
+  .mk-navgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;}
+  .mk-cell{aspect-ratio:1;border:1px solid var(--border-clr);border-radius:7px;font-size:13.5px;font-weight:700;color:var(--text-muted);background:var(--card-bg);cursor:pointer;position:relative;font-family:inherit;font-variant-numeric:tabular-nums;}
+  .mk-cell.done{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-text);}
+  .mk-cell.cur{border:2px solid var(--teal);color:var(--teal);}
+  .mk-cell.flag::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--flag-color);}
+  .mk-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--text-mid);margin-top:10px;}
+  .mk-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1.5px;}
+  /* 결과 */
+  .mk-result-hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap;}
+  .mk-ring{flex:none;width:150px;height:150px;border-radius:50%;position:relative;}
+  .mk-ring::before{content:"";position:absolute;inset:11px;background:var(--card-bg);border-radius:50%;}
+  .mk-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .mk-ring-n{font-size:32px;font-weight:800;color:var(--text-main);font-variant-numeric:tabular-nums;line-height:1.05;}
+  .mk-ring-d{font-size:13px;color:var(--text-muted);}
+  .mk-kpis{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .mk-kpi{border:1px solid var(--border-clr);border-radius:10px;padding:8px 12px;font-size:12.5px;color:var(--text-muted);}
+  .mk-kpi b{display:block;font-size:17px;color:var(--text-main);font-variant-numeric:tabular-nums;}
+  .mk-sect{font-size:14px;font-weight:800;color:var(--text-main);margin:22px 0 10px;}
+  /* 토픽 정답률: 토픽명 넓게, 바는 짧게 (2026-07-17 피드백 6) */
+  .mk-dom{display:grid;grid-template-columns:minmax(170px,2.3fr) 1fr 52px;gap:10px;align-items:center;font-size:13px;color:var(--text-mid);padding:5px 0;}
+  .mk-dom-track{height:14px;background:#edf1f2;border-radius:4px;overflow:hidden;}
+  .mk-dom-fill{height:100%;border-radius:0 4px 4px 0;}
+  .mk-dom-pct{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--text-main);}
+  .mk-weak{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .mk-weak-c{border:1px solid var(--border-clr);border-radius:12px;padding:12px;background:var(--card-bg);}
+  .mk-weak-code{font-size:11px;font-weight:800;color:var(--acc-low);letter-spacing:.06em;}
+  .mk-weak-t{font-size:13px;font-weight:700;color:var(--text-main);margin:4px 0 6px;line-height:1.4;}
+  .mk-weak-s{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums;}
+  .mk-qlist{margin-top:6px;border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;}
+  .mk-qrow{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card-bg);border-bottom:1px solid var(--border-clr);font-size:13px;color:var(--text-mid);cursor:pointer;}
+  .mk-qrow:last-child{border-bottom:0;} .mk-qrow:hover{background:#f6f9f9;}
+  .mk-ox{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;}
+  .mk-ox.o{background:var(--success-color);} .mk-ox.x{background:var(--danger-color);} .mk-ox.u{background:var(--text-muted);}
+  .mk-qnum{font-variant-numeric:tabular-nums;font-weight:700;color:var(--text-main);width:34px;}
+  .mk-qtopic{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mk-exp-badge{background:var(--accent-tint);color:#a4552f;border:1px solid var(--accent-border);font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 7px;}
+  .mk-hist-tb{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .mk-hist-tb th{text-align:left;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);font-weight:800;padding:8px 10px;border-bottom:1px solid var(--border-clr);}
+  .mk-hist-tb td{padding:10px;border-bottom:1px solid var(--border-clr);color:var(--text-mid);font-variant-numeric:tabular-nums;}
+  .mk-hist-tb td b{color:var(--text-main);}
+  /* 대시보드 모의고사 카드 호버 — dash-part-row 와 동일 관용구 (2026-07-17) */
+  .mk-dash-card{transition:transform .15s, box-shadow .15s, border-color .15s;}
+  @media(hover:hover){
+    .mk-dash-card:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+  }
+  .mk-dash-card:active{transform:translateY(-1px);opacity:.9;}
+  /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
+  .modal:has(#mk-review-box){max-width:720px;}
+  /* X 버튼-스크롤바 간격 확보 + 모바일 여백 (2026-07-17 피드백 2·3) */
+  .modal:has(#mk-review-box) .modal-close{margin-right:10px;margin-top:-4px;}
+  @media(max-width:640px){
+    .modal:has(#mk-review-box){padding:1.1rem;}
+    #mk-review-box{font-size:15px;}
+  }
+  @media(max-width:640px){
+    .mk-qtext{font-size:17.5px;} .mk-opt-t{font-size:17.5px;} .mk-opt-l{font-size:17.5px;}
+    .mk-weak{grid-template-columns:1fr;}
+    .mk-dom{grid-template-columns:minmax(120px,1.8fr) 1fr 46px;}
+    .mk-actions .btn-navy{order:-1;width:100%;}
+  }
+</style>
+
+<div id="screen-mock" class="screen"><div id="mock-hub" style="max-width:760px;margin:0 auto;"></div></div>
+
+<div id="screen-mock-exam" class="screen">
+  <div style="max-width:760px;margin:0 auto;">
+    <div class="mk-exam-bar">
+      <span class="mk-timer" id="mock-timer">3:30:00</span>
+      <span class="mk-progtext" id="mock-progtext">Question 1 of 100</span>
+      <span class="sp"></span>
+      <button class="btn-ghost" style="padding:8px 14px;font-size:13px;" onclick="mockOpenReview()" data-i18n="mock_review_btn">검토·제출</button>
+    </div>
+    <div class="mk-prog-track"><div class="mk-prog-fill" id="mock-prog-fill"></div></div>
+    <div id="mock-question-panel"><div id="mock-q-wrap"></div></div>
+    <div id="mock-review-panel" style="display:none;">
+      <div class="card" style="padding:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+          <div><b style="font-size:15px;color:var(--text-main);" data-i18n="mock_review_title">문항 검토</b>
+            <span style="font-size:12.5px;color:var(--text-muted);" data-i18n="mock_review_hint"> — 번호를 눌러 이동</span></div>
+          <button class="btn-ghost" style="padding:7px 12px;font-size:13px;white-space:nowrap;" onclick="mockBackToQ()" data-i18n="mock_back_q">← 문항으로</button>
+        </div>
+        <div class="mk-navgrid" id="mock-navgrid"></div>
+        <div class="mk-legend" id="mock-legend"></div>
+        <div style="margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span id="mock-submit-note" style="font-size:12.5px;color:var(--text-muted);"></span>
+          <button class="btn-navy" style="padding:11px 20px;" onclick="mockConfirmSubmit()" data-i18n="mock_submit_grade">제출하고 채점</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-mock-result" class="screen"><div id="mock-result-wrap" style="max-width:760px;margin:0 auto;"></div></div>
+<div id="screen-mock-history" class="screen"><div id="mock-history-wrap" style="max-width:760px;margin:0 auto;"></div></div>
+
 </div><!-- /content -->
 </div><!-- /app -->
 
@@ -1798,18 +1949,18 @@ function applyAdminVisibility(){
   var isAdmin = SB_USER && SB_USER.id === ADMIN_UID;
   var navBtns = document.querySelectorAll('.nav-btn');
 
-  // ── Upload 메뉴: Admin 전용 ──
-  if(navBtns[4]) navBtns[4].style.display = isAdmin ? '' : 'none';
+  // ── Upload 메뉴: Admin 전용 (모의고사 nav 삽입으로 index 4→5) ──
+  if(navBtns[5]) navBtns[5].style.display = isAdmin ? '' : 'none';
   var mobUpload = document.getElementById('mob-upload');
   if(mobUpload) mobUpload.style.display = isAdmin ? '' : 'none';
 
   // ── Settings(Admin) vs Sign Out(일반 유저) ──
   // ── Settings(Admin) vs Sign Out(일반 유저) ── (2026-07-08 원복: 일반 유저 진입점은 배너+이메일 딥링크로 대체)
-  if(navBtns[5]){
-    navBtns[5].innerHTML = isAdmin
+  if(navBtns[6]){
+    navBtns[6].innerHTML = isAdmin
       ? (navSvg('settings') + '<span>' + t('nav_settings') + '</span>')
       : (navSvg('account')  + '<span>' + t('nav_account') + '</span>');
-    navBtns[5].onclick = function(){ showScreen('settings'); closeDrawer(); };
+    navBtns[6].onclick = function(){ showScreen('settings'); closeDrawer(); };
   }
   var mobSettings = document.getElementById('mob-settings');
   if(mobSettings){
@@ -1828,8 +1979,8 @@ function applyAdminVisibility(){
   var copyBtn = document.getElementById('q-copy-btn');
   if(copyBtn) copyBtn.style.display = isAdmin ? '' : 'none';
 
-  // ── 이상 탐지 메뉴: Admin 전용 (nav 인덱스 6, 목록 끝에 append됨) ──
-  if(navBtns[6]) navBtns[6].style.display = isAdmin ? '' : 'none';
+  // ── 이상 탐지 메뉴: Admin 전용 (모의고사 nav 삽입으로 index 6→7, 목록 끝) ──
+  if(navBtns[7]) navBtns[7].style.display = isAdmin ? '' : 'none';
   var mobAnom = document.getElementById('mob-anomaly');
   if(mobAnom) mobAnom.style.display = isAdmin ? '' : 'none';
 }
@@ -3223,6 +3374,14 @@ var UI_TEXT = {
   // 헤더 / 메뉴
   nav_dashboard: {ko:'대시보드', en:'Dashboard'},
   nav_study:     {ko:'학습',     en:'Study'},
+  nav_mock:      {ko:'모의고사', en:'Mock Exam'},
+  mob_mock:      {ko:'모의고사', en:'Mock Exam'},
+  mock_review_btn:   {ko:'검토·제출', en:'Review & Submit'},
+  mock_review_title: {ko:'문항 검토', en:'Question Review'},
+  mock_review_hint:  {ko:' — 번호를 눌러 이동', en:' — tap a number to jump'},
+  mock_back_q:       {ko:'← 문항으로', en:'← Back to question'},
+  mock_submit_grade: {ko:'제출하고 채점', en:'Submit & grade'},
+  mock_banner_resume:{ko:'이어하기', en:'Resume'},
   nav_review:    {ko:'복습',     en:'Review'},
   nav_statistics:{ko:'통계',     en:'Statistics'},
   nav_upload:    {ko:'업로드',   en:'Upload'},
@@ -3449,6 +3608,10 @@ function applyLang(){
   try{ if(typeof updateSyncStatus === 'function') updateSyncStatus(); }catch(e){}
   // Review 탭 뱃지/세션 목록도 언어 갱신
   try{ if(typeof renderReviewSessions === 'function') renderReviewSessions(); }catch(e){}
+  // 모의고사 화면(활성 시)도 선택 언어로 재렌더 (mL()로 그려지므로 토글 시 갱신 필요)
+  try{ if(document.querySelector('#screen-mock.active') && typeof renderMockHub==='function') renderMockHub(); }catch(e){}
+  try{ if(document.querySelector('#screen-mock-history.active') && typeof renderMockHistory==='function') renderMockHistory(); }catch(e){}
+  try{ if(document.querySelector('#screen-mock-result.active') && typeof renderMockResult==='function' && Mock.result) renderMockResult(Mock.result); }catch(e){}
 }
 function toggleLang(){
   LANG = (LANG === 'ko') ? 'en' : 'ko';
@@ -3686,15 +3849,22 @@ function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={dashboard:0,'quiz-setup':1,bookmarks:2,statistics:3,upload:4,settings:5,anomaly:6};
+  const map={dashboard:0,'quiz-setup':1,mock:2,bookmarks:3,statistics:4,upload:5,settings:6,anomaly:7};
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
-  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',bookmarks:'mob-review',statistics:'mob-statistics',upload:'mob-upload',settings:'mob-settings',anomaly:'mob-anomaly'};
+  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',bookmarks:'mob-review',statistics:'mob-statistics',upload:'mob-upload',settings:'mob-settings',anomaly:'mob-anomaly'};
   document.querySelectorAll('.mobile-nav-item').forEach(b=>b.classList.remove('active'));
   if(mobMap[name]) { const el=document.getElementById(mobMap[name]); if(el) el.classList.add('active'); }
+  // 모의고사 하위 화면(exam/result/history)도 모의고사 메뉴를 활성 표시
+  if(name.indexOf('mock')===0){ var _nm=document.getElementById('nav-mock'); if(_nm)_nm.classList.add('active');
+    var _mm=document.getElementById('mob-mock'); if(_mm)_mm.classList.add('active'); }
+  // 응시 중 언어 토글 숨김 (실전 재현 — 확정 결정 ④: 응시 화면은 영어 전용, 한글은 복습에서만)
+  var _ls=document.getElementById('lang-seg'); if(_ls) _ls.style.visibility=(name==='mock-exam')?'hidden':'visible';
   if(name==='dashboard') { renderDashboard(); resetResumeBadgeDismiss(); }
   if(name==='bookmarks') renderBookmarks();
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
+  if(name==='mock') renderMockHub();
+  if(name==='mock-history') renderMockHistory();
   // 화면 전환 후에도 Resume 배지 상태 갱신
   updateResumeBadge();
 }
@@ -3818,6 +3988,7 @@ function renderDashboard(){
   if(!S.questions.some(q => q.part === focusPart)) focusPart = 'Part 1';
 
   renderDashHero(focusPart);
+  try{ renderMockDashCard(); }catch(e){}
   renderDashPartsGrid();
   renderDashWeakTopics();
   renderDashRecent2();
@@ -5046,6 +5217,13 @@ function buildTPIQQueue(pool, count){
 // ══════════════════════════════════════════════════════
 async function startQuiz(){
   if(!canStartQuiz()) return;
+  // 모의고사 진행 중 가드 (2026-07-17): 벽시계가 계속 흐름을 고지 후 진행 (관리자 QC 모드는 제외)
+  try{
+    if(!S.adminQcMode && typeof mockLoadLS==='function' && !(typeof Mock!=='undefined' && Mock._practiceAck)){
+      var _mlive=mockLoadLS();
+      if(_mlive && _mlive.attemptId){ mockPracticeGuardModal(); return; }
+    }
+  }catch(e){}
   clearInterval(S.timerInt);
   let pool=getPool();
   if(!pool.length){
@@ -6641,6 +6819,481 @@ function showToast(msg){
   }
   const t=document.getElementById('toast'); t.textContent=msg;
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══════════════════════════════════════════════════════
+// MOCK EXAM (모의고사) 모듈 — 2026-07-17
+//   RPC: start_mock_exam(p_part) / grade_mock_exam(p_attempt_id,p_answers)
+//   본문 get_question_payload · 복습 get_review_payload (재사용)
+//   설계: 100문항 / 3.5h 벽시계 / 영어 전용 / 동적추출 / 대시보드와 분리
+// ══════════════════════════════════════════════════════
+var MOCK_DURATION_SEC = 3.5*60*60;   // 12600초
+var MOCK_LS_BASE = 'ea_mock_live';
+// LS 키는 사용자별 스코프 — 공용 브라우저에서 타인의 진행 중 응시가 보이는 것 방지 (2026-07-17 수정)
+function mockLsKey(){ return MOCK_LS_BASE + '_' + ((typeof SB_USER!=='undefined' && SB_USER && SB_USER.id) ? SB_USER.id : 'anon'); }
+var MOCK_PARTMETA = { 1:{l:'Individuals'}, 2:{l:'Businesses'}, 3:{l:'Representation'} };
+var Mock = { attemptId:null, part:null, ids:[], qmap:{}, answers:{}, flags:{},
+             curIdx:0, startedAt:null, timerInt:null, result:null, selPart:1 };
+
+function mL(ko,en){ return (LANG==='en') ? en : ko; }
+function mockIsAdmin(){ return (typeof SB_USER!=='undefined' && SB_USER && typeof ADMIN_UID!=='undefined' && SB_USER.id===ADMIN_UID); }
+function mockCanUse(){ return !!S.isPaid || mockIsAdmin(); }
+function mockFmt(sec){ if(sec<0)sec=0; var h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=Math.floor(sec%60);
+  return h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
+function mockRemaining(){ if(!Mock.startedAt) return MOCK_DURATION_SEC;
+  return Math.max(0, MOCK_DURATION_SEC - Math.floor((Date.now()-Mock.startedAt)/1000)); }
+
+// ── 로컬 저장(복구+벽시계) ──
+function mockPersist(){
+  try{ localStorage.setItem(mockLsKey(), JSON.stringify({
+    attemptId:Mock.attemptId, part:Mock.part, ids:Mock.ids,
+    answers:Mock.answers, flags:Mock.flags, startedAt:Mock.startedAt, curIdx:Mock.curIdx
+  })); }catch(e){}
+}
+function mockLoadLS(){ try{ var r=localStorage.getItem(mockLsKey()); return r?JSON.parse(r):null; }catch(e){ return null; } }
+function mockClearLS(){ try{ localStorage.removeItem(mockLsKey()); localStorage.removeItem(MOCK_LS_BASE); }catch(e){} }
+// 진행 중 응시 폐기: 타이머·LS·메모리 상태를 함께 정리 (버려진 응시가 만료 자동제출되는 것 방지)
+function mockDiscard(){
+  if(Mock.timerInt){ clearInterval(Mock.timerInt); Mock.timerInt=null; }
+  mockClearLS(); Mock.attemptId=null; Mock.result=null; Mock._practiceAck=false;
+  mockGlobalBannerTick();
+}
+
+// ── 전역 진행 배너 (응시 화면 외 모든 화면 상단, 1초 갱신) ──
+function mockGlobalBannerTick(){
+  var el=document.getElementById('mock-global-banner'); if(!el) return;
+  var live=mockLoadLS();
+  var onExam=document.querySelector('#screen-mock-exam.active');
+  var onHub=document.querySelector('#screen-mock.active');   // 허브엔 자체 배너 있음
+  var loggedIn=(typeof SB_USER!=='undefined' && SB_USER);
+  if(!live || !live.attemptId || onExam || onHub || !loggedIn){ el.style.display='none'; return; }
+  var rem=Math.max(0, MOCK_DURATION_SEC - Math.floor((Date.now()-live.startedAt)/1000));
+  var ans=Object.keys(live.answers||{}).length;
+  var tx=document.getElementById('mock-global-banner-text');
+  if(tx) tx.innerHTML = '⏱ <b>'+mL('모의고사 진행 중','Mock exam in progress')+'</b> — Part '+live.part+
+    ' · '+ans+'/100 '+mL('응답','answered')+' · <b>'+mL('남은','left')+' '+mockFmt(rem)+'</b> · '+
+    (rem>0 ? mL('만료 시 자동 제출','auto-submits at expiry') : mL('시간 종료 — 이어하기를 누르면 채점됩니다','time up — Resume to grade'));
+  el.style.display='block';
+}
+setInterval(mockGlobalBannerTick, 1000);
+
+// ── 연습 시작 가드: 모의고사 진행 중 연습 세션 시작 시 확인 (2026-07-17 피드백 5) ──
+function mockPracticeGuardModal(){
+  var live=mockLoadLS(); if(!live){ return; }
+  var rem=Math.max(0, MOCK_DURATION_SEC - Math.floor((Date.now()-live.startedAt)/1000));
+  document.getElementById('modal-content').innerHTML =
+    '<div style="text-align:center;padding:1rem 0;"><div style="font-size:36px;margin-bottom:.6rem;">⏱</div>'+
+    '<div style="font-size:17px;font-weight:800;margin-bottom:.5rem;">'+mL('모의고사가 진행 중입니다','A mock exam is in progress')+'</div>'+
+    '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem;">'+
+    mL('남은 시간 <b>'+mockFmt(rem)+'</b> — 연습을 시작해도 모의고사 타이머는 멈추지 않고 계속 흐릅니다.',
+       '<b>'+mockFmt(rem)+'</b> left — the mock timer keeps running while you practice.')+'</div>'+
+    '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="closeModal();mockResume()">'+mL('모의고사 이어하기','Resume the mock exam')+'</button>'+
+    '<button class="btn-ghost" style="width:100%;" onclick="closeModal();Mock._practiceAck=true;startQuiz()">'+mL('알겠습니다 — 연습 계속','Got it — continue to practice')+'</button></div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// ── 진입 허브 ──
+function renderMockHub(){
+  var el=document.getElementById('mock-hub'); if(!el) return;
+  var paid=mockCanUse();
+  var live=mockLoadLS();
+  // 제목 (학습 화면과 동일: section-title + subtitle)
+  var html =
+    '<div style="margin-bottom:1.25rem;">'+
+      '<div class="section-title">'+mL('실전 모의고사','Mock Exam')+'</div>'+
+      '<div style="font-size:14px;color:var(--text-muted);">'+mL('실제 시험과 동일한 조건으로 응시하세요.','Sit a full exam under real exam conditions.')+'</div>'+
+    '</div>';
+  // 이어하기 배너 (진행 중) 또는 무료 안내 배너 — 학습의 trial-quota-banner 스타일
+  if(live && live.attemptId){
+    var rem=Math.max(0, MOCK_DURATION_SEC - Math.floor((Date.now()-live.startedAt)/1000));
+    var ans=Object.keys(live.answers||{}).length;
+    html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-main);line-height:1.6;">'+
+      '⏱ <b>'+mL('진행 중인 모의고사','Mock exam in progress')+'</b> — Part '+live.part+' · '+ans+'/100 '+mL('응답','answered')+
+      ' · <b>'+mL('남은','left')+' '+mockFmt(rem)+'</b> · '+mL('만료 시 자동 제출','auto-submits at expiry')+
+      '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">'+mL('일시정지가 아닙니다 — 자리를 비운 시간도 차감됩니다 · 아래 "이어하기"로 계속하세요','Not a pause — time away is deducted · use “Resume” below')+'</div></div>';
+  } else if(!paid){
+    html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-main);line-height:1.6;">'+
+      '🔒 '+mL('모의고사는 유료 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.','Mock exams are for paid members. You can preview the setup below.')+'</div>';
+  }
+  // 파트 선택 (학습 part-picker 와 동일한 setup-icon-btn 스타일)
+  var parts='';
+  for(var p=1;p<=3;p++){
+    parts += '<button class="setup-icon-btn'+(Mock.selPart===p?' selected':'')+'" onclick="mockSelectPart('+p+')">'+
+      '<div class="setup-icon-circle">'+PART_META['Part '+p].icon+'</div>'+
+      '<div class="setup-icon-label">Part '+p+'</div></button>';
+  }
+  html += '<div class="start-card">'+
+    '<div class="setup-section-label">'+mL('파트 선택','Choose a part')+'</div>'+
+    '<div class="setup-icon-grid setup-icon-grid-3">'+parts+'</div>'+
+    '<div class="setup-divider"></div>'+
+    '<div style="font-size:13px;color:var(--text-mid);line-height:1.95;">'+
+      '• '+mL('문항 100 (채점 85 + 실험 15)','100 questions (85 scored + 15 experimental)')+'<br>'+
+      '• '+mL('제한시간 3시간 30분 — 실제 시험과 동일','3h 30m limit — same as the real exam')+'<br>'+
+      '• '+mL('응시마다 새 조합으로 각 파트마다 3개의 시험 세트 제공됩니다.','A fresh combination every attempt — 3 exam sets per part.')+'</div>'+
+    '<div class="mk-lastscores" id="mock-lastscores"></div>'+
+    (function(){
+      if(!paid){
+        return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 '+mL('유료 회원 전용 — 업그레이드','Paid only — Upgrade')+'</button>';
+      }
+      if(live && live.attemptId){
+        return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockResume()">'+mL('이어하기','Resume')+'</button>'+
+          '<button class="btn-ghost" style="width:100%;margin-top:8px;" onclick="mockStart()">'+mL('새 모의고사로 다시 시작','Start a new mock exam')+'</button>';
+      }
+      return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">'+mL('새 모의고사 시작','Start new mock exam')+'</button>';
+    })()+
+    '<div style="margin-top:12px;text-align:center;"><a href="#" onclick="showScreen(\'mock-history\');return false;" style="font-size:13px;color:var(--teal);font-weight:700;text-decoration:none;">'+
+      mL('모의고사 이력 보기 →','View history →')+'</a></div>'+
+  '</div>';
+  el.innerHTML=html;
+  if(paid) mockFillLastScores();
+}
+async function mockFillLastScores(){
+  var box=document.getElementById('mock-lastscores'); if(!box) return;
+  try{
+    var res=await sb.from('mock_attempts').select('part,score_correct,score_total,started_at')
+      .eq('status','graded').eq('part',Mock.selPart).order('started_at',{ascending:false}).limit(20);
+    if(res.error||!res.data||!res.data.length){ box.innerHTML=''; return; }
+    var last=res.data[0], best=res.data.reduce(function(a,b){return (b.score_correct>a.score_correct)?b:a;});
+    box.innerHTML='<span class="mk-chip">'+mL('최근','Last')+': <b>'+last.score_correct+'/'+last.score_total+'</b></span>'+
+      '<span class="mk-chip">'+mL('최고','Best')+': <b>'+best.score_correct+'/'+best.score_total+'</b></span>';
+  }catch(e){ box.innerHTML=''; }
+}
+function mockSelectPart(p){ Mock.selPart=p; renderMockHub(); }
+
+// ── 대시보드 진입 카드 ──
+function renderMockDashCard(){
+  var el=document.getElementById('dash-mock'); if(!el) return;
+  var paid=mockCanUse(); var live=mockLoadLS();
+  var sub = (live&&live.attemptId)
+    ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
+    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
+  el.innerHTML =
+    '<div class="start-card mk-dash-card" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;" onclick="showScreen(\'mock\')">'+
+    '<div><div style="font-size:16px;font-weight:700;color:var(--text-main);">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
+    '<div style="font-size:12.5px;color:var(--text-muted);margin-top:3px;">'+sub+'</div></div>'+
+    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="9 18 15 12 9 6"/></svg>'+
+    '</div>';
+}
+
+// ── 시작 ──
+async function mockStart(){
+  if(!mockCanUse()){ showPricingModal(); return; }
+  var live=mockLoadLS();
+  if(live && live.attemptId){
+    document.getElementById('modal-content').innerHTML =
+      '<div style="text-align:center;padding:1rem 0;"><div style="font-size:36px;margin-bottom:.6rem;">⚠️</div>'+
+      '<div style="font-size:17px;font-weight:800;margin-bottom:.5rem;">'+mL('진행 중인 모의고사가 있습니다','A mock exam is in progress')+'</div>'+
+      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem;">'+
+      mL('새로 시작하면 진행 중인 응시는 버려집니다(채점되지 않음).','Starting a new one discards the in-progress attempt (it will not be graded).')+'</div>'+
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="closeModal();mockDiscard();_mockStartGo()">'+mL('새로 시작','Start new')+'</button>'+
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal();mockResume()">'+mL('이어하기','Resume')+'</button></div>';
+    document.getElementById('modal-bg').classList.add('open');
+    return;
+  }
+  _mockStartGo();
+}
+async function _mockStartGo(){
+  var part=Mock.selPart;
+  // 이전 응시의 타이머가 살아있으면 정리 (버려진 attempt 자동제출 방지)
+  if(Mock.timerInt){ clearInterval(Mock.timerInt); Mock.timerInt=null; }
+  showToast(mL('모의고사 준비 중…','Preparing mock exam…'));
+  try{
+    var res=await sb.rpc('start_mock_exam',{ p_part:part });
+    if(res.error) throw res.error;
+    var row=Array.isArray(res.data)?res.data[0]:res.data;
+    if(!row||!row.question_ids||!row.question_ids.length) throw new Error('EMPTY');
+    Mock.attemptId=row.attempt_id; Mock.part=part; Mock.ids=row.question_ids;
+    Mock.qmap={}; Mock.answers={}; Mock.flags={}; Mock.curIdx=0; Mock.startedAt=Date.now(); Mock.result=null; Mock._practiceAck=false;
+    mockPersist();
+    var ok=await mockLoadPayloads(Mock.ids);
+    if(!ok){ showToast(mL('문항 로드 실패 — 다시 시도해주세요','Failed to load questions — please retry')); return; }
+    showScreen('mock-exam');
+    mockBackToQ();          // 이전 응시가 검토 패널에서 끝났어도 문항 패널로 리셋
+    mockRenderQuestion(0);
+    mockStartTimer();
+  }catch(e){
+    var m=(e&&e.message)||''+e;
+    if(m.indexOf('NOT_PAID')>=0){ showPricingModal(); }
+    else if(m.indexOf('POOL_TOO_SMALL')>=0){ showToast(mL('이 파트의 모의고사 풀이 아직 준비되지 않았습니다.','Mock pool for this part is not ready yet.')); }
+    else { showToast(mL('시작 실패: ','Start failed: ')+m); }
+    console.error('[mock start]', e);
+  }
+}
+async function mockLoadPayloads(ids){
+  try{
+    for(var i=0;i<ids.length;i+=100){
+      var chunk=ids.slice(i,i+100);
+      var res=await sb.rpc('get_question_payload',{ p_ids:chunk });
+      if(res.error) throw res.error;
+      (res.data||[]).forEach(function(r){ Mock.qmap[r.question_id]={text:r.text,options:r.options}; });
+    }
+    return true;
+  }catch(e){ console.error('[mock payload]',e); return false; }
+}
+
+// ── 응시(한 문항씩) ──
+function mockRenderQuestion(idx){
+  Mock.curIdx=idx; mockPersist();
+  var id=Mock.ids[idx], q=Mock.qmap[id]||{};
+  var opts=q.options||[]; var sel=Mock.answers[id]; var flagged=!!Mock.flags[id];
+  var optHtml='';
+  for(var i=0;i<opts.length;i++){
+    optHtml += '<button class="mk-opt'+(sel===i?' sel':'')+'" onclick="mockSelect('+i+')">'+
+      '<span class="mk-opt-l">'+String.fromCharCode(65+i)+'</span><span class="mk-opt-t">'+mockEsc(opts[i])+'</span></button>';
+  }
+  document.getElementById('mock-q-wrap').innerHTML =
+    '<div class="mk-qcard"><div class="mk-qmeta"><span class="mk-badge">Part '+Mock.part+'</span>'+
+    '<span class="q-badge-gray" style="font-size:11.5px;color:var(--text-muted);border:1px solid var(--border-clr);border-radius:6px;padding:3px 9px;">Q'+(idx+1)+' / 100</span>'+
+    '<button class="mk-flagbtn'+(flagged?' on':'')+'" onclick="mockToggleFlag()">⚑ '+mL('검토 표시','Mark for review')+'</button></div>'+
+    '<div class="mk-qtext">'+mockEsc(q.text||mL('불러오는 중…','Loading…'))+'</div>'+
+    '<div class="mk-opts">'+optHtml+'</div>'+
+    '<div class="mk-actions"><button class="btn-ghost" onclick="mockPrev()"'+(idx===0?' disabled style="opacity:.4;"':'')+'>← '+mL('이전','Prev')+'</button>'+
+    '<span class="sp"></span><button class="btn-ghost" onclick="mockNext()">'+(idx===99?mL('검토·제출','Review & submit'):mL('다음','Next')+' →')+'</button></div></div>';
+  mockUpdateProgress();
+}
+function mockEsc(s){ s=(s==null?'':''+s); return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function mockSelect(i){ var id=Mock.ids[Mock.curIdx]; Mock.answers[id]=i; mockPersist();
+  document.querySelectorAll('#mock-q-wrap .mk-opt').forEach(function(b,bi){ b.classList.toggle('sel', bi===i); });
+  mockUpdateProgress(); }
+function mockToggleFlag(){ var id=Mock.ids[Mock.curIdx]; Mock.flags[id]=!Mock.flags[id]; mockPersist();
+  var b=document.querySelector('#mock-q-wrap .mk-flagbtn'); if(b) b.classList.toggle('on', !!Mock.flags[id]);
+  mockUpdateProgress(); }
+function mockPrev(){ if(Mock.curIdx>0) mockRenderQuestion(Mock.curIdx-1); }
+function mockNext(){ if(Mock.curIdx<99) mockRenderQuestion(Mock.curIdx+1); else mockOpenReview(); }
+function mockGoto(idx){ mockBackToQ(); mockRenderQuestion(idx); }
+function mockUpdateProgress(){
+  var ans=Object.keys(Mock.answers).length, fl=Object.values(Mock.flags).filter(Boolean).length;
+  var pt=document.getElementById('mock-progtext');
+  if(pt) pt.innerHTML='Question <b>'+(Mock.curIdx+1)+'</b> of 100 · '+mL('응답','answered')+' '+ans+' · '+mL('플래그','flagged')+' '+fl;
+  var pf=document.getElementById('mock-prog-fill'); if(pf) pf.style.width=(ans)+'%';
+}
+
+// ── 검토 화면(별도) ──
+function mockOpenReview(){
+  document.getElementById('mock-question-panel').style.display='none';
+  document.getElementById('mock-review-panel').style.display='block';
+  mockRenderNavGrid();
+  var ans=Object.keys(Mock.answers).length;
+  document.getElementById('mock-submit-note').textContent=mL('미응답 '+(100-ans)+'문항은 오답 처리됩니다','Unanswered ('+(100-ans)+') count as wrong');
+}
+function mockBackToQ(){
+  document.getElementById('mock-review-panel').style.display='none';
+  document.getElementById('mock-question-panel').style.display='block';
+}
+function mockRenderNavGrid(){
+  var g=document.getElementById('mock-navgrid'); var h='';
+  for(var i=0;i<100;i++){
+    var id=Mock.ids[i]; var done=(Mock.answers[id]!==undefined); var fl=!!Mock.flags[id]; var cur=(i===Mock.curIdx);
+    h += '<button class="mk-cell'+(done?' done':'')+(fl?' flag':'')+(cur?' cur':'')+'" onclick="mockGoto('+i+')">'+(i+1)+'</button>';
+  }
+  g.innerHTML=h;
+  var ans=Object.keys(Mock.answers).length, fl=Object.values(Mock.flags).filter(Boolean).length;
+  document.getElementById('mock-legend').innerHTML=
+    '<span><i style="background:var(--sel-bg);border:1px solid var(--sel-border);"></i>'+mL('응답','Answered')+' '+ans+'</span>'+
+    '<span><i style="background:var(--card-bg);border:1px solid var(--border-clr);"></i>'+mL('미응답','Unanswered')+' '+(100-ans)+'</span>'+
+    '<span><i style="background:#fef8ec;border:1px solid var(--flag-color);"></i>'+mL('검토표시','Flagged')+' '+fl+'</span>'+
+    '<span><i style="background:var(--card-bg);border:2px solid var(--teal);"></i>'+mL('현재','Current')+'</span>';
+}
+
+// ── 타이머(벽시계) ──
+function mockStartTimer(){
+  if(Mock.timerInt) clearInterval(Mock.timerInt);
+  mockTickTimer();
+  Mock.timerInt=setInterval(mockTickTimer,1000);
+}
+function mockTickTimer(){
+  var rem=mockRemaining(); var el=document.getElementById('mock-timer');
+  if(el){ el.textContent=mockFmt(rem); el.classList.toggle('low', rem<1800); }
+  if(rem<=0){ clearInterval(Mock.timerInt); Mock.timerInt=null;
+    showToast(mL('시간 종료 — 자동 제출합니다','Time is up — submitting')); mockSubmit(); }
+}
+
+// ── 제출/채점 ──
+function mockConfirmSubmit(){
+  var ans=Object.keys(Mock.answers).length, un=100-ans, fl=Object.values(Mock.flags).filter(Boolean).length;
+  document.getElementById('modal-content').innerHTML =
+    '<div style="padding:.5rem 0;"><div style="font-size:17px;font-weight:800;margin-bottom:.5rem;">'+mL('모의고사를 제출할까요?','Submit the mock exam?')+'</div>'+
+    '<div style="font-size:14px;color:var(--text-mid);line-height:1.6;">'+mL('제출하면 채점되며 응시 화면으로 돌아올 수 없습니다.','Once submitted it is graded and you cannot return to the exam.')+'</div>'+
+    (un>0?'<div style="background:#fef2f2;border:1px solid #fecaca;color:var(--danger-color);border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:700;margin:14px 0;">'+
+      mL('미응답 '+un+'문항 — 오답으로 처리됩니다','Unanswered '+un+' — will count as wrong')+'</div>':'<div style="height:8px;"></div>')+
+    (fl>0?'<div style="font-size:13px;color:var(--text-mid);">⚑ '+mL('검토 표시 '+fl+'문항이 있습니다.','You have '+fl+' flagged question(s).')+'</div>':'')+
+    '<div style="display:flex;gap:8px;margin-top:18px;justify-content:flex-end;">'+
+    '<button class="btn-ghost" onclick="closeModal()">'+mL('계속 풀기','Keep going')+'</button>'+
+    '<button class="btn-navy" onclick="closeModal();mockSubmit()">'+mL('제출하고 채점','Submit & grade')+'</button></div></div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+async function mockSubmit(){
+  if(Mock.timerInt){ clearInterval(Mock.timerInt); Mock.timerInt=null; }
+  if(!Mock.attemptId){ return; }
+  var answers=Mock.ids.map(function(id){ return { question_id:id, choice:(Mock.answers[id]!==undefined?Mock.answers[id]:-1) }; });
+  showToast(mL('채점 중…','Grading…'));
+  try{
+    var res=await sb.rpc('grade_mock_exam',{ p_attempt_id:Mock.attemptId, p_answers:answers });
+    if(res.error) throw res.error;
+    Mock.result=res.data; Mock.result.part=Mock.part;
+    mockClearLS(); Mock._practiceAck=false;
+    renderMockResult(Mock.result);
+    showScreen('mock-result');
+  }catch(e){
+    var gm=(e&&e.message)||''+e; console.error('[mock grade]',e);
+    if(gm.indexOf('NOT_OWNER')>=0 || gm.indexOf('ATTEMPT_NOT_FOUND')>=0 || gm.indexOf('ATTEMPT_ABANDONED')>=0){
+      mockDiscard(); showToast(mL('유효하지 않은 응시라 정리했습니다','Invalid attempt — cleared')); showScreen('mock'); return;
+    }
+    showToast(mL('채점 실패: ','Grading failed: ')+gm);
+  }
+}
+
+// ── 결과 ──
+function renderMockResult(r){
+  var pq=(r.per_question)||[]; var part=r.part||Mock.part||'';
+  var scored=pq.filter(function(x){return x.is_scored;});
+  var correct=r.score_correct, total=r.score_total||scored.length||85;
+  var wrong=scored.filter(function(x){return !x.is_correct && x.choice!==-1;}).length;
+  var unans=scored.filter(function(x){return x.choice===-1;}).length;
+  var exper=pq.filter(function(x){return !x.is_scored;}).length;
+  var pct=total?Math.round(correct/total*100):0;
+  // 토픽별(채점 대상)
+  var byT={};
+  scored.forEach(function(x){ var k=x.outline_code||x.topic||'—'; if(!byT[k])byT[k]={code:k,topic:x.topic||k,c:0,n:0};
+    byT[k].n++; if(x.is_correct)byT[k].c++; });
+  var topics=Object.values(byT);
+  var weak=topics.slice().filter(function(t){return t.n>0;})
+    .sort(function(a,b){ return (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).slice(0,3);
+  var domHtml=topics.slice().sort(function(a,b){return b.n-a.n;}).slice(0,10).map(function(t){
+    var p=Math.round(t.c/t.n*100);
+    return '<div class="mk-dom"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+mockEsc(t.topic)+'</span>'+
+      '<div class="mk-dom-track"><div class="mk-dom-fill" style="width:'+p+'%;background:'+accuracyColor(p)+';"></div></div>'+
+      '<span class="mk-dom-pct">'+p+'%</span></div>';
+  }).join('');
+  var weakHtml=weak.map(function(t){ return '<div class="mk-weak-c"><div class="mk-weak-code">'+mockEsc(t.code)+'</div>'+
+    '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div><div class="mk-weak-s">'+t.c+'/'+t.n+' · '+Math.round(t.c/t.n*100)+'%</div></div>'; }).join('');
+  var rows=pq.map(function(x,i){
+    var cls=(x.choice===-1)?'u':(x.is_correct?'o':'x'); var mk=(x.choice===-1)?'–':(x.is_correct?'O':'X');
+    return '<div class="mk-qrow" onclick="mockReviewItem(\''+x.question_id+'\')"><span class="mk-ox '+cls+'">'+mk+'</span>'+
+      '<span class="mk-qnum">'+(i+1)+'</span><span class="mk-qtopic">'+mockEsc(x.topic||x.outline_code||'')+'</span>'+
+      (x.is_scored?'':'<span class="mk-exp-badge">'+mL('채점 미반영','Unscored')+'</span>')+
+      '<span style="color:var(--text-muted);font-size:12px;">'+mL('해설','Review')+' →</span></div>';
+  }).join('');
+  document.getElementById('mock-result-wrap').innerHTML =
+    '<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 결과','Mock Exam Result')+' — Part '+part+'</h2>'+
+    '<div class="card"><div class="mk-result-hero">'+
+    '<div class="mk-ring" style="background:conic-gradient(var(--progress-bar) 0 '+pct+'%, #e8eeef '+pct+'% 100%);" role="img" aria-label="'+correct+' / '+total+'">'+
+    '<div class="mk-ring-in"><div class="mk-ring-n">'+correct+'<span style="font-size:17px;color:var(--text-muted);">/'+total+'</span></div>'+
+    '<div class="mk-ring-d">'+mL('정답률','Accuracy')+' '+pct+'%</div></div></div>'+
+    '<div style="flex:1;min-width:230px;"><div class="mk-eyebrow">'+mL('채점 대상 85문항 기준','Based on 85 scored items')+'</div>'+
+    '<div style="font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.6;">'+mL('실험 문항 15개는 점수에 반영되지 않습니다. 실제 SEE는 환산점수제라 백분율과 1:1 대응하지 않습니다.','15 experimental items do not count. The real SEE uses a scaled score, not a raw percentage.')+'</div>'+
+    '<div class="mk-kpis"><span class="mk-kpi"><b>'+correct+'</b>'+mL('정답','Correct')+'</span>'+
+    '<span class="mk-kpi"><b>'+wrong+'</b>'+mL('오답','Wrong')+'</span>'+
+    '<span class="mk-kpi"><b>'+unans+'</b>'+mL('미응답','Unanswered')+'</span>'+
+    '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span></div></div></div>'+
+    (weakHtml?'<div class="mk-sect">'+mL('약점 Top 3','Weakest 3')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
+    (domHtml?'<div class="mk-sect">'+mL('토픽별 정답률','Accuracy by topic')+'</div><div>'+domHtml+'</div>':'')+
+    '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('클릭하면 해설 (한 문항씩 로드)','click for review (loaded one at a time)')+'</span></div>'+
+    '<div class="mk-qlist">'+rows+'</div>'+
+    '<div style="margin-top:16px;display:flex;gap:8px;"><button class="btn-ghost" onclick="showScreen(\'mock\')">'+mL('모의고사 홈','Mock home')+'</button>'+
+    '<button class="btn-ghost" onclick="showScreen(\'mock-history\')">'+mL('이력','History')+'</button></div></div>';
+}
+
+// ── 복습(한 문항씩, get_review_payload 재사용) ──
+async function mockReviewItem(qid){
+  showToast(mL('불러오는 중…','Loading…'));
+  try{
+    var res=await sb.rpc('get_review_payload',{ p_ids:[qid] });
+    if(res.error) throw res.error;
+    var q=(res.data&&res.data[0]);
+    if(!q){
+      // 진행 중 모의고사에 포함된 문항은 응시 종료 전 조회 차단(서버 가드) — 사유를 구분해 안내
+      var _live=mockLoadLS();
+      showToast(_live && _live.attemptId
+        ? mL('진행 중인 모의고사에 포함된 문항은 그 응시를 마친 후 확인할 수 있습니다','This question is part of your in-progress mock — finish it first')
+        : mL('해설을 불러올 수 없습니다','Cannot load review'));
+      return;
+    }
+    var pqArr=(Mock.result&&Mock.result.per_question)||[];
+    var mineIdx=pqArr.findIndex(function(x){return x.question_id===qid;});
+    var mine=(mineIdx>=0)?pqArr[mineIdx]:null;
+    var myc=mine?mine.choice:-1; var cc=q.correct;
+    // 문제/보기/해설 폰트 통일 15.5px (2026-07-17 피드백 6)
+    var opts=q.options||[]; var oh='';
+    for(var i=0;i<opts.length;i++){
+      var isC=(i===cc), isM=(i===myc);
+      var st=isC?'border-color:var(--success-color);background:#f0fdf4;':(isM?'border-color:var(--danger-color);background:#fef2f2;':'border-color:var(--border-clr);');
+      oh += '<div style="border:1.5px solid;border-radius:12px;padding:11px 14px;margin-bottom:7px;font-size:15.5px;line-height:1.6;'+st+'"><b style="color:var(--text-muted);">'+String.fromCharCode(65+i)+'</b> '+
+        '<span style="color:var(--text-mid);">'+mockEsc(opts[i])+'</span>'+
+        (isC?' <b style="color:var(--success-color);">('+mL('정답','correct')+')</b>':'')+
+        (isM&&!isC?' <b style="color:var(--danger-color);">('+mL('내 선택','your pick')+')</b>':'')+'</div>';
+    }
+    var expl=pickLang(q.explanation||'', q.explanation_en||'')||q.explanation_en||q.explanation||'';
+    var tip=pickLang(q.examtip||'', q.examtip_en||'');
+    var hdr = (mineIdx>=0)
+      ? ('<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;border-bottom:1px solid var(--border-clr);padding-bottom:10px;">'+
+         '<span style="font-size:19px;font-weight:800;color:var(--text-main);">Q'+(mineIdx+1)+'</span>'+
+         (mine?('<span class="mk-ox '+(mine.choice===-1?'u':(mine.is_correct?'o':'x'))+'">'+(mine.choice===-1?'–':(mine.is_correct?'O':'X'))+'</span>'):'')+
+         '<span style="font-size:13px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+mockEsc((mine&&(mine.topic||mine.outline_code))||'')+'</span></div>')
+      : '';
+    document.getElementById('modal-content').innerHTML =
+      '<div id="mk-review-box" style="text-align:left;">'+hdr+
+      '<div style="font-size:15.5px;color:var(--text-main);line-height:1.65;margin-bottom:12px;">'+mockEsc(q.text||'')+'</div>'+oh+
+      '<div style="font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;margin:14px 0 6px;">'+mL('해설','Explanation')+'</div>'+
+      '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;">'+mockEsc(expl)+'</div>'+
+      (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+mL('EA 시험 팁','EA Exam Tip')+'</b> · '+mockEsc(tip)+'</div>':'')+
+      '<div style="margin-top:16px;text-align:right;"><button class="btn-ghost" onclick="closeModal()">'+mL('닫기','Close')+'</button></div></div>';
+    document.getElementById('modal-bg').classList.add('open');
+  }catch(e){ console.error('[mock review]',e); showToast(mL('해설 로드 실패','Review load failed')); }
+}
+
+// ── 이어하기(벽시계 복구) ──
+async function mockResume(){
+  var live=mockLoadLS(); if(!live||!live.attemptId){ showToast(mL('진행 중인 모의고사가 없습니다','No mock in progress')); renderMockHub(); return; }
+  Mock.attemptId=live.attemptId; Mock.part=live.part; Mock.ids=live.ids;
+  Mock.answers=live.answers||{}; Mock.flags=live.flags||{}; Mock.startedAt=live.startedAt; Mock.curIdx=live.curIdx||0; Mock.qmap={}; Mock.result=null;
+  if(mockRemaining()<=0){ showToast(mL('시간이 종료되어 자동 제출합니다','Time expired — submitting')); await mockSubmit(); return; }
+  showToast(mL('불러오는 중…','Loading…'));
+  var ok=await mockLoadPayloads(Mock.ids);
+  if(!ok){ showToast(mL('문항 로드 실패','Failed to load')); return; }
+  // 소유권 가드: 다른 계정의 잔존 LS(공용 브라우저 등)면 서버가 본문을 0건 반환 → 폐기
+  if(Object.keys(Mock.qmap).length===0){
+    mockDiscard(); showToast(mL('이 응시는 현재 계정의 것이 아니어서 정리했습니다','Stale attempt from another account — cleared')); renderMockHub(); return;
+  }
+  showScreen('mock-exam');
+  mockBackToQ();          // 검토 패널 상태 리셋
+  mockRenderQuestion(Mock.curIdx);
+  mockStartTimer();
+}
+
+// ── 이력 ──
+async function renderMockHistory(){
+  var el=document.getElementById('mock-history-wrap'); if(!el) return;
+  el.innerHTML='<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 이력','Mock Exam History')+'</h2>'+
+    '<div class="card"><div style="font-size:13px;color:var(--text-muted);">'+mL('불러오는 중…','Loading…')+'</div></div>';
+  try{
+    var res=await sb.from('mock_attempts').select('id,part,score_correct,score_total,status,started_at,finished_at')
+      .order('started_at',{ascending:false}).limit(50);
+    if(res.error) throw res.error;
+    var data=res.data||[];
+    if(!data.length){ el.innerHTML='<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 이력','Mock Exam History')+'</h2>'+
+      '<div class="card"><div style="font-size:14px;color:var(--text-muted);">'+mL('아직 응시 기록이 없습니다.','No attempts yet.')+'</div>'+
+      '<button class="btn-navy" style="margin-top:14px;" onclick="showScreen(\'mock\')">'+mL('모의고사 시작','Start a mock exam')+'</button></div>'; return; }
+    var rows=data.map(function(a){
+      var d=(a.started_at||'').slice(5,10); var graded=(a.status==='graded');
+      var sc=graded?('<b>'+a.score_correct+'/'+a.score_total+'</b> ('+Math.round(a.score_correct/a.score_total*100)+'%)'):mL('미완료','Incomplete');
+      var act=graded?('<a href="#" onclick="mockOpenPastResult(\''+a.id+'\');return false;" style="color:var(--teal);font-weight:700;text-decoration:none;">'+mL('결과 보기','View')+' →</a>'):'';
+      return '<tr><td>'+d+'</td><td>Part '+a.part+'</td><td>'+sc+'</td><td>'+act+'</td></tr>';
+    }).join('');
+    el.innerHTML='<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 이력','Mock Exam History')+'</h2>'+
+      '<div class="card"><table class="mk-hist-tb"><thead><tr><th>'+mL('날짜','Date')+'</th><th>'+mL('파트','Part')+'</th><th>'+mL('점수','Score')+'</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<p style="font-size:12px;color:var(--text-muted);margin-top:12px;">'+mL('모의고사 성적은 메인 대시보드와 분리되어 집계됩니다.','Mock scores are tracked separately from the main dashboard.')+'</p></div>';
+  }catch(e){ console.error('[mock history]',e);
+    el.innerHTML='<div class="card"><div style="color:var(--danger-color);font-size:14px;">'+mL('이력 로드 실패','Failed to load history')+'</div></div>'; }
+}
+async function mockOpenPastResult(id){
+  try{
+    var res=await sb.from('mock_attempts').select('*').eq('id',id).single();
+    if(res.error||!res.data) throw res.error||new Error('none');
+    var a=res.data;
+    Mock.result={ score_correct:a.score_correct, score_total:a.score_total, per_question:a.answers||[], part:a.part };
+    renderMockResult(Mock.result); showScreen('mock-result');
+  }catch(e){ console.error('[mock past]',e); showToast(mL('결과 로드 실패','Failed to load result')); }
 }
 
 // START
