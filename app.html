@@ -1819,7 +1819,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-actions .sp{flex:1;}
   /* 검토 화면 (별도) */
   .mk-navgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;}
-  .mk-cell{aspect-ratio:1;border:1px solid var(--border-clr);border-radius:7px;font-size:13.5px;font-weight:700;color:var(--text-muted);background:var(--card-bg);cursor:pointer;position:relative;font-family:inherit;font-variant-numeric:tabular-nums;}
+  /* 고정 height (2026-07-18): aspect-ratio는 일부 안드로이드 크로미움에서 grid 행 높이 0 계산
+     → 타일이 아래 콘텐츠(제출 버튼)를 덮는 오버랩 버그. 고정 높이는 전 브라우저 안전. */
+  .mk-cell{height:36px;border:1px solid var(--border-clr);border-radius:7px;font-size:13.5px;font-weight:700;color:var(--text-muted);background:var(--card-bg);cursor:pointer;position:relative;font-family:inherit;font-variant-numeric:tabular-nums;padding:0;}
   .mk-cell.done{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-text);}
   .mk-cell.cur{border:2px solid var(--teal);color:var(--teal);}
   .mk-cell.flag::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--flag-color);}
@@ -1874,6 +1876,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   }
   @media(max-width:640px){
     .mk-qtext{font-size:17.5px;} .mk-opt-t{font-size:17.5px;} .mk-opt-l{font-size:17.5px;}
+    .mk-cell{height:30px;font-size:12px;}
+    .mk-navgrid{gap:4px;}
     .mk-weak{grid-template-columns:1fr;}
     .mk-dom{grid-template-columns:minmax(120px,1.8fr) 1fr 46px;}
     .mk-actions .btn-navy{order:-1;width:100%;}
