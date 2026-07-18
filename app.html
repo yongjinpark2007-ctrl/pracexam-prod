@@ -3035,8 +3035,10 @@ async function fetchQuestionMetaRows(){
   const Q_TABLE = S.isAdminUser ? 'questions' : 'questions_meta';
   try{
     function pageQuery(withCount){
+      // 관리자 raw 경로도 mock 제외 (2026-07-18): mock이 S.questions에 섞이면 연습(TPIQ) 큐 오염.
+      // mock QC는 모의고사 화면에서. (questions_meta 뷰엔 pool 컬럼이 없어 관리자 분기에만 적용)
       var q = S.isAdminUser
-        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined)
+        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock')
         : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
       return q.order('created_at', { ascending: true });
     }
@@ -3059,7 +3061,11 @@ async function fetchQuestionMetaRows(){
   }catch(e){
     // 폴백: 검증된 레거시 경로 (select * 순차 페이지네이션) — 부팅 보장
     console.warn('[Load] questions 빠른 경로 실패 → 레거시 폴백:', e && e.message);
-    return await _legacyPaginate(function(){ return sb.from(Q_TABLE).select('*').order('created_at', { ascending: true }); });
+    return await _legacyPaginate(function(){
+      var q = sb.from(Q_TABLE).select('*');
+      if(S.isAdminUser) q = q.neq('pool','mock');   // 관리자 폴백도 mock 제외 (뷰 경로엔 pool 컬럼 없음)
+      return q.order('created_at', { ascending: true });
+    });
   }
 }
 
@@ -3131,6 +3137,7 @@ async function adminBackfillContent(){
       const { data, error } = await sb
         .from('questions')
         .select('*')
+        .neq('pool','mock')   // 백필도 mock 제외 (2026-07-18) — S.questions와 정합 + 대역폭 절약
         .order('created_at', { ascending: true })
         .range(offset, offset + CLOUD_PAGE_SIZE - 1);
       if (error) throw error;
@@ -3913,6 +3920,8 @@ function clearLiveQuiz(){
   S.adminQcMode = false;
   S.retryFlaggedMode = false;
   S.returnTo = null;
+  // QC 개별조회로 임시 주입된 문항(_qcOnly, 예: MOCK-*) 제거 — 연습/통계 오염 방지 (2026-07-18)
+  S.questions = S.questions.filter(function(q){ return !q._qcOnly; });
   save();
 }
 
@@ -4345,6 +4354,41 @@ async function adminQcStart(){
     if(q){ if(found.indexOf(q.id) < 0) found.push(q.id); }
     else missing.push(id);
   });
+
+  // 로드에서 제외된 문항(모의고사 MOCK-* 등)은 DB에서 개별 조회해 임시 주입 (2026-07-18)
+  //   _qcOnly 플래그 = 연습 풀(getPool) 제외 + 세션 종료(clearLiveQuiz) 시 자동 제거
+  if(missing.length > 0){
+    _qcMsg('로드 외 문항 조회 중… (' + missing.length + '건)', true);
+    try{
+      var tryIds = [];
+      missing.forEach(function(id){ tryIds.push(id); var up = id.toUpperCase(); if(up !== id) tryIds.push(up); });
+      var qcRes = await sb.from('questions').select('*').in('question_id', tryIds);
+      if(!qcRes.error && qcRes.data && qcRes.data.length){
+        var fetched = {};
+        qcRes.data.forEach(function(r){ fetched[(r.question_id || '').toLowerCase()] = r; });
+        var still = [];
+        missing.forEach(function(id){
+          var r = fetched[id.toLowerCase()];
+          if(!r){ still.push(id); return; }
+          var q = {
+            id: r.question_id, question_id: r.question_id, source: 'cloud',
+            text: r.text, options: r.options, correct: r.correct,
+            explanation: r.explanation || '', explanationEn: r.explanation_en || '',
+            wrongReasons: r.wrongreasons || '', taxUpdate2025: r.taxupdate2025 || '',
+            examTip: r.examtip || '', examTipEn: r.examtip_en || '',
+            part: r.part ? ('Part ' + r.part) : 'Part 1',
+            topic: r.topic || 'General', outlineCode: r.outline_code || '',
+            difficulty: r.difficulty != null ? r.difficulty : null,
+            _qcOnly: true
+          };
+          S.questions.push(q);
+          if(found.indexOf(q.id) < 0) found.push(q.id);
+        });
+        missing = still;
+      }
+    }catch(e){ console.warn('[QC] 개별 조회 실패:', e && e.message); }
+  }
+
   if(found.length === 0){
     _qcMsg('일치하는 문제가 없습니다: ' + missing.join(', '), false);
     return;
@@ -4987,7 +5031,7 @@ function updateAvailCount(){
 }
 
 function getPool(){
-  let p=S.questions;
+  let p=S.questions.filter(function(q){ return !q._qcOnly; });   // QC 임시 주입분(mock 등) 연습 제외
   if(S.part==='part1') p=p.filter(q=>q.part==='Part 1');
   else if(S.part==='part2') p=p.filter(q=>q.part==='Part 2');
   else if(S.part==='part3') p=p.filter(q=>q.part==='Part 3');
