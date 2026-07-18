@@ -981,6 +981,14 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .hamburger-btn{display:flex;}
   /* 모바일: 부제목이 숨겨져 단일 라인이 되면 로고 워드마크가 제목·메뉴보다 살짝 낮게 보임 → 위로 미세 조정 */
   .header-brand img{transform:translateY(-2px);}
+  /* 좁은 화면에서 브랜드-언어토글 붙음 방지 (2026-07-18): 브랜드는 줄어들 수 있게 하고
+     제목은 말줄임, 우측(토글+햄버거)은 고정 — 어떤 폭에서도 최소 8px 간격 보장 */
+  .header{padding:env(safe-area-inset-top) .8rem 0;gap:8px;}
+  .header-brand{flex-shrink:1;min-width:0;gap:8px;}
+  .header-brand>div{min-width:0;}
+  .header-title{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .header-right{gap:6px;flex-shrink:0;}
+  .lang-seg button{padding:5px 8px;font-size:11px;}
 
   /* ── Dashboard v2 Hero ── */
   .dash-hero{padding:1.1rem 1.1rem 1rem;}
@@ -6644,6 +6652,17 @@ function closeDrawer(){
   const spans = document.getElementById('hamburger-btn').querySelectorAll('span');
   spans[0].style.transform=''; spans[1].style.opacity=''; spans[2].style.transform='';
 }
+
+// 드로어 외부 터치/클릭 시 자동 닫기 (2026-07-18) — X를 누르지 않아도 닫히도록.
+// 햄버거 버튼 자체는 제외(자체 토글이 처리 — 제외 안 하면 열자마자 이 리스너가 되닫음).
+document.addEventListener('click', function(e){
+  var d = document.getElementById('mobile-nav-drawer');
+  if(!d || !d.classList.contains('open')) return;
+  if(d.contains(e.target)) return;
+  var h = document.getElementById('hamburger-btn');
+  if(h && h.contains(e.target)) return;
+  closeDrawer();
+});
 
 // ══════════════════════════════════════════════════════
 // UPLOAD & CSV PARSING (그대로 유지)
