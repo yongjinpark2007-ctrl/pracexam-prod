@@ -7281,7 +7281,7 @@ function renderMockResult(r){
     '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span></div></div></div>'+
     (weakHtml?'<div class="mk-sect">'+mL('약점 Top 3','Weakest 3')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
     (domHtml?'<div class="mk-sect">'+mL('토픽별 정답률','Accuracy by topic')+'</div><div>'+domHtml+'</div>':'')+
-    '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('클릭하면 해설 (한 문항씩 로드)','click for review (loaded one at a time)')+'</span></div>'+
+    '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('각 문제를 클릭하셔서 해설을 확인하세요.','Click each question to see its explanation.')+'</span></div>'+
     '<div class="mk-qlist">'+rows+'</div>'+
     '<div style="margin-top:16px;display:flex;gap:8px;"><button class="btn-ghost" onclick="showScreen(\'mock\')">'+mL('모의고사 홈','Mock home')+'</button>'+
     '<button class="btn-ghost" onclick="showScreen(\'mock-history\')">'+mL('이력','History')+'</button></div></div>';
