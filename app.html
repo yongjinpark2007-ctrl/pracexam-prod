@@ -2624,7 +2624,7 @@ async function loadTrialStatus(){
   try{
     const { data, error } = await sb
       .from('profiles')
-      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled')
+      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled, signup_welcome_sent')
       .eq('id', SB_USER.id)
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
@@ -2647,6 +2647,13 @@ async function loadTrialStatus(){
       S.dailyUsed = 0; S.dailyDate = todayStr;
     } else {
       S.dailyUsed = data.daily_used || 0; S.dailyDate = data.daily_date;
+    }
+
+    // 무료 가입 Welcome 메일: 이메일 확인 완료 + 미발송이면 1회 발송 요청.
+    // 서버 Edge Function send-signup-welcome 이 profiles.signup_welcome_sent 를
+    // 원자적으로 선점해 멱등 처리하므로, 재로그인/새로고침으로 여러 번 호출돼도 1통만 나간다.
+    if(SB_USER.email_confirmed_at && data.signup_welcome_sent === false){
+      sb.functions.invoke('send-signup-welcome').catch(function(e){ console.warn('signup welcome invoke skip:', e && e.message); });
     }
   }catch(e){ console.warn('loadTrialStatus 오류:', e); }
   updateTrialStatusUI();
