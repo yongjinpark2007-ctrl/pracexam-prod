@@ -1635,11 +1635,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   </div>
 
   <!-- 이메일 수신 설정 카드 제거(2026-07-11): 인앱 토글 대신 이메일 하단 unsubscribe 링크로 옵트아웃. 옵트인 모달·동의 로직은 유지. -->
-  <div id="settings-data-mgmt" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
-    <div class="exp-label" style="margin-bottom:10px;">데이터 관리</div>
-    <button class="btn-ghost" style="margin-bottom:10px;width:100%;" onclick="exportData()">모든 데이터 내보내기 (JSON)</button>
-    <button class="btn-ghost" style="width:100%;color:#dc2626;border-color:rgba(220,38,38,.3);" onclick="if(confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))resetData()">모든 데이터 초기화</button>
-  </div>
+  <!-- 데이터 관리 카드 제거 (2026-07-22): '모든 데이터 초기화'(resetData) 등 위험·불필요 메뉴 삭제 요청.
+       exportData()/resetData() 함수 정의는 미사용으로 남겨둠(다른 참조 없음). 필요 시 복원 가능. -->
+  <div id="settings-data-mgmt" style="display:none;"></div>
   <!-- 💾 클라우드 저장 안내 카드 제거(2026-07-11): 불필요한 안내문. -->
 
   <!-- 로그아웃 (맨 아래, 눈에 잘 띄게) -->
@@ -2561,7 +2559,8 @@ function updateSyncStatus(){
     var _meta = SB_USER.user_metadata || {};
     var _nm = (((S.firstName || _meta.first_name || '') + ' ' + (S.lastName || _meta.last_name || '')).trim());
     if(!_nm){ _nm = (SB_USER.email || '').split('@')[0]; }
-    var _tp = S.isPaid ? t('acct_type_paid') : (S.trialExpired ? t('acct_type_expired') : t('acct_type_trial'));
+    var _isAdminAcct = SB_USER && SB_USER.id === ADMIN_UID;
+    var _tp = _isAdminAcct ? t('acct_type_admin') : (S.isPaid ? t('acct_type_paid') : (S.trialExpired ? t('acct_type_expired') : t('acct_type_trial')));
     function _acctRow(lbl, val, strong){
       return '<div style="display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--border-clr);">' +
         '<span style="color:var(--text-muted);flex-shrink:0;">' + lbl + '</span>' +
@@ -3050,8 +3049,9 @@ async function fetchQuestionMetaRows(){
       // 관리자 raw 경로도 mock 제외 (2026-07-18): mock이 S.questions에 섞이면 연습(TPIQ) 큐 오염.
       // mock QC는 모의고사 화면에서. (questions_meta 뷰엔 pool 컬럼이 없어 관리자 분기에만 적용)
       var q = S.isAdminUser
-        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock')
+        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock').eq('exam','ea')
         : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
+      // EA만 로드 — RE 등 타시험 차단 (2026-07-22). 비관리자 경로는 questions_meta 뷰가 exam='ea'로 필터(Jay).
       return q.order('created_at', { ascending: true });
     }
     const first = await pageQuery(true).range(0, CLOUD_PAGE_SIZE - 1);
@@ -3150,6 +3150,7 @@ async function adminBackfillContent(){
         .from('questions')
         .select('*')
         .neq('pool','mock')   // 백필도 mock 제외 (2026-07-18) — S.questions와 정합 + 대역폭 절약
+        .eq('exam','ea')      // EA만 백필 — RE 등 타시험 차단 (2026-07-22)
         .order('created_at', { ascending: true })
         .range(offset, offset + CLOUD_PAGE_SIZE - 1);
       if (error) throw error;
@@ -3509,6 +3510,7 @@ var UI_TEXT = {
   acct_membership_title:{ko:'🎓 멤버십', en:'🎓 Membership'},
   acct_logout:   {ko:'로그아웃', en:'Log out'},
   acct_type_paid:{ko:'유료 멤버십', en:'Paid membership'},
+  acct_type_admin:{ko:'관리자 계정', en:'Admin account'},
   acct_type_trial:{ko:'무료 체험', en:'Free trial'},
   acct_type_expired:{ko:'무료 (체험 종료)', en:'Free (trial ended)'},
   // 문제 풀이 화면
