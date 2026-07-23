@@ -3026,13 +3026,27 @@ async function openCustomerPortal(){
   showToast(t('portal_opening'));
   try{
     const { data, error } = await sb.functions.invoke('customer-portal');
-    if(error) throw error;
+    if(error){
+      // 서버가 4xx/5xx 반환. 사유 코드는 콘솔에만 남기고(개발자용) 사용자에겐 일반 안내만.
+      var reason = '';
+      try{
+        if(error.context && typeof error.context.json === 'function'){
+          var body = await error.context.json();
+          if(body && body.error) reason = body.error;
+        }
+      }catch(_){}
+      console.warn('customer-portal 실패 사유:', reason || '(알수없음)', error);
+      if(portalWin){ try{ portalWin.close(); }catch(_){} }
+      showToast(t('portal_error'));
+      return;
+    }
     var url = (data && (data.cancel || data.overview)) || null;
     if(url){
       if(portalWin){ try{ portalWin.opener = null; }catch(_){}; portalWin.location.href = url; }
       else { window.open(url, '_blank', 'noopener'); }   // 미리 연 탭이 없으면(그래도) 재시도
     } else {
       if(portalWin){ try{ portalWin.close(); }catch(_){} }
+      console.warn('customer-portal: 주소 없음(empty_url)');
       showToast(t('portal_error'));
     }
   }catch(e){
