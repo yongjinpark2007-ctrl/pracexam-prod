@@ -1672,6 +1672,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
     <button id="atab-unconfirmed" class="admin-tab" onclick="adminTab('unconfirmed')">미확인 가입자</button>
     <button id="atab-qc" class="admin-tab" onclick="adminTab('qc')">문제 검토</button>
+    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')">Daily 문제</button>
   </div>
 
   <!-- ═══ 공지 관리 ═══ -->
@@ -1791,6 +1792,42 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div style="margin-top:1rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
       💡 문제를 풀고 <strong>정답 확인</strong>을 누르면 정답·해설·오답 이유·시험 팁이 실제 화면 그대로 표시됩니다.
       검토를 마치면(마지막 문제 다음으로 이동) 자동으로 이 화면으로 돌아옵니다.
+    </div>
+  </div>
+
+  <!-- ═══ Daily 문제 지정 (daily.html 노출용) ═══ -->
+  <div id="admin-panel-daily" style="display:none;">
+    <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
+      <strong>Daily Quiz</strong> (<a href="daily.html" target="_blank" style="color:var(--teal);">daily.html</a>)에 노출할 문제를 여기서 지정합니다.
+      지정 즉시 반영되며 <strong>배포는 필요 없습니다</strong>.
+    </div>
+
+    <div class="ann-form-card" style="margin-bottom:1rem;">
+      <div class="admin-sub-title">현재 노출 중인 문제</div>
+      <div id="daily-current" style="font-size:13.5px;color:var(--text-mid);line-height:1.6;">불러오는 중…</div>
+    </div>
+
+    <div class="ann-form-card">
+      <div class="admin-sub-title">새 문제로 지정</div>
+      <div class="ann-field">
+        <label>question_id</label>
+        <input class="ann-input" id="daily-id-input" placeholder="예) P1-0342">
+      </div>
+      <div class="ann-field">
+        <label>메모 (선택 — 관리용, 화면엔 안 보임)</label>
+        <input class="ann-input" id="daily-note-input" placeholder="예) 2026-07-27 페북용">
+      </div>
+      <div class="ann-form-actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn-navy" style="padding:9px 18px;" onclick="adminDailyPreview()">미리보기</button>
+        <button class="btn-navy" style="padding:9px 18px;" onclick="adminDailySet()">Daily로 지정</button>
+        <span id="daily-form-msg" style="font-size:12.5px;margin-left:4px;"></span>
+      </div>
+      <div id="daily-preview" style="display:none;margin-top:12px;padding:12px 14px;background:rgba(53,70,73,.05);border-radius:10px;font-size:13px;color:var(--text-main);line-height:1.6;"></div>
+    </div>
+
+    <div style="margin-top:1rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
+      💡 "<strong>미리보기</strong>"로 문제 내용을 확인한 뒤 "<strong>Daily로 지정</strong>"을 누르세요.
+      이전 문제는 자동으로 교체됩니다(삭제 불필요).
     </div>
   </div>
 </div>
@@ -4357,9 +4394,9 @@ function copyUnconfirmedEmails(){
 
 function adminTab(name){
   // 알 수 없는 탭 이름은 공지 관리로 폴백 (기존 동작 보존)
-  if(name !== 'notices' && name !== 'anomaly' && name !== 'unconfirmed' && name !== 'qc') name = 'notices';
-  var panels = { notices:'admin-panel-notices', anomaly:'admin-panel-anomaly', unconfirmed:'admin-panel-unconfirmed', qc:'admin-panel-qc' };
-  var tabs   = { notices:'atab-notices',        anomaly:'atab-anomaly',        unconfirmed:'atab-unconfirmed',        qc:'atab-qc' };
+  if(name !== 'notices' && name !== 'anomaly' && name !== 'unconfirmed' && name !== 'qc' && name !== 'daily') name = 'notices';
+  var panels = { notices:'admin-panel-notices', anomaly:'admin-panel-anomaly', unconfirmed:'admin-panel-unconfirmed', qc:'admin-panel-qc', daily:'admin-panel-daily' };
+  var tabs   = { notices:'atab-notices',        anomaly:'atab-anomaly',        unconfirmed:'atab-unconfirmed',        qc:'atab-qc',        daily:'atab-daily' };
   Object.keys(panels).forEach(function(k){
     var p = document.getElementById(panels[k]);
     var t = document.getElementById(tabs[k]);
@@ -4369,6 +4406,85 @@ function adminTab(name){
   if(name === 'notices') renderAdminAnnList();
   else if(name === 'anomaly'){ renderAnomaly(); renderMockActivity(); }
   else if(name === 'unconfirmed') renderUnconfirmed();
+  else if(name === 'daily') renderDailyAdmin();
+}
+
+// ── 관리자: Daily Quiz 문제 지정 (daily.html 노출 · 2026-07-24) ──
+//   · daily_quiz 테이블에 insert (RLS: is_admin()만 허용) → get_daily_quiz() 최신 1행 노출
+//   · daily_quiz_setup.sql 미실행 시 조회/지정이 실패하나, 안내만 뜨고 앱은 정상
+function _dailyMsg(txt, ok){
+  var m = document.getElementById('daily-form-msg'); if(!m) return;
+  m.textContent = txt || '';
+  m.style.color = ok ? 'var(--success-color)' : 'var(--danger-color)';
+}
+
+async function renderDailyAdmin(){
+  if(!S.isAdminUser) return;
+  var cur = document.getElementById('daily-current');
+  if(cur) cur.textContent = '불러오는 중…';
+  try{
+    var res = await sb.rpc('get_daily_quiz');
+    if(res.error) throw res.error;
+    var row = Array.isArray(res.data) ? res.data[0] : res.data;
+    if(!row){ if(cur) cur.innerHTML = '<em>아직 지정된 문제가 없습니다.</em>'; return; }
+    var letter = String.fromCharCode(65 + (row.correct || 0));
+    var txt = String(row.text || '');
+    if(cur) cur.innerHTML =
+      '<div style="font-weight:700;color:var(--text-main);margin-bottom:4px;">' + _escHtml(row.question_id) + ' · Part ' + (row.part != null ? row.part : '?') + (row.topic ? ' · ' + _escHtml(row.topic) : '') + '</div>' +
+      '<div>' + _escHtml(txt.slice(0, 160)) + (txt.length > 160 ? '…' : '') + '</div>' +
+      '<div style="margin-top:4px;color:var(--text-muted);">정답: ' + letter + '</div>';
+  }catch(e){
+    if(cur) cur.innerHTML = '<em style="color:var(--danger-color);">불러오기 실패 — daily_quiz 셋업(SQL)이 아직 안 됐을 수 있습니다.</em>';
+  }
+}
+
+async function _dailyFetchQuestion(id){
+  var tryIds = [id]; var up = id.toUpperCase(); if(up !== id) tryIds.push(up);
+  var res = await sb.from('questions')
+    .select('question_id,part,topic,text,options,correct,explanation_en')
+    .in('question_id', tryIds).limit(1);
+  if(res.error) throw res.error;
+  return res.data && res.data[0];
+}
+
+async function adminDailyPreview(){
+  if(!S.isAdminUser){ _dailyMsg('권한 없음 (관리자 전용)', false); return; }
+  var id = (document.getElementById('daily-id-input').value || '').trim();
+  var box = document.getElementById('daily-preview');
+  if(!id){ _dailyMsg('question_id를 입력하세요', false); return; }
+  _dailyMsg('조회 중…', true);
+  try{
+    var r = await _dailyFetchQuestion(id);
+    if(!r){ if(box) box.style.display = 'none'; _dailyMsg('해당 question_id를 찾을 수 없습니다', false); return; }
+    var opts = Array.isArray(r.options) ? r.options : [];
+    var oh = opts.map(function(o, i){ return '<div>' + String.fromCharCode(65 + i) + '. ' + _escHtml(o) + (i === r.correct ? ' ✅' : '') + '</div>'; }).join('');
+    if(box){
+      box.style.display = '';
+      box.innerHTML =
+        '<div style="font-weight:700;margin-bottom:6px;">' + _escHtml(r.question_id) + ' · Part ' + (r.part != null ? r.part : '?') + (r.topic ? ' · ' + _escHtml(r.topic) : '') + '</div>' +
+        '<div style="margin-bottom:8px;">' + _escHtml(r.text || '') + '</div>' + oh;
+    }
+    _dailyMsg('확인되면 "Daily로 지정"을 누르세요', true);
+  }catch(e){ if(box) box.style.display = 'none'; _dailyMsg('조회 실패: ' + (e.message || e), false); }
+}
+
+async function adminDailySet(){
+  if(!S.isAdminUser){ _dailyMsg('권한 없음 (관리자 전용)', false); return; }
+  var id = (document.getElementById('daily-id-input').value || '').trim();
+  var note = (document.getElementById('daily-note-input').value || '').trim();
+  if(!id){ _dailyMsg('question_id를 입력하세요', false); return; }
+  _dailyMsg('지정 중…', true);
+  try{
+    var r = await _dailyFetchQuestion(id);
+    if(!r || !r.question_id){ _dailyMsg('해당 question_id가 존재하지 않습니다', false); return; }
+    var ins = await sb.from('daily_quiz').insert({ question_id: r.question_id, note: note || null });
+    if(ins.error) throw ins.error;
+    _dailyMsg('✓ 지정 완료 — daily.html에 반영되었습니다', true);
+    document.getElementById('daily-id-input').value = '';
+    document.getElementById('daily-note-input').value = '';
+    var box = document.getElementById('daily-preview'); if(box) box.style.display = 'none';
+    renderDailyAdmin();
+  }catch(e){ _dailyMsg('지정 실패: ' + (e.message || e), false); }
 }
 
 // ── 관리자 QC: question_id로 문제 풀이식 검토 (2026-07-08) ──

@@ -743,6 +743,7 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
     <nav class="nav-links">
       <a href="#features" onclick="closeNavMenu()"><span class="ko">기능</span><span class="en">Features</span></a>
       <a href="#samples" onclick="closeNavMenu()"><span class="ko">예제 문제</span><span class="en">Sample Questions</span></a>
+      <a href="daily.html" onclick="closeNavMenu()" style="color:var(--accent); font-weight:700;"><span class="ko">데일리 퀴즈</span><span class="en">Daily Quiz</span></a>
       <a href="#pricing" onclick="closeNavMenu()"><span class="ko">요금제</span><span class="en">Pricing</span></a>
     </nav>
     <div class="nav-actions">
@@ -1256,6 +1257,7 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
   <div class="wrap footer-inner">
     <span>© 2026 dxd investment group LLC. <span class="ko">All rights reserved.</span><span class="en">All rights reserved.</span></span>
     <div class="footer-links">
+      <a href="daily.html"><span class="ko">데일리 퀴즈</span><span class="en">Daily Quiz</span></a>
       <a href="#about"><span class="ko">회사 소개</span><span class="en">About</span></a>
       <a href="mailto:hello@pracexam.com">Contact</a>
       <a href="terms.html"><span class="ko">이용약관</span><span class="en">Terms</span></a>
@@ -1559,6 +1561,13 @@ function switchModal(which){
   var note = document.getElementById('su-subscribe-note');
   if(note) note.style.display = (which === 'signup' && window._intent === 'subscribe') ? 'block' : 'none';
 }
+
+// daily.html 등 외부 페이지에서 ?signup=1 로 들어오면 가입 모달 자동 오픈
+(function(){
+  try{
+    if(new URLSearchParams(location.search).get('signup') === '1') startFree();
+  }catch(e){}
+})();
 
 // ── Supabase signup (direct REST — iOS-safe, no supabase-js) ──
 var SUPABASE_URL  = 'https://ufrhvodruulpgnmudzwh.supabase.co';
