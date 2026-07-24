@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- ===== Google Ads 전환추적 (gtag) — 2026-07 ===== -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18345651711"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18345651711');
+  (function(){ try{ var p=new URLSearchParams(location.search),keep={};
+    ['gclid','utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){ if(p.get(k)) keep[k]=p.get(k); });
+    if(Object.keys(keep).length){ keep._ts=Date.now(); localStorage.setItem('pe_attrib', JSON.stringify(keep)); }
+  }catch(e){} })();
+</script>
+<!-- ===== /전환추적 ===== -->
+
 <!-- ===== Naver Search Advisor 소유확인 (2026-07-03) =====
      ⚠️ content 값을 네이버 서치어드바이저에서 발급받은 실제 코드로 교체.
         서치어드바이저 → 사이트 등록 → 소유확인 → HTML 태그 방식 -->
@@ -1597,6 +1611,8 @@ function doSignup(){
   .then(function(res){ return res.json().then(function(d){ return {ok: res.ok, data: d}; }); })
   .then(function(result){
     if (result.ok) {
+      // Google Ads 전환: 무료 가입 성공
+      try{ gtag('event','conversion',{ send_to:'AW-18345651711/z9OnCN2y1NUcEP_b8atE' }); }catch(e){}
       showMsg(
         lang === 'ko'
           ? '가입 완료! 확인 이메일을 발송했습니다. 받은 편지함에 없으면 스팸함(정크메일함)도 꼭 확인해주세요.'
