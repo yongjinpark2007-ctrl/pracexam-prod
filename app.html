@@ -7720,7 +7720,7 @@ async function renderWarRoom(){
     _wrBuildShell(rows);
     wrShow(rows[0].outline_code);
     // 언어 토글 시 재렌더 (한 번만 훅)
-    ['lang-ko','lang-en'].forEach(function(id){ var b=document.getElementById(id); if(b&&!b._wrHook){ b._wrHook=1; b.addEventListener('click',function(){ setTimeout(function(){ var sc=document.getElementById('screen-warroom'); if(sc&&sc.classList.contains('active')&&WR.cur){ _wrBuildShell(WR.rows); wrShow(WR.cur); } },60); }); } });
+    ['lang-ko','lang-en'].forEach(function(id){ var b=document.getElementById(id); if(b&&!b._wrHook){ b._wrHook=1; b.addEventListener('click',function(){ setTimeout(function(){ var sc=document.getElementById('screen-warroom'); if(sc&&sc.classList.contains('active')&&WR.cur){ _wrBuildShell(WR.rows, WR.cur); } },60); }); } });
   }catch(e){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room is being set up.':'War Room 준비 중입니다. (콘텐츠 적재 대기)')+'</div>'; }
 }
 
@@ -7729,10 +7729,10 @@ var WR_SKELETON={
  2:[['Business Entities and Considerations','사업체·고려사항',43],['Business Tax Preparation','사업세 신고',46],['Specialized Returns and Taxpayers','특수 신고·납세자',28]],
  3:[['Practices and Procedures','실무·절차',28],['Representation before the IRS','IRS 대리',16],['Specific Areas of Representation','대리 세부영역',54],['Filing Process','신고 절차',22]]
 };
-function _wrBuildShell(rows){
+function _wrBuildShell(rows, preferCode){
   WR.byPart={};
   rows.forEach(function(r){ var p=r.part||1; if(!WR.byPart[p])WR.byPart[p]={}; var d=r.domain||''; if(!WR.byPart[p][d])WR.byPart[p][d]=[]; WR.byPart[p][d].push(r); });
-  WR.curPart = (WR.byPart[1]?1:(WR.byPart[2]?2:(WR.byPart[3]?3:1)));
+  if(!WR.curPart || !WR.byPart[WR.curPart]){ WR.curPart = (WR.byPart[1]?1:(WR.byPart[2]?2:(WR.byPart[3]?3:1))); }
   var tabs=''; [1,2,3].forEach(function(p){ tabs+='<button class="wr-ptab'+(p===WR.curPart?' active':'')+'" onclick="_wrSetPart('+p+')">Part '+p+'</button>'; });
   document.getElementById('warroom-mount').innerHTML=
     '<div class="wr-wrap">'
@@ -7744,7 +7744,7 @@ function _wrBuildShell(rows){
     +'<button id="wr-next" onclick="wrNav(1)">'+(_wrLang()==='en'?'Next':'다음')+'<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div></main></div>';
   var guard=document.getElementById('wr-content');
   ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();}); });
-  _wrSetPart(WR.curPart);
+  _wrSetPart(WR.curPart, preferCode);
 }
 function _wrRenderDomains(p){
   var chev='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
@@ -7763,13 +7763,15 @@ function _wrRenderDomains(p){
   });
   var el=document.getElementById('wr-doms'); if(el) el.innerHTML=html;
 }
-function _wrSetPart(p){
+function _wrSetPart(p, preferCode){
   WR.curPart=p;
   document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
   _wrRenderDomains(p);
   var buck=(WR.byPart&&WR.byPart[p])||{}, firstCode=null;
   (WR_SKELETON[p]||[]).some(function(row){ var l=buck[row[0]]; if(l&&l.length){ firstCode=l[0].outline_code; return true; } return false; });
-  if(firstCode){ wrShow(firstCode); }
+  var showCode=firstCode;
+  if(preferCode && Object.keys(buck).some(function(k){ return (buck[k]||[]).some(function(r){ return r.outline_code===preferCode; }); })){ showCode=preferCode; }
+  if(showCode){ wrShow(showCode); }
   else {
     var c=document.getElementById('wr-content');
     if(c) c.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?('Part '+p+' cheat sheets are coming soon.'):('Part '+p+' 치트시트는 곧 추가됩니다.'))+'</div>';
