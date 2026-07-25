@@ -1197,9 +1197,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
       <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
-      <button class="nav-btn" onclick="showScreen('upload');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="nav_upload">Upload</span></button>
-      <button class="nav-btn" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
-      <button class="nav-btn" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
+      <button class="nav-btn" id="nav-upload" onclick="showScreen('upload');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="nav_upload">Upload</span></button>
+      <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
+      <button class="nav-btn" id="nav-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
     </div>
     <div class="lang-seg" id="lang-seg" role="group" aria-label="Language">
       <button id="lang-ko" type="button" onclick="setLang('ko')">KO</button>
@@ -2034,20 +2034,20 @@ function navSvg(name, cls){
 
 function applyAdminVisibility(){
   var isAdmin = SB_USER && SB_USER.id === ADMIN_UID;
-  var navBtns = document.querySelectorAll('.nav-btn');
 
-  // ── Upload 메뉴: Admin 전용 (모의고사 nav 삽입으로 index 4→5) ──
-  if(navBtns[5]) navBtns[5].style.display = isAdmin ? '' : 'none';
+  // ── Upload 메뉴: Admin 전용 ── (ID 기반 — nav 버튼 삽입에도 안전)
+  var upBtn = document.getElementById('nav-upload');
+  if(upBtn) upBtn.style.display = isAdmin ? '' : 'none';
   var mobUpload = document.getElementById('mob-upload');
   if(mobUpload) mobUpload.style.display = isAdmin ? '' : 'none';
 
-  // ── Settings(Admin) vs Sign Out(일반 유저) ──
-  // ── Settings(Admin) vs Sign Out(일반 유저) ── (2026-07-08 원복: 일반 유저 진입점은 배너+이메일 딥링크로 대체)
-  if(navBtns[6]){
-    navBtns[6].innerHTML = isAdmin
+  // ── Settings(Admin) vs 내 계정(일반 유저) ──
+  var setBtn = document.getElementById('nav-settings');
+  if(setBtn){
+    setBtn.innerHTML = isAdmin
       ? (navSvg('settings') + '<span>' + t('nav_settings') + '</span>')
       : (navSvg('account')  + '<span>' + t('nav_account') + '</span>');
-    navBtns[6].onclick = function(){ showScreen('settings'); closeDrawer(); };
+    setBtn.onclick = function(){ showScreen('settings'); closeDrawer(); };
   }
   var mobSettings = document.getElementById('mob-settings');
   if(mobSettings){
@@ -2066,8 +2066,9 @@ function applyAdminVisibility(){
   var copyBtn = document.getElementById('q-copy-btn');
   if(copyBtn) copyBtn.style.display = isAdmin ? '' : 'none';
 
-  // ── 이상 탐지 메뉴: Admin 전용 (모의고사 nav 삽입으로 index 6→7, 목록 끝) ──
-  if(navBtns[7]) navBtns[7].style.display = isAdmin ? '' : 'none';
+  // ── 관리자(이상탐지) 메뉴: Admin 전용 ── (ID 기반)
+  var anoBtn = document.getElementById('nav-anomaly');
+  if(anoBtn) anoBtn.style.display = isAdmin ? '' : 'none';
   var mobAnom = document.getElementById('mob-anomaly');
   if(mobAnom) mobAnom.style.display = isAdmin ? '' : 'none';
 }
@@ -7653,6 +7654,12 @@ if ('serviceWorker' in navigator) {
 .wr-dom-head .c{font-size:10px;font-weight:700;color:#4E5C66;background:rgba(53,70,73,.08);border-radius:20px;padding:1px 8px;}
 .wr-dom-head svg{width:15px;height:15px;stroke:#4d6164;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;}
 .wr-dom.open .wr-dom-head svg{transform:rotate(180deg);}
+.wr-dom-head > span:first-child{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;}
+.wr-dom-head .rt{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.wr-parts{display:flex;gap:6px;margin-bottom:8px;}
+.wr-ptab{flex:1;text-align:center;font:inherit;font-size:12px;font-weight:700;padding:7px 4px;border:1px solid rgba(53,70,73,.12);border-radius:8px;background:#fff;color:#4E5C66;cursor:pointer;}
+.wr-ptab.active{background:#354649;color:#fff;border-color:#354649;}
+.wr-dom-empty{font-size:12px;color:#4E5C66;padding:4px 10px 12px;line-height:1.5;}
 .wr-dom-list{display:none;padding-bottom:4px;}
 .wr-dom.open .wr-dom-list{display:block;}
 .wr-topic-link{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;font-size:13px;color:#4b5759;cursor:pointer;}
@@ -7717,35 +7724,58 @@ async function renderWarRoom(){
   }catch(e){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room is being set up.':'War Room 준비 중입니다. (콘텐츠 적재 대기)')+'</div>'; }
 }
 
+var WR_SKELETON={
+ 1:[['Preliminary Work and Taxpayer Data','예비 작업·납세자 정보',19],['Income and Assets','소득과 자산',44],['Deductions and Credits','공제 & 세액공제',22],['Taxation','세액 계산',15],['Advising the Individual Taxpayer','납세자 자문',15],['Specialized Returns for Individuals','개인 특수 신고',18]],
+ 2:[['Business Entities and Considerations','사업체·고려사항',43],['Business Tax Preparation','사업세 신고',46],['Specialized Returns and Taxpayers','특수 신고·납세자',28]],
+ 3:[['Practices and Procedures','실무·절차',28],['Representation before the IRS','IRS 대리',16],['Specific Areas of Representation','대리 세부영역',54],['Filing Process','신고 절차',22]]
+};
 function _wrBuildShell(rows){
-  var parts={}, porder=[];
-  rows.forEach(function(r){ var p=r.part||1; if(!parts[p]){parts[p]={};porder.push(p);} var d=r.domain||''; if(!parts[p][d])parts[p][d]=[]; parts[p][d].push(r); });
-  var chev='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
-  var html='';
-  porder.forEach(function(p){
-    html+='<div class="wr-part">Part '+p+'</div>';
-    var doms=parts[p], first=true;
-    Object.keys(doms).forEach(function(d){
-      var list=doms[d];
-      html+='<div class="wr-dom'+(first?' open':'')+'"><div class="wr-dom-head" onclick="_wrToggleDom(this.parentNode)"><span>'+_wrEsc(d)+'</span><span style="display:inline-flex;align-items:center;gap:6px;"><span class="c">'+list.length+'</span>'+chev+'</span></div><div class="wr-dom-list">';
-      list.forEach(function(r){
-        var lk=r.locked?'<span class="lk">🔒 </span>':'';
-        var tag=r.is_free?'<span class="tag free">FREE</span>':'';
-        html+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span>'+tag+'</div>';
-      });
-      html+='</div></div>'; first=false;
-    });
-  });
+  WR.byPart={};
+  rows.forEach(function(r){ var p=r.part||1; if(!WR.byPart[p])WR.byPart[p]={}; var d=r.domain||''; if(!WR.byPart[p][d])WR.byPart[p][d]=[]; WR.byPart[p][d].push(r); });
+  WR.curPart = (WR.byPart[1]?1:(WR.byPart[2]?2:(WR.byPart[3]?3:1)));
+  var tabs=''; [1,2,3].forEach(function(p){ tabs+='<button class="wr-ptab'+(p===WR.curPart?' active':'')+'" onclick="_wrSetPart('+p+')">Part '+p+'</button>'; });
   document.getElementById('warroom-mount').innerHTML=
     '<div class="wr-wrap">'
     +'<button class="wr-toc-toggle" id="wr-toc-toggle" onclick="_wrToggleToc()"><span>📚 '+(_wrLang()==='en'?'Index':'목차')+'</span><span>▾</span></button>'
-    +'<aside class="wr-toc" id="wr-toc">'+html+'</aside>'
+    +'<aside class="wr-toc" id="wr-toc"><div class="wr-parts">'+tabs+'</div><div id="wr-doms"></div></aside>'
     +'<main class="wr-sheet"><div class="wr-protected" id="wr-content"></div>'
     +'<div class="wr-nav"><button id="wr-prev" onclick="wrNav(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>'+(_wrLang()==='en'?'Prev':'이전')+'</button>'
     +'<span class="pos" id="wr-pos"></span>'
     +'<button id="wr-next" onclick="wrNav(1)">'+(_wrLang()==='en'?'Next':'다음')+'<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div></main></div>';
   var guard=document.getElementById('wr-content');
   ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();}); });
+  _wrSetPart(WR.curPart);
+}
+function _wrRenderDomains(p){
+  var chev='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+  var skel=WR_SKELETON[p]||[], buck=(WR.byPart&&WR.byPart[p])||{}, lang=_wrLang(), html='', firstPop=true;
+  skel.forEach(function(row){
+    var key=row[0], ko=row[1], cnt=row[2], list=buck[key]||[], pop=list.length>0;
+    var opened=(pop&&firstPop)?' open':''; if(pop&&firstPop)firstPop=false;
+    var label=(lang==='ko')?ko:key, inner='';
+    if(pop){
+      list.forEach(function(r){
+        var lk=r.locked?'<span class="lk">🔒 </span>':'', tag=r.is_free?'<span class="tag free">FREE</span>':'';
+        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span>'+tag+'</div>';
+      });
+    } else { inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>'; }
+    html+='<div class="wr-dom'+opened+'"><div class="wr-dom-head" onclick="_wrToggleDom(this.parentNode)"><span>'+_wrEsc(label)+'</span><span class="rt"><span class="c">'+(pop?list.length:cnt)+'</span>'+chev+'</span></div><div class="wr-dom-list">'+inner+'</div></div>';
+  });
+  var el=document.getElementById('wr-doms'); if(el) el.innerHTML=html;
+}
+function _wrSetPart(p){
+  WR.curPart=p;
+  document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
+  _wrRenderDomains(p);
+  var buck=(WR.byPart&&WR.byPart[p])||{}, firstCode=null;
+  (WR_SKELETON[p]||[]).some(function(row){ var l=buck[row[0]]; if(l&&l.length){ firstCode=l[0].outline_code; return true; } return false; });
+  if(firstCode){ wrShow(firstCode); }
+  else {
+    var c=document.getElementById('wr-content');
+    if(c) c.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?('Part '+p+' cheat sheets are coming soon.'):('Part '+p+' 치트시트는 곧 추가됩니다.'))+'</div>';
+    var pos=document.getElementById('wr-pos'); if(pos)pos.textContent='';
+    var pv=document.getElementById('wr-prev'),nx=document.getElementById('wr-next'); if(pv)pv.disabled=true; if(nx)nx.disabled=true;
+  }
 }
 function _wrToggleDom(el){ var was=el.classList.contains('open'); var box=el.closest('.wr-toc'); box.querySelectorAll('.wr-dom').forEach(function(x){x.classList.remove('open');}); if(!was)el.classList.add('open'); }
 function _wrToggleToc(){ var t=document.getElementById('wr-toc'); if(t)t.classList.toggle('open'); }
