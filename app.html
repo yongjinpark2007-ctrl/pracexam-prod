@@ -1194,6 +1194,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <button class="nav-btn active" onclick="showScreen('dashboard');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span data-i18n="nav_dashboard">Dashboard</span></button>
       <button class="nav-btn" onclick="openStudy()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="nav_study">Study</span></button>
       <button class="nav-btn" id="nav-mock" onclick="showScreen('mock');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="nav_mock">Mock Exam</span></button>
+      <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
       <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
       <button class="nav-btn" onclick="showScreen('upload');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="nav_upload">Upload</span></button>
@@ -1215,6 +1216,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <button class="mobile-nav-item active" id="mob-dashboard" onclick="showScreen('dashboard');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span data-i18n="mob_dashboard">Dashboard</span></button>
   <button class="mobile-nav-item" id="mob-study" onclick="openStudy()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="mob_study">Study</span></button>
   <button class="mobile-nav-item" id="mob-mock" onclick="showScreen('mock');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="mob_mock">Mock Exam</span></button>
+  <button class="mobile-nav-item" id="mob-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
   <button class="mobile-nav-item" id="mob-review" onclick="showScreen('bookmarks');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="mob_review">Review</span></button>
   <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
   <button class="mobile-nav-item" id="mob-upload" onclick="showScreen('upload');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="mob_upload">Upload</span></button>
@@ -1979,6 +1981,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 <div id="screen-mock-result" class="screen"><div id="mock-result-wrap" style="max-width:760px;margin:0 auto;"></div></div>
 <div id="screen-mock-history" class="screen"><div id="mock-history-wrap" style="max-width:760px;margin:0 auto;"></div></div>
+
+<!-- ═══ WAR ROOM (시험 직전 치트시트) — 2026-07-25 ═══ -->
+<div id="screen-warroom" class="screen"><div id="warroom-mount"></div></div>
 
 </div><!-- /content -->
 </div><!-- /app -->
@@ -3710,7 +3715,7 @@ var UI_TEXT = {
   checkout_pending:{ko:'결제가 접수되었습니다. 반영까지 잠시 걸릴 수 있어요 (다음 로그인 시 적용).', en:'Payment received. It may take a moment to apply (or on next login).'},
   pricing_title:  {ko:'전체 문제은행 무제한', en:'Unlimited Full Question Bank'},
   pricing_price:  {ko:'$29 / 월', en:'$29 / month'},
-  pricing_benefits:{ko:'• 4,000+ 전 문항 무제한 풀이<br>• Part 1·2·3 전 영역<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 4,000+ questions<br>• All of Part 1, 2, 3<br>• Korean/English explanations<br>• Cancel anytime · 14-day money-back'},
+  pricing_benefits:{ko:'• 5,000+ 전 문항 무제한 풀이<br>• Part 1·2·3 전 영역<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 5,000+ questions<br>• All of Part 1, 2, 3<br>• Korean/English explanations<br>• Cancel anytime · 14-day money-back'},
   pricing_subscribe:{ko:'구독하기 ($29/월)', en:'Subscribe ($29/mo)'},
   pricing_fineprint:{ko:'매월 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews monthly · cancel anytime. Payments securely handled by Paddle.'},
   paid_until_label:{ko:'다음 결제일', en:'Renews'},
@@ -4046,9 +4051,9 @@ function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={dashboard:0,'quiz-setup':1,mock:2,bookmarks:3,statistics:4,upload:5,settings:6,anomaly:7};
+  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,upload:6,settings:7,anomaly:8};
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
-  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',bookmarks:'mob-review',statistics:'mob-statistics',upload:'mob-upload',settings:'mob-settings',anomaly:'mob-anomaly'};
+  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',upload:'mob-upload',settings:'mob-settings',anomaly:'mob-anomaly'};
   document.querySelectorAll('.mobile-nav-item').forEach(b=>b.classList.remove('active'));
   if(mobMap[name]) { const el=document.getElementById(mobMap[name]); if(el) el.classList.add('active'); }
   // 모의고사 하위 화면(exam/result/history)도 모의고사 메뉴를 활성 표시
@@ -4057,6 +4062,7 @@ function showScreen(name){
   // 응시 중 언어 토글 숨김 (실전 재현 — 확정 결정 ④: 응시 화면은 영어 전용, 한글은 복습에서만)
   var _ls=document.getElementById('lang-seg'); if(_ls) _ls.style.visibility=(name==='mock-exam')?'hidden':'visible';
   if(name==='dashboard') { renderDashboard(); resetResumeBadgeDismiss(); }
+  if(name==='warroom') renderWarRoom();
   if(name==='bookmarks') renderBookmarks();
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
@@ -7249,9 +7255,9 @@ function renderMockHub(){
     '<div class="setup-icon-grid setup-icon-grid-3">'+parts+'</div>'+
     '<div class="setup-divider"></div>'+
     '<div style="font-size:13px;color:var(--text-mid);line-height:1.95;">'+
-      '• '+mL('문항 100 (채점 85 + 실험 15)','100 questions (85 scored + 15 experimental)')+'<br>'+
+      '• '+mL('회당 100문항 (채점 85 + 실험 15)','100 questions per exam (85 scored + 15 experimental)')+'<br>'+
       '• '+mL('제한시간 3시간 30분 — 실제 시험과 동일','3h 30m limit — same as the real exam')+'<br>'+
-      '• '+mL('응시마다 새 조합으로 각 파트마다 3개의 시험 세트 제공됩니다.','A fresh combination every attempt — 3 exam sets per part.')+'</div>'+
+      '• '+mL('각 파트 300문항 = 100문항 시험 3세트 · 응시마다 새 조합','300 questions per part = three 100-question exams · fresh mix each attempt')+'</div>'+
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
       if(!paid){
@@ -7288,7 +7294,7 @@ function renderMockDashCard(){
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
-    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
+    : mL('각 파트 100문항 × 3세트 · 3시간 30분 · 실전 조건','3 sets of 100 per part · 3h 30m · exam conditions');
   el.innerHTML =
     '<div class="start-card mk-dash-card" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;" onclick="showScreen(\'mock\')">'+
     '<div><div style="font-size:16px;font-weight:700;color:var(--text-main);">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
@@ -7631,6 +7637,155 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.warn('[SW] registration failed:', err));
   });
 }
+</script>
+
+<!-- ═══ WAR ROOM 모듈 (치트시트 · RPC 로딩 · 이전/다음 · 복사차단 · 2026-07-25) ═══ -->
+<style id="wr-style">
+#screen-warroom{padding:0;}
+.wr-wrap{max-width:1000px;margin:0 auto;padding:6px 0 0;display:grid;grid-template-columns:250px 1fr;gap:20px;}
+.wr-toc-toggle{display:none;}
+@media(max-width:820px){ .wr-wrap{grid-template-columns:1fr;} .wr-toc-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid rgba(53,70,73,.12);border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;color:#354649;cursor:pointer;} .wr-toc{display:none;margin-top:10px;} .wr-toc.open{display:block;} }
+.wr-toc{background:#fff;border:1px solid rgba(53,70,73,.12);border-radius:14px;padding:10px;height:max-content;}
+.wr-part{font-size:11px;font-weight:800;letter-spacing:.06em;color:#4E5C66;text-transform:uppercase;padding:8px 10px 4px;}
+.wr-dom{border-top:1px solid rgba(53,70,73,.1);}
+.wr-dom:first-of-type{border-top:none;}
+.wr-dom-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;cursor:pointer;font-size:12.5px;font-weight:700;color:#354649;}
+.wr-dom-head .c{font-size:10px;font-weight:700;color:#4E5C66;background:rgba(53,70,73,.08);border-radius:20px;padding:1px 8px;}
+.wr-dom-head svg{width:15px;height:15px;stroke:#4d6164;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;}
+.wr-dom.open .wr-dom-head svg{transform:rotate(180deg);}
+.wr-dom-list{display:none;padding-bottom:4px;}
+.wr-dom.open .wr-dom-list{display:block;}
+.wr-topic-link{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;font-size:13px;color:#4b5759;cursor:pointer;}
+.wr-topic-link.active{background:#d9ebe9;color:#354649;font-weight:700;}
+.wr-topic-link .lk{opacity:.6;}
+.wr-topic-link .tag{margin-left:auto;font-size:9px;font-weight:700;border-radius:5px;padding:1px 5px;}
+.wr-topic-link .tag.free{color:#16a34a;border:1px solid rgba(22,163,74,.35);}
+.wr-sheet{position:relative;background:#fff;border:1px solid rgba(53,70,73,.12);border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.06);min-height:420px;display:flex;flex-direction:column;}
+.wr-protected{flex:1;padding:20px 26px 26px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.wr-title{font-family:'Poppins',sans-serif;font-size:21px;font-weight:800;color:#232e30;margin-bottom:14px;letter-spacing:-.01em;}
+.wr-body h3{font-family:'Poppins',sans-serif;font-size:15.5px;font-weight:700;color:#354649;margin:20px 0 9px;padding-bottom:6px;border-bottom:1px solid rgba(53,70,73,.12);}
+.wr-body h3:first-child{margin-top:2px;}
+.wr-body p{font-size:14.5px;line-height:1.75;color:#4b5759;margin-bottom:11px;}
+.wr-body ul{margin:0 0 12px 20px;} .wr-body li{font-size:14.5px;line-height:1.7;color:#4b5759;margin-bottom:5px;}
+.wr-body strong{color:#232e30;}
+.wr-body table{width:100%;border-collapse:collapse;margin:4px 0 14px;font-size:13.5px;}
+.wr-body th,.wr-body td{border:1px solid rgba(53,70,73,.12);padding:8px 11px;text-align:left;vertical-align:top;}
+.wr-body th{background:#EDF4F3;color:#354649;font-weight:700;font-size:12px;}
+.wr-body td{color:#4b5759;}
+.wr-body .tip{background:#FBF1EC;border-left:3px solid #DD8F75;border-radius:0 8px 8px 0;padding:11px 14px;margin:8px 0 15px;}
+.wr-body .tip-label{font-size:10.5px;font-weight:700;color:#b85f3f;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
+.wr-body .tip p{font-size:13.5px;line-height:1.7;margin:0;color:#4b5759;}
+.wr-body .ex{background:#D3E9E4;border:1px solid #9CC8C1;border-left:4px solid #3E837A;border-radius:0 8px 8px 0;padding:12px 15px;margin:10px 0 16px;}
+.wr-body .ex-label{display:inline-block;font-size:10.5px;font-weight:700;color:#fff;background:#3E837A;border-radius:5px;padding:2px 8px;margin-bottom:8px;text-transform:uppercase;}
+.wr-body .ex p{font-size:13.5px;line-height:1.72;margin:0 0 6px;color:#4b5759;}
+.wr-body .ex .ans b{color:#1f5b54;}
+.wr-gate{text-align:center;padding:40px 20px;}
+.wr-gate .card{background:#354649;color:#fff;border-radius:14px;padding:24px 22px;max-width:420px;margin:0 auto;}
+.wr-gate h4{font-family:'Poppins',sans-serif;font-size:17px;margin:6px 0;color:#fff;}
+.wr-gate p{font-size:13.5px;color:rgba(255,255,255,.72);margin:0 0 16px;line-height:1.6;}
+.wr-gate button{background:#DD8F75;color:#fff;border:none;border-radius:9px;padding:11px 24px;font-weight:700;font-size:14px;cursor:pointer;}
+.wr-nav{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 26px;border-top:1px solid rgba(53,70,73,.12);background:#fff;border-radius:0 0 16px 16px;box-shadow:0 -6px 16px rgba(53,70,73,.06);}
+.wr-nav button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:15px;font-weight:700;color:#354649;background:#fff;border:1.5px solid rgba(53,70,73,.22);border-radius:10px;padding:11px 20px;cursor:pointer;}
+.wr-nav button:hover:not(:disabled){background:#d9ebe9;border-color:#d9ebe9;}
+.wr-nav button:disabled{opacity:.3;cursor:default;}
+.wr-nav button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+.wr-nav .pos{font-size:14px;font-weight:800;color:#232e30;}
+.wr-nav .pos .k{font-size:12px;font-weight:600;color:#4E5C66;margin-left:8px;}
+.wr-loading,.wr-empty{text-align:center;padding:60px 20px;color:#4b5759;font-size:15px;}
+@media(max-width:820px){ .wr-nav .pos .k{display:none;} }
+</style>
+<script>
+var WR={rows:[],order:[],cur:null};
+function _wrLang(){ return (typeof LANG!=='undefined' && LANG==='en')?'en':'ko'; }
+function _wrT(r){ return _wrLang()==='en'?(r.title_en||r.title_ko):(r.title_ko||r.title_en); }
+function _wrEsc(s){var d=document.createElement('div');d.textContent=(s==null?'':s);return d.innerHTML;}
+function _wrSlug(s){return String(s).replace(/[^a-zA-Z0-9]+/g,'-').toLowerCase();}
+
+async function renderWarRoom(){
+  var mount=document.getElementById('warroom-mount'); if(!mount) return;
+  mount.innerHTML='<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+  try{
+    var res=await sb.rpc('list_war_room_topics');
+    if(res.error) throw res.error;
+    var rows=(res.data||[]).slice();
+    if(!rows.length){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room content is coming soon.':'War Room 콘텐츠가 곧 제공됩니다.')+'</div>'; return; }
+    WR.rows=rows; WR.order=rows.map(function(r){return r.outline_code;});
+    _wrBuildShell(rows);
+    wrShow(rows[0].outline_code);
+    // 언어 토글 시 재렌더 (한 번만 훅)
+    ['lang-ko','lang-en'].forEach(function(id){ var b=document.getElementById(id); if(b&&!b._wrHook){ b._wrHook=1; b.addEventListener('click',function(){ setTimeout(function(){ var sc=document.getElementById('screen-warroom'); if(sc&&sc.classList.contains('active')&&WR.cur){ _wrBuildShell(WR.rows); wrShow(WR.cur); } },60); }); } });
+  }catch(e){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room is being set up.':'War Room 준비 중입니다. (콘텐츠 적재 대기)')+'</div>'; }
+}
+
+function _wrBuildShell(rows){
+  var parts={}, porder=[];
+  rows.forEach(function(r){ var p=r.part||1; if(!parts[p]){parts[p]={};porder.push(p);} var d=r.domain||''; if(!parts[p][d])parts[p][d]=[]; parts[p][d].push(r); });
+  var chev='<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+  var html='';
+  porder.forEach(function(p){
+    html+='<div class="wr-part">Part '+p+'</div>';
+    var doms=parts[p], first=true;
+    Object.keys(doms).forEach(function(d){
+      var list=doms[d];
+      html+='<div class="wr-dom'+(first?' open':'')+'"><div class="wr-dom-head" onclick="_wrToggleDom(this.parentNode)"><span>'+_wrEsc(d)+'</span><span style="display:inline-flex;align-items:center;gap:6px;"><span class="c">'+list.length+'</span>'+chev+'</span></div><div class="wr-dom-list">';
+      list.forEach(function(r){
+        var lk=r.locked?'<span class="lk">🔒 </span>':'';
+        var tag=r.is_free?'<span class="tag free">FREE</span>':'';
+        html+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span>'+tag+'</div>';
+      });
+      html+='</div></div>'; first=false;
+    });
+  });
+  document.getElementById('warroom-mount').innerHTML=
+    '<div class="wr-wrap">'
+    +'<button class="wr-toc-toggle" id="wr-toc-toggle" onclick="_wrToggleToc()"><span>📚 '+(_wrLang()==='en'?'Index':'목차')+'</span><span>▾</span></button>'
+    +'<aside class="wr-toc" id="wr-toc">'+html+'</aside>'
+    +'<main class="wr-sheet"><div class="wr-protected" id="wr-content"></div>'
+    +'<div class="wr-nav"><button id="wr-prev" onclick="wrNav(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>'+(_wrLang()==='en'?'Prev':'이전')+'</button>'
+    +'<span class="pos" id="wr-pos"></span>'
+    +'<button id="wr-next" onclick="wrNav(1)">'+(_wrLang()==='en'?'Next':'다음')+'<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div></main></div>';
+  var guard=document.getElementById('wr-content');
+  ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();}); });
+}
+function _wrToggleDom(el){ var was=el.classList.contains('open'); var box=el.closest('.wr-toc'); box.querySelectorAll('.wr-dom').forEach(function(x){x.classList.remove('open');}); if(!was)el.classList.add('open'); }
+function _wrToggleToc(){ var t=document.getElementById('wr-toc'); if(t)t.classList.toggle('open'); }
+function _wrCloseTocMobile(){ if(window.innerWidth<=820){ var t=document.getElementById('wr-toc'); if(t)t.classList.remove('open'); } }
+
+async function wrShow(code){
+  WR.cur=code;
+  document.querySelectorAll('.wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+code); });
+  var link=document.getElementById('wr-nav-'+code);
+  if(link){ var dom=link.closest('.wr-dom'); if(dom && !dom.classList.contains('open')){ var box=dom.closest('.wr-toc'); box.querySelectorAll('.wr-dom').forEach(function(x){x.classList.remove('open');}); dom.classList.add('open'); } }
+  var row=WR.rows.find(function(r){return r.outline_code===code;});
+  var content=document.getElementById('wr-content'); if(!content) return;
+  var title=row?_wrT(row):'';
+  if(row && row.locked){
+    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-gate"><div class="card"><div style="font-size:22px;">🔒</div><h4>'+(_wrLang()==='en'?'Pro members only':'Pro 회원 전용')+'</h4><p>'+(_wrLang()==='en'?'Upgrade to Pro to unlock every War Room cheat sheet.':'Pro로 업그레이드하면 War Room 전체 치트시트를 볼 수 있어요.')+'</p><button onclick="if(typeof showPricingModal===\'function\')showPricingModal()">'+(_wrLang()==='en'?'Upgrade to Pro':'Pro로 업그레이드')+'</button></div></div>';
+    _wrUpdateNav(); _wrCloseTocMobile(); return;
+  }
+  content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+  try{
+    var res=await sb.rpc('get_war_room_topic',{p_code:code});
+    if(res.error) throw res.error;
+    var d=Array.isArray(res.data)?res.data[0]:res.data;
+    var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
+    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+(body||'')+'</div>';
+  }catch(e){ content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; }
+  _wrUpdateNav(); _wrCloseTocMobile();
+  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+}
+function _wrUpdateNav(){
+  var i=WR.order.indexOf(WR.cur);
+  var p=document.getElementById('wr-prev'), n=document.getElementById('wr-next'), pos=document.getElementById('wr-pos');
+  if(p)p.disabled=(i<=0); if(n)n.disabled=(i>=WR.order.length-1);
+  if(pos)pos.innerHTML=(i+1)+' / '+WR.order.length+'<span class="k">'+(_wrLang()==='en'?'← → to flip':'← → 키로 넘기기')+'</span>';
+}
+function wrNav(dir){ var i=WR.order.indexOf(WR.cur); if(i<0)i=0; var j=i+dir; if(j<0||j>=WR.order.length)return; wrShow(WR.order[j]); }
+document.addEventListener('keydown',function(e){
+  var sc=document.getElementById('screen-warroom'); if(!sc||!sc.classList.contains('active'))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='ArrowRight')wrNav(1); else if(e.key==='ArrowLeft')wrNav(-1);
+});
 </script>
 </body>
 </html>
