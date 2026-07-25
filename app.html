@@ -7755,8 +7755,8 @@ function _wrRenderDomains(p){
     var label=(lang==='ko')?ko:key, inner='';
     if(pop){
       list.forEach(function(r){
-        var lk=r.locked?'<span class="lk">🔒 </span>':'', tag=r.is_free?'<span class="tag free">FREE</span>':'';
-        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span>'+tag+'</div>';
+        var lk=r.locked?'<span class="lk">🔒 </span>':'';
+        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span></div>';
       });
     } else { inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>'; }
     html+='<div class="wr-dom'+opened+'"><div class="wr-dom-head" onclick="_wrToggleDom(this.parentNode)"><span>'+_wrEsc(label)+'</span><span class="rt"><span class="c">'+(pop?list.length:cnt)+'</span>'+chev+'</span></div><div class="wr-dom-list">'+inner+'</div></div>';
