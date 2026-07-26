@@ -126,6 +126,7 @@ html, body {
   border-bottom:none;
   padding:env(safe-area-inset-top) 1.25rem 0;
   display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:nowrap;                 /* 헤더는 어떤 폭에서도 한 줄 유지 (줄바꿈 금지) */
   height:calc(60px + env(safe-area-inset-top));
   position:sticky;top:0;z-index:100;flex-shrink:0;
   box-shadow:0 2px 12px rgba(0,0,0,.18);
@@ -140,20 +141,21 @@ html, body {
 .header-title{font-size:15px;font-weight:700;color:#E0E7E9;letter-spacing:-.01em;}
 .header-sub{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;}
 /* Desktop nav */
-.header-nav{display:flex;gap:2px;}
+.header-nav{display:flex;gap:2px;flex-wrap:nowrap;}
 .nav-btn{
   background:none;border:none;color:rgba(255,255,255,.7);
   padding:7px 14px;border-radius:8px;cursor:pointer;
   font-family:inherit;font-size:13px;font-weight:600;
   transition:all .18s;letter-spacing:.01em;
   display:inline-flex;align-items:center;gap:6px;
+  white-space:nowrap;flex:0 0 auto;
 }
 .nav-ico{width:15px;height:15px;flex:0 0 auto;}
 .mob-ico{width:18px;height:18px;flex:0 0 auto;}
 .nav-btn:hover{background:rgba(255,255,255,.12);color:#ffffff;}
 .nav-btn.active{background:rgba(255,255,255,.18);color:#ffffff;border:1px solid rgba(255,255,255,.25);}
 /* Right-side cluster: nav + language toggle + hamburger */
-.header-right{display:flex;align-items:center;gap:10px;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;flex-shrink:0;}
 /* Language toggle — landing-page style segmented control (adapted for dark header) */
 .lang-seg{display:inline-flex;border:1px solid rgba(255,255,255,.28);border-radius:8px;overflow:hidden;flex:0 0 auto;}
 .lang-seg button{
@@ -972,18 +974,32 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 /* ========== END DASHBOARD V2 ========== */
 
-/* ── Tablet portrait (iPad Portrait 등) — 헤더 압축 ── */
-/* 640px 이하는 아래 mobile 규칙에서 nav 자체를 숨김. 641~900px 범위에서 */
-/* 데스크톱 nav를 유지하되 요소가 겹치거나 밀려나지 않도록 압축한다. */
-@media(min-width:641px) and (max-width:900px){
-  .header{padding:env(safe-area-inset-top) 0.75rem 0;}
+/* ── 햄버거 전환 기준 (2026-07-26 · War Room 추가로 메뉴 8개가 되면서 수정) ──
+   "PC 외에는 전부 햄버거 메뉴". 태블릿(iPad)에서 상단 메뉴가 두 줄로 어긋나고
+   언어 토글(KO/EN)이 화면 밖으로 밀려나던 문제를 근본적으로 없앤다.
+     ① 가로 1024px 이하  → 태블릿 세로/가로, 모바일 전부 포함
+     ② 터치 기기(pointer:coarse)면서 1400px 이하 → iPad Pro 가로(1366px)까지 커버
+   (마우스가 주 입력인 PC는 pointer:fine 이라 ②에 걸리지 않는다.) */
+@media (max-width:1024px), (pointer:coarse) and (max-width:1400px){
+  .header{padding:env(safe-area-inset-top) 0.9rem 0;}
   .header-brand{gap:8px;min-width:0;}
   .header-sub{display:none;}
+  .header-nav{display:none;}          /* 상단 가로 메뉴 숨김 */
+  .hamburger-btn{display:flex;}       /* 햄버거로 전환 */
+  .header-right{gap:8px;flex-shrink:0;}  /* 언어 토글 + 햄버거는 항상 보이게 고정 */
+}
+
+/* ── 데스크톱 좁은 폭(1025~1400px) — 메뉴가 늘어나도 한 줄에 들어가도록 압축 ── */
+@media(min-width:1025px) and (max-width:1400px){
   .header-title{font-size:14px;}
-  .header-right{gap:6px;}
   .header-nav{gap:1px;}
   .nav-btn{padding:6px 9px;font-size:12px;}
   .lang-seg button{padding:5px 8px;font-size:11px;}
+}
+/* 1025~1200px + 관리자(업로드·관리자 메뉴 추가 = 최대 9개)에서도 안 밀리도록 아이콘만 생략 */
+@media(min-width:1025px) and (max-width:1200px){
+  .header-nav .nav-ico{display:none;}
+  .nav-btn{padding:6px 8px;}
 }
 
 @media(max-width:640px){
@@ -4172,14 +4188,21 @@ function partLabel(pk){ var m = PART_META[pk]; if(!m) return pk; return (LANG ==
 
 // 응시 권장 정답률 임계값 (Phase 2 design decision)
 const EXAM_READY_THRESHOLD = 90;
+// 응시 권장 최소 진도율 (2026-07-26) — 정답률만 높고 문제를 거의 안 푼 상태에서
+// '응시 가능'이 뜨던 버그 수정. 아무리 정답률이 높아도 진도 60% 미만이면 '응시 가능' 불가.
+const EXAM_READY_MIN_PROGRESS = 60;
+// '거의 다 왔어요'도 최소한의 표본이 필요 — 진도 30% 미만이면 아직 '학습 중' 단계로 본다.
+const HERO_ALMOST_MIN_PROGRESS = 30;
 
 // 대시보드 히어로 응시 준비도 라벨 — 진척 단계별로 의미 있는 문구 반환
 // cls: 'ready'(녹색·응시가능) / ''(앰버·거의 다옴) / 'neutral'(틸·학습중)
-function heroReadyStatus(accPct, tAttempts){
-  if(tAttempts === 0)               return { text: t('hero_start'),    cls: 'neutral' };
-  if(accPct >= EXAM_READY_THRESHOLD) return { text: t('hero_ready'),    cls: 'ready'   };
-  if(accPct >= 75)                  return { text: t('hero_almost'),   cls: ''        };
-  if(accPct >= 50)                  return { text: t('hero_learning'), cls: 'neutral' };
+// progressPct = 해당 Part의 진도율(푼 문항 수 / 전체 문항 수). 정답률과 함께 판단한다.
+function heroReadyStatus(accPct, tAttempts, progressPct){
+  var prog = (typeof progressPct === 'number' && isFinite(progressPct)) ? progressPct : 0;
+  if(tAttempts === 0)                                                        return { text: t('hero_start'),    cls: 'neutral' };
+  if(accPct >= EXAM_READY_THRESHOLD && prog >= EXAM_READY_MIN_PROGRESS)      return { text: t('hero_ready'),    cls: 'ready'   };
+  if(accPct >= 75 && prog >= HERO_ALMOST_MIN_PROGRESS)                       return { text: t('hero_almost'),   cls: ''        };
+  if(accPct >= 50 || prog >= HERO_ALMOST_MIN_PROGRESS)                       return { text: t('hero_learning'), cls: 'neutral' };
   return { text: t('hero_basics'), cls: 'neutral' };
 }
 
@@ -4759,7 +4782,7 @@ function renderDashHero(focusPart){
 
   const info = PART_META[focusPart] || PART_META['Part 1'];
   // 응시 준비도: '준비 중'(무의미) 대신 진척에 따른 단계별 라벨
-  const st = heroReadyStatus(accPct, tAttempts);
+  const st = heroReadyStatus(accPct, tAttempts, progressPct);
 
   document.getElementById('dash-hero').innerHTML =
     '<div class="dash-hero">' +
@@ -6831,6 +6854,15 @@ document.addEventListener('click', function(e){
   var h = document.getElementById('hamburger-btn');
   if(h && h.contains(e.target)) return;
   closeDrawer();
+});
+
+// 화면 회전/창 크기 변경으로 데스크톱 폭이 되어 햄버거가 사라지면 열린 드로어도 닫는다 (2026-07-26).
+// (아이패드 세로→가로 회전 시 드로어가 남아 상단 메뉴와 겹치는 것 방지)
+window.addEventListener('resize', function(){
+  var d = document.getElementById('mobile-nav-drawer');
+  if(!d || !d.classList.contains('open')) return;
+  var h = document.getElementById('hamburger-btn');
+  if(h && getComputedStyle(h).display === 'none') closeDrawer();
 });
 
 // ══════════════════════════════════════════════════════
