@@ -77,9 +77,10 @@
   --hero-cream:   #f7f5ee;              /* 크림 배경 */
   --hero-gold:    #C6A15B;              /* 골드 좌측 포인트 라인 */
   --hero-gold-bd: rgba(198,161,91,.30); /* 골드 톤 보더 */
-  /* 공지사항 — 학습 카드(흰색)와 구분되는 차분한 슬레이트 톤 (2026-07-05) */
-  --ann-bg:       #eaeff4;              /* 슬레이트 블루 배경 */
-  --ann-bd:       #d9e1ea;              /* 슬레이트 보더 */
+  /* 공지사항 — 흰 카드 + 스틸 좌측선 (2026-07-27 대안2 확정, 히어로의 좌측선 문법과 통일) */
+  --ann-bg:       #ffffff;              /* 흰 배경 */
+  --ann-bd:       rgba(53,70,73,.14);   /* 기본 카드 보더와 동일 */
+  --ann-item-bg:  #f7f9fa;              /* 안쪽 공지 항목 — 흰 카드 안에서 살짝 구분되는 옅은 회색 */
   /* 진행률 바 — 완주도는 "낮아도 나쁜 게 아님" → 경고색 대신 차분한 브랜드 색 (2026-07-05) */
   --progress-bar: #5B9089;              /* Deep Seafoam — 진행률(완주도) 전용 */
   /* 정답률 바 — 성과 구간별 색상 (앰버 → 틸 → 그린) */
@@ -901,15 +902,16 @@ html, body {
   transition:border-color .2s,transform .15s,box-shadow .2s;
 }
 .dash-part-row:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
-/* 선택된 Part 타일을 히어로와 같은 크림+골드로 연결 (2026-07-05) */
-.dash-part-row.active{border:1.5px solid var(--hero-gold-bd);border-top:3px solid var(--hero-gold);background:var(--hero-cream);}
+/* 선택된 Part 타일을 히어로와 같은 크림+골드로 연결 (2026-07-05)
+   — 골드 포인트 선을 상단→왼쪽으로 이동해 히어로·프리미엄·공지 카드의 좌측선 문법과 통일 (2026-07-27) */
+.dash-part-row.active{border:1.5px solid var(--hero-gold-bd);border-left:3px solid var(--hero-gold);background:var(--hero-cream);}
 .dash-part-row-name{display:flex;flex-direction:column;align-items:flex-start;gap:9px;font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;line-height:1.3;}
 .dash-part-row.active .dash-part-row-name{color:var(--sel-text);}
 .dash-part-row-name svg{width:26px;height:26px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .dash-part-row-stats{font-size:12.5px;color:var(--text-mid);margin-bottom:11px;}
 .dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;margin-top:auto;}
 /* ── 공지사항 (Announcements) ── */
-.ann-card{background:var(--ann-bg);border:1px solid var(--ann-bd);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
+.ann-card{background:var(--ann-bg);border:1px solid var(--ann-bd);border-left:3px solid var(--silver);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
 .ann-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .ann-head-l{display:flex;align-items:center;gap:9px;}
 .ann-title-lbl{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--text-main);}
@@ -917,10 +919,10 @@ html, body {
 .ann-pill{background:#fae7df;color:#b23c22;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;}
 .ann-mark{background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:4px 6px;border-radius:6px;}
 .ann-mark:hover{background:rgba(0,0,0,.04);color:var(--text-mid);}
-.ann-item{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:border-color .15s;}
+.ann-item{background:var(--ann-item-bg);border:1px solid rgba(53,70,73,.10);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:border-color .15s;}
 .ann-item:last-of-type{margin-bottom:0;}
 .ann-item:hover{border-color:var(--border-hover);}
-.ann-item.pin{border-left:3px solid var(--hero-gold);border-radius:0 10px 10px 0;}
+.ann-item.pin{border-left:3px solid var(--hero-gold);}
 .ann-item-top{display:flex;align-items:center;gap:8px;}
 .ann-item-top svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .ann-item-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text-main);}
@@ -954,16 +956,21 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 .admin-ann-btn.danger:hover{border-color:var(--danger-color);background:rgba(220,38,38,.05);}
 .dash-part-row-bar-fill{height:100%;border-radius:3px;transition:width .4s,background .3s;}
 
-/* 약점 토픽 위젯 */
+/* ── 대시보드 섹션 카드 (약점 보강 · 최근 학습) — 공지/프리미엄과 동일 문법:
+     둥근 모서리 + 3px 좌측 포인트 선 + 제목 내장 (2026-07-27 통일) ── */
+.dash-sec-card{background:var(--card-bg);border:1px solid var(--border-clr);border-left:3px solid var(--silver);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
+.dash-sec-title{font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:12px;}
+
+/* 약점 토픽 위젯 — 카드 안쪽 행 (공지 항목과 동일 톤) */
 .weak-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:11px 13px;background:var(--card-bg);
-  border:1px solid var(--border-clr);border-radius:10px;
-  box-shadow:var(--card-shadow);
+  padding:11px 13px;background:var(--ann-item-bg);
+  border:1px solid rgba(53,70,73,.10);border-radius:10px;
   margin-bottom:7px;font-size:14px;
   transition:border-color .2s,transform .15s;
   cursor:pointer;   /* COP 미니 세션 시작 (클릭) */
 }
+.weak-row:last-child{margin-bottom:0;}
 /* 전체 Part 행과 동일한 hover 강조 — 살짝 이동 (2026-07-05) */
 .weak-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
 .weak-name{color:var(--text-main);}
@@ -971,20 +978,20 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 .weak-stat.crit{color:var(--danger-color);}
 .weak-stat.warn{color:var(--flag-color);}
 
-/* 최근 세션 컴팩트 (Dashboard 용 — 2개만) */
+/* 최근 세션 컴팩트 (Dashboard 용 — 2개만) — 카드 안쪽 행 (공지 항목과 동일 톤) */
 .dash-recent-row{
   display:flex;align-items:center;gap:12px;
-  padding:11px 13px;background:var(--card-bg);
-  border:1px solid var(--border-clr);border-radius:14px;
-  box-shadow:var(--card-shadow);
+  padding:11px 13px;background:var(--ann-item-bg);
+  border:1px solid rgba(53,70,73,.10);border-radius:10px;
   margin-bottom:7px;font-size:13px;
   cursor:pointer;transition:border-color .15s,transform .15s;
 }
+.dash-recent-row:last-child{margin-bottom:0;}
 /* 전체 Part 행과 동일한 hover 강조 — 살짝 이동 (2026-07-05) */
 .dash-recent-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
 /* 복습 불가(구버전 세션) 행은 클릭·이동 강조 비활성 */
 .dash-recent-row.no-review{cursor:default;}
-.dash-recent-row.no-review:hover{transform:none;border-color:var(--border-clr);}
+.dash-recent-row.no-review:hover{transform:none;border-color:rgba(53,70,73,.10);}
 .dash-recent-date{font-weight:600;color:var(--text-main);font-size:13px;}
 .dash-recent-score{margin-left:auto;font-weight:700;font-size:14px;}
 
@@ -1740,6 +1747,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
             <option value="notice">일반 (종 아이콘)</option>
             <option value="content">신규 문제/콘텐츠 (신규 태그)</option>
             <option value="maintenance">점검 안내 (회색)</option>
+            <option value="plain">아이콘 없음 (텍스트만)</option>
           </select>
         </div>
         <div class="ann-field" style="flex:0 0 auto;min-width:0;">
@@ -1965,12 +1973,22 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-hist-tb th{text-align:left;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);font-weight:800;padding:8px 10px;border-bottom:1px solid var(--border-clr);}
   .mk-hist-tb td{padding:10px;border-bottom:1px solid var(--border-clr);color:var(--text-mid);font-variant-numeric:tabular-nums;}
   .mk-hist-tb td b{color:var(--text-main);}
-  /* 대시보드 모의고사 카드 호버 — dash-part-row 와 동일 관용구 (2026-07-17) */
-  .mk-dash-card{transition:transform .15s, box-shadow .15s, border-color .15s;}
+  /* 대시보드 프리미엄 2버튼 (실전 모의고사 + War Room) — A안 시폼 틴트 + 좌측선, 히어로(크림+골드)와
+     같은 문법의 "두 번째 하이라이트". 호버는 dash-part-row 와 동일 관용구. (2026-07-27) */
+  .prem-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:1.25rem;}
+  .prem-card{background:#EDF4F3;border:1px solid rgba(111,163,158,.40);border-left:3px solid var(--gold);
+    border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;
+    cursor:pointer;box-shadow:var(--card-shadow);transition:transform .15s, box-shadow .15s, border-color .15s;}
   @media(hover:hover){
-    .mk-dash-card:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+    .prem-card:hover{border-color:var(--sel-border);border-left-color:var(--gold);transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
   }
-  .mk-dash-card:active{transform:translateY(-1px);opacity:.9;}
+  .prem-card:active{transform:translateY(-1px);opacity:.9;}
+  .prem-ico{width:34px;height:34px;border-radius:9px;background:rgba(111,163,158,.16);display:flex;align-items:center;justify-content:center;flex:none;}
+  .prem-ico svg{width:19px;height:19px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke:#4E7D78;}
+  .prem-ico.ter{background:rgba(221,143,117,.16);}
+  .prem-ico.ter svg{stroke:#C96F4E;}
+  .prem-tt{font-size:14.5px;font-weight:800;color:var(--text-main);}
+  .prem-sub{font-size:11.5px;color:#55716e;margin-top:2px;line-height:1.45;}
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
   /* X 버튼-스크롤바 간격 확보 + 모바일 여백 (2026-07-17 피드백 2·3) */
@@ -4407,6 +4425,7 @@ async function loadAnnouncements(){
 }
 
 function _annIcon(cat){
+  if(cat === 'plain') return '';   // 아이콘 없음 (텍스트만) — 2026-07-27
   if(cat === 'content') return '<svg viewBox="0 0 24 24" style="stroke:var(--accent);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
   if(cat === 'maintenance') return '<svg viewBox="0 0 24 24" style="stroke:var(--text-muted);"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 0 1 5.4-5.4l-2.6 2.6-2-2z"/></svg>';
   return '<svg viewBox="0 0 24 24" style="stroke:var(--hero-gold);"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
@@ -5032,7 +5051,8 @@ function renderDashWeakTopics(){
   var el = document.getElementById('dash-weak-topics');
   if(!el) return;
 
-  var label = '<div class="dash-parts-section-label">' + t('dash_weak_more') + focusPart + ' Top 3</div>';
+  // 제목은 카드 안에 (공지사항·프리미엄 카드와 동일 문법, 2026-07-27 통일)
+  var label = '<div class="dash-sec-title">' + t('dash_weak_more') + focusPart + ' Top 3</div>';
 
   if(weak.length === 0){
     var reason = Object.keys(copMap).length === 0
@@ -5040,11 +5060,11 @@ function renderDashWeakTopics(){
       : (LANG === 'en'
           ? ('Shown after ' + MIN_ATT + '+ attempts on a ' + focusPart + ' topic')
           : (focusPart + ' 주제를 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
-    el.innerHTML = label +
-      '<div class="empty" style="padding:1.25rem 1rem;background:var(--card-bg);' +
-      'border:1px solid var(--border-clr);border-radius:10px;margin-bottom:1.5rem;">' +
+    el.innerHTML = '<div class="dash-sec-card">' + label +
+      '<div class="empty" style="padding:1.25rem 1rem;background:var(--ann-item-bg);' +
+      'border:1px solid rgba(53,70,73,.10);border-radius:10px;">' +
         '<div class="empty-sub">' + reason + '</div>' +
-      '</div>';
+      '</div></div>';
     return;
   }
 
@@ -5060,7 +5080,7 @@ function renderDashWeakTopics(){
     '</div>';
   }).join('');
 
-  el.innerHTML = label + rows;
+  el.innerHTML = '<div class="dash-sec-card">' + label + rows + '</div>';
 }
 
 // 약점 행 클릭 → 확인 모달 → 승낙 시 해당 COP 문제만 모은 미니 세션
@@ -5194,12 +5214,12 @@ function renderDashRecent2(){
   var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
   if(recentItems.length === 0){
     el.innerHTML =
-      '<div class="dash-parts-section-label">' + t('dash_recent') + '</div>' +
-      '<div class="empty" style="padding:1.5rem 1rem;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:10px;">' +
+      '<div class="dash-sec-card"><div class="dash-sec-title">' + t('dash_recent') + '</div>' +
+      '<div class="empty" style="padding:1.5rem 1rem;background:var(--ann-item-bg);border:1px solid rgba(53,70,73,.10);border-radius:10px;">' +
         '<div class="empty-icon">📖</div>' +
         '<div class="empty-title">' + t('dash_recent_empty_t') + '</div>' +
         '<div class="empty-sub">' + t('dash_recent_empty_s') + '</div>' +
-      '</div>';
+      '</div></div>';
     return;
   }
 
@@ -5233,7 +5253,7 @@ function renderDashRecent2(){
            '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="dash-parts-section-label">' + t('dash_recent') + '</div>' + rowsHtml;
+  el.innerHTML = '<div class="dash-sec-card"><div class="dash-sec-title">' + t('dash_recent') + '</div>' + rowsHtml + '</div>';
 }
 
 // Hero CTA 클릭 → Study 진입 (focus part 저장 + 해당 chip 자동 선택)
@@ -7457,18 +7477,27 @@ async function mockFillLastScores(){
 }
 function mockSelectPart(p){ Mock.selPart=p; renderMockHub(); }
 
-// ── 대시보드 진입 카드 ──
+// ── 대시보드 진입 카드: 프리미엄 2버튼 (실전 모의고사 + War Room) ──
+//    · 아이콘 = 기존 언어 재사용: War Room 번개(메뉴와 동일 path) · 모의고사 스톱워치(시간제한 시험)
+//    · 🔒 는 모의고사에만 — War Room은 무료 샘플이 있어 진입 자체는 열어 둠(내부 게이트가 잠금)
 function renderMockDashCard(){
   var el=document.getElementById('dash-mock'); if(!el) return;
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
-    : mL('각 파트 100문항 × 3세트 · 3시간 30분 · 실전 조건','3 sets of 100 per part · 3h 30m · exam conditions');
+    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
   el.innerHTML =
-    '<div class="start-card mk-dash-card" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;" onclick="showScreen(\'mock\')">'+
-    '<div><div style="font-size:16px;font-weight:700;color:var(--text-main);">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
-    '<div style="font-size:12.5px;color:var(--text-muted);margin-top:3px;">'+sub+'</div></div>'+
-    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="9 18 15 12 9 6"/></svg>'+
+    '<div class="prem-row">'+
+    '<div class="prem-card" onclick="showScreen(\'mock\')">'+
+      '<div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>'+
+      '<div><div class="prem-tt">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
+      '<div class="prem-sub">'+sub+'</div></div>'+
+    '</div>'+
+    '<div class="prem-card" onclick="showScreen(\'warroom\')">'+
+      '<div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
+      '<div><div class="prem-tt">War Room</div>'+
+      '<div class="prem-sub">'+mL('시험 직전 치트시트','Last-minute cheat sheets')+'</div></div>'+
+    '</div>'+
     '</div>';
 }
 
