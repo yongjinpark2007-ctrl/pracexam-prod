@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- ===== 확인메일 링크 착지 보정 (2026-07-27) =====
+     Supabase 확인 메일의 링크가 사이트 루트(index.html)로 떨어지면, 세션 토큰(#access_token=…)이
+     여기서 그냥 버려진다 → 사용자는 로그인 안 된 랜딩페이지를 보고, 앱(app.html)이 실행되지 않아
+     가입 환영 메일(send-signup-welcome)도 영영 발송되지 않는다. (2026-07-24~27 16명 누락 원인)
+     → 토큰 해시를 달고 들어오면 그대로 app.html 로 넘겨 앱이 세션을 잡게 한다. -->
+<script>
+(function(){
+  try{
+    var h = window.location.hash || '';
+    if(h.indexOf('access_token=') > -1){
+      window.location.replace('/app.html' + (window.location.search || '') + h);
+    }
+  }catch(e){}
+})();
+</script>
+
 <!-- ===== Google Ads 전환추적 (gtag) — 2026-07 ===== -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18345651711"></script>
 <script>
@@ -1601,7 +1617,13 @@ function doSignup(){
     return;
   }
 
-  fetch(SUPABASE_URL + '/auth/v1/signup', {
+  // 확인메일이 돌아올 주소. Supabase(GoTrue)는 redirect_to 를 **쿼리스트링에서만** 읽는다.
+  // (2026-07-27 수정) 예전에는 body 안에 넣어 보내서 무시됐고 → 확인 링크가 사이트 루트로 떨어져
+  // 앱이 실행되지 않았다 = 가입 환영 메일 미발송의 원인.
+  // ⚠️ 이 주소는 Supabase → Authentication → URL Configuration → Redirect URLs 에 등록돼 있어야 한다.
+  var confirmRedirect = window.location.origin + '/app.html' + (window._intent === 'subscribe' ? '?intent=subscribe' : '');
+
+  fetch(SUPABASE_URL + '/auth/v1/signup?redirect_to=' + encodeURIComponent(confirmRedirect), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
     body: JSON.stringify({
@@ -1613,8 +1635,7 @@ function doSignup(){
         language: lang,
         marketing_consent: marketingConsent,
         marketing_consent_at: marketingConsent ? new Date().toISOString() : null
-      },
-      redirect_to: window.location.origin + '/app.html' + (window._intent === 'subscribe' ? '?intent=subscribe' : '')
+      }
     })
   })
   .then(function(res){ return res.json().then(function(d){ return {ok: res.ok, data: d}; }); })
