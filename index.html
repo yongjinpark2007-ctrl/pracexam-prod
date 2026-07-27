@@ -13,8 +13,18 @@
 (function(){
   try{
     var h = window.location.hash || '';
+    var s = window.location.search || '';
+    // 성공: 세션 토큰을 달고 왔다 → 앱이 세션을 잡도록 그대로 넘긴다.
     if(h.indexOf('access_token=') > -1){
-      window.location.replace('/app.html' + (window.location.search || '') + h);
+      window.location.replace('/app.html' + s + h);
+      return;
+    }
+    // 실패: 링크가 만료됐거나 이미 사용됐다(#error=access_denied&error_code=otp_expired).
+    // 예전엔 이 경우 아무 처리가 없어서, 사용자는 설명 없는 랜딩/로그인 화면만 보고 이탈했다.
+    // → 앱으로 넘겨 "만료 안내 + 확인메일 재발송" 화면을 띄운다. (2026-07-27 §10-D)
+    if(h.indexOf('error_code=') > -1 || h.indexOf('error=') > -1 ||
+       s.indexOf('error_code=') > -1 || s.indexOf('error=') > -1){
+      window.location.replace('/app.html' + s + h);
     }
   }catch(e){}
 })();

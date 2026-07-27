@@ -1170,6 +1170,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <div class="lg-err" id="lg-err">❌ Incorrect email or password</div>
       <div class="lg-status" id="lg-status">🔄 Signing in…</div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowReset()">Forgot password?</a></div>
+      <div style="text-align:center;"><a class="lg-link" onclick="lgShowResend()">Didn't get the confirmation email?</a></div>
     </div>
 
     <!-- View 2: 비밀번호 재설정 메일 요청 -->
@@ -1195,6 +1196,19 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <button class="lg-btn" id="lg-newpw-btn" onclick="doUpdatePassword()">Update password</button>
       <div class="lg-err" id="lg-newpw-err"></div>
       <div class="lg-ok" id="lg-newpw-ok"></div>
+    </div>
+
+    <!-- View 4: 확인 메일 재발송 (링크 만료·미수신 구제) — 2026-07-27 -->
+    <div id="lg-view-resend" style="display:none;">
+      <div id="lg-resend-note" style="display:none;background:rgba(184,95,63,.08);border:1px solid rgba(184,95,63,.25);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.6;color:var(--text-main);margin-bottom:14px;"></div>
+      <div id="lg-resend-title" style="font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:6px;">Resend confirmation email</div>
+      <div id="lg-resend-desc" style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:16px;">Enter the email you signed up with and we'll send a fresh confirmation link.</div>
+      <div class="lg-label">Email</div>
+      <input class="lg-input" type="email" id="lg-resend-email" placeholder="Enter your email" onkeydown="if(event.key==='Enter')doResendConfirm()"/>
+      <button class="lg-btn" id="lg-resend-btn" onclick="doResendConfirm()">Send new link</button>
+      <div class="lg-err" id="lg-resend-err"></div>
+      <div class="lg-ok" id="lg-resend-ok"></div>
+      <div style="text-align:center;"><a class="lg-link" onclick="lgShowLogin()">← Back to login</a></div>
     </div>
   </div>
 
@@ -2437,6 +2451,18 @@ async function doLogin(){
   if(error){
     btn.disabled = false;
     status.style.display = 'none';
+    // 이메일 미확인 = 막다른 길이 되기 쉬운 지점. 영문 원문 에러만 띄우지 말고
+    // 재발송 화면으로 데려간다(이메일은 미리 채워서). (2026-07-27 §10-D)
+    if((error.message || '').toLowerCase().indexOf('not confirmed') > -1){
+      lgShowResend(email);
+      var _n = document.getElementById('lg-resend-note');
+      if(_n){
+        _n.innerHTML = _lgT('⚠️ This account still needs email confirmation. Send yourself a fresh link below.',
+                            '⚠️ 아직 이메일 확인이 완료되지 않은 계정입니다. 아래에서 새 확인 링크를 받아보세요.');
+        _n.style.display = 'block';
+      }
+      return;
+    }
     showLgErr('❌ ' + (error.message === 'Invalid login credentials' ? 'Incorrect email or password' : error.message));
     return;
   }
@@ -2457,12 +2483,87 @@ function showLgErr(msg){
 var _recoveryMode = false;  // 메일 링크(type=recovery)로 진입했는지
 
 function lgShowView(which){
-  ['login','reset','newpw'].forEach(function(v){
+  ['login','reset','newpw','resend'].forEach(function(v){
     var el = document.getElementById('lg-view-' + v);
     if(el) el.style.display = (v === which) ? '' : 'none';
   });
 }
 function lgShowLogin(){ lgShowView('login'); }
+
+// 로그인 게이트는 로그인 전 화면이라 LANG 초기화(파일 하단)보다 먼저 그려질 수 있다.
+// LANG이 아직 없으면 저장된 값을 직접 읽고, 그것도 없으면 영어(확인 메일이 영문이므로).
+function _lgLang(){
+  try{
+    if(typeof LANG !== 'undefined' && LANG) return LANG;
+    return localStorage.getItem('ea_lang') || 'en';
+  }catch(e){ return 'en'; }
+}
+function _lgT(en, ko){ return (_lgLang() === 'ko') ? ko : en; }
+
+// ── 확인 메일 재발송 (2026-07-27) ──────────────────────
+// 왜 필요한가: 확인 링크는 1회용이고 기본 24시간이면 만료된다. 회사 메일의 보안 스캐너가
+// 사용자보다 먼저 링크를 눌러 토큰을 태워버리는 경우도 있다. 그때 GoTrue는
+//   #error=access_denied&error_code=otp_expired
+// 를 달아 되돌려보내는데, 예전에는 이 해시를 아무도 읽지 않아 사용자가 "아무 일도 안 일어나는
+// 화면"을 보고 그대로 이탈했다(= 2026-07-27 §10-D). 이제 안내 + 재발송 경로를 제공한다.
+function lgShowResend(prefill){
+  var err = document.getElementById('lg-resend-err');
+  var ok  = document.getElementById('lg-resend-ok');
+  if(err) err.style.display = 'none';
+  if(ok)  ok.style.display  = 'none';
+  var pre = prefill || (document.getElementById('lg-email') ? document.getElementById('lg-email').value.trim() : '');
+  if(pre) document.getElementById('lg-resend-email').value = pre;
+  var t = document.getElementById('lg-resend-title');
+  var d = document.getElementById('lg-resend-desc');
+  if(t) t.textContent = _lgT('Resend confirmation email', '확인 메일 다시 보내기');
+  if(d) d.textContent = _lgT("Enter the email you signed up with and we'll send a fresh confirmation link.",
+                             '가입하신 이메일을 입력하시면 새 확인 링크를 보내드립니다.');
+  document.getElementById('lg-resend-btn').textContent = _lgT('Send new link', '새 링크 보내기');
+  lgShowView('resend');
+}
+
+async function doResendConfirm(){
+  var email = document.getElementById('lg-resend-email').value.trim();
+  var err = document.getElementById('lg-resend-err');
+  var ok  = document.getElementById('lg-resend-ok');
+  var btn = document.getElementById('lg-resend-btn');
+  err.style.display = 'none'; ok.style.display = 'none';
+  if(!email){
+    err.textContent = _lgT('Please enter your email.', '이메일을 입력해 주세요.');
+    err.style.display = 'block'; return;
+  }
+  btn.disabled = true; btn.textContent = _lgT('Sending…', '보내는 중…');
+  try{
+    // ⚠️ emailRedirectTo 필수. 빠뜨리면 GoTrue가 Site URL(사이트 루트)로 되돌려보내
+    //    2026-06-30~07-27 버그가 그대로 재현된다. supabase-js는 이 값을 쿼리스트링에 넣어준다.
+    var res = await sb.auth.resend({
+      type: 'signup',
+      email: email,
+      options: { emailRedirectTo: window.location.origin + '/app.html' }
+    });
+    if(res && res.error){ throw res.error; }
+    ok.innerHTML = _lgT('✅ New confirmation link sent.<br>Check your inbox — and your spam/junk folder.',
+                        '✅ 새 확인 링크를 보냈습니다.<br>받은 편지함과 스팸함을 확인해 주세요.');
+    ok.style.display = 'block';
+  }catch(e){
+    var m = (e && e.message) ? e.message : '';
+    if(m.toLowerCase().indexOf('already') > -1 || m.toLowerCase().indexOf('confirmed') > -1){
+      // 이미 확인된 계정 — 재발송이 아니라 그냥 로그인하면 된다.
+      ok.innerHTML = _lgT('This email is already confirmed. Just log in with your password below.',
+                          '이미 확인이 완료된 계정입니다. 아래에서 비밀번호로 로그인해 주세요.');
+      ok.style.display = 'block';
+    } else if(m.toLowerCase().indexOf('security purposes') > -1 || m.toLowerCase().indexOf('rate') > -1){
+      err.textContent = _lgT('Please wait a minute before requesting another email.',
+                             '잠시 후(1분 뒤) 다시 시도해 주세요.');
+      err.style.display = 'block';
+    } else {
+      err.textContent = '❌ ' + (m || _lgT('Failed to send. Please try again.', '발송에 실패했습니다. 다시 시도해 주세요.'));
+      err.style.display = 'block';
+    }
+  }finally{
+    btn.disabled = false; btn.textContent = _lgT('Send new link', '새 링크 보내기');
+  }
+}
 function lgShowReset(){
   document.getElementById('lg-reset-err').style.display = 'none';
   document.getElementById('lg-reset-ok').style.display = 'none';
@@ -2581,9 +2682,45 @@ try{
 
 // ── SESSION 초기화 (이메일 인증 링크 자동 로그인 + 기존 세션 복원) ──
 
+// ⓪-A 확인/재설정 링크가 실패해서 되돌아온 경우 (2026-07-27 §10-D)
+//   GoTrue는 링크가 만료·재사용됐을 때 세션 대신 에러를 해시로 붙여 보낸다:
+//     #error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired
+//   (라이브 프로브로 실제 형식 확인함.) 예전엔 이 해시를 읽는 코드가 없어서 사용자는
+//   아무 설명 없는 로그인 화면을 보고 이탈했다 — 실패 로그도 안 남는 무음 이탈.
+//   이제 사유를 보여주고 곧바로 "확인 메일 다시 보내기"로 안내한다.
+(function(){
+  try{
+    var raw = (window.location.hash || '').replace(/^#/, '');
+    if(raw.indexOf('error') === -1) raw = (window.location.search || '').replace(/^\?/, '');
+    if(raw.indexOf('error') === -1) return;
+    var q = new URLSearchParams(raw);
+    var code = q.get('error_code') || q.get('error') || '';
+    if(!code) return;
+    _sessionHandled = true;   // 에러 상태이므로 자동 진입 로직을 막는다
+    var expired = (code.indexOf('otp_expired') > -1 || code.indexOf('access_denied') > -1);
+    setTimeout(function(){
+      try{
+        document.getElementById('login-gate').style.display = 'flex';
+        lgShowResend();
+        var note = document.getElementById('lg-resend-note');
+        if(note){
+          note.innerHTML = expired
+            ? _lgT('⚠️ That confirmation link has expired or was already used. Links are valid for a limited time, and some corporate email filters open them before you do.<br><b>Send yourself a new one below — it only takes a second.</b>',
+                   '⚠️ 확인 링크가 만료되었거나 이미 사용되었습니다. 링크는 일정 시간만 유효하고, 회사 메일의 보안 필터가 먼저 링크를 여는 경우도 있습니다.<br><b>아래에서 새 링크를 받아보세요 — 몇 초면 됩니다.</b>')
+            : _lgT('⚠️ We could not complete that link (' + code + '). You can request a new confirmation email below, or just log in.',
+                   '⚠️ 링크 처리에 실패했습니다 (' + code + '). 아래에서 확인 메일을 다시 받거나, 그냥 로그인하셔도 됩니다.');
+          note.style.display = 'block';
+        }
+        history.replaceState(null, '', window.location.pathname);
+      }catch(e){}
+    }, 0);
+  }catch(e){}
+})();
+
 // ⓪ 비밀번호 재설정 메일 링크(type=recovery)로 진입한 경우:
 //    세션은 생기지만 앱으로 자동 진입시키지 않고 '새 비밀번호' 화면을 띄운다.
-if(window.location.hash && window.location.hash.indexOf('type=recovery') !== -1){
+// (⓪-A가 에러를 처리했으면 여기 들어오지 않는다 — 만료된 재설정 링크로 '새 비밀번호' 화면이 뜨는 것 방지)
+if(window.location.hash && window.location.hash.indexOf('type=recovery') !== -1 && !_sessionHandled){
   _recoveryMode = true;
   _sessionHandled = true;  // checkSession / SIGNED_IN 자동 진입 방지
   setTimeout(function(){
