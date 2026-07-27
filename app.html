@@ -154,6 +154,8 @@ html, body {
 .mob-ico{width:18px;height:18px;flex:0 0 auto;}
 .nav-btn:hover{background:rgba(255,255,255,.12);color:#ffffff;}
 .nav-btn.active{background:rgba(255,255,255,.18);color:#ffffff;border:1px solid rgba(255,255,255,.25);}
+/* 클릭 후 ←→ 키 사용 시 브라우저 기본 포커스 링이 메뉴에 그려지는 것 방지 (2026-07-27) */
+.nav-btn:focus,.mobile-nav-item:focus{outline:none;}
 /* Right-side cluster: nav + language toggle + hamburger */
 .header-right{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;flex-shrink:0;}
 /* Language toggle — landing-page style segmented control (adapted for dark header) */
@@ -7862,6 +7864,7 @@ if ('serviceWorker' in navigator) {
 .wr-nav{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 26px;border-top:1px solid rgba(53,70,73,.12);background:#fff;border-radius:0 0 16px 16px;box-shadow:0 -6px 16px rgba(53,70,73,.06);}
 .wr-nav button{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:15px;font-weight:700;color:#354649;background:#fff;border:1.5px solid rgba(53,70,73,.22);border-radius:10px;padding:11px 20px;cursor:pointer;}
 .wr-nav button:hover:not(:disabled){background:#d9ebe9;border-color:#d9ebe9;}
+.wr-nav button:focus{outline:none;}
 .wr-nav button:disabled{opacity:.3;cursor:default;}
 .wr-nav button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
 .wr-nav .pos{font-size:14px;font-weight:800;color:#232e30;}
