@@ -1208,7 +1208,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <button class="lg-btn" id="lg-resend-btn" onclick="doResendConfirm()">Send new link</button>
       <div class="lg-err" id="lg-resend-err"></div>
       <div class="lg-ok" id="lg-resend-ok"></div>
-      <div style="text-align:center;"><a class="lg-link" onclick="lgShowLogin()">← Back to login</a></div>
+      <div style="text-align:center;"><a class="lg-link" id="lg-resend-back" onclick="lgShowLogin()">← Back to login</a></div>
     </div>
   </div>
 
@@ -2457,8 +2457,7 @@ async function doLogin(){
       lgShowResend(email);
       var _n = document.getElementById('lg-resend-note');
       if(_n){
-        _n.innerHTML = _lgT('⚠️ This account still needs email confirmation. Send yourself a fresh link below.',
-                            '⚠️ 아직 이메일 확인이 완료되지 않은 계정입니다. 아래에서 새 확인 링크를 받아보세요.');
+        _n.innerHTML = '⚠️ This account still needs email confirmation. Send yourself a fresh link below.';
         _n.style.display = 'block';
       }
       return;
@@ -2490,15 +2489,10 @@ function lgShowView(which){
 }
 function lgShowLogin(){ lgShowView('login'); }
 
-// 로그인 게이트는 로그인 전 화면이라 LANG 초기화(파일 하단)보다 먼저 그려질 수 있다.
-// LANG이 아직 없으면 저장된 값을 직접 읽고, 그것도 없으면 영어(확인 메일이 영문이므로).
-function _lgLang(){
-  try{
-    if(typeof LANG !== 'undefined' && LANG) return LANG;
-    return localStorage.getItem('ea_lang') || 'en';
-  }catch(e){ return 'en'; }
-}
-function _lgT(en, ko){ return (_lgLang() === 'ko') ? ko : en; }
+// ⚠️ 로그인 게이트는 **영어로 통일**한다 (2026-07-27 사용자 결정).
+//    고객 대부분이 영어권이고, 카드 안의 기존 문구(Email/Password/Log In/Forgot password?)도
+//    전부 영어라서 여기만 한국어가 섞이면 오히려 깨져 보인다. 확인 메일 자체도 영문(Brevo 17).
+//    → 이 게이트 안에서는 새 문구도 영어로만 쓸 것. (앱 본문은 기존대로 t()/LANG 이중언어 유지)
 
 // ── 확인 메일 재발송 (2026-07-27) ──────────────────────
 // 왜 필요한가: 확인 링크는 1회용이고 기본 24시간이면 만료된다. 회사 메일의 보안 스캐너가
@@ -2513,12 +2507,6 @@ function lgShowResend(prefill){
   if(ok)  ok.style.display  = 'none';
   var pre = prefill || (document.getElementById('lg-email') ? document.getElementById('lg-email').value.trim() : '');
   if(pre) document.getElementById('lg-resend-email').value = pre;
-  var t = document.getElementById('lg-resend-title');
-  var d = document.getElementById('lg-resend-desc');
-  if(t) t.textContent = _lgT('Resend confirmation email', '확인 메일 다시 보내기');
-  if(d) d.textContent = _lgT("Enter the email you signed up with and we'll send a fresh confirmation link.",
-                             '가입하신 이메일을 입력하시면 새 확인 링크를 보내드립니다.');
-  document.getElementById('lg-resend-btn').textContent = _lgT('Send new link', '새 링크 보내기');
   lgShowView('resend');
 }
 
@@ -2529,10 +2517,10 @@ async function doResendConfirm(){
   var btn = document.getElementById('lg-resend-btn');
   err.style.display = 'none'; ok.style.display = 'none';
   if(!email){
-    err.textContent = _lgT('Please enter your email.', '이메일을 입력해 주세요.');
+    err.textContent = 'Please enter your email.';
     err.style.display = 'block'; return;
   }
-  btn.disabled = true; btn.textContent = _lgT('Sending…', '보내는 중…');
+  btn.disabled = true; btn.textContent = 'Sending…';
   try{
     // ⚠️ emailRedirectTo 필수. 빠뜨리면 GoTrue가 Site URL(사이트 루트)로 되돌려보내
     //    2026-06-30~07-27 버그가 그대로 재현된다. supabase-js는 이 값을 쿼리스트링에 넣어준다.
@@ -2542,26 +2530,23 @@ async function doResendConfirm(){
       options: { emailRedirectTo: window.location.origin + '/app.html' }
     });
     if(res && res.error){ throw res.error; }
-    ok.innerHTML = _lgT('✅ New confirmation link sent.<br>Check your inbox — and your spam/junk folder.',
-                        '✅ 새 확인 링크를 보냈습니다.<br>받은 편지함과 스팸함을 확인해 주세요.');
+    ok.innerHTML = '✅ New confirmation link sent.<br>Check your inbox — and your spam/junk folder.';
     ok.style.display = 'block';
   }catch(e){
     var m = (e && e.message) ? e.message : '';
     if(m.toLowerCase().indexOf('already') > -1 || m.toLowerCase().indexOf('confirmed') > -1){
       // 이미 확인된 계정 — 재발송이 아니라 그냥 로그인하면 된다.
-      ok.innerHTML = _lgT('This email is already confirmed. Just log in with your password below.',
-                          '이미 확인이 완료된 계정입니다. 아래에서 비밀번호로 로그인해 주세요.');
+      ok.innerHTML = 'This email is already confirmed. Just log in with your password below.';
       ok.style.display = 'block';
     } else if(m.toLowerCase().indexOf('security purposes') > -1 || m.toLowerCase().indexOf('rate') > -1){
-      err.textContent = _lgT('Please wait a minute before requesting another email.',
-                             '잠시 후(1분 뒤) 다시 시도해 주세요.');
+      err.textContent = 'Please wait a minute before requesting another email.';
       err.style.display = 'block';
     } else {
-      err.textContent = '❌ ' + (m || _lgT('Failed to send. Please try again.', '발송에 실패했습니다. 다시 시도해 주세요.'));
+      err.textContent = '❌ ' + (m || 'Failed to send. Please try again.');
       err.style.display = 'block';
     }
   }finally{
-    btn.disabled = false; btn.textContent = _lgT('Send new link', '새 링크 보내기');
+    btn.disabled = false; btn.textContent = 'Send new link';
   }
 }
 function lgShowReset(){
@@ -2579,7 +2564,7 @@ async function doResetRequest(){
   var ok  = document.getElementById('lg-reset-ok');
   var btn = document.getElementById('lg-reset-btn');
   err.style.display = 'none'; ok.style.display = 'none';
-  if(!email){ err.textContent = '이메일을 입력해 주세요.'; err.style.display = 'block'; return; }
+  if(!email){ err.textContent = 'Please enter your email.'; err.style.display = 'block'; return; }
   btn.disabled = true; btn.textContent = 'Sending…';
   try{
     // redirectTo: 메일 링크 클릭 시 돌아올 주소 (recovery 토큰이 해시로 붙어 옴)
@@ -2587,10 +2572,10 @@ async function doResetRequest(){
       redirectTo: 'https://pracexam.com/app.html'
     });
     if(res && res.error){ throw res.error; }
-    ok.innerHTML = '✅ 재설정 링크를 보냈습니다.<br>메일함(스팸함 포함)을 확인해 주세요.';
+    ok.innerHTML = '✅ Reset link sent.<br>Check your inbox — and your spam/junk folder.';
     ok.style.display = 'block';
   }catch(e){
-    err.textContent = '❌ ' + (e && e.message ? e.message : '발송에 실패했습니다.');
+    err.textContent = '❌ ' + (e && e.message ? e.message : 'Failed to send. Please try again.');
     err.style.display = 'block';
   }finally{
     btn.disabled = false; btn.textContent = 'Send reset link';
@@ -2605,13 +2590,13 @@ async function doUpdatePassword(){
   var ok  = document.getElementById('lg-newpw-ok');
   var btn = document.getElementById('lg-newpw-btn');
   err.style.display = 'none'; ok.style.display = 'none';
-  if(!p1 || p1.length < 8){ err.textContent = '비밀번호는 8자 이상이어야 합니다.'; err.style.display = 'block'; return; }
-  if(p1 !== p2){ err.textContent = '두 비밀번호가 일치하지 않습니다.'; err.style.display = 'block'; return; }
+  if(!p1 || p1.length < 8){ err.textContent = 'Password must be at least 8 characters.'; err.style.display = 'block'; return; }
+  if(p1 !== p2){ err.textContent = 'The two passwords do not match.'; err.style.display = 'block'; return; }
   btn.disabled = true; btn.textContent = 'Updating…';
   try{
     var res = await sb.auth.updateUser({ password: p1 });
     if(res && res.error){ throw res.error; }
-    ok.innerHTML = '✅ 비밀번호가 변경되었습니다.<br>잠시 후 새 비밀번호로 로그인됩니다.';
+    ok.innerHTML = '✅ Password updated.<br>Signing you in with your new password…';
     ok.style.display = 'block';
     _recoveryMode = false;
     // recovery 토큰 해시 제거 후, 정상 세션이면 자동 진입
@@ -2632,7 +2617,7 @@ async function doUpdatePassword(){
       });
     }, 1400);
   }catch(e){
-    err.textContent = '❌ ' + (e && e.message ? e.message : '변경에 실패했습니다.');
+    err.textContent = '❌ ' + (e && e.message ? e.message : 'Failed to update. Please try again.');
     err.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Update password';
   }
@@ -2705,10 +2690,8 @@ try{
         var note = document.getElementById('lg-resend-note');
         if(note){
           note.innerHTML = expired
-            ? _lgT('⚠️ That confirmation link has expired or was already used. Links are valid for a limited time, and some corporate email filters open them before you do.<br><b>Send yourself a new one below — it only takes a second.</b>',
-                   '⚠️ 확인 링크가 만료되었거나 이미 사용되었습니다. 링크는 일정 시간만 유효하고, 회사 메일의 보안 필터가 먼저 링크를 여는 경우도 있습니다.<br><b>아래에서 새 링크를 받아보세요 — 몇 초면 됩니다.</b>')
-            : _lgT('⚠️ We could not complete that link (' + code + '). You can request a new confirmation email below, or just log in.',
-                   '⚠️ 링크 처리에 실패했습니다 (' + code + '). 아래에서 확인 메일을 다시 받거나, 그냥 로그인하셔도 됩니다.');
+            ? '⚠️ That confirmation link has expired or was already used. Links are valid for a limited time, and some corporate email filters open them before you do.<br><b>Send yourself a new one below — it only takes a second.</b>'
+            : '⚠️ We could not complete that link (' + code + '). You can request a new confirmation email below, or just log in.';
           note.style.display = 'block';
         }
         history.replaceState(null, '', window.location.pathname);
