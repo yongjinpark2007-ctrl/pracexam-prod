@@ -1636,9 +1636,10 @@ function _emailTypoCheck(email){
     var d=_lev(domain,_MAIL_DOMAINS[i]);
     if(d<bestD){bestD=d;best=_MAIL_DOMAINS[i];}
   }
-  if(best && bestD<=2) return {fix: local+"@"+best};           // 인기 도메인의 1~2글자 오타
-  var parts=domain.split("."), tld=parts.pop();
-  if(_TLD_FIX[tld]) return {fix: local+"@"+parts.join(".")+"."+_TLD_FIX[tld]};  // 회사 도메인이라도 .con 등은 교정 제안
+  var parts=domain.split("."), tld=parts[parts.length-1];
+  var tldBad = !!_TLD_FIX[tld];                                // _TLD_FIX의 TLD는 전부 실존하지 않음 → 하드 차단 대상
+  if(best && bestD<=2) return {fix: local+"@"+best, hard: tldBad};
+  if(tldBad) return {fix: local+"@"+parts.slice(0,-1).join(".")+"."+_TLD_FIX[tld], hard: true};
   return null;
 }
 
@@ -1666,6 +1667,16 @@ function doSignup(){
 
   // 오타 의심 시 수정 제안 (제안일 뿐 강제 아님 — 거부하면 입력한 주소 그대로 가입)
   var _tc = _emailTypoCheck(email);
+  if (_tc && _tc.hard) {
+    // 실존하지 않는 도메인(.con 등) → 계정 생성 차단. 확인 메일이 반송될 주소로 가입시키지 않는다.
+    showMsg(
+      lang === 'ko'
+        ? '이메일 도메인이 올바르지 않아 가입할 수 없습니다: ' + email + ' — 혹시 ' + _tc.fix + ' 아닌가요? 주소를 수정한 뒤 다시 시도해주세요.'
+        : 'That email domain does not exist: ' + email + '. Did you mean ' + _tc.fix + '? Please correct the address and try again.',
+      false
+    );
+    return;
+  }
   if (_tc && _tc.fix && _tc.fix !== email.toLowerCase()) {
     var _useFix = window.confirm(
       lang === 'ko'
