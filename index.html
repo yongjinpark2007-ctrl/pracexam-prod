@@ -384,9 +384,10 @@ section{padding:88px 0;}
 
 /* ── stats strip ───────────────────────────────────────── */
 .stats{padding:36px 0; border-top:1px solid var(--border-clr); border-bottom:1px solid var(--border-clr);}
-.stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center;}
-@media (max-width:760px){ .stats-grid{grid-template-columns:repeat(2,1fr); gap:28px 16px;} }
-.stat-num{font-family:var(--font-serif); font-size:clamp(26px,3.4vw,36px); color:var(--navy);}
+.stats-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:24px; text-align:center;}
+@media (max-width:760px){ .stats-grid{grid-template-columns:repeat(2,1fr); gap:28px 16px;}
+  .stats-grid > div:last-child:nth-child(odd){grid-column:1 / -1;} }
+.stat-num{font-family:var(--font-serif); font-size:clamp(22px,2.7vw,32px); color:var(--navy); white-space:nowrap;}
 .stat-label{font-size:13px; color:var(--text-muted); margin-top:4px;}
 
 /* ── section heads ─────────────────────────────────────── */
@@ -867,8 +868,12 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <div class="stat-label"><span class="ko">실전 문제</span><span class="en">Practice Questions</span></div>
     </div>
     <div>
-      <div class="stat-num">Part 1·2·3</div>
-      <div class="stat-label"><span class="ko">전 영역 커버</span><span class="en">Full Exam Coverage</span></div>
+      <div class="stat-num">War Room</div>
+      <div class="stat-label"><span class="ko">시험장 치트시트</span><span class="en">Exam Cheat Sheets</span></div>
+    </div>
+    <div>
+      <div class="stat-num">Mock Exams</div>
+      <div class="stat-label"><span class="ko">실전 모의고사 900문항</span><span class="en">Real Exam Style 900 Questions</span></div>
     </div>
     <div>
       <div class="stat-num">한·영</div>
