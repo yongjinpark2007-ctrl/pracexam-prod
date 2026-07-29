@@ -1610,6 +1610,38 @@ function showMsg(text, ok){
   el.className = 'modal-msg show ' + (ok ? 'ok' : 'err');
 }
 
+
+// ── 이메일 오타 감지 (2026-07-29): gmail.con 류 오타를 가입 전에 잡는다 ──
+//   반환 {fix:"수정제안주소"} 또는 null. 차단이 아니라 '제안'만 — 사용자가 거부하면 그대로 진행.
+var _MAIL_DOMAINS = ["gmail.com","naver.com","hanmail.net","daum.net","nate.com","kakao.com",
+  "hotmail.com","outlook.com","yahoo.com","icloud.com","aol.com","live.com","msn.com","mail.com",
+  "ymail.com","gmx.com","proton.me","protonmail.com","comcast.net","att.net","verizon.net","sbcglobal.net"];
+var _TLD_FIX = {con:"com",cmo:"com",cpm:"com",ocm:"com",vom:"com",xom:"com",comm:"com",coom:"com",
+  cim:"com",conm:"com",cok:"com",cpom:"com",met:"net",nte:"net",ent:"net"};
+function _lev(a,b){
+  var m=a.length,n=b.length,i,j,dp=[];
+  for(i=0;i<=m;i++){dp[i]=[i];}
+  for(j=1;j<=n;j++){dp[0][j]=j;}
+  for(i=1;i<=m;i++)for(j=1;j<=n;j++)
+    dp[i][j]=Math.min(dp[i-1][j]+1,dp[i][j-1]+1,dp[i-1][j-1]+(a.charAt(i-1)===b.charAt(j-1)?0:1));
+  return dp[m][n];
+}
+function _emailTypoCheck(email){
+  var m = String(email).toLowerCase().match(/^([^@]+)@([^@\s]+\.[^@\s]+)$/);
+  if(!m) return null;
+  var local=m[1], domain=m[2];
+  if(_MAIL_DOMAINS.indexOf(domain) > -1) return null;          // 정상 도메인
+  var best=null, bestD=3;
+  for(var i=0;i<_MAIL_DOMAINS.length;i++){
+    var d=_lev(domain,_MAIL_DOMAINS[i]);
+    if(d<bestD){bestD=d;best=_MAIL_DOMAINS[i];}
+  }
+  if(best && bestD<=2) return {fix: local+"@"+best};           // 인기 도메인의 1~2글자 오타
+  var parts=domain.split("."), tld=parts.pop();
+  if(_TLD_FIX[tld]) return {fix: local+"@"+parts.join(".")+"."+_TLD_FIX[tld]};  // 회사 도메인이라도 .con 등은 교정 제안
+  return null;
+}
+
 function doSignup(){
   var fname = document.getElementById('su-fname').value.trim();
   var lname = document.getElementById('su-lname').value.trim();
@@ -1630,6 +1662,17 @@ function doSignup(){
   if (pw.length < 6) {
     showMsg(lang === 'ko' ? '비밀번호는 6자 이상이어야 합니다.' : 'Password must be at least 6 characters.', false);
     return;
+  }
+
+  // 오타 의심 시 수정 제안 (제안일 뿐 강제 아님 — 거부하면 입력한 주소 그대로 가입)
+  var _tc = _emailTypoCheck(email);
+  if (_tc && _tc.fix && _tc.fix !== email.toLowerCase()) {
+    var _useFix = window.confirm(
+      lang === 'ko'
+        ? '입력하신 이메일: ' + email + '\n혹시 아래 주소가 맞지 않나요?\n\n' + _tc.fix + '\n\n[확인] 위 주소로 수정해서 가입\n[취소] 입력한 주소 그대로 가입'
+        : 'You entered: ' + email + '\nDid you mean:\n\n' + _tc.fix + '\n\n[OK] Sign up with the suggested address\n[Cancel] Keep the address I typed'
+    );
+    if (_useFix) { email = _tc.fix; document.getElementById('su-email').value = email; }
   }
 
   // 확인메일이 돌아올 주소. Supabase(GoTrue)는 redirect_to 를 **쿼리스트링에서만** 읽는다.
@@ -1660,8 +1703,8 @@ function doSignup(){
       try{ gtag('event','conversion',{ send_to:'AW-18345651711/z9OnCN2y1NUcEP_b8atE' }); }catch(e){}
       showMsg(
         lang === 'ko'
-          ? '가입 완료! 확인 이메일을 발송했습니다. 받은 편지함에 없으면 스팸함(정크메일함)도 꼭 확인해주세요.'
-          : "Account created! We've sent you a confirmation email — if it's not in your inbox, please check your spam/junk folder.",
+          ? '가입 완료! ' + email + ' 주소로 확인 이메일을 발송했습니다. 받은 편지함에 없으면 스팸함(정크메일함)도 꼭 확인해주세요.'
+          : "Account created! We've sent a confirmation email to " + email + " — if it's not in your inbox, please check your spam/junk folder.",
         true
       );
     } else {
