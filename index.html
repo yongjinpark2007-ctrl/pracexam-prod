@@ -1638,7 +1638,7 @@ function _emailTypoCheck(email){
   }
   var parts=domain.split("."), tld=parts[parts.length-1];
   var tldBad = !!_TLD_FIX[tld];                                // _TLD_FIX의 TLD는 전부 실존하지 않음 → 하드 차단 대상
-  if(best && bestD<=2) return {fix: local+"@"+best, hard: tldBad};
+  if(best && bestD<=2) return {fix: local+"@"+best, hard: (tldBad || bestD<=1)};  // 주요 메일 도메인의 1글자 변형(gmail.co 등)은 사실상 오타 → 하드 차단
   if(tldBad) return {fix: local+"@"+parts.slice(0,-1).join(".")+"."+_TLD_FIX[tld], hard: true};
   return null;
 }
@@ -1677,13 +1677,24 @@ function doSignup(){
     );
     return;
   }
-  if (_tc && _tc.fix && _tc.fix !== email.toLowerCase()) {
+  if (_tc && _tc.fix && _tc.fix !== email.toLowerCase() && window._suDeclined !== email) {
     var _useFix = window.confirm(
       lang === 'ko'
-        ? '입력하신 이메일: ' + email + '\n혹시 아래 주소가 맞지 않나요?\n\n' + _tc.fix + '\n\n[확인] 위 주소로 수정해서 가입\n[취소] 입력한 주소 그대로 가입'
-        : 'You entered: ' + email + '\nDid you mean:\n\n' + _tc.fix + '\n\n[OK] Sign up with the suggested address\n[Cancel] Keep the address I typed'
+        ? '입력하신 이메일: ' + email + '\n혹시 아래 주소가 맞지 않나요?\n\n' + _tc.fix + '\n\n[확인] 위 주소로 수정해서 가입\n[취소] 가입 중단 (주소 다시 확인)'
+        : 'You entered: ' + email + '\nDid you mean:\n\n' + _tc.fix + '\n\n[OK] Sign up with the suggested address\n[Cancel] Stop and re-check my address'
     );
     if (_useFix) { email = _tc.fix; document.getElementById('su-email').value = email; }
+    else {
+      // 취소 = 가입 중단 (계정 미생성). 같은 주소로 한 번 더 가입을 누르면 본인 확인으로 간주하고 진행.
+      window._suDeclined = email;
+      showMsg(
+        lang === 'ko'
+          ? '가입이 진행되지 않았습니다. 이메일 주소를 다시 확인해주세요. 입력하신 주소가 확실히 맞다면 가입 버튼을 한 번 더 눌러주세요.'
+          : 'Sign-up was not completed. Please double-check your email address. If it is definitely correct, press the sign-up button once more.',
+        false
+      );
+      return;
+    }
   }
 
   // 확인메일이 돌아올 주소. Supabase(GoTrue)는 redirect_to 를 **쿼리스트링에서만** 읽는다.
