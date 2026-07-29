@@ -472,6 +472,7 @@ html, body {
 .setup-cta-btn:hover{background:linear-gradient(135deg,#4d6164,#354649);transform:translateY(-1px);}
 .setup-cta-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
 .setup-cta-note{font-size:13px;color:var(--text-muted);text-align:center;margin-top:8px;}
+.setup-mode-hint{font-size:12px;color:var(--text-muted);text-align:center;margin-top:8px;line-height:1.5;min-height:18px;}
 /* 모바일: 아이콘 약간 축소 */
 @media(max-width:640px){
   .setup-icon-circle{width:48px;height:48px;}
@@ -1472,6 +1473,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
           <div class="setup-icon-label" data-i18n="mode_timed">Timed 90s</div>
         </button>
       </div>
+      <div class="setup-mode-hint" id="mode-hint" data-i18n="mode_hint_normal"></div>
 
       <div class="setup-divider"></div>
 
@@ -1581,7 +1583,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   </div>
   <div class="result-btns" id="result-btns-area">
     <button class="btn-navy" style="flex:1;" onclick="showScreen('dashboard')">Dashboard</button>
-    <button class="btn-primary" style="flex:1;" onclick="clearLiveQuiz();showScreen('quiz-setup')">New Session →</button>
+    <button class="btn-primary" style="flex:1;" onclick="clearLiveQuiz();_openStudySetup()">New Session →</button>
   </div>
 </div>
 
@@ -3810,6 +3812,10 @@ var UI_TEXT = {
   mode_tpiq:      {ko:'스마트 (TPIQ)', en:'Smart (TPIQ)'},
   mode_review:    {ko:'오답 복습', en:'Review Wrong'},
   mode_timed:     {ko:'타이머 90초', en:'Timed 90s'},
+  mode_hint_normal:{ko:'선택한 범위에서 무작위 순서로 출제됩니다.', en:'Questions from your selected scope, in random order.'},
+  mode_hint_tpiq: {ko:'Powered by TPIQ — Tier-Priority Interleaved Queue. 빈출 주제를 우선 배치하고 주제를 교차(인터리빙)해 출제합니다.', en:'Powered by TPIQ — Tier-Priority Interleaved Queue. Prioritizes high-frequency exam topics and interleaves them for better retention.'},
+  mode_hint_review:{ko:'이전에 틀린 문제만 다시 풉니다.', en:'Retry only the questions you previously got wrong.'},
+  mode_hint_timed:{ko:'문제당 90초 제한 — 실전 페이스로 연습합니다.', en:'90 seconds per question — practice at real exam pace.'},
   cnt_quick:      {ko:'빠르게',  en:'Quick'},
   cnt_standard:   {ko:'표준',    en:'Standard'},
   cnt_extended:   {ko:'확장',    en:'Extended'},
@@ -4258,7 +4264,7 @@ function openStudy(){
 // Quiz Setup 화면 진입 공통 헬퍼
 function _openStudySetup(){
   showScreen('quiz-setup');
-  setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); updateAvailCount(); applyTrialSetupRestrictions(); }, 50);
+  setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); syncSubsetIconUI(); updateAvailCount(); applyTrialSetupRestrictions(); }, 50);
 }
 
 // 진행 중 세션 재개/새 세션 선택 모달 (기존 confirm 대체)
@@ -5276,6 +5282,7 @@ function dashStartFocusPart(part){
     updateSetupBanner();
     syncRepeatIconUI();
     syncModeIconUI();
+    syncSubsetIconUI();
     if(typeof updateAvailCount === 'function') updateAvailCount();
   }, 50);
 }
@@ -5304,6 +5311,16 @@ function selectMode(m,btn){
   S.mode=m;
   document.querySelectorAll('#mode-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
+  updateAvailCount();   // review 모드는 getPool()을 오답만으로 좁히므로 개수 갱신 필요
+  updateModeHint();
+}
+// 학습 모드 한 줄 설명 (mode-row 아래) — data-i18n 갱신으로 언어 토글에도 자동 추종
+function updateModeHint(){
+  var el=document.getElementById('mode-hint');
+  if(!el) return;
+  var k='mode_hint_'+(S.mode||'normal');
+  el.setAttribute('data-i18n',k);
+  el.textContent=t(k)||'';
 }
 function selectRepeatIcon(val,btn){
   if(_trialLockGuard(btn))return;
@@ -5366,6 +5383,7 @@ function syncModeIconUI(){
   var btns=document.querySelectorAll('#mode-row .setup-icon-btn');
   var vals=['normal','tpiq','review','timed'];
   btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
+  if(typeof updateModeHint==='function') updateModeHint();
 }
 // subset-row(범위) UI 동기화
 function syncSubsetIconUI(){
