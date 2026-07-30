@@ -1993,6 +1993,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .prem-sub{font-size:11.5px;color:#55716e;margin-top:2px;line-height:1.45;}
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
+  /* 모의고사 해설 모달 copy guard — War Room(.wr-protected)과 동일 방식 (2026-07-30) */
+  #mk-review-box{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
   /* X 버튼-스크롤바 간격 확보 + 모바일 여백 (2026-07-17 피드백 2·3) */
   .modal:has(#mk-review-box) .modal-close{margin-right:10px;margin-top:-4px;}
   @media(max-width:640px){
@@ -7809,6 +7811,9 @@ async function mockReviewItem(qid){
       '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;">'+mockEsc(expl)+'</div>'+
       (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+mL('EA 시험 팁','EA Exam Tip')+'</b> · '+mockEsc(tip)+'</div>':'')+
       '<div style="margin-top:16px;text-align:right;"><button class="btn-ghost" onclick="closeModal()">'+mL('닫기','Close')+'</button></div></div>';
+    // copy guard — War Room(.wr-protected)과 동일: 우클릭·복사·잘라내기·드래그·선택 차단 (박스 스코프, 다른 모달 무영향)
+    var _mrb=document.getElementById('mk-review-box');
+    if(_mrb){ ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ _mrb.addEventListener(ev,function(e){e.preventDefault();}); }); }
     document.getElementById('modal-bg').classList.add('open');
   }catch(e){ console.error('[mock review]',e); showToast(mL('해설 로드 실패','Review load failed')); }
 }
