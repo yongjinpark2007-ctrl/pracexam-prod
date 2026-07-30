@@ -4251,7 +4251,7 @@ function showScreen(name){
   var _ls=document.getElementById('lang-seg'); if(_ls) _ls.style.visibility=(name==='mock-exam')?'hidden':'visible';
   if(name==='dashboard') { renderDashboard(); resetResumeBadgeDismiss(); }
   if(name==='warroom'){ var _wpc=window._wrPendingCode||null; window._wrPendingCode=null; renderWarRoom(_wpc); }
-  else if(window._wrFromQuiz){ window._wrFromQuiz=false; } // War Room을 떠나면 '돌아가기' 모드 해제
+  else if(window._wrFromQuiz||window._wrQSignal){ window._wrFromQuiz=false; window._wrQSignal=null; } // War Room을 떠나면 '돌아가기' 모드·관련칩 해제
   if(name==='bookmarks') renderBookmarks();
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
@@ -6199,7 +6199,7 @@ async function showExplanation(q, isOk, timeout){
       topicBadge.innerHTML = '📖 Topic: ' + _escHtml(_tn) + ' <span style="opacity:.65;">↗</span>';
       topicBadge.classList.add('exp-topic-link');
       topicBadge.title = (LANG === 'en') ? 'View this topic\'s War Room cheat sheet' : 'War Room에서 이 토픽 치트시트 보기';
-      topicBadge.onclick = function(){ openWarRoomTopic(_oc); };
+      topicBadge.onclick = function(){ openWarRoomTopic(_oc, q); };
     } else {
       topicBadge.textContent = 'Topic: ' + _tn;
       topicBadge.classList.remove('exp-topic-link');
@@ -7953,6 +7953,11 @@ if ('serviceWorker' in navigator) {
 .wr-nav .pos .k{font-size:12px;font-weight:600;color:#4E5C66;margin-left:8px;}
 .wr-loading,.wr-empty{text-align:center;padding:60px 20px;color:#4b5759;font-size:15px;}
 @media(max-width:820px){ .wr-nav .pos .k{display:none;} .wr-body th,.wr-body td{padding:7px 8px;font-size:13px;} .wr-protected{padding:16px 14px 22px;} }
+.wr-related{display:flex;flex-wrap:wrap;align-items:center;gap:7px;background:#EDF4F3;border:1px solid rgba(62,131,122,.25);border-radius:10px;padding:9px 12px;margin:0 0 14px;}
+.wr-rel-lbl{font-size:11.5px;font-weight:800;color:#3E837A;letter-spacing:.02em;}
+.wr-rel-chip{font:inherit;font-size:12.5px;font-weight:600;color:#354649;background:#fff;border:1px solid rgba(62,131,122,.35);border-radius:16px;padding:5px 11px;cursor:pointer;}
+.wr-rel-chip:hover{background:#d9ebe9;}
+.wr-rel-chip .pb{font-size:9px;font-weight:800;color:#3E837A;margin-right:5px;}
 .exp-topic-link{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
 .exp-topic-link:hover{background:#d9ebe9;color:#354649;}
 .wr-search{position:relative;margin:2px 2px 10px;}
@@ -8118,6 +8123,7 @@ async function wrShow(code){
   var title=row?_wrT(row):'';
   if(row && row.locked){
     content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-gate"><div class="card"><div style="font-size:22px;">🔒</div><h4>'+(_wrLang()==='en'?'Pro members only':'Pro 회원 전용')+'</h4><p>'+(_wrLang()==='en'?'Upgrade to Pro to unlock every War Room cheat sheet.':'Pro로 업그레이드하면 War Room 전체 치트시트를 볼 수 있어요.')+'</p><button onclick="if(typeof showPricingModal===\'function\')showPricingModal()">'+(_wrLang()==='en'?'Upgrade to Pro':'Pro로 업그레이드')+'</button></div></div>';
+    _wrRenderRelated(content, code);
     _wrUpdateNav(); _wrCloseTocMobile(); return;
   }
   content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
@@ -8128,6 +8134,7 @@ async function wrShow(code){
     var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
     content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
     _wrPostProcess(content);
+    _wrRenderRelated(content, code);
   }catch(e){ content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; }
   _wrUpdateNav(); _wrCloseTocMobile();
   try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
@@ -8148,15 +8155,49 @@ function _wrPostProcess(root){
     t.parentNode.insertBefore(w,t); w.appendChild(t);
   });
 }
+// 문제→딥링크 도착 시: 문제 속 Form 번호가 제목에 들어간 다른 치트시트를 '관련' 칩으로 제안 (2026-07-30)
+// (COP 매핑 토픽이 광범위 토픽일 때 — 예: C1013-003의 Form 3520 → C1902 상세 토픽 안내)
+function _wrRenderRelated(content, code){
+  var sig=window._wrQSignal;
+  if(!sig || sig.origin!==code || !WR.rows || !WR.rows.length) return;
+  var o=WR.rows.find(function(r){return r.outline_code===code;});
+  var ot=o?((o.title_en||'')+' '+(o.title_ko||'')):'';
+  var keys=sig.keys.filter(function(k){ return ot.indexOf(k)<0; }); // 도착 토픽 제목이 이미 다루는 번호는 제외
+  if(!keys.length) return;
+  var chips=[];
+  WR.rows.forEach(function(r){
+    if(r.outline_code===code) return;
+    var t=(r.title_en||'')+' '+(r.title_ko||'');
+    if(keys.some(function(k){ return t.indexOf(k)>=0; })) chips.push(r);
+  });
+  if(!chips.length) return;
+  var lang=_wrLang(), html='<div class="wr-related"><span class="wr-rel-lbl">📌 '+(lang==='en'?'Related to this question':'이 문제와 관련')+'</span>';
+  chips.slice(0,3).forEach(function(r){
+    html+='<button class="wr-rel-chip" onclick="_wrGo('+(r.part||1)+',\''+r.outline_code+'\')"><span class="pb">P'+(r.part||1)+'</span>'+_wrEsc(_wrT(r))+(r.locked?' 🔒':'')+'</button>';
+  });
+  html+='</div>';
+  var t=content.querySelector('.wr-title');
+  if(t) t.insertAdjacentHTML('afterend', html);
+}
 // "IRC §6103" / "Form 2848" 같은 참조가 라벨과 번호 사이에서 줄바꿈되지 않게 NBSP로 결합
 function _wrNbspJoin(html){
   return String(html).replace(/\b(Treas\. Reg\.|Rev\. Proc\.|IRC|Form|Pub\.|Reg\.|Letter|Notice|Schedule|Circular|Title) (?=§|\d|CP)/g,
     function(_m,p1){ return p1+' '; });
 }
 // ── 해설 Topic 버튼 → War Room 딥링크 (2026-07-30) ──
-function openWarRoomTopic(code){
+function openWarRoomTopic(code, q){
   code=((code||'')+'').trim(); if(!code) return;
   window._wrPendingCode=code;
+  // 문제 텍스트에서 Form 번호 추출 → 도착 토픽에서 '관련 치트시트' 칩 제안용 (예: C1013-003의 Form 3520 → C1902)
+  window._wrQSignal=null;
+  if(q){
+    var src=[q.topic,q.text,q.textEn,q.explanation,q.explanationEn,q.examTip,q.examTipEn]
+      .map(function(v){return (v==null?'':String(v));}).join(' ');
+    var keys={}, m, re=/\bForm\s*([0-9]{3,5}(?:-[A-Za-z]{1,4})?)\b/gi;
+    while((m=re.exec(src))!==null){ if(m[1].length>=3) keys[m[1]]=1; }
+    var list=Object.keys(keys);
+    if(list.length) window._wrQSignal={origin:code, keys:list};
+  }
   // 진행 중 학습 세션이 있으면 복귀 배지를 '문제로 돌아가기' 모드로
   window._wrFromQuiz = !!(S.quizQueue && S.quizQueue.length>0 && S.quizIdx<S.quizQueue.length);
   if(window._wrFromQuiz) _resumeBadgeDismissed=false;
