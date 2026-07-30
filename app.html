@@ -4151,11 +4151,22 @@ function updateResumeBadge(){
     }, { passive: true });
   }
 
-  const tag = (LANG === 'en')
-    ? (S.reviewMode ? 'Resume review' : 'Resume study')
-    : (S.reviewMode ? '복습 재개' : '학습 재개');
-  document.getElementById('resume-badge-label').innerHTML =
-    `▶ ${tag} <span style="opacity:.85;font-weight:500;">(${S.quizIdx+1}/${S.quizQueue.length})</span>`;
+  // War Room 딥링크(해설 Topic 버튼)로 진입한 경우: '문제로 돌아가기' 모드로 강조 (2026-07-30)
+  const wrReturnMode = !!window._wrFromQuiz && document.getElementById('screen-warroom')?.classList.contains('active');
+  if(wrReturnMode){
+    document.getElementById('resume-badge-label').innerHTML =
+      `← ${(LANG==='en')?'Back to question':'문제로 돌아가기'} <span style="opacity:.85;font-weight:500;">(${S.quizIdx+1}/${S.quizQueue.length})</span>`;
+    badge.style.background = '#DD8F75';
+    badge.style.boxShadow = '0 4px 16px rgba(221,143,117,.55)';
+  } else {
+    const tag = (LANG === 'en')
+      ? (S.reviewMode ? 'Resume review' : 'Resume study')
+      : (S.reviewMode ? '복습 재개' : '학습 재개');
+    document.getElementById('resume-badge-label').innerHTML =
+      `▶ ${tag} <span style="opacity:.85;font-weight:500;">(${S.quizIdx+1}/${S.quizQueue.length})</span>`;
+    badge.style.background = '#16a34a';
+    badge.style.boxShadow = '0 4px 14px rgba(22,163,74,.45)';
+  }
   badge.style.display = 'flex';
 }
 
@@ -4239,7 +4250,8 @@ function showScreen(name){
   // 응시 중 언어 토글 숨김 (실전 재현 — 확정 결정 ④: 응시 화면은 영어 전용, 한글은 복습에서만)
   var _ls=document.getElementById('lang-seg'); if(_ls) _ls.style.visibility=(name==='mock-exam')?'hidden':'visible';
   if(name==='dashboard') { renderDashboard(); resetResumeBadgeDismiss(); }
-  if(name==='warroom') renderWarRoom();
+  if(name==='warroom'){ var _wpc=window._wrPendingCode||null; window._wrPendingCode=null; renderWarRoom(_wpc); }
+  else if(window._wrFromQuiz){ window._wrFromQuiz=false; } // War Room을 떠나면 '돌아가기' 모드 해제
   if(name==='bookmarks') renderBookmarks();
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
@@ -6179,7 +6191,22 @@ function skipQuestion(){
 async function showExplanation(q, isOk, timeout){
   const ec = document.getElementById('explanation-card'); ec.classList.add('visible');
   const topicBadge = document.getElementById('exp-topic-badge');
-  if(topicBadge) topicBadge.textContent = 'Topic: ' + (q.topic || 'General');
+  if(topicBadge){
+    const _tn = q.topic || 'General';
+    const _oc = ((q.outlineCode || '') + '').trim();
+    if(_oc){
+      // COP 매핑 문제: 배지 클릭 → War Room 해당 토픽 (2026-07-30)
+      topicBadge.innerHTML = '📖 Topic: ' + _escHtml(_tn) + ' <span style="opacity:.65;">↗</span>';
+      topicBadge.classList.add('exp-topic-link');
+      topicBadge.title = (LANG === 'en') ? 'View this topic\'s War Room cheat sheet' : 'War Room에서 이 토픽 치트시트 보기';
+      topicBadge.onclick = function(){ openWarRoomTopic(_oc); };
+    } else {
+      topicBadge.textContent = 'Topic: ' + _tn;
+      topicBadge.classList.remove('exp-topic-link');
+      topicBadge.title = '';
+      topicBadge.onclick = null;
+    }
+  }
   const banner = document.getElementById('result-banner');
   if(isOk === null || isOk === undefined){
     banner.className = 'result-banner'; banner.textContent = '';
@@ -7858,7 +7885,7 @@ if ('serviceWorker' in navigator) {
 <!-- ═══ WAR ROOM 모듈 (치트시트 · RPC 로딩 · 이전/다음 · 복사차단 · 2026-07-25) ═══ -->
 <style id="wr-style">
 #screen-warroom{padding:0;}
-.wr-wrap{max-width:1000px;margin:0 auto;padding:6px 0 0;display:grid;grid-template-columns:250px 1fr;gap:20px;}
+.wr-wrap{max-width:1040px;margin:0 auto;padding:6px 0 0;display:grid;grid-template-columns:230px 1fr;gap:20px;}
 .wr-toc-toggle{display:none;}
 .wr-toc-toggle svg{width:16px;height:16px;stroke:#354649;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;flex:0 0 auto;}
 .wr-wrap:has(.wr-toc.open) .wr-toc-toggle svg{transform:rotate(180deg);}
@@ -7892,8 +7919,16 @@ if ('serviceWorker' in navigator) {
 .wr-body p{font-size:14.5px;line-height:1.75;color:#4b5759;margin-bottom:11px;}
 .wr-body ul{margin:0 0 12px 20px;} .wr-body li{font-size:14.5px;line-height:1.7;color:#4b5759;margin-bottom:5px;}
 .wr-body strong{color:#232e30;}
+/* 줄바꿈 규칙 (2026-07-30): 전역 .screen의 word-break:break-word가 표 열을 글자 단위까지
+   짜부라뜨려 한/영 단어가 중간에 쪼개지던 문제 → War Room 본문에서 무효화.
+   keep-all = 한글 어절 단위 줄바꿈(영어는 원래 단어 단위), 표 셀은 단어를 절대 쪼개지 않고
+   넓은 표는 .wr-tblwrap 가로 스크롤로 유연하게 수용. */
+.wr-body{word-break:normal;overflow-wrap:normal;}
+.wr-body p,.wr-body li{word-break:keep-all;overflow-wrap:break-word;}
+.wr-tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px;}
+.wr-tblwrap>table{margin:0;}
 .wr-body table{width:100%;border-collapse:collapse;margin:4px 0 14px;font-size:13.5px;}
-.wr-body th,.wr-body td{border:1px solid rgba(53,70,73,.12);padding:8px 11px;text-align:left;vertical-align:top;}
+.wr-body th,.wr-body td{border:1px solid rgba(53,70,73,.12);padding:8px 11px;text-align:left;vertical-align:top;word-break:keep-all;overflow-wrap:normal;}
 .wr-body th{background:#EDF4F3;color:#354649;font-weight:700;font-size:12px;}
 .wr-body td{color:#4b5759;}
 .wr-body .tip{background:#FBF1EC;border-left:3px solid #DD8F75;border-radius:0 8px 8px 0;padding:11px 14px;margin:8px 0 15px;}
@@ -7917,7 +7952,9 @@ if ('serviceWorker' in navigator) {
 .wr-nav .pos{font-size:14px;font-weight:800;color:#232e30;}
 .wr-nav .pos .k{font-size:12px;font-weight:600;color:#4E5C66;margin-left:8px;}
 .wr-loading,.wr-empty{text-align:center;padding:60px 20px;color:#4b5759;font-size:15px;}
-@media(max-width:820px){ .wr-nav .pos .k{display:none;} }
+@media(max-width:820px){ .wr-nav .pos .k{display:none;} .wr-body th,.wr-body td{padding:7px 8px;font-size:13px;} .wr-protected{padding:16px 14px 22px;} }
+.exp-topic-link{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
+.exp-topic-link:hover{background:#d9ebe9;color:#354649;}
 .wr-search{position:relative;margin:2px 2px 10px;}
 .wr-search input{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px 28px 8px 30px;border:1px solid rgba(53,70,73,.18);border-radius:9px;color:#354649;background:#fff;outline:none;}
 .wr-search input:focus{border-color:#3E837A;}
@@ -7934,7 +7971,7 @@ function _wrT(r){ return _wrLang()==='en'?(r.title_en||r.title_ko):(r.title_ko||
 function _wrEsc(s){var d=document.createElement('div');d.textContent=(s==null?'':s);return d.innerHTML;}
 function _wrSlug(s){return String(s).replace(/[^a-zA-Z0-9]+/g,'-').toLowerCase();}
 
-async function renderWarRoom(){
+async function renderWarRoom(preferCode){
   var mount=document.getElementById('warroom-mount'); if(!mount) return;
   mount.innerHTML='<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
   try{
@@ -7943,7 +7980,7 @@ async function renderWarRoom(){
     var rows=(res.data||[]).slice();
     if(!rows.length){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room content is coming soon.':'War Room 콘텐츠가 곧 제공됩니다.')+'</div>'; return; }
     WR.rows=rows;
-    _wrBuildShell(rows);
+    _wrBuildShell(rows, preferCode||undefined);
     // 언어 토글 시 재렌더 (한 번만 훅)
     ['lang-ko','lang-en'].forEach(function(id){ var b=document.getElementById(id); if(b&&!b._wrHook){ b._wrHook=1; b.addEventListener('click',function(){ setTimeout(function(){ var sc=document.getElementById('screen-warroom'); if(sc&&sc.classList.contains('active')&&WR.cur){ _wrBuildShell(WR.rows, WR.cur); } },60); }); } });
   }catch(e){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room is being set up.':'War Room 준비 중입니다. (콘텐츠 적재 대기)')+'</div>'; }
@@ -7957,6 +7994,8 @@ var WR_SKELETON={
 function _wrBuildShell(rows, preferCode){
   WR.byPart={};
   rows.forEach(function(r){ var p=r.part||1; if(!WR.byPart[p])WR.byPart[p]={}; var d=r.domain||''; if(!WR.byPart[p][d])WR.byPart[p][d]=[]; WR.byPart[p][d].push(r); });
+  // 딥링크(해설 Topic 버튼 등): preferCode가 속한 Part를 현재 탭으로
+  if(preferCode){ var _pr=rows.find(function(r){return r.outline_code===preferCode;}); if(_pr && WR.byPart[_pr.part||1]) WR.curPart=_pr.part||1; }
   if(!WR.curPart || !WR.byPart[WR.curPart]){ WR.curPart = (WR.byPart[1]?1:(WR.byPart[2]?2:(WR.byPart[3]?3:1))); }
   var tabs=''; [1,2,3].forEach(function(p){ tabs+='<button class="wr-ptab'+(p===WR.curPart?' active':'')+'" onclick="_wrSetPart('+p+')">Part '+p+'</button>'; });
   document.getElementById('warroom-mount').innerHTML=
@@ -8087,7 +8126,8 @@ async function wrShow(code){
     if(res.error) throw res.error;
     var d=Array.isArray(res.data)?res.data[0]:res.data;
     var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+(body||'')+'</div>';
+    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
+    _wrPostProcess(content);
   }catch(e){ content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; }
   _wrUpdateNav(); _wrCloseTocMobile();
   try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
@@ -8099,6 +8139,29 @@ function _wrUpdateNav(){
   if(pos)pos.innerHTML=(i+1)+' / '+WR.order.length+'<span class="k">'+(_wrLang()==='en'?'← → to flip':'← → 키로 넘기기')+'</span>';
 }
 function wrNav(dir){ var i=WR.order.indexOf(WR.cur); if(i<0)i=0; var j=i+dir; if(j<0||j>=WR.order.length)return; wrShow(WR.order[j]); }
+// ── 렌더 후처리 (2026-07-30) ──
+// 표를 가로 스크롤 래퍼로 감싸 좁은 화면에서도 열이 단어 폭 이하로 짜부라지지 않게 함
+function _wrPostProcess(root){
+  root.querySelectorAll('.wr-body table').forEach(function(t){
+    if(t.parentElement && t.parentElement.classList.contains('wr-tblwrap')) return;
+    var w=document.createElement('div'); w.className='wr-tblwrap';
+    t.parentNode.insertBefore(w,t); w.appendChild(t);
+  });
+}
+// "IRC §6103" / "Form 2848" 같은 참조가 라벨과 번호 사이에서 줄바꿈되지 않게 NBSP로 결합
+function _wrNbspJoin(html){
+  return String(html).replace(/\b(Treas\. Reg\.|Rev\. Proc\.|IRC|Form|Pub\.|Reg\.|Letter|Notice|Schedule|Circular|Title) (?=§|\d|CP)/g,
+    function(_m,p1){ return p1+' '; });
+}
+// ── 해설 Topic 버튼 → War Room 딥링크 (2026-07-30) ──
+function openWarRoomTopic(code){
+  code=((code||'')+'').trim(); if(!code) return;
+  window._wrPendingCode=code;
+  // 진행 중 학습 세션이 있으면 복귀 배지를 '문제로 돌아가기' 모드로
+  window._wrFromQuiz = !!(S.quizQueue && S.quizQueue.length>0 && S.quizIdx<S.quizQueue.length);
+  if(window._wrFromQuiz) _resumeBadgeDismissed=false;
+  showScreen('warroom');
+}
 document.addEventListener('keydown',function(e){
   var sc=document.getElementById('screen-warroom'); if(!sc||!sc.classList.contains('active'))return;
   if(e.ctrlKey||e.metaKey||e.altKey)return;
