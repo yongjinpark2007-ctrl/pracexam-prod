@@ -1711,6 +1711,29 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div id="settings-data-mgmt" style="display:none;"></div>
   <!-- 💾 클라우드 저장 안내 카드 제거(2026-07-11): 불필요한 안내문. -->
 
+  <!-- 🔒 비밀번호 변경 (2026-07-30) — 재인증(현재 비밀번호 확인) 후 updateUser, 성공 시 다른 기기 세션 종료 -->
+  <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
+    <div class="exp-label" style="margin-bottom:10px;" data-i18n="pw_title">🔒 비밀번호 변경</div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
+      <div>
+        <label style="display:block;font-size:12.5px;font-weight:700;color:var(--text-muted);margin-bottom:4px;" data-i18n="pw_cur">현재 비밀번호</label>
+        <input type="password" id="pw-cur" autocomplete="current-password" placeholder="••••••••" style="width:100%;box-sizing:border-box;font:inherit;font-size:14.5px;padding:10px 12px;border:1px solid var(--border-clr);border-radius:10px;background:var(--card-bg);color:var(--text-main);">
+      </div>
+      <div>
+        <label style="display:block;font-size:12.5px;font-weight:700;color:var(--text-muted);margin-bottom:4px;" data-i18n="pw_new">새 비밀번호 (6자 이상)</label>
+        <input type="password" id="pw-new" autocomplete="new-password" placeholder="••••••••" style="width:100%;box-sizing:border-box;font:inherit;font-size:14.5px;padding:10px 12px;border:1px solid var(--border-clr);border-radius:10px;background:var(--card-bg);color:var(--text-main);">
+      </div>
+      <div>
+        <label style="display:block;font-size:12.5px;font-weight:700;color:var(--text-muted);margin-bottom:4px;" data-i18n="pw_new2">새 비밀번호 확인</label>
+        <input type="password" id="pw-new2" autocomplete="new-password" placeholder="••••••••" style="width:100%;box-sizing:border-box;font:inherit;font-size:14.5px;padding:10px 12px;border:1px solid var(--border-clr);border-radius:10px;background:var(--card-bg);color:var(--text-main);">
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <button id="pw-btn" class="btn-navy" style="padding:10px 20px;font-size:14.5px;" onclick="changePassword()" data-i18n="pw_btn">비밀번호 변경</button>
+        <span id="pw-msg" style="font-size:13px;line-height:1.5;"></span>
+      </div>
+    </div>
+  </div>
+
   <!-- 로그아웃 (맨 아래, 눈에 잘 띄게) -->
   <div style="margin-top:1.5rem;">
     <button style="width:100%;background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;border:none;border-radius:12px;padding:14px 24px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .18s;" onclick="doLogout()" data-i18n="acct_logout">로그아웃</button>
@@ -2644,6 +2667,65 @@ async function doUpdatePassword(){
     err.textContent = '❌ ' + (e && e.message ? e.message : 'Failed to update. Please try again.');
     err.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Update password';
+  }
+}
+
+// ── 비밀번호 변경 (2026-07-30) ──
+// Supabase updateUser는 현재 비밀번호 확인이 내장되어 있지 않음 → signInWithPassword 재인증 성공 시에만 변경.
+// 성공 시 다른 기기 세션 전부 종료(scope:'others'). 연속 실패 3회 → 10초 잠금.
+let _pwFails = 0, _pwLockUntil = 0, _pwBusy = false;
+async function changePassword(){
+  if(_pwBusy) return;
+  const en = (typeof LANG !== 'undefined' && LANG === 'en');
+  const msg = document.getElementById('pw-msg');
+  const btn = document.getElementById('pw-btn');
+  const say = (text, ok) => { if(msg){ msg.textContent = text; msg.style.color = ok ? 'var(--success-color)' : 'var(--danger-color)'; } };
+
+  if(Date.now() < _pwLockUntil){
+    say(en ? 'Too many attempts — try again in a few seconds.' : '시도가 너무 많습니다 — 잠시 후 다시 시도하세요.', false);
+    return;
+  }
+  const cur = (document.getElementById('pw-cur')?.value || '');
+  const nw  = (document.getElementById('pw-new')?.value || '');
+  const nw2 = (document.getElementById('pw-new2')?.value || '');
+  const email = SB_USER && SB_USER.email;
+  if(!email){ say(en ? 'Please log in again.' : '다시 로그인해 주세요.', false); return; }
+  if(!cur){ say(en ? 'Enter your current password.' : '현재 비밀번호를 입력하세요.', false); return; }
+  if(nw.length < 6){ say(en ? 'New password must be at least 6 characters.' : '새 비밀번호는 6자 이상이어야 합니다.', false); return; }
+  if(nw !== nw2){ say(en ? 'New passwords do not match.' : '새 비밀번호가 서로 일치하지 않습니다.', false); return; }
+  if(nw === cur){ say(en ? 'New password must be different from the current one.' : '새 비밀번호가 현재 비밀번호와 같습니다.', false); return; }
+
+  _pwBusy = true;
+  if(btn){ btn.disabled = true; btn.style.opacity = '.6'; }
+  say(en ? 'Verifying…' : '확인 중…', true);
+  try{
+    // 1) 재인증: 현재 비밀번호가 맞는지 확인 (같은 계정으로 재로그인 — 세션 동일 유지)
+    const re = await sb.auth.signInWithPassword({ email: email, password: cur });
+    if(re.error){
+      _pwFails++;
+      if(_pwFails >= 3){ _pwLockUntil = Date.now() + 10000; _pwFails = 0; }
+      say(en ? 'Current password is incorrect.' : '현재 비밀번호가 올바르지 않습니다.', false);
+      return;
+    }
+    _pwFails = 0;
+    // 2) 변경
+    const up = await sb.auth.updateUser({ password: nw });
+    if(up.error){
+      const m = (up.error.message || '') + '';
+      say(m.indexOf('different from the old') >= 0
+        ? (en ? 'New password must be different from the current one.' : '새 비밀번호가 현재 비밀번호와 같습니다.')
+        : (en ? 'Could not change password: ' : '비밀번호 변경 실패: ') + m, false);
+      return;
+    }
+    // 3) 다른 기기 세션 종료 (현재 기기는 유지) — 실패해도 변경 자체는 완료이므로 무시
+    try{ await sb.auth.signOut({ scope: 'others' }); }catch(e){}
+    ['pw-cur','pw-new','pw-new2'].forEach(function(id){ const el = document.getElementById(id); if(el) el.value = ''; });
+    say(en ? '✓ Password changed. Other devices have been signed out.' : '✓ 비밀번호가 변경되었습니다. 다른 기기의 로그인은 모두 해제되었습니다.', true);
+  }catch(e){
+    say((en ? 'Error: ' : '오류: ') + (e && e.message ? e.message : e), false);
+  }finally{
+    _pwBusy = false;
+    if(btn){ btn.disabled = false; btn.style.opacity = ''; }
   }
 }
 
@@ -3770,6 +3852,11 @@ var UI_TEXT = {
   acct_info_title:{ko:'👤 계정 정보', en:'👤 Account Info'},
   acct_membership_title:{ko:'🎓 멤버십', en:'🎓 Membership'},
   acct_logout:   {ko:'로그아웃', en:'Log out'},
+  pw_title:      {ko:'🔒 비밀번호 변경', en:'🔒 Change Password'},
+  pw_cur:        {ko:'현재 비밀번호', en:'Current password'},
+  pw_new:        {ko:'새 비밀번호 (6자 이상)', en:'New password (at least 6 characters)'},
+  pw_new2:       {ko:'새 비밀번호 확인', en:'Confirm new password'},
+  pw_btn:        {ko:'비밀번호 변경', en:'Change password'},
   acct_type_paid:{ko:'유료 멤버십', en:'Paid membership'},
   acct_type_admin:{ko:'관리자 계정', en:'Admin account'},
   acct_type_trial:{ko:'무료 체험', en:'Free trial'},
