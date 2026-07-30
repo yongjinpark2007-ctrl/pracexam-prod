@@ -3099,8 +3099,12 @@ function updateTrialStatusUI(){
     } else {
       txt.textContent = t('trial_paid') + (_until ? (' · ' + t('paid_until_label') + ' ' + _until) : '');
     }
-    if(act) act.innerHTML = '<button class="btn-navy" style="width:100%;margin-bottom:6px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
-      '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('manage_portal_note') + '</div>';
+    // comp_* 플랜(무료 증정)은 Paddle 고객이 아니라 포털 발급이 실패하므로 버튼 대신 안내만
+    var _isComp = (S.planCode || '').slice(0, 4) === 'comp';
+    if(act) act.innerHTML = _isComp
+      ? '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('comp_membership_note') + '</div>'
+      : '<button class="btn-navy" style="width:100%;margin-bottom:6px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
+        '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('manage_portal_note') + '</div>';
   } else if(S.trialExpired){
     txt.textContent = t('trial_expired');
     if(act) act.innerHTML = _upgradeBtn;
@@ -3323,8 +3327,10 @@ function showMembershipModal(){
         t('trial_paid') +
         (_until ? ('<br>' + t('paid_until_label') + ': <strong>' + _until + '</strong>') : '') +
       '</div>' +
-      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
-      '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;margin-bottom:1.1rem;">' + t('manage_portal_note') + '</div>' +
+      (((S.planCode || '').slice(0, 4) === 'comp')
+        ? '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;margin-bottom:1.1rem;">' + t('comp_membership_note') + '</div>'
+        : '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
+          '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;margin-bottom:1.1rem;">' + t('manage_portal_note') + '</div>') +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('close') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
@@ -3902,7 +3908,7 @@ var UI_TEXT = {
   mode_review:    {ko:'오답 복습', en:'Review Wrong'},
   mode_timed:     {ko:'타이머 90초', en:'Timed 90s'},
   mode_hint_normal:{ko:'선택한 범위에서 무작위 순서로 출제됩니다.', en:'Questions from your selected scope, in random order.'},
-  mode_hint_tpiq: {ko:'Powered by TPIQ — Tier-Priority Interleaved Queue. 빈출 주제를 우선 배치하고 주제를 교차(인터리빙)해 출제합니다.', en:'Powered by TPIQ — Tier-Priority Interleaved Queue. Prioritizes high-frequency exam topics and interleaves them for better retention.'},
+  mode_hint_tpiq: {ko:'시험에 자주 나오는 주제부터 먼저, 여러 주제를 섞어 출제해 더 오래 기억에 남습니다. (Powered by TPIQ)', en:'Shows the most-tested topics first and mixes topics as you go — so what you learn actually sticks. (Powered by TPIQ)'},
   mode_hint_review:{ko:'이전에 틀린 문제만 다시 풉니다.', en:'Retry only the questions you previously got wrong.'},
   mode_hint_timed:{ko:'문제당 90초 제한 — 실전 페이스로 연습합니다.', en:'90 seconds per question — practice at real exam pace.'},
   cnt_quick:      {ko:'빠르게',  en:'Quick'},
@@ -3991,6 +3997,7 @@ var UI_TEXT = {
   membership_title:{ko:'내 멤버십', en:'My Membership'},
   manage_portal:  {ko:'구독 관리 / 해지', en:'Manage / cancel subscription'},
   manage_portal_note:{ko:'카드 변경·해지·영수증을 Paddle 보안 페이지에서 직접 처리합니다.', en:"Manage your card, cancellation, and invoices on Paddle's secure page."},
+  comp_membership_note:{ko:'무료 제공 멤버십입니다. 등록된 결제 수단이 없어 별도의 구독 관리가 필요하지 않습니다.', en:'Complimentary membership — no payment method on file, so no subscription management is needed.'},
   portal_opening: {ko:'⏳ 관리 페이지 여는 중…', en:'⏳ Opening your billing page…'},
   portal_error:   {ko:'관리 페이지를 열 수 없습니다. 잠시 후 다시 시도해주세요.', en:'Could not open the billing page. Please try again.'},
   close:          {ko:'닫기', en:'Close'},
