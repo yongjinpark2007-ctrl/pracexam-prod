@@ -8162,17 +8162,24 @@ function _wrRenderRelated(content, code){
   if(!sig || sig.origin!==code || !WR.rows || !WR.rows.length) return;
   var o=WR.rows.find(function(r){return r.outline_code===code;});
   var ot=o?((o.title_en||'')+' '+(o.title_ko||'')):'';
-  var keys=sig.keys.filter(function(k){ return ot.indexOf(k)<0; }); // 도착 토픽 제목이 이미 다루는 번호는 제외
-  if(!keys.length) return;
-  var chips=[];
-  WR.rows.forEach(function(r){
-    if(r.outline_code===code) return;
-    var t=(r.title_en||'')+' '+(r.title_ko||'');
-    if(keys.some(function(k){ return t.indexOf(k)>=0; })) chips.push(r);
-  });
-  if(!chips.length) return;
+  var oPart=o?(o.part||1):0;
+  // 도착 토픽 제목이 이미 다루는 번호는 제외, topic명 번호(prio)가 앞
+  var ordered=(sig.prio||[]).concat(sig.rest||[]).filter(function(k){ return ot.indexOf(k)<0; });
+  if(!ordered.length) return;
+  function tHas(r,k){ return ((r.title_en||'')+' '+(r.title_ko||'')).indexOf(k)>=0; }
+  // 선정: 번호별 라운드로빈(각 번호 최대 2개, 우선순위 번호부터), 총 5개, 같은 Part 우선 — 반복 칩 방지
+  var picked=[], used={};
+  for(var pass=0; pass<2 && picked.length<5; pass++){
+    ordered.forEach(function(k){
+      if(picked.length>=5) return;
+      var cand=WR.rows.filter(function(r){ return r.outline_code!==code && !used[r.outline_code] && tHas(r,k); });
+      cand.sort(function(a,b){ return ((a.part===oPart)?0:1)-((b.part===oPart)?0:1); });
+      if(cand[0]){ used[cand[0].outline_code]=1; picked.push(cand[0]); }
+    });
+  }
+  if(!picked.length) return;
   var lang=_wrLang(), html='<div class="wr-related"><span class="wr-rel-lbl">📌 '+(lang==='en'?'Related to this question':'이 문제와 관련')+'</span>';
-  chips.slice(0,3).forEach(function(r){
+  picked.forEach(function(r){
     html+='<button class="wr-rel-chip" onclick="_wrGo('+(r.part||1)+',\''+r.outline_code+'\')"><span class="pb">P'+(r.part||1)+'</span>'+_wrEsc(_wrT(r))+(r.locked?' 🔒':'')+'</button>';
   });
   html+='</div>';
@@ -8189,14 +8196,19 @@ function openWarRoomTopic(code, q){
   code=((code||'')+'').trim(); if(!code) return;
   window._wrPendingCode=code;
   // 문제 텍스트에서 Form 번호 추출 → 도착 토픽에서 '관련 치트시트' 칩 제안용 (예: C1013-003의 Form 3520 → C1902)
+  // 우선순위: 문제의 topic명에 등장한 번호(prio) > 본문·해설의 번호(rest) — 2026-07-30 개선
   window._wrQSignal=null;
   if(q){
-    var src=[q.topic,q.text,q.textEn,q.explanation,q.explanationEn,q.examTip,q.examTipEn]
-      .map(function(v){return (v==null?'':String(v));}).join(' ');
-    var keys={}, m, re=/\bForm\s*([0-9]{3,5}(?:-[A-Za-z]{1,4})?)\b/gi;
-    while((m=re.exec(src))!==null){ if(m[1].length>=3) keys[m[1]]=1; }
-    var list=Object.keys(keys);
-    if(list.length) window._wrQSignal={origin:code, keys:list};
+    function _ex(s){
+      var out=[], m, re=/\bForm\s*([0-9]{3,5}(?:-[A-Za-z]{1,4})?)\b/gi;
+      s=(s==null?'':String(s));
+      while((m=re.exec(s))!==null){ if(m[1].length>=3 && out.indexOf(m[1])<0) out.push(m[1]); }
+      return out;
+    }
+    var prio=_ex(q.topic);
+    var rest=_ex([q.text,q.textEn,q.explanation,q.explanationEn,q.examTip,q.examTipEn].join(' '))
+      .filter(function(k){ return prio.indexOf(k)<0; });
+    if(prio.length||rest.length) window._wrQSignal={origin:code, prio:prio, rest:rest};
   }
   // 진행 중 학습 세션이 있으면 복귀 배지를 '문제로 돌아가기' 모드로
   window._wrFromQuiz = !!(S.quizQueue && S.quizQueue.length>0 && S.quizIdx<S.quizQueue.length);
