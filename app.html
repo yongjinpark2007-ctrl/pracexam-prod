@@ -2210,6 +2210,35 @@ function _anomTier(score){
 
 var _ANOM_ROWS = [];  // 상세 모달용 캐시
 
+// ── 관리자: 사용자 디렉터리(이름·언어) (2026-07-31) ──
+//   RPC: get_admin_user_directory() (SECURITY DEFINER, 관리자 체크 내장, 읽기 전용)
+//   목적: 동일 인물이 이메일 2개로 가입하는 경우 → 이름으로 교차 확인.
+//   ※ 지역(국가) 정보는 가입 시 수집하지 않아 존재하지 않음 → 언어(ko/en)만 표시.
+//   미배포/오류 시 빈 맵 → 칼럼에 '—' 표시만 되고 앱 손상 없음 (이상탐지 패턴과 동일)
+var _ADMIN_DIR = null;          // { user_id: {name, language} }
+var _ADMIN_DIR_PROMISE = null;  // renderAnomaly/renderMockActivity 동시 호출 시 중복 fetch 방지
+function loadAdminUserDir(){
+  if(!_ADMIN_DIR_PROMISE){
+    _ADMIN_DIR_PROMISE = (async function(){
+      _ADMIN_DIR = {};
+      try{
+        var res = await sb.rpc('get_admin_user_directory');
+        if(res.error) throw res.error;
+        (res.data || []).forEach(function(u){
+          _ADMIN_DIR[u.user_id] = {
+            name: [u.first_name, u.last_name].filter(Boolean).join(' '),
+            language: u.language || ''
+          };
+        });
+      }catch(e){ /* 미배포/오류 → 빈 맵 유지 */ }
+      return _ADMIN_DIR;
+    })();
+  }
+  return _ADMIN_DIR_PROMISE;
+}
+function _dirName(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.name) || ''; }
+function _dirLang(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.language) || ''; }
+
 // ══════════════════════════════════════════════════════
 // 모의고사 활동 모니터 (2026-07-17) — mock_attempts 기반, 학습 이상탐지와 별개
 //   RPC: get_mock_activity_report(p_hours) → 사용자별 raw 지표(숫자)만. 임계값은 여기서.
@@ -2252,14 +2281,15 @@ async function renderMockActivity(){
     }
     body.innerHTML='<div style="padding:1.25rem;color:#dc2626;">조회 실패: '+_anomEsc(msg||'오류')+'</div>'; return;
   }
+  await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
   var rows=(res.data||[]).map(function(r){ var risk=computeMockRisk(r); r._score=risk.score; r._reasons=risk.reasons; return r; });
   rows.sort(function(a,b){ return b._score-a._score || (b.total_attempts||0)-(a.total_attempts||0); });
   var flagged=rows.filter(function(r){ return r._score>=30; }).length;
   if(sum) sum.textContent='모의고사 응시자 '+rows.length+'명 · 주의 이상 '+flagged+'명';
   if(!rows.length){ body.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--text-muted);">이 기간에 모의고사 응시가 없습니다.</div>'; return; }
-  var html='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:620px;">'+
+  var html='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:780px;">'+
     '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
-    '<th style="padding:8px 10px;">위험도</th><th style="padding:8px 10px;">사용자</th><th style="padding:8px 10px;">상태</th>'+
+    '<th style="padding:8px 10px;">위험도</th><th style="padding:8px 10px;">사용자</th><th style="padding:8px 10px;">이름</th><th style="padding:8px 10px;">언어</th><th style="padding:8px 10px;">상태</th>'+
     '<th style="padding:8px 10px;text-align:right;">응시<br>(기간)</th><th style="padding:8px 10px;text-align:right;">응시<br>(누적)</th>'+
     '<th style="padding:8px 10px;text-align:right;">빠른<br>채점</th><th style="padding:8px 10px;text-align:right;">최단<br>(분)</th>'+
     '<th style="padding:8px 10px;text-align:right;">연습<br>문항수</th><th style="padding:8px 10px;">신호</th></tr></thead><tbody>';
@@ -2270,6 +2300,8 @@ async function renderMockActivity(){
     html+='<tr style="border-bottom:1px solid rgba(53,70,73,.08);background:'+t.bg+';">'+
       '<td style="padding:8px 10px;white-space:nowrap;"><span style="display:inline-block;min-width:34px;text-align:center;font-weight:700;color:'+t.color+';">'+r._score+'</span> <span style="color:'+t.color+';font-size:11px;">'+t.label+'</span></td>'+
       '<td style="padding:8px 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(r.email||r.user_id)+'</td>'+
+      '<td style="padding:8px 10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(_dirName(r.user_id)||'—')+'</td>'+
+      '<td style="padding:8px 10px;white-space:nowrap;">'+_anomEsc(_dirLang(r.user_id)||'—')+'</td>'+
       '<td style="padding:8px 10px;">'+(r.is_paid?'유료':'체험')+'</td>'+
       '<td style="padding:8px 10px;text-align:right;">'+(r.started_win||0)+'</td>'+
       '<td style="padding:8px 10px;text-align:right;">'+(r.total_attempts||0)+'</td>'+
@@ -2321,6 +2353,8 @@ async function renderAnomaly(){
     return;
   }
 
+  await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
+
   var rows = (res.data || []).map(function(r){
     var risk = computeAnomalyRisk(r);
     r._score = risk.score; r._reasons = risk.reasons;
@@ -2339,10 +2373,12 @@ async function renderAnomaly(){
 
   var html = ''+
     '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'+
-    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:640px;">'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:800px;">'+
     '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
       '<th style="padding:8px 10px;">위험도</th>'+
       '<th style="padding:8px 10px;">사용자</th>'+
+      '<th style="padding:8px 10px;">이름</th>'+
+      '<th style="padding:8px 10px;">언어</th>'+
       '<th style="padding:8px 10px;">상태</th>'+
       '<th style="padding:8px 10px;text-align:right;">30분</th>'+
       '<th style="padding:8px 10px;text-align:right;">문제수<br>(기간내)</th>'+
@@ -2359,6 +2395,8 @@ async function renderAnomaly(){
       '<tr style="border-bottom:1px solid rgba(53,70,73,.08);background:'+t.bg+';">'+
         '<td style="padding:8px 10px;white-space:nowrap;"><span style="display:inline-block;min-width:34px;text-align:center;font-weight:700;color:'+t.color+';">'+r._score+'</span> <span style="color:'+t.color+';font-size:11px;">'+t.label+'</span></td>'+
         '<td style="padding:8px 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(r.email||r.user_id)+'</td>'+
+        '<td style="padding:8px 10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(_dirName(r.user_id)||'—')+'</td>'+
+        '<td style="padding:8px 10px;white-space:nowrap;">'+_anomEsc(_dirLang(r.user_id)||'—')+'</td>'+
         '<td style="padding:8px 10px;white-space:nowrap;">'+stateTxt+'</td>'+
         '<td style="padding:8px 10px;text-align:right;">'+(r.q_30m||0)+'</td>'+
         '<td style="padding:8px 10px;text-align:right;">'+(r.q_24h||0)+'</td>'+
@@ -2393,7 +2431,9 @@ function showAnomalyDetail(i){
     '<div style="padding:.25rem 0;">'+
       '<div style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">이상 탐지 상세</div>'+
       '<div style="font-size:16px;font-weight:700;word-break:break-all;margin-bottom:2px;">'+_anomEsc(r.email||r.user_id)+'</div>'+
-      '<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">'+(r.is_paid?'유료':'체험')+' · 가입 '+joined+' · 위험도 <span style="color:'+t.color+';font-weight:700;">'+r._score+' ('+t.label+')</span></div>'+
+      '<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">'+
+        _anomEsc(_dirName(r.user_id)||'이름 없음')+' · 언어 '+_anomEsc(_dirLang(r.user_id)||'—')+' · '+
+        (r.is_paid?'유료':'체험')+' · 가입 '+joined+' · 위험도 <span style="color:'+t.color+';font-weight:700;">'+r._score+' ('+t.label+')</span></div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">'+
         metric('30분', (r.q_30m||0)+'개')+
         metric('1시간', (r.q_1h||0)+'개')+
@@ -4514,8 +4554,23 @@ function annMarkAll(){
 }
 function annToggle(id, el){
   el.classList.toggle('open');
+  if(el.classList.contains('open')) logAnnView(id);   // 펼칠 때만 서버에 열람 기록 (2026-07-31)
   var s = annReadSet();
   if(!s.has(id)){ s.add(id); annSaveRead(s); paintAnnouncements(); }
+}
+
+// ── 공지 열람 기록 (2026-07-31) ──
+//   RPC: log_announcement_view(p_ann_id) — announcement_views 테이블에 upsert (서버가 중복 정리)
+//   · 관리자 본인 클릭은 통계 오염 방지를 위해 전송 안 함
+//   · 미배포/오류 시 조용히 무시 → 공지 열람 UX에 영향 없음
+var _ANN_VIEW_LOGGED = {};   // 세션 내 같은 공지 중복 전송 방지
+function logAnnView(id){
+  try{
+    if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+    if(_ANN_VIEW_LOGGED[id]) return;
+    _ANN_VIEW_LOGGED[id] = true;
+    sb.rpc('log_announcement_view', { p_ann_id: id }).then(function(){}, function(){});
+  }catch(e){}
 }
 
 async function renderAnnouncements(){
@@ -4904,6 +4959,63 @@ function _annMsg(txt, ok){
   m.style.color = ok ? 'var(--success-color)' : 'var(--danger-color)';
 }
 
+// ── 공지 열람 통계 (2026-07-31) ──
+//   RPC: admin_announcement_view_stats() → 공지별 열람자 수 (미배포 시 null → 배지 숨김)
+var _ANN_VIEW_STATS = null;   // { announcement_id: viewer_count }
+async function loadAnnViewStats(){
+  try{
+    var res = await sb.rpc('admin_announcement_view_stats');
+    if(res.error) throw res.error;
+    var m = {};
+    (res.data || []).forEach(function(r){ m[r.announcement_id] = r.viewer_count || 0; });
+    _ANN_VIEW_STATS = m;
+  }catch(e){ _ANN_VIEW_STATS = null; }   // 미배포/오류 → 배지 자체를 표시 안 함
+}
+
+// 공지 열람자 명단 모달 — RPC: admin_announcement_viewers(p_ann_id)
+async function showAnnViewers(id){
+  var a = _ADMIN_ANN.filter(function(x){ return x.id === id; })[0];
+  var title = a ? (a.title_ko || a.title_en || '(제목 없음)') : '';
+  var mc = document.getElementById('modal-content');
+  mc.innerHTML =
+    '<div style="padding:.25rem 0;">'+
+      '<div style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">공지 열람자</div>'+
+      '<div style="font-size:16px;font-weight:700;margin-bottom:12px;">'+_annEsc(title)+'</div>'+
+      '<div id="ann-viewers-body" style="max-height:50vh;overflow-y:auto;"><div style="color:var(--text-muted);padding:8px 0;font-size:13px;">불러오는 중…</div></div>'+
+      '<button class="btn-navy" style="width:100%;margin-top:14px;" onclick="closeModal()">닫기</button>'+
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+  var body = document.getElementById('ann-viewers-body');
+  try{
+    var res = await sb.rpc('admin_announcement_viewers', { p_ann_id: id });
+    if(res.error) throw res.error;
+    var rows = res.data || [];
+    if(!rows.length){ body.innerHTML = '<div style="color:var(--text-muted);padding:8px 0;font-size:13px;">아직 이 공지를 열어 본 사용자가 없습니다.</div>'; return; }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:13px;">'+
+      '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
+      '<th style="padding:6px 8px;">이름</th><th style="padding:6px 8px;">이메일</th><th style="padding:6px 8px;white-space:nowrap;">처음 열람</th><th style="padding:6px 8px;text-align:right;">횟수</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      var nm = [r.first_name, r.last_name].filter(Boolean).join(' ') || '—';
+      var dt = r.first_viewed_at ? new Date(r.first_viewed_at).toLocaleDateString('ko-KR') : '—';
+      html += '<tr style="border-bottom:1px solid rgba(53,70,73,.08);">'+
+        '<td style="padding:6px 8px;">'+_annEsc(nm)+'</td>'+
+        '<td style="padding:6px 8px;word-break:break-all;">'+_annEsc(r.email||'')+'</td>'+
+        '<td style="padding:6px 8px;white-space:nowrap;color:var(--text-muted);">'+dt+'</td>'+
+        '<td style="padding:6px 8px;text-align:right;">'+(r.view_count||1)+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    body.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">총 '+rows.length+'명</div>'+html;
+  }catch(e){
+    var msg = (e && (e.message||'')) + '';
+    var code = (e && (e.code||'')) + '';
+    if(code==='42883' || code==='PGRST202' || /does not exist|could not find/i.test(msg)){
+      body.innerHTML = '<div style="font-size:13px;color:var(--text-mid);line-height:1.7;border:1px dashed var(--border-clr);border-radius:8px;padding:10px 12px;">⚙️ <code>admin_announcement_viewers</code> 함수가 아직 배포되지 않았습니다.<br><code>pracexam_admin_userinfo_annviews.sql</code>을 Supabase에서 실행하세요.</div>';
+    }else{
+      body.innerHTML = '<div style="color:#dc2626;font-size:13px;">조회 실패: '+_annEsc(msg||'오류')+'</div>';
+    }
+  }
+}
+
 async function renderAdminAnnList(){
   var el = document.getElementById('admin-ann-list');
   if(!el) return;
@@ -4924,15 +5036,20 @@ async function renderAdminAnnList(){
     return;
   }
   if(!_ADMIN_ANN.length){ el.innerHTML = '<div class="ann-empty">등록된 공지가 없습니다.</div>'; return; }
+  await loadAnnViewStats();   // 공지별 열람자 수 (미배포 시 배지 숨김)
   el.innerHTML = _ADMIN_ANN.map(function(a){
     var d = a.published_at ? new Date(a.published_at) : null;
     var dt = d ? (String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')) : '';
     var badges = (a.pinned ? '<span class="ann-tag" style="background:rgba(198,161,91,.16);color:#8a5e22;">고정</span> ' : '')
                + (!a.is_active ? '<span class="ann-tag" style="background:rgba(53,70,73,.08);color:var(--text-muted);">비활성</span>' : '');
+    var viewBtn = (_ANN_VIEW_STATS !== null)
+      ? '<button class="admin-ann-btn" title="열람자 명단 보기" onclick="showAnnViewers('+a.id+')">👁 '+(_ANN_VIEW_STATS[a.id]||0)+'명</button>'
+      : '';
     return '<div class="admin-ann-row'+(a.is_active?'':' off')+'">'+
       '<span class="a-t">'+ _annEsc(a.title_ko || a.title_en || '(제목 없음)') +'</span>'+
       badges +
       '<span style="font-size:11px;color:var(--text-muted);">'+dt+'</span>'+
+      viewBtn +
       '<button class="admin-ann-btn" onclick="adminAnnEdit('+a.id+')">수정</button>'+
       '<button class="admin-ann-btn" onclick="adminAnnToggleActive('+a.id+')">'+(a.is_active?'비활성화':'다시 게시')+'</button>'+
       '<button class="admin-ann-btn danger" onclick="adminAnnDelete('+a.id+')">삭제</button>'+
