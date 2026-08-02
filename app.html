@@ -1906,9 +1906,11 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <div class="ann-field" style="display:flex;align-items:flex-start;gap:8px;">
         <input type="checkbox" id="daily-mail-chk" style="margin-top:3px;width:16px;height:16px;flex-shrink:0;">
         <label for="daily-mail-chk" style="cursor:pointer;line-height:1.55;">
-          지정한 뒤 <strong>회원에게 알림 메일 발송</strong>
+          지정한 뒤 <strong>발송 확인창 띄우기</strong>
           <span style="display:block;color:var(--text-muted);font-size:12px;font-weight:400;">
-            마케팅 수신 동의 + 이메일 확인을 마친 회원에게만 갑니다. 누르기 전에 확인창이 한 번 더 뜹니다.
+            체크해도 <strong>바로 나가지 않습니다.</strong> 문제 지정이 끝나면 수신 인원이 적힌
+            확인창이 뜨고, 거기서 <strong>[확인]</strong>을 눌러야 발송됩니다. [취소]해도 문제 지정은 유지됩니다.<br>
+            대상 = 마케팅 수신 동의 + 이메일 확인을 마친 회원 (메일에서 수신거부한 사람은 자동 제외).
           </span>
         </label>
       </div>
@@ -4858,6 +4860,9 @@ async function renderDailyMailStatus(){
         html += ' — 성공 ' + _escHtml(String(s.sent));
         if(s.failed) html += ' · 실패 ' + _escHtml(String(s.failed));
         html += '통';
+        // 메일의 수신거부 링크를 누른 사람은 발송 전에 걸러진다
+        if(s.blocked) html += ' (수신거부 ' + _escHtml(String(s.blocked)) + '명 제외)';
+        if(s.blocklist_ok === false) html += ' ⚠️ 수신거부 목록 조회 실패 — 걸러내지 못했을 수 있음';
       }
       html += '<br><span style="color:var(--text-muted);">중복 발송이 차단된 상태입니다.</span>';
     }else{
