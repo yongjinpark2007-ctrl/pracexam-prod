@@ -1886,6 +1886,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div class="ann-form-card" style="margin-bottom:1rem;">
       <div class="admin-sub-title">현재 노출 중인 문제</div>
       <div id="daily-current" style="font-size:13.5px;color:var(--text-mid);line-height:1.6;">불러오는 중…</div>
+      <div id="daily-mail-status" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-clr);font-size:12.5px;color:var(--text-muted);line-height:1.6;"></div>
     </div>
 
     <div class="ann-form-card">
@@ -1898,6 +1899,19 @@ textarea.ann-input{resize:vertical;min-height:60px;}
         <label>메모 (선택 — 관리용, 화면엔 안 보임)</label>
         <input class="ann-input" id="daily-note-input" placeholder="예) 2026-07-27 페북용">
       </div>
+      <div class="ann-field">
+        <label>썸네일 이미지 URL (선택 — 비워두면 이미지 없이 발송)</label>
+        <input class="ann-input" id="daily-img-input" placeholder="예) https://pracexam.com/email/daily/2026-08-01.png">
+      </div>
+      <div class="ann-field" style="display:flex;align-items:flex-start;gap:8px;">
+        <input type="checkbox" id="daily-mail-chk" style="margin-top:3px;width:16px;height:16px;flex-shrink:0;">
+        <label for="daily-mail-chk" style="cursor:pointer;line-height:1.55;">
+          지정한 뒤 <strong>회원에게 알림 메일 발송</strong>
+          <span style="display:block;color:var(--text-muted);font-size:12px;font-weight:400;">
+            마케팅 수신 동의 + 이메일 확인을 마친 회원에게만 갑니다. 누르기 전에 확인창이 한 번 더 뜹니다.
+          </span>
+        </label>
+      </div>
       <div class="ann-form-actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <button class="btn-navy" style="padding:9px 18px;" onclick="adminDailyPreview()">미리보기</button>
         <button class="btn-navy" style="padding:9px 18px;" onclick="adminDailySet()">Daily로 지정</button>
@@ -1906,9 +1920,28 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <div id="daily-preview" style="display:none;margin-top:12px;padding:12px 14px;background:rgba(53,70,73,.05);border-radius:10px;font-size:13px;color:var(--text-main);line-height:1.6;"></div>
     </div>
 
+    <div class="ann-form-card" style="margin-top:1rem;">
+      <div class="admin-sub-title">메일만 따로 보내기</div>
+      <div style="font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:10px;">
+        이미 지정해 둔 문제에 대해 나중에 메일만 보낼 때 씁니다.
+        <strong>테스트 발송</strong>은 내 주소로 1통만 가고 기록도 남지 않으니, 실제 발송 전에 꼭 한 번 확인하세요.
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select class="ann-input" id="daily-test-lang" style="width:auto;padding:8px 10px;">
+          <option value="en">영문 템플릿</option>
+          <option value="ko">국문 템플릿</option>
+        </select>
+        <button class="btn-navy" style="padding:9px 18px;" onclick="adminDailyMailTest()">테스트 발송 (나에게)</button>
+        <button class="btn-navy" style="padding:9px 18px;background:var(--accent);border-color:var(--accent);" onclick="adminDailyMailSend()">회원 전체 발송</button>
+        <span id="daily-mail-msg" style="font-size:12.5px;margin-left:4px;"></span>
+      </div>
+    </div>
+
     <div style="margin-top:1rem;font-size:12px;color:var(--text-muted);line-height:1.7;background:rgba(53,70,73,.05);border-radius:10px;padding:12px 14px;">
       💡 "<strong>미리보기</strong>"로 문제 내용을 확인한 뒤 "<strong>Daily로 지정</strong>"을 누르세요.
-      이전 문제는 자동으로 교체됩니다(삭제 불필요).
+      이전 문제는 자동으로 교체됩니다(삭제 불필요).<br>
+      ⚠️ 메일은 <strong>한 회차당 한 번만</strong> 나갑니다(중복 발송 차단). 직전 발송으로부터 20시간이 지나지 않으면 거절됩니다.
+      다시 보내야 하면 Jay에게 <code>email_sent_at</code> 초기화를 요청하세요.
     </div>
   </div>
 </div>
@@ -4780,7 +4813,7 @@ async function renderDailyAdmin(){
     var res = await sb.rpc('get_daily_quiz');
     if(res.error) throw res.error;
     var row = Array.isArray(res.data) ? res.data[0] : res.data;
-    if(!row){ if(cur) cur.innerHTML = '<em>아직 지정된 문제가 없습니다.</em>'; return; }
+    if(!row){ if(cur) cur.innerHTML = '<em>아직 지정된 문제가 없습니다.</em>'; renderDailyMailStatus(); return; }
     var letter = String.fromCharCode(65 + (row.correct || 0));
     var txt = String(row.text || '');
     if(cur) cur.innerHTML =
@@ -4790,6 +4823,115 @@ async function renderDailyAdmin(){
   }catch(e){
     if(cur) cur.innerHTML = '<em style="color:var(--danger-color);">불러오기 실패 — daily_quiz 셋업(SQL)이 아직 안 됐을 수 있습니다.</em>';
   }
+  renderDailyMailStatus();
+}
+
+// ── 관리자: Daily Quiz 알림메일 (2026-08-01) ──
+//   · get_daily_quiz_email_status() = 현재 회차의 발송 여부 + 수신 대상 인원수
+//   · daily_quiz_email_setup.sql 미실행 시 조용히 숨긴다 (기존 지정 기능은 정상 동작)
+var _dailyMailState = null;   // { daily_id, email_sent_at, recipient_count, ... }
+
+function _dailyWhen(iso){
+  if(!iso) return '';
+  try{ return new Date(iso).toLocaleString('ko-KR', { dateStyle:'medium', timeStyle:'short' }); }
+  catch(e){ return String(iso); }
+}
+
+async function renderDailyMailStatus(){
+  var box = document.getElementById('daily-mail-status');
+  if(!box) return;
+  box.innerHTML = '';
+  _dailyMailState = null;
+  try{
+    var res = await sb.rpc('get_daily_quiz_email_status');
+    if(res.error) throw res.error;
+    var st = Array.isArray(res.data) ? res.data[0] : res.data;
+    if(!st) return;
+    _dailyMailState = st;
+
+    var n = st.recipient_count == null ? '?' : st.recipient_count;
+    var html = '📮 수신 대상 <strong>' + _escHtml(String(n)) + '명</strong> (마케팅 동의 + 이메일 확인 완료)';
+    if(st.email_sent_at){
+      var s = st.email_stats || {};
+      html += '<br>✅ 이 회차는 <strong>' + _escHtml(_dailyWhen(st.email_sent_at)) + '</strong>에 발송됨';
+      if(s.sent != null){
+        html += ' — 성공 ' + _escHtml(String(s.sent));
+        if(s.failed) html += ' · 실패 ' + _escHtml(String(s.failed));
+        html += '통';
+      }
+      html += '<br><span style="color:var(--text-muted);">중복 발송이 차단된 상태입니다.</span>';
+    }else{
+      html += '<br>✉️ 이 회차는 <strong style="color:var(--flag-color);">아직 발송 전</strong>입니다.';
+    }
+    box.innerHTML = html;
+  }catch(e){
+    // 함수 미배포 = 기능 미설치. 관리자에게만 조용히 안내.
+    box.innerHTML = '<span style="color:var(--text-muted);">메일 기능 미설치 — <code>daily_quiz_email_setup.sql</code> 실행 및 <code>send-daily-quiz</code> 배포가 필요합니다.</span>';
+  }
+}
+
+function _dailyMailMsg(txt, ok){
+  var m = document.getElementById('daily-mail-msg'); if(!m) return;
+  m.textContent = txt || '';
+  m.style.color = ok ? 'var(--success-color)' : 'var(--danger-color)';
+}
+
+// Edge Function 호출 공통부. 반환 = { ok:boolean, data:object, msg:string }
+async function _dailyMailInvoke(payload){
+  var res = await sb.functions.invoke('send-daily-quiz', { body: payload });
+  if(res.error){
+    return { ok:false, data:null, msg:'호출 실패: ' + (res.error.message || res.error) };
+  }
+  var d = res.data || {};
+  if(d.error){
+    var map = {
+      'TOO_SOON':      '거절됨 — 직전 발송으로부터 20시간이 지나지 않았습니다.',
+      'ALREADY_SENT':  '거절됨 — 이 회차는 이미 발송되었습니다.',
+      'NO_ACTIVE_QUIZ':'거절됨 — 지정된 문제가 없습니다.',
+      'unauthorized':  '거절됨 — 관리자 권한이 확인되지 않았습니다.',
+      'brevo not configured':'거절됨 — Brevo 시크릿(템플릿 ID)이 아직 등록되지 않았습니다.'
+    };
+    return { ok:false, data:d, msg: map[d.error] || ('실패: ' + d.error) };
+  }
+  return { ok:true, data:d, msg:'' };
+}
+
+// 테스트 발송 — 로그인한 관리자 본인 주소로 1통. 선점/기록 없음.
+async function adminDailyMailTest(){
+  if(!S.isAdminUser){ _dailyMailMsg('권한 없음 (관리자 전용)', false); return; }
+  var lang = (document.getElementById('daily-test-lang') || {}).value || 'en';
+  var img  = ((document.getElementById('daily-img-input') || {}).value || '').trim();
+  _dailyMailMsg('테스트 발송 중…', true);
+  try{
+    var u = await sb.auth.getUser();
+    var email = u && u.data && u.data.user ? u.data.user.email : null;
+    if(!email){ _dailyMailMsg('내 이메일 주소를 확인할 수 없습니다', false); return; }
+    var r = await _dailyMailInvoke({ test_email: email, language: lang, image_url: img });
+    if(!r.ok){ _dailyMailMsg(r.msg, false); return; }
+    _dailyMailMsg('✓ ' + email + ' 으로 테스트 발송했습니다 (받은편지함 확인)', true);
+  }catch(e){ _dailyMailMsg('테스트 실패: ' + (e.message || e), false); }
+}
+
+// 실제 발송. 확인창 2단계 — 인원수를 눈으로 보고 넘어가게 한다.
+async function adminDailyMailSend(){
+  if(!S.isAdminUser){ _dailyMailMsg('권한 없음 (관리자 전용)', false); return; }
+  var st = _dailyMailState;
+  if(st && st.email_sent_at){
+    _dailyMailMsg('이미 발송된 회차입니다 (중복 발송 차단)', false); return;
+  }
+  var n = st && st.recipient_count != null ? st.recipient_count : '?';
+  var qid = st && st.question_id ? st.question_id : '(현재 노출 중인 문제)';
+  if(!confirm('회원 ' + n + '명에게 알림 메일을 보냅니다.\n\n문제: ' + qid + '\n\n한 번 나가면 되돌릴 수 없습니다. 테스트 발송으로 먼저 확인하셨나요?')) return;
+
+  var img = ((document.getElementById('daily-img-input') || {}).value || '').trim();
+  _dailyMailMsg('발송 중… (인원이 많으면 30초 정도 걸립니다)', true);
+  try{
+    var r = await _dailyMailInvoke({ image_url: img });
+    if(!r.ok){ _dailyMailMsg(r.msg, false); renderDailyMailStatus(); return; }
+    var s = (r.data && r.data.stats) || {};
+    _dailyMailMsg('✓ 발송 완료 — 성공 ' + (s.sent || 0) + '통' + (s.failed ? (' · 실패 ' + s.failed + '통') : ''), true);
+    renderDailyMailStatus();
+  }catch(e){ _dailyMailMsg('발송 실패: ' + (e.message || e), false); }
 }
 
 async function _dailyFetchQuestion(id){
@@ -4837,7 +4979,15 @@ async function adminDailySet(){
     document.getElementById('daily-id-input').value = '';
     document.getElementById('daily-note-input').value = '';
     var box = document.getElementById('daily-preview'); if(box) box.style.display = 'none';
-    renderDailyAdmin();
+    await renderDailyAdmin();
+
+    // 체크했으면 이어서 알림 메일. 지정 자체는 이미 끝났으므로,
+    // 메일이 실패해도 daily.html 반영은 그대로 유지된다.
+    var chk = document.getElementById('daily-mail-chk');
+    if(chk && chk.checked){
+      chk.checked = false;              // 다음 지정 때 실수로 또 나가지 않게 즉시 해제
+      await adminDailyMailSend();
+    }
   }catch(e){ _dailyMsg('지정 실패: ' + (e.message || e), false); }
 }
 
