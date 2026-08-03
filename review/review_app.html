@@ -276,6 +276,9 @@ html,body{
 /* 제안 위에 항상 붙는 '문항 원문' 카드 — 이게 없으면 검토 자체가 불가능하다 */
 .ap-q{margin:12px 0;border:1px solid #cfdadb;border-radius:10px;background:#fff;padding:14px}
 .ap-qtext{font-size:calc(15px * var(--fs));line-height:1.8;color:#20343a;white-space:pre-wrap;margin-bottom:10px}
+/* 한 항목에 문항이 둘 이상일 때(중복 쌍) — 라벨이 붙은 카드는 왼쪽 띠로 구분한다 */
+.ap-q-multi{border-left:4px solid #A3C6C4}
+.ap-q-multi .ap-h{color:#2f6b5c;font-size:13px}
 .ap-opt{display:flex;gap:9px;padding:7px 10px;border-radius:8px;margin-bottom:3px;
   font-size:calc(14px * var(--fs));line-height:1.65;color:#20343a}
 .ap-opt b{color:#8a999c;min-width:15px;flex:none}
@@ -372,8 +375,10 @@ html,body{
           <button class="btn" id="apImport">제안 파일 열기</button>
           <button class="btn" id="apPasteBtn">붙여넣기</button>
           <button class="btn primary" id="apExport">피드백 내보내기</button>
+          <button class="btn" id="apSetDir" title="'claude proposal' 폴더를 한 번만 지정해 두면 다음부터는 자동으로 그 폴더에 저장됩니다">저장 폴더</button>
           <input type="file" id="apFile" accept=".json,application/json" style="display:none">
         </div>
+        <div class="filter-row ap-dir" id="apDirInfo" style="display:none"></div>
         <div class="filter-row ap-info" id="apInfo" style="display:none"></div>
       </div>
       <div class="qlist" id="qlist"></div>
@@ -559,7 +564,8 @@ function renderPoolSeg(){
     .join('');
   // 승인 대기 모드에서만 제안 불러오기/내보내기 도구를 띄운다
   $('apBar').style.display = isAp() ? 'flex' : 'none';
-  if (!isAp()) $('apInfo').style.display = 'none';
+  if (!isAp()){ $('apInfo').style.display = 'none'; $('apDirInfo').style.display = 'none'; }
+  else apDirShow();          // 저장 폴더가 지정돼 있는지 항상 보여 준다
   $('poolSeg').querySelectorAll('button').forEach(b => {
     b.addEventListener('click', async () => {
       if (b.dataset.pool === S.pool) return;
@@ -672,7 +678,8 @@ async function loadApprovals(){
     topic: it.topic || '',
     text:  it.title || '',
     _search: [it.id, it.title, it.why, it.note,
-              JSON.stringify(it.changes || [])].filter(Boolean).join(' '),
+              JSON.stringify(it.changes || []),
+              JSON.stringify(it.contexts || [])].filter(Boolean).join(' '),
     is_ap: true,
     ap: it
   }));
@@ -711,8 +718,8 @@ function apContext(cx){
   const exp = (lbl, body) => body
     ? `<details class="ap-exp"><summary>${lbl}</summary><div class="ap-body">${esc(body)}</div></details>`
     : '';
-  return `<div class="ap-q">
-    <div class="ap-h">문항 원문${cx.is_active === false ? ' · 현재 비활성' : ''}</div>
+  return `<div class="ap-q${cx.label ? ' ap-q-multi' : ''}">
+    <div class="ap-h">${esc(cx.label || '문항 원문')}${cx.is_active === false ? ' · 현재 비활성' : ''}</div>
     ${cx.text ? `<div class="ap-qtext">${esc(cx.text)}</div>` : ''}
     ${opts}
     ${exp('해설 (국문) 펼치기', cx.explanation)}
@@ -754,7 +761,77 @@ function apShowPaste(){
   });
 }
 
-function apExport(){
+/* ── 저장 폴더 기억 (File System Access API) ────────────────────────────────
+   사용자 지정 2026-08-03: 피드백 내보내기는 제안 파일과 같은 폴더로 간다.
+     C:\Users\Yongj\OneDrive\1_DXD Computer\0_PracExam\Production Files\claude proposal
+   폴더를 한 번 지정하면 핸들을 IndexedDB 에 보관해 다음부터 자동 저장한다.
+   브라우저가 이 API 를 지원하지 않으면 기존 다운로드 방식으로 물러난다. */
+const AP_DIR_DB = 'reviewAppDir', AP_DIR_KEY = 'feedbackDir';
+const AP_DIR_LABEL = 'Production Files\\claude proposal';
+
+function apIdb(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(AP_DIR_DB, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('h');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function apDirGet(){
+  try {
+    const db = await apIdb();
+    return await new Promise((res) => {
+      const rq = db.transaction('h').objectStore('h').get(AP_DIR_KEY);
+      rq.onsuccess = () => res(rq.result || null);
+      rq.onerror = () => res(null);
+    });
+  } catch(e){ return null; }
+}
+async function apDirPut(h){
+  try {
+    const db = await apIdb();
+    await new Promise((res) => {
+      const rq = db.transaction('h', 'readwrite').objectStore('h').put(h, AP_DIR_KEY);
+      rq.onsuccess = rq.onerror = () => res();
+    });
+  } catch(e){ console.warn('폴더 핸들 저장 실패:', e); }
+}
+function apDirSupported(){ return typeof window.showDirectoryPicker === 'function'; }
+
+async function apDirEnsure(interactive){
+  if (!apDirSupported()) return null;
+  let h = await apDirGet();
+  if (h){
+    let perm = await h.queryPermission({ mode:'readwrite' });
+    if (perm !== 'granted' && interactive) perm = await h.requestPermission({ mode:'readwrite' });
+    if (perm === 'granted') return h;
+    if (!interactive) return null;
+  }
+  if (!interactive) return null;
+  try {
+    h = await window.showDirectoryPicker({ id:'claudeProposal', mode:'readwrite' });
+  } catch(e){ return null; }               // 사용자가 취소
+  await apDirPut(h);
+  return h;
+}
+async function apDirShow(){
+  const el = $('apDirInfo');
+  if (!el) return;
+  if (!apDirSupported()){
+    el.style.display = '';
+    el.innerHTML = '<span style="color:#a33">이 브라우저는 폴더 지정을 지원하지 않습니다 — 내보내기는 다운로드 폴더로 갑니다. ' +
+                   'Chrome 또는 Edge 로 열면 <b>' + esc(AP_DIR_LABEL) + '</b> 에 바로 저장됩니다.</span>';
+    return;
+  }
+  const h = await apDirGet();
+  el.style.display = '';
+  el.innerHTML = h
+    ? '저장 폴더: <b>' + esc(h.name) + '</b> — 내보내기가 이 폴더에 바로 저장됩니다.'
+    : '<span style="color:#a33">저장 폴더가 아직 지정되지 않았습니다.</span> [저장 폴더] 를 눌러 <b>' +
+      esc(AP_DIR_LABEL) + '</b> 을 선택해 주세요.';
+}
+
+async function apExport(){
   const store = apLoadStore();
   const fb = store.feedback || {};
   const items = (S.proposal && S.proposal.items ? S.proposal.items : [])
@@ -769,14 +846,45 @@ function apExport(){
   if (!items.length){ alert('내보낼 판정·피드백이 아직 없습니다.'); return; }
 
   const batch = (S.proposal && S.proposal.batch) || 'batch';
-  const out = { batch, exported_at: new Date().toISOString(), count: items.length, items };
-  const blob = new Blob([JSON.stringify(out, null, 1)], { type:'application/json' });
+  const name  = `review_feedback_${batch}.json`;
+  const out   = { batch, exported_at: new Date().toISOString(), count: items.length, items };
+  const text  = JSON.stringify(out, null, 1);
+
+  // ① 지정된 폴더에 바로 저장 (없으면 이때 한 번 물어본다)
+  const dir = await apDirEnsure(true);
+  if (dir){
+    try {
+      const fh = await dir.getFileHandle(name, { create:true });
+      const w  = await fh.createWritable();
+      await w.write(text); await w.close();
+      await apDirShow();
+      alert(`저장했습니다 — ${dir.name} 폴더의 ${name}\n(${items.length}건)`);
+      return;
+    } catch(e){
+      console.warn('폴더 저장 실패, 다운로드로 대체:', e);
+    }
+  }
+
+  // ② 폴백 — 기존 다운로드
+  const blob = new Blob([text], { type:'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `review_feedback_${batch}.json`;
+  a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  alert(`다운로드 폴더에 저장했습니다 — ${name}\n\n` +
+        `${AP_DIR_LABEL} 로 옮겨 주시거나, ea_generator 에서\n  py collect_feedback.py\n를 실행하면 자동으로 옮겨집니다.`);
 }
+
+$('apSetDir').addEventListener('click', async () => {
+  if (!apDirSupported()){ await apDirShow(); return; }
+  const h = await window.showDirectoryPicker({ id:'claudeProposal', mode:'readwrite' })
+    .catch(() => null);
+  if (!h) return;
+  await apDirPut(h);
+  await apDirShow();
+  alert(`저장 폴더를 '${h.name}' 로 지정했습니다.\n앞으로 [피드백 내보내기] 는 이 폴더에 바로 저장됩니다.`);
+});
 
 $('apImport').addEventListener('click', () => $('apFile').click());
 $('apFile').addEventListener('change', (e) => {
@@ -1024,6 +1132,7 @@ function renderDetail(){
       </div>
       <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:10px;">${esc(it.title || '')}</div>
       ${apContext(it.context)}
+      ${(it.contexts || []).map(apContext).join('')}
       ${it.why ? `<div class="ap-why"><div class="ap-h">제안 이유</div>
         <div class="ap-body">${esc(it.why)}</div></div>` : ''}
       ${(it.changes || []).map(apDiff).join('')}
