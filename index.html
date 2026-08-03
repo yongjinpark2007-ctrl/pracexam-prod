@@ -1351,6 +1351,46 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       </div>
     </div>
 
+    <!-- ═══ 확인 대기 화면 (2026-08-03) ═══
+         가입 직후 모달을 닫지 않고 이 화면으로 바꾼다.
+         예전에는 버튼 아래 작은 한 줄("가입 완료! …스팸함도 확인해주세요")만 띄웠고,
+         사용자가 곧바로 창을 닫아 버려서 확인 메일이 스팸함에 갇히면 그대로 이탈했다
+         (2026-08-03 실측: 가입 91명 중 12명이 이 지점에 정체).
+         이제 스팸함 안내를 화면에 계속 띄워 두고, 확인되는 즉시 자동으로 앱에 진입시킨다. -->
+    <div id="modal-confirm" style="display:none;">
+      <div style="text-align:center;">
+        <div style="font-size:38px; line-height:1; margin-bottom:8px;">✉️</div>
+        <h3 style="margin-bottom:4px;">
+          <span class="ko">확인 메일을 보냈습니다</span><span class="en">Check your email</span>
+        </h3>
+        <div id="cf-email" style="font-weight:700; color:var(--navy); font-size:14px; word-break:break-all; margin-bottom:12px;"></div>
+        <p style="font-size:13.5px; line-height:1.7; color:var(--text-mid); margin:0 0 16px;">
+          <span class="ko">메일 속 링크를 눌러야 가입이 완료됩니다.<br><strong>이 창은 그대로 두세요</strong> — 확인되면 자동으로 넘어갑니다.</span>
+          <span class="en">Click the link in that email to finish signing up.<br><strong>Keep this window open</strong> — we'll take you straight in.</span>
+        </p>
+        <div id="cf-status" style="font-size:13px; color:var(--text-mid); margin-bottom:16px;">
+          <span class="ko">⏳ 확인을 기다리는 중…</span><span class="en">⏳ Waiting for confirmation…</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(20,50,90,.05); border:1px solid var(--border-clr,#e5e7eb); border-radius:10px; padding:12px 14px; font-size:12.5px; line-height:1.75; color:var(--text-mid);">
+        <strong style="color:var(--navy);"><span class="ko">메일이 안 보이나요?</span><span class="en">Don't see it?</span></strong>
+        <div style="margin-top:6px;">
+          <span class="ko">· <strong>스팸함(정크메일함)</strong>을 확인해 주세요<br>· Gmail이면 <strong>'프로모션'</strong> 탭도 확인해 주세요<br>· 메일함에서 <strong>pracexam</strong> 으로 검색해 보세요</span>
+          <span class="en">· Check your <strong>spam</strong> or <strong>junk</strong> folder<br>· In Gmail, also check the <strong>Promotions</strong> tab<br>· Search your mailbox for <strong>pracexam</strong></span>
+        </div>
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-clr,#e5e7eb);">
+          <span class="ko">보낸사람 </span><span class="en">From </span>
+          <strong style="color:var(--navy); word-break:break-all;">noreply@mail.pracexam.com</strong>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost" id="cf-resend" onclick="doResendSignup()" style="margin-top:14px;">
+        <span class="ko">메일 다시 보내기</span><span class="en">Resend the email</span>
+      </button>
+      <div class="modal-msg" id="cf-msg"></div>
+    </div>
+
     <div id="modal-login" style="display:none;">
       <h3><span class="ko">로그인</span><span class="en">Log In</span></h3>
       <p class="sub"><span class="ko">PracExam 앱으로 이동합니다.</span><span class="en">You'll be taken to the PracExam app.</span></p>
@@ -1583,11 +1623,16 @@ function openModal(which){
 }
 function closeModal(){
   document.getElementById('modal-bg').classList.remove('open');
+  _cfStop();   // 창을 닫으면 확인 대기 폴링도 멈춘다
 }
 function switchModal(which){
   document.getElementById('modal-signup').style.display   = (which === 'signup')   ? 'block' : 'none';
   document.getElementById('modal-login').style.display    = (which === 'login')    ? 'block' : 'none';
   document.getElementById('modal-waitlist').style.display = (which === 'waitlist') ? 'block' : 'none';
+  var _cfView = document.getElementById('modal-confirm');
+  if(_cfView) _cfView.style.display = (which === 'confirm') ? 'block' : 'none';
+  // 확인 대기 화면을 벗어나면 불필요한 인증 요청이 계속 나가지 않도록 멈춘다
+  if(which !== 'confirm') _cfStop();
   // 구독 의도로 가입 모달을 열면 안내 배너 표시
   var note = document.getElementById('su-subscribe-note');
   if(note) note.style.display = (which === 'signup' && window._intent === 'subscribe') ? 'block' : 'none';
@@ -1723,12 +1768,18 @@ function doSignup(){
     if (result.ok) {
       // Google Ads 전환: 무료 가입 성공
       try{ gtag('event','conversion',{ send_to:'AW-18345651711/z9OnCN2y1NUcEP_b8atE' }); }catch(e){}
-      showMsg(
-        lang === 'ko'
-          ? '가입 완료! ' + email + ' 주소로 확인 이메일을 발송했습니다. 받은 편지함에 없으면 스팸함(정크메일함)도 꼭 확인해주세요.'
-          : "Account created! We've sent a confirmation email to " + email + " — if it's not in your inbox, please check your spam/junk folder.",
-        true
-      );
+      // 확인 대기 화면으로 전환 + 확인 여부 감지 시작.
+      // 만에 하나 그 화면이 깨지더라도 가입 자체는 성공했으므로, 예전 안내 문구로 물러선다.
+      try {
+        _cfStart(email, pw, confirmRedirect);
+      } catch(e) {
+        showMsg(
+          lang === 'ko'
+            ? '가입 완료! ' + email + ' 주소로 확인 이메일을 발송했습니다. 받은 편지함에 없으면 스팸함(정크메일함)도 꼭 확인해주세요.'
+            : "Account created! We've sent a confirmation email to " + email + " — if it's not in your inbox, please check your spam/junk folder.",
+          true
+        );
+      }
     } else {
       var msg = (result.data && result.data.msg)
              || (result.data && result.data.error_description)
@@ -1738,6 +1789,122 @@ function doSignup(){
   })
   .catch(function(){
     showMsg(lang === 'ko' ? '네트워크 오류가 발생했습니다. 다시 시도해주세요.' : 'Network error. Please try again.', false);
+  });
+}
+
+// ── 확인 대기 + 자동 진입 (2026-08-03) ──────────────────────────────
+// 가입 직후 모달을 '확인 대기' 화면으로 바꾸고, 백그라운드에서 확인 여부를 감지한다.
+//
+// 감지 방법 = 방금 입력받은 이메일·비밀번호로 조용히 로그인을 시도해 본다.
+//   · 아직 미확인 → GoTrue 가 400(email_not_confirmed)으로 거절 → 계속 대기
+//   · 확인 완료   → 200 + 토큰 → 그 토큰째로 app.html 에 넘겨 로그인된 상태로 진입
+// 서버 쪽 작업이 전혀 필요 없다(SQL·Edge Function·Supabase 설정 변경 0건).
+//
+// app.html 로 넘길 때는 확인메일 링크가 쓰는 것과 **같은 형식**(#access_token=…)을 만든다.
+// app.html 은 이미 그 해시를 처리하고 있으므로(SESSION 초기화 ①) 앱 쪽은 고칠 것이 없다.
+//
+// ⚠️ 폴링 간격: 인증 엔드포인트를 너무 자주 때리면 GoTrue 레이트리밋에 걸린다.
+//    처음 2분은 6초, 이후 15초. 15분이 지나면 멈추고 안내 문구를 바꾼다.
+//    (총 요청 수 ~70회. 창을 닫거나 다른 화면으로 가면 즉시 멈춘다.)
+var _cfTimer = null, _cfEmail = '', _cfPw = '', _cfRedirect = '', _cfStartedAt = 0, _cfDone = false;
+
+function _cfLang(){
+  return document.getElementById('html-root').className.indexOf('lang-en') > -1 ? 'en' : 'ko';
+}
+
+function _cfStart(email, pw, redirect){
+  _cfEmail = email; _cfPw = pw; _cfRedirect = redirect || '';
+  _cfDone = false; _cfStartedAt = Date.now();
+  document.getElementById('cf-email').textContent = email;
+  var m = document.getElementById('cf-msg');
+  if(m){ m.textContent = ''; m.className = 'modal-msg'; }
+  switchModal('confirm');
+  _cfSchedule();
+}
+
+function _cfStop(){
+  if(_cfTimer){ clearTimeout(_cfTimer); _cfTimer = null; }
+}
+
+function _cfSchedule(){
+  _cfStop();
+  if(_cfDone) return;
+  var elapsed = Date.now() - _cfStartedAt;
+  if(elapsed > 15 * 60 * 1000){ _cfGiveUp(); return; }
+  _cfTimer = setTimeout(_cfPoll, (elapsed < 2 * 60 * 1000) ? 6000 : 15000);
+}
+
+function _cfGiveUp(){
+  _cfStop();
+  var el = document.getElementById('cf-status');
+  if(!el) return;
+  el.innerHTML = (_cfLang() === 'ko')
+    ? '메일을 확인하신 뒤 <strong>로그인</strong>해 주세요.'
+    : 'Once you have confirmed, please <strong>log in</strong>.';
+}
+
+function _cfPoll(){
+  if(_cfDone) return;
+  fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+    body: JSON.stringify({ email: _cfEmail, password: _cfPw })
+  })
+  .then(function(res){ return res.json().then(function(d){ return {ok: res.ok, data: d}; }); })
+  .then(function(r){
+    if(r.ok && r.data && r.data.access_token){ _cfEnter(r.data); return; }
+    _cfSchedule();   // 아직 미확인(또는 일시적 오류) → 계속 기다린다
+  })
+  .catch(function(){ _cfSchedule(); });
+}
+
+function _cfEnter(d){
+  _cfDone = true;
+  _cfStop();
+  var el = document.getElementById('cf-status');
+  if(el){
+    el.innerHTML = (_cfLang() === 'ko') ? '✅ 확인되었습니다. 이동 중…' : '✅ Confirmed. Taking you in…';
+  }
+  // 확인메일 링크가 돌아올 때와 동일한 해시 형식 → app.html 의 supabase-js 가 그대로 세션을 잡는다.
+  var hash = '#access_token=' + encodeURIComponent(d.access_token)
+           + '&expires_in=' + (d.expires_in || 3600)
+           + '&refresh_token=' + encodeURIComponent(d.refresh_token || '')
+           + '&token_type=bearer&type=signup';
+  var url = 'app.html' + (window._intent === 'subscribe' ? '?intent=subscribe' : '') + hash;
+  _cfPw = '';   // 비밀번호는 메모리에서 지운다
+  setTimeout(function(){ window.location.href = url; }, 600);
+}
+
+// 확인 메일 재발송 — app.html 의 재발송 화면과 같은 GoTrue 엔드포인트를 쓴다.
+// ⚠️ redirect_to 는 쿼리스트링으로만 전달된다(body 에 넣으면 무시됨 — 2026-07-27 사고 원인).
+function doResendSignup(){
+  var btn = document.getElementById('cf-resend');
+  var ko  = (_cfLang() === 'ko');
+  if(btn) btn.disabled = true;
+  showMsgEl('cf-msg', ko ? '보내는 중…' : 'Sending…', true);
+  fetch(SUPABASE_URL + '/auth/v1/resend?redirect_to=' + encodeURIComponent(_cfRedirect), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+    body: JSON.stringify({ type: 'signup', email: _cfEmail })
+  })
+  .then(function(res){ return res.json().then(function(d){ return {ok: res.ok, data: d}; }); })
+  .then(function(r){
+    if(btn) btn.disabled = false;
+    if(r.ok){
+      showMsgEl('cf-msg', ko
+        ? '새 확인 메일을 보냈습니다. 스팸함도 함께 확인해 주세요.'
+        : 'New confirmation email sent. Please check your spam folder too.', true);
+      return;
+    }
+    var m = (r.data && (r.data.msg || r.data.error_description || r.data.message)) || '';
+    if(m.toLowerCase().indexOf('security purposes') > -1 || m.toLowerCase().indexOf('rate') > -1){
+      m = ko ? '잠시 후 다시 시도해 주세요.' : 'Please wait a moment before trying again.';
+    }
+    showMsgEl('cf-msg', m || (ko ? '발송에 실패했습니다.' : 'Could not send. Please try again.'), false);
+  })
+  .catch(function(){
+    if(btn) btn.disabled = false;
+    showMsgEl('cf-msg', ko ? '네트워크 오류가 발생했습니다.' : 'Network error. Please try again.', false);
   });
 }
 
