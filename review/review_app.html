@@ -269,8 +269,9 @@ html,body{
 /* ── 승인 대기(Claude 제안 검토) 모드 ─────────────────────────────────────── */
 .ap-bar{gap:6px;flex-wrap:wrap}
 .ap-bar .btn{padding:7px 10px;font-size:12px}
-.ap-info{font-size:12px;color:#5b6b6e;line-height:1.5}
-.ap-info b{color:#20343a}
+/* 저장 폴더 안내(.ap-dir)는 그 아래 묶음 정보(.ap-info)와 같은 크기로 — 눈에 튀지 않게 */
+.ap-info,.ap-dir{font-size:12px;color:#5b6b6e;line-height:1.5}
+.ap-info b,.ap-dir b{color:#20343a}
 .q-badge.ap-applied{background:rgba(111,163,158,.18);border-color:#A3C6C4}
 .q-badge.ap-pending{background:rgba(224,168,90,.20);border-color:#E0A85A}
 /* 제안 위에 항상 붙는 '문항 원문' 카드 — 이게 없으면 검토 자체가 불가능하다 */
