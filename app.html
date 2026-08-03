@@ -2881,6 +2881,33 @@ try{
   }catch(e){}
 })();
 
+// ⓪-B 미확인 안내 메일의 "Send me a new link" 로 들어온 경우 (2026-08-03)
+//   send-confirm-reminder(가입 24시간 뒤 1회 발송)가 보내는 안내 메일의 링크가
+//     https://pracexam.com/app?resend=1&email=<주소>
+//   형태로 돌아온다. 이 사람은 아직 이메일 미확인이라 세션이 없다 → 로그인 게이트를 열고
+//   곧바로 재발송 화면을 띄우고 주소를 채워 준다(타이핑 없이 버튼 한 번).
+//   ⚠️ _sessionHandled 은 일부러 건드리지 않는다. 이미 확인·로그인된 사람이 옛 링크를
+//      눌렀다면 checkSession/SIGNED_IN 이 뒤이어 게이트를 닫고 정상 진입시켜야 하기 때문.
+(function(){
+  try{
+    var q = new URLSearchParams(window.location.search || '');
+    if(q.get('resend') !== '1') return;
+    var pre = q.get('email') || '';
+    setTimeout(function(){
+      try{
+        document.getElementById('login-gate').style.display = 'flex';
+        lgShowResend(pre);
+        var note = document.getElementById('lg-resend-note');
+        if(note){
+          note.innerHTML = 'Your email address has not been confirmed yet, so you cannot log in.<br><b>Send yourself a new confirmation link below.</b>';
+          note.style.display = 'block';
+        }
+        history.replaceState(null, '', window.location.pathname);
+      }catch(e){}
+    }, 0);
+  }catch(e){}
+})();
+
 // ⓪ 비밀번호 재설정 메일 링크(type=recovery)로 진입한 경우:
 //    세션은 생기지만 앱으로 자동 진입시키지 않고 '새 비밀번호' 화면을 띄운다.
 // (⓪-A가 에러를 처리했으면 여기 들어오지 않는다 — 만료된 재설정 링크로 '새 비밀번호' 화면이 뜨는 것 방지)
