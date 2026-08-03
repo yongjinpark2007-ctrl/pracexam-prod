@@ -1361,15 +1361,15 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <div style="text-align:center;">
         <div style="font-size:38px; line-height:1; margin-bottom:8px;">✉️</div>
         <h3 style="margin-bottom:4px;">
-          <span class="ko">확인 메일을 보냈습니다</span><span class="en">Check your email</span>
+          <span class="ko">확인 메일을 보내드렸습니다</span><span class="en">Check your email</span>
         </h3>
         <!-- ⚠️ word-break 을 지정하지 말 것. body 의 keep-all(한국어 어절 단위) +
              overflow-wrap:break-word 를 그대로 물려받아야 단어 중간이 깨지지 않는다.
              긴 이메일 주소는 overflow-wrap 이 필요할 때만 알아서 접는다. -->
         <div id="cf-email" style="font-weight:700; color:var(--navy); font-size:14px; margin-bottom:12px;"></div>
         <p style="font-size:13.5px; line-height:1.7; color:var(--text-mid); margin:0 0 16px;">
-          <span class="ko">메일 속 링크를 눌러야 가입이 완료됩니다.<br><strong>이 창은 그대로 두세요</strong> — 확인되면 자동으로 넘어갑니다.</span>
-          <span class="en">Click the link in that email to finish signing up.<br><strong>Keep this window open</strong> — we'll take you straight in.</span>
+          <span class="ko">보내드린 메일에 있는 링크를 눌러 주세요.<br>이 창은 그대로 열어 두시면 됩니다.<br>메일 확인되면 자동으로 로그인됩니다.</span>
+          <span class="en">Click the link in that email to finish signing up.<br>You can leave this window open.<br>We'll log you in automatically once it's confirmed.</span>
         </p>
         <div id="cf-status" style="font-size:13px; color:var(--text-mid); margin-bottom:16px;">
           <span class="ko">⏳ 확인을 기다리는 중…</span><span class="en">⏳ Waiting for confirmation…</span>
@@ -1377,14 +1377,33 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       </div>
 
       <div style="background:rgba(20,50,90,.05); border:1px solid var(--border-clr,#e5e7eb); border-radius:10px; padding:12px 14px; font-size:12.5px; line-height:1.75; color:var(--text-mid);">
-        <strong style="color:var(--navy);"><span class="ko">메일이 안 보이나요?</span><span class="en">Don't see it?</span></strong>
-        <div style="margin-top:6px;">
-          <span class="ko">· <strong>스팸함(정크메일함)</strong>을 확인해 주세요<br>· Gmail이면 <strong>'프로모션'</strong> 탭도 확인해 주세요<br>· 메일함에서 <strong>pracexam</strong> 으로 검색해 보세요</span>
-          <span class="en">· Check your <strong>spam</strong> or <strong>junk</strong> folder<br>· In Gmail, also check the <strong>Promotions</strong> tab<br>· Search your mailbox for <strong>pracexam</strong></span>
+        <strong style="color:var(--navy);"><span class="ko">메일이 안 보이시나요?</span><span class="en">Don't see it?</span></strong>
+
+        <!-- 글머리표(·)와 본문을 각각 다른 칸에 둔다. 한 덩어리로 두면 문장이 두 줄로 넘어갈 때
+             둘째 줄이 · 아래(맨 왼쪽)까지 밀려나 문장이 잘린 것처럼 보인다 — 문장이 긴 영어에서 특히.
+             ⚠️ .en/.ko 토글 CSS(178행)는 display:none 만 걸므로, 보이는 쪽 display 는 여기서 직접 준다. -->
+        <div style="display:flex; gap:7px; align-items:flex-start; margin-top:6px;">
+          <span style="flex-shrink:0;">·</span>
+          <span>
+            <span class="ko"><strong>스팸함(정크메일함)</strong>을 확인해 주세요.</span>
+            <span class="en">Check your <strong>spam</strong> or <strong>junk</strong> folder.</span>
+          </span>
         </div>
+        <div style="display:flex; gap:7px; align-items:flex-start;">
+          <span style="flex-shrink:0;">·</span>
+          <span>
+            <span class="ko">메일함에서 <strong>pracexam</strong> 으로 검색해 보세요.</span>
+            <span class="en">Search your mailbox for <strong>pracexam</strong>.</span>
+          </span>
+        </div>
+        <div class="en" style="display:flex; gap:7px; align-items:flex-start;">
+          <span style="flex-shrink:0;">·</span>
+          <span>In Gmail, also check the <strong>Promotions</strong> tab.</span>
+        </div>
+
         <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-clr,#e5e7eb);">
-          <span class="ko">보낸사람 </span><span class="en">From </span>
-          <strong style="color:var(--navy);">noreply@mail.pracexam.com</strong>
+          <span class="ko">보낸사람</span><span class="en">From</span>
+          <div style="margin-top:2px;"><strong style="color:var(--navy);">noreply@mail.pracexam.com</strong></div>
         </div>
       </div>
 
