@@ -544,6 +544,16 @@ html, body {
 .fb-row{display:flex;gap:8px;margin-top:1rem;align-items:stretch;flex-wrap:wrap;}
 .fb-row .btn-navy{flex:1;}
 
+/* 앰배서더 배지 — 본인에게만 보인다(RLS가 본인 행만 읽게 함). 색은 히어로 카드의 골드 계열 (2026-08-05) */
+.amb-badge{
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  background:rgba(198,161,91,.12);color:#8a6d2f;
+  border:1px solid rgba(198,161,91,.45);border-radius:7px;
+  padding:5px 11px;margin-top:9px;
+  font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.02em;
+}
+.amb-badge svg{flex:none;}
+
 /* QUIZ */
 .quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
 .quiz-progress-bar{height:3px;background:rgba(0,0,0,.04);border-radius:2px;margin-bottom:1.5rem;}
@@ -3061,7 +3071,7 @@ async function loadTrialStatus(){
   try{
     const { data, error } = await sb
       .from('profiles')
-      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled, signup_welcome_sent')
+      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled, signup_welcome_sent, comp_program')
       .eq('id', SB_USER.id)
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
@@ -3075,6 +3085,19 @@ async function loadTrialStatus(){
     S.lastName  = data.last_name || null;
     S.trialEndsAt = data.trial_ends_at;
     S.trialExpired = !S.isPaid && S.trialEndsAt && (new Date(S.trialEndsAt) < new Date());
+
+    // ── 무료 제공 프로그램 배지 (앰배서더 등) — 본인에게만 보인다 ──
+    // 문구는 DB(comp_programs.badge_label)가 진실 소스라 앱 재배포 없이 바꿀 수 있다.
+    // 조회가 실패해도(정책 미배포 등) 앱이 멈추면 안 되므로 별도 쿼리 + 로컬 폴백.
+    S.compProgram = data.comp_program || null;
+    S.compBadge = null;
+    if(S.compProgram){
+      try{
+        const bres = await sb.from('comp_programs').select('badge_label').eq('code', S.compProgram).maybeSingle();
+        if(!bres.error && bres.data) S.compBadge = bres.data.badge_label || null;
+      }catch(e){ console.warn('badge 조회 skip:', e && e.message); }
+      if(!S.compBadge) S.compBadge = COMP_BADGE_FALLBACK[S.compProgram] || null;
+    }
 
     // ── 일일 한도: 날짜가 바뀌었으면 로컬 표시만 0으로 리셋 ──
     // [Phase 0 · 결제MP §0b] 클라이언트는 profiles에 절대 쓰지 않는다(표시용 미러링만).
@@ -3096,6 +3119,7 @@ async function loadTrialStatus(){
   updateTrialStatusUI();
   applyTrialSetupRestrictions();
   updateTrialQuotaBanner();
+  try{ if(S && S.questions) renderDashboard(); }catch(e){}   // 배지가 히어로에 반영되도록 (프로필은 대시보드보다 늦게 온다)
   try{ updateSyncStatus(); }catch(e){}
 }
 
@@ -3203,6 +3227,19 @@ function canStartQuiz(){
 //       S.dailyUsed 로컬 미러링 + UI 갱신만 수행(클라우드 write 없음).
 
 // Settings 화면의 멤버십 카드 갱신 (Admin은 표시 안 함)
+// ══ 무료 제공 프로그램 배지 ═════════════════════════════════════════════
+// DB(comp_programs.badge_label)를 못 읽었을 때만 쓰는 최소 폴백. 문구의 진실 소스는 DB.
+var COMP_BADGE_FALLBACK = { ambassador: 'PracExam Ambassador' };
+
+// 배지 HTML. 배지가 없는 프로그램(gift·trial_ext)이나 일반 회원은 빈 문자열.
+function ambBadgeHtml(style){
+  if(!S.compBadge) return '';
+  return '<div class="amb-badge"' + (style ? (' style="' + style + '"') : '') + '>' +
+    '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.1 8.6 22 9.6 17 14.5 18.2 21.4 12 18.1 5.8 21.4 7 14.5 2 9.6 8.9 8.6 12 2"/></svg>' +
+    '<span>' + _escHtml(S.compBadge) + '</span>' +
+  '</div>';
+}
+
 function updateTrialStatusUI(){
   try{ updateMarketingConsentUI(); }catch(e){}   // 마케팅 토글도 함께 갱신 (early return 전에)
   try{ maybeShowMarketingModal(); }catch(e){}    // 옵트인 모달 (조건 충족 시 1회)
@@ -3226,7 +3263,8 @@ function updateTrialStatusUI(){
     // comp_* 플랜(무료 증정)은 Paddle 고객이 아니라 포털 발급이 실패하므로 버튼 대신 안내만
     var _isComp = (S.planCode || '').slice(0, 4) === 'comp';
     if(act) act.innerHTML = _isComp
-      ? '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('comp_membership_note') + '</div>'
+      ? ambBadgeHtml('margin-top:0;margin-bottom:10px;') +
+        '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('comp_membership_note') + '</div>'
       : '<button class="btn-navy" style="width:100%;margin-bottom:6px;" onclick="openCustomerPortal()">' + t('manage_portal') + '</button>' +
         '<div style="font-size:11.5px;color:var(--text-mid);line-height:1.6;">' + t('manage_portal_note') + '</div>';
   } else if(S.trialExpired){
@@ -5398,6 +5436,7 @@ function renderDashHero(focusPart){
         '<div>' +
           '<div class="dash-hero-label">' + t('hero_focus') + '</div>' +
           '<div class="dash-hero-title">' + info.icon + ' ' + partLabel(focusPart) + '</div>' +
+          ambBadgeHtml() +
         '</div>' +
         '<span class="dash-hero-status ' + st.cls + '">' + st.text + '</span>' +
       '</div>' +
@@ -6714,6 +6753,7 @@ function openFeedbackModal(){
   mc.innerHTML =
     '<div style="padding:.25rem 0;">' +
       '<div style="font-size:18px;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;">💬 ' + _escHtml(t('fb_title')) + '</div>' +
+      ambBadgeHtml('margin-top:2px;margin-bottom:8px;') +
       '<div style="font-size:13.5px;line-height:1.7;color:var(--text-mid);margin-bottom:14px;">' + _escHtml(t('fb_intro')) + '</div>' +
       '<div style="background:#f6f8f8;border:1px solid var(--border-clr);border-radius:10px;padding:10px 12px;margin-bottom:14px;">' +
         '<div style="font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">' + _escHtml(t('fb_qlabel')) + '</div>' +
