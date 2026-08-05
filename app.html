@@ -8486,11 +8486,20 @@ if ('serviceWorker' in navigator) {
 <!-- ═══ WAR ROOM 모듈 (치트시트 · RPC 로딩 · 이전/다음 · 복사차단 · 2026-07-25) ═══ -->
 <style id="wr-style">
 #screen-warroom{padding:0;}
-.wr-wrap{max-width:1040px;margin:0 auto;padding:6px 0 0;display:grid;grid-template-columns:230px 1fr;gap:20px;}
+/* 🔴 가로 넘침 수정 (2026-08-06)
+   grid 의 1fr 은 minmax(auto,1fr) 이라 트랙 최소폭이 '내용물의 min-content' 가 된다.
+   본문 표는 .wr-body th,td 의 word-break:keep-all 때문에 단어 아래로 못 줄어들어서,
+   그 표 폭만큼 시트 전체가 화면보다 넓어졌다 → .content 의 overflow-x:hidden 이
+   오른쪽을 잘라내 본문 끝부분과 '다음' 버튼이 통째로 화면 밖으로 나갔다.
+   minmax(0,1fr) + min-width:0 으로 줄어들 수 있게 하면, 넓은 표만 .wr-tblwrap 안에서
+   가로 스크롤되고(원래 의도) 나머지는 화면 폭에 맞는다. */
+.wr-wrap{max-width:1040px;margin:0 auto;padding:6px 0 0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;}
+.wr-sheet,.wr-protected,.wr-body{min-width:0;}
+.wr-tblwrap{max-width:100%;}
 .wr-toc-toggle{display:none;}
 .wr-toc-toggle svg{width:16px;height:16px;stroke:#354649;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;flex:0 0 auto;}
 .wr-wrap:has(.wr-toc.open) .wr-toc-toggle svg{transform:rotate(180deg);}
-@media(max-width:820px){ .wr-wrap{grid-template-columns:1fr;} .wr-toc-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid rgba(53,70,73,.12);border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;color:#354649;cursor:pointer;} .wr-toc{display:none;margin-top:10px;} .wr-toc.open{display:block;} }
+@media(max-width:820px){ .wr-wrap{grid-template-columns:minmax(0,1fr);} .wr-toc-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1px solid rgba(53,70,73,.12);border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;color:#354649;cursor:pointer;} .wr-toc{display:none;margin-top:10px;} .wr-toc.open{display:block;} }
 .wr-toc{background:#fff;border:1px solid rgba(53,70,73,.12);border-radius:14px;padding:10px;height:max-content;}
 .wr-part{font-size:11px;font-weight:800;letter-spacing:.06em;color:#4E5C66;text-transform:uppercase;padding:8px 10px 4px;}
 .wr-dom{border-top:1px solid rgba(53,70,73,.1);}
