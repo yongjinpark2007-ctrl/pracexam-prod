@@ -528,6 +528,22 @@ html, body {
 }
 .btn-navy:hover{border-color:rgba(53,70,73,.3);color:var(--teal);}
 
+/* 문항 피드백 버튼 (해설 카드 하단 · Next Question 왼쪽) — 2026-08-04 */
+.fb-btn{
+  background:rgba(0,0,0,.03);color:var(--text-muted);
+  border:1px solid var(--border-clr);border-radius:10px;
+  padding:12px 13px;font-family:inherit;font-size:13px;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  cursor:pointer;transition:all .15s;flex:none;
+}
+.fb-btn:hover{color:var(--teal);border-color:rgba(53,70,73,.3);}
+.fb-btn:active{opacity:.75;}
+.fb-btn svg{flex:none;}
+/* 좁은 화면에서는 라벨을 'Feedback'으로 줄여 Next 버튼 폭을 지킨다 */
+@media(max-width:560px){ .fb-btn .fb-btn-long{display:none;} }
+.fb-row{display:flex;gap:8px;margin-top:1rem;align-items:stretch;flex-wrap:wrap;}
+.fb-row .btn-navy{flex:1;}
+
 /* QUIZ */
 .quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
 .quiz-progress-bar{height:3px;background:rgba(0,0,0,.04);border-radius:2px;margin-bottom:1.5rem;}
@@ -1545,7 +1561,13 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     </div>
 
     <div id="exp-next-btn-area">
-      <button class="btn-navy" data-i18n="quiz_next_q" style="width:100%;margin-top:1rem;" onclick="nextQuestion()">Next Question →</button>
+      <div class="fb-row">
+        <button class="fb-btn" onclick="openFeedbackModal()" title="Send feedback about this question">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span>Feedback<span class="fb-btn-long">&nbsp;to PracExam</span></span>
+        </button>
+        <button class="btn-navy" data-i18n="quiz_next_q" onclick="nextQuestion()">Next Question →</button>
+      </div>
     </div>
   </div>
 
@@ -3978,6 +4000,24 @@ var UI_TEXT = {
   quiz_prev:     {ko:'← 이전',   en:'← Prev'},
   quiz_next:     {ko:'다음 →',   en:'Next →'},
   quiz_next_q:   {ko:'다음 문제 →', en:'Next Question →'},
+  // 문항 피드백 (2026-08-04)
+  fb_btn_title:  {ko:'이 문제에 대한 의견 보내기', en:'Send feedback about this question'},
+  fb_title:      {ko:'Feedback to PracExam', en:'Feedback to PracExam'},
+  fb_intro:      {ko:'이 문제에 대한 의견을 들려주세요. 보내 주신 소중한 의견은 학습 개선에 반영하겠습니다.',
+                  en:'We would love to hear your thoughts on this question. Your feedback goes right back into improving your study experience.'},
+  fb_qlabel:     {ko:'문제 코드', en:'Question code'},
+  fb_ph:         {ko:'의견을 적어주세요', en:'Write your feedback here'},
+  fb_send:       {ko:'보내기', en:'Send'},
+  fb_sending:    {ko:'보내는 중…', en:'Sending…'},
+  fb_cancel:     {ko:'취소', en:'Cancel'},
+  fb_too_short:  {ko:'의견을 조금 더 자세히 적어주세요 (5자 이상).', en:'Please add a bit more detail (at least 5 characters).'},
+  fb_too_long:   {ko:'2000자까지 입력할 수 있습니다.', en:'Please keep your feedback under 2,000 characters.'},
+  fb_failed:     {ko:'전송에 실패했습니다. 잠시 후 다시 시도해주세요.', en:'Could not send your feedback. Please try again in a moment.'},
+  fb_thanks_t:   {ko:'피드백 감사합니다', en:'Thank you for your feedback'},
+  fb_thanks_b:   {ko:'의견이 잘 전달되었습니다. 시간 내어 알려주셔서 감사합니다.',
+                  en:'Your message has been sent. Thank you for taking the time to tell us.'},
+  fb_no_q:       {ko:'현재 문제를 찾을 수 없습니다.', en:'Could not identify the current question.'},
+  fb_cooldown:   {ko:'방금 보내셨습니다. 잠시 후 다시 시도해주세요.', en:'You just sent feedback. Please try again in a moment.'},
   q_copy:        {ko:'복사',     en:'Copy'},
   q_flag:        {ko:'플래그',   en:'Flag'},
   exp_explanation:{ko:'해설',    en:'Explanation'},
@@ -6627,15 +6667,132 @@ async function showExplanation(q, isOk, timeout){
     if(S.retryFlaggedMode){
       const hasNext = (S.quizIdx + 1) < S.quizQueue.length;
       btnArea.innerHTML =
-        '<div style="display:flex;gap:8px;margin-top:1rem;">' +
+        '<div class="fb-row">' +
+          feedbackBtnHtml() +
           (hasNext
             ? '<button class="btn-navy" style="flex:1;" onclick="nextRetryFlagged()">' + (LANG === 'en' ? 'Next Flagged →' : '다음 Flagged →') + '</button>'
             : '') +
           '<button class="btn-ghost" style="flex:1;" onclick="exitRetryFlagged()">' + (LANG === 'en' ? 'Back to Review' : 'Review로 돌아가기') + '</button>' +
         '</div>';
     } else {
-      btnArea.innerHTML = '<button class="btn-navy" style="width:100%;margin-top:1rem;" onclick="nextQuestion()">Next Question →</button>';
+      btnArea.innerHTML =
+        '<div class="fb-row">' +
+          feedbackBtnHtml() +
+          '<button class="btn-navy" data-i18n="quiz_next_q" onclick="nextQuestion()">' + t('quiz_next_q') + '</button>' +
+        '</div>';
     }
+  }
+}
+
+// 문항 피드백 버튼 HTML — 해설 카드 하단(Next 버튼 왼쪽). 라벨은 브랜드 문구라 양쪽 언어 공통.
+function feedbackBtnHtml(){
+  return '<button class="fb-btn" onclick="openFeedbackModal()" title="' + _escHtml(t('fb_btn_title')) + '">' +
+    '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>' +
+    '<span>Feedback<span class="fb-btn-long">&nbsp;to PracExam</span></span>' +
+  '</button>';
+}
+
+// ══ 문항 피드백 모달 ══════════════════════════════════════════════════════
+// 사용자가 현재 문제에 대한 의견을 적어 보내면 Edge Function(send-question-feedback)이
+// hello@pracexam.com 으로 메일을 보낸다. 문제 본문·정답은 클라이언트가 아니라 서버가
+// question_id 로 DB에서 다시 읽어 붙이므로 위·변조가 불가능하다.
+var FB_COOLDOWN_MS = 30000;   // 연타 방지 (같은 브라우저 기준)
+
+function openFeedbackModal(){
+  var q = (typeof curQ === 'function') ? curQ() : null;
+  if(!q){ showToast(t('fb_no_q')); return; }
+  var mc = document.getElementById('modal-content');
+  if(!mc) return;
+
+  var code = String(q.question_id || q.id || '').trim();
+  var meta = [];
+  if(q.part) meta.push('Part ' + String(q.part).replace(/^Part\s*/i, ''));
+  if(q.topic) meta.push(q.topic);
+  var excerpt = String(q.text || '');
+  if(excerpt.length > 140) excerpt = excerpt.slice(0, 140) + '…';
+
+  mc.innerHTML =
+    '<div style="padding:.25rem 0;">' +
+      '<div style="font-size:18px;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;">💬 ' + _escHtml(t('fb_title')) + '</div>' +
+      '<div style="font-size:13.5px;line-height:1.7;color:var(--text-mid);margin-bottom:14px;">' + _escHtml(t('fb_intro')) + '</div>' +
+      '<div style="background:#f6f8f8;border:1px solid var(--border-clr);border-radius:10px;padding:10px 12px;margin-bottom:14px;">' +
+        '<div style="font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">' + _escHtml(t('fb_qlabel')) + '</div>' +
+        '<div style="font-family:ui-monospace,Consolas,monospace;font-size:14px;font-weight:700;color:var(--text-main);letter-spacing:.02em;">' + _escHtml(code || '—') + '</div>' +
+        (meta.length ? '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">' + _escHtml(meta.join(' · ')) + '</div>' : '') +
+        (excerpt ? '<div style="font-size:12.5px;line-height:1.6;color:var(--text-mid);margin-top:6px;">' + _escHtml(excerpt) + '</div>' : '') +
+      '</div>' +
+      '<textarea class="ann-input" id="fb-text" maxlength="2000" placeholder="' + _escHtml(t('fb_ph')) + '" style="min-height:110px;"></textarea>' +
+      '<div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:4px;" id="fb-count">0 / 2000</div>' +
+      '<div style="display:flex;gap:8px;margin-top:12px;">' +
+        '<button class="btn-ghost" style="flex:1;" onclick="closeModal()">' + _escHtml(t('fb_cancel')) + '</button>' +
+        '<button class="btn-navy" style="flex:1;background:var(--navy);color:#fff;border-color:var(--navy);" id="fb-send" onclick="submitQuestionFeedback()">' + _escHtml(t('fb_send')) + '</button>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('modal-bg').classList.add('open');
+  var ta = document.getElementById('fb-text');
+  if(ta){
+    ta.oninput = function(){
+      var el = document.getElementById('fb-count');
+      if(el) el.textContent = ta.value.length + ' / 2000';
+    };
+    try{ ta.focus(); }catch(e){}
+  }
+  FB_CTX = { code: code, qid: (q.question_id || q.id || null) };
+}
+
+var FB_CTX = null;
+
+async function submitQuestionFeedback(){
+  var ta = document.getElementById('fb-text');
+  var btn = document.getElementById('fb-send');
+  if(!ta || !FB_CTX) return;
+
+  var msg = String(ta.value || '').trim();
+  if(msg.length < 5){ showToast(t('fb_too_short')); try{ ta.focus(); }catch(e){} return; }
+  if(msg.length > 2000){ showToast(t('fb_too_long')); return; }
+
+  // 연타 방지
+  try{
+    var last = Number(localStorage.getItem('pe_fb_last') || 0);
+    if(last && (Date.now() - last) < FB_COOLDOWN_MS){ showToast(t('fb_cooldown')); return; }
+  }catch(e){}
+
+  if(btn){ btn.disabled = true; btn.textContent = t('fb_sending'); }
+
+  var ok = false;
+  try{
+    var res = await sb.functions.invoke('send-question-feedback', {
+      body: {
+        question_id: FB_CTX.qid,
+        message: msg,
+        lang: LANG,
+        page_url: (location && location.href) ? location.href : ''
+      }
+    });
+    if(!res.error && res.data && res.data.status === 'sent') ok = true;
+    else console.warn('question feedback failed:', res.error || res.data);
+  }catch(e){
+    console.warn('question feedback exception:', e);
+  }
+
+  if(!ok){
+    if(btn){ btn.disabled = false; btn.textContent = t('fb_send'); }
+    showToast(t('fb_failed'));
+    return;
+  }
+
+  try{ localStorage.setItem('pe_fb_last', String(Date.now())); }catch(e){}
+
+  var mc = document.getElementById('modal-content');
+  if(mc){
+    mc.innerHTML =
+      '<div style="text-align:center;padding:1rem 0 .25rem;">' +
+        '<div style="font-size:34px;line-height:1;margin-bottom:10px;">✅</div>' +
+        '<div style="font-size:18px;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;">' + _escHtml(t('fb_thanks_t')) + '</div>' +
+        '<div style="font-size:13.5px;line-height:1.7;color:var(--text-mid);margin-bottom:16px;">' + _escHtml(t('fb_thanks_b')) + '</div>' +
+        '<button class="btn-navy" style="width:100%;background:var(--navy);color:#fff;border-color:var(--navy);" onclick="closeModal()">' + _escHtml(t('close')) + '</button>' +
+      '</div>';
   }
 }
 
