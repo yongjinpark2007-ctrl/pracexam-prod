@@ -302,6 +302,23 @@ html,body{
   white-space:pre-wrap;word-break:break-word;font-family:inherit;color:#20343a;overflow-x:auto}
 .ap-card textarea{min-height:220px;font-size:calc(14px * var(--fs));line-height:1.7}
 .ap-count{font-size:11px;color:#8a999c;text-align:right;margin-top:4px}
+/* ── 치트시트(War Room) 제안 검토 — kind:'sheet' ────────────────────────────
+   본문이 HTML 이라 문항용(전부 escape)으로는 검토가 안 된다. 수정 반영본을 그대로 렌더하고
+   바뀐 곳만 노란 표시(<mark class="ap-mk">)로 짚어 준다. */
+.ap-sheet{margin:12px 0;border:1px solid #cfdadb;border-radius:10px;background:#fff;padding:14px}
+.ap-sheet-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ap-sheet-title{font-size:calc(16px * var(--fs));font-weight:700;color:#20343a}
+.ap-sheet .wr-body{max-height:none}
+mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;border-radius:3px}
+.ap-mk-legend{font-size:11.5px;color:#8a999c;margin-bottom:8px}
+/* 구간 대조 — 실제 보이는 모습과 HTML 코드를 함께 본다 */
+.ap-col .ap-rendered{padding:10px;font-size:calc(13.5px * var(--fs));line-height:1.7;color:#20343a}
+.ap-col .ap-rendered strong,.ap-col .ap-rendered b{color:#20343a;font-weight:700}
+.ap-code{border-top:1px dashed #dbe4e5}
+.ap-code summary{cursor:pointer;font-size:11px;color:#8a999c;padding:5px 10px;list-style:revert}
+.ap-note{font-size:12px;color:#8a6a2f;background:#fffbf0;border:1px solid #f0e2bd;
+  border-radius:8px;padding:7px 10px;margin-top:8px;line-height:1.6}
+.ap-reason{font-size:12.5px;color:#5b6b6e;line-height:1.7;margin-top:8px;white-space:pre-wrap}
 .ap-paste{padding:16px}
 .ap-paste textarea{width:100%;min-height:340px;font:inherit;font-size:13px;line-height:1.6;
   padding:12px;border:1px solid #cfdadb;border-radius:10px;resize:vertical}
@@ -679,6 +696,7 @@ async function loadApprovals(){
     topic: it.topic || '',
     text:  it.title || '',
     _search: [it.id, it.title, it.why, it.note,
+              it.sheet && it.sheet.title_ko, it.sheet && it.sheet.title_en,
               JSON.stringify(it.changes || []),
               JSON.stringify(it.contexts || [])].filter(Boolean).join(' '),
     is_ap: true,
@@ -730,16 +748,45 @@ function apContext(cx){
   </div>`;
 }
 
+/* War Room 치트시트 원문 카드 — 수정 반영본을 실제 화면 모습 그대로 보여준다.
+   (본문이 HTML 이라 문항용 escape 렌더로는 표·굵은 글씨가 다 깨져 검토가 불가능하다) */
+function apSheet(sh){
+  if (!sh || !sh.bodies) return '';
+  const lang  = S.lang === 'en' ? 'en' : 'ko';
+  const body  = sh.bodies['body_' + lang] || '';
+  const title = lang === 'en' ? (sh.title_en || sh.title_ko || '') : (sh.title_ko || sh.title_en || '');
+  return `<div class="ap-sheet">
+    <div class="ap-sheet-head">
+      <span class="q-badge">${esc(sh.code || '')}</span>
+      ${sh.domain ? `<span class="q-badge q-badge-gray">${esc(sh.domain)}</span>` : ''}
+      <span class="lang-toggle" style="margin-left:auto">
+        <button data-lang="ko" class="${lang === 'ko' ? 'active' : ''}">KO</button>
+        <button data-lang="en" class="${lang === 'en' ? 'active' : ''}">EN</button>
+      </span>
+    </div>
+    <div class="ap-sheet-title">${esc(title)}</div>
+    <div class="ap-mk-legend">아래는 <b>수정을 반영한 모습</b>입니다. 바뀐 곳은 <mark class="ap-mk">노란 표시</mark>입니다.</div>
+    <div class="wr-body">${body || '<span style="color:#a8b3b6">(본문 없음)</span>'}</div>
+  </div>`;
+}
+
 function apDiff(c){
   const hasBefore = Object.prototype.hasOwnProperty.call(c, 'before');
+  /* c.html === true 면 값이 HTML 조각이다(치트시트). 보이는 모습 + 코드를 함께 보여준다. */
+  const cell = (v) => c.html
+    ? `<div class="ap-rendered">${v}</div>
+       <details class="ap-code"><summary>HTML 코드 보기</summary><pre>${esc(v)}</pre></details>`
+    : `<pre>${esc(apVal(v))}</pre>`;
   return `<div class="ap-diff">
     <div class="ap-h">${esc(c.field || '변경')}</div>
     <div class="ap-cols">
       ${hasBefore ? `<div class="ap-col ap-before"><div class="ap-col-h">기존</div>
-        <pre>${esc(apVal(c.before))}</pre></div>` : ''}
+        ${cell(c.before)}</div>` : ''}
       <div class="ap-col ap-after"><div class="ap-col-h">제안</div>
-        <pre>${esc(apVal(c.after))}</pre></div>
+        ${cell(c.after)}</div>
     </div>
+    ${c.note   ? `<div class="ap-note">${esc(c.note)}</div>` : ''}
+    ${c.reason ? `<div class="ap-reason">${esc(c.reason)}</div>` : ''}
   </div>`;
 }
 
@@ -1132,6 +1179,7 @@ function renderDetail(){
         <button class="btn back-btn" id="btnBack" style="margin-left:auto;padding:7px 13px;">← 목록</button>
       </div>
       <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:10px;">${esc(it.title || '')}</div>
+      ${it.kind === 'sheet' ? apSheet(it.sheet) : ''}
       ${apContext(it.context)}
       ${(it.contexts || []).map(apContext).join('')}
       ${it.why ? `<div class="ap-why"><div class="ap-h">제안 이유</div>
