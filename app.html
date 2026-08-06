@@ -8778,32 +8778,82 @@ function _wrPostProcess(root){
     t.parentNode.insertBefore(w,t); w.appendChild(t);
   });
 }
-// 문제→딥링크 도착 시: 문제 속 Form 번호가 제목에 들어간 다른 치트시트를 '관련' 칩으로 제안 (2026-07-30)
-// (COP 매핑 토픽이 광범위 토픽일 때 — 예: C1013-003의 Form 3520 → C1902 상세 토픽 안내)
+// ── 문제→딥링크 도착 시 '관련 치트시트' 칩 (2026-08-06 전면 개편) ──────────────
+// 옛 방식은 문항 속 "Form ####" 번호만 신호로 썼다. 실측 결과 문항의 47.8%가 번호를 아예 안 담고
+// 있어 칩이 뜨는 문항은 27.5%뿐이었다(C1057-018 처럼 주제가 명백히 겹쳐도 0개 — 사용자 지적).
+// 새 방식(사용자 지시): **문항 topic명(x3) → 보기(x2)** 의 용어로 War Room 제목을 검색한다.
+//   · 용어 점수 = 문제은행 5,392문항 기준 희소도 — 1% 미만 3점 · 5% 미만 2점 · 22% 이하 1점
+//     (22% 넘게 나오는 용어는 변별력이 없어 아예 제외. the/tax/irs/may/form 등 129개)
+//   · 여러 제목이 공유하는 흔한 용어(insurance·planning·contributions)는 √(그 용어를 쓴 제목 수)로
+//     나눠 눌러 준다 — 안 그러면 그런 단어 하나로 무관한 토픽이 상위를 차지한다(실측)
+//   · 양식 번호(8606 등)도 제목 토큰이라 **옛 Form 번호 기능은 그대로 흡수**된다
+// 가중치 표는 스크래치의 rel_proto*.py 로 산출했다(문제은행 전수 집계).
+var WR_RELW3='1023 1023-ez 1031 1033 1040-nr 1099-a 1127 12153 2000 267 3115 3520 448 481 4835 4975 529 5500-ez 6013 6015 6060 6103 6404 706 7216 7345 751 7525 8300 8379 8453 8606 8832 8879 8919 8948 8962 982 abated accrued adoption adp advocate aet alimony amt aotc appearance appraisals assisting authoritative backup badges barter book-tax bylaws cancelled capitalization casualty cheat clean clergy cnc cogs comingling competence completing contingent corpus correspondence cp-2000 cp2000 crop csed currency cycle dealings dental dependency disability disaster-area disreputable dissolution dni dob docs drd dsue e-services eitc elect-out employing energy entries espp evasion expertise findings firpta first-time fishermen flow-through foia fraudulent freedom frivolous fta ftc furnishing gambling generation-skipping gift-splitting gifted gst hce hierarchy hobby homebuyer housing hsa inactive incompetence incorporation infractions inheritance inherited injured innocent investigate investor involuntary kiddie learning like-kind livestock llcs lump-sum m-1 m-2 m-3 mandate manual marital marriage math military minor minutes miscalculations mixed-use moving mtc naics netting niit non-authoritative non-business non-cash non-discrimination non-qualified nonbusiness notification nqso nra opt-out passport perjury personnel planning plr portability post-filing prepaid privacy privilege proofing ptp qcd qjv railroad reactivation recalculation recharacterization reconsideration record-keeping redemptions refunded regs reinstatement rejected reliance rendered renewal research resolution responsibilities returning rmd rollovers royalties ruling rulings salaries seizure selection self-rentals software solicitation spt start-up summons supervisory tas tfrp theft timeliness trader treaties ubti uncollected unconscionable unearned unicap unified virtual visas willfulness withdrawing witness worldwide 가구규모 가구소득 가사 가상자산 가속인식 가족고용 가축 간행물 감가상각환수 감독책임 감사통지 감정서 개인비용 개인사업자 개인재산 개인정보 갱신주기 건강보험료 건강저축계좌 건설적 경비기록 계속교육 고객정보 고용기록 고용주주식 공공지지 공동소유 과세유산 과소납부 광고 구분기재 구분보고 군인 권위 권유 근로소득세액공제 금지거래 금지거래와 기록보존 기초가액 기타부양가족 기타소득 납부기한 납부능력 납부액과 내부세입매뉴얼 농가 농부 농장 누적유보초과세 대기업 대납 대리서명 대손금 대여금 대차대조표 대체최저세 데이터 도난 도박 돌봄 동시적 동업기업 동종자산 동종자산교환 등기 딸린 렌탈 로열티와 롤오버 매출원가 면세단체 면세지위 무고 무과세 무능 문서와 미성년 미수령 미지급 미징수 바터 배당과 배당능력 배우자공제 배제와 백업원천징수 번호의 벌금과 벌금의 법인설립 변경절차 별도보고 별장 보수의 보안 보증금 보호관 보호와 부과시효 부과제척기간 부동산세 부여한 분류코드 분배와 분할납부 분할납부약정 분할매각 불로소득 불명예 불복 불복심판 불합리보수 비거주자 비공개 비관련 비권위 비사업 비사업용 비자발적 비적격 비현금 사기의 사법절차는 사안의 사업과세소득 사용인 상가 생년월일 생명보험 생애주기 서면결정 서면조사 서면조언 서명권한 서신 서열 선수임대료 선정 선택권 성공보수 성직자 세계 세금혜택원칙 세금효과 세대생략이전세 세무규정 세무분류 세무속성 세무의 세액공제의 소득보고 소멸시효 소프트웨어 소환장 손익계산서 수동손실 수동활동손실 수선비 수준과 수탁관계 수학오류 순손익 순영업손실 순투자소득세 시력 시리즈 식대 식별과 신고대리인 신고요건 신고의무와 신고포지션 신분증 신원도용 신탁기금 실무의 실사 실사의무 심리 아동 아동돌봄 악성채무 알리머니 압류 압수 양도차익 어부 여권 역량 연대책임 연장동의 영주권 오계산 완성 외국납부세액공제 외국신탁 외국증여 요청과 위계 위계와 위임장과 위자료 위증벌 위험부담 유산설계 유산세 유치권 유형과 은퇴계좌 은퇴계획 은퇴저축 은퇴플랜 의사록 의제배당 의제이자 이사비용 이사회 이월공제 이자비용 이중기초 이해상충 이혼 인식과 인식규칙 일반사업세액공제 일시분배 임대비용 임직원 입양 입증책임 자기임대 자녀세액공제 자료제출 자본손익 자본화 자산처분 자산평가 작물보험 잠재적 장기요양 재계산 재난지역 재무건전성 재무기준 재무서류 재산분할 재심 재조정 재해지역 재활성화 적격사업소득 적격플랜 적법절차 적시성 전문성 전문인 전직 절세와 절차의 접대비 정관 정보보고와 정보신고 정보자유법 정의와 제공자 제공할 제출물 조기분배 조력 조사결과에 조세조약 조세회피 종결합의 주거지 주세 주식기초 주식배당 주식분할 주식소각 주식옵션 주택담보 주택배제 주택수당 중간예납 중개계좌기록 즉시비용처리 증여분할 증여자산 증인 지급불능 지방세 지원서류 징수불능 징수시효 징표 차별금지 창업비 채무면제소득 채무면제이익 채무탕감 책임정산제 철도연금 청산과 청정에너지 초과기여와 초기회의 총매출 총유산 총정리 최저세액공제 최저한세공제 최종신고 최초주택구입 추가세와 추정세와 출장 취미 취소수표 치과 치트시트 카드명세 크레딧의 타이밍 타협제안 탈세 통과과세 통산 통신 통제그룹 통지와 통합공제 퇴직계획 퇴직소득 퇴직연금 퇴직플랜 투자자 트레이더 특권 특별공제 특수관계인 특수관계자 특수아동 파산에서의 판결의 판례법 판정과 패스스루 페널티 평생학습 폐쇄회사 포터빌리티 프리미엄 플로우스루 피상속인 피해 필수최소분배 학자금이자 핫에셋 항목별공제와 항변 항의서 해산 해외계좌 해외근로소득 해외소득 해외정보 행정소환 협상 협약 혼용 혼용주택 혼인상태 홈오피스 환급가능 환급과 환급수표 환급의 회계기간 회계방법과 회계소득 회수벌금';
+var WR_RELW2='1040-x 1041 1099-nec 121 1245 1250 179 2553 2848 351 709 843 8821 8938 990 abatement abatements aca access accounting accumulated advertising advice allowance alternative amended analysis appeal appeals areas assistance at-risk attribute audit audits avoidance bad bankruptcy bonus boot brokerage burden caf cancellation capitalize card cards carryovers cdp changing charitable charity children closely closing cod codes collectible commercial communications comparison compliance compromise conduct conference conflict consequences consideration constitutes constructive contemporaneous continue continuing contractor controlled conversions converted copies copy corrections criminal criteria ctc currently data death decedent decisions deductibility deficiency definition deposit deposits diligence disaster discharge disclose disclosure divorce duplicate duties e-file education elements employed enrollment entities essentials estimated exchange exemptions expensing family farm farmers fbar fees feie fiduciary fix former fraud function furnish gift gifts goods granted green groups health hot household identification identifying identity initial insolvency installment insurance internal interpretation inventory investigation iras issuance itemized judicial k-1 keeping length letter levy life lifetime liquidation liquidations local long-term maintain meals medical medicare meeting minimum negotiation nftl nol non-taxable obbba offer officer omission operating paper parties pass-through passive pensions photo poa potential practitioner premium preparation prior-year private proceedings professional program prohibited prompt proof proprietorships protest provider ptc ptin qbi qualification qualifications recapture reconciliation recovery refundable regulations repair repayment representing requesting residency residential respect retirement revocation room roth salary salt sanctions savings scope self-employed series settlement sheet signing size splits sstb sstbs submission submissions subsequent substantiation substantive supporting systems tax-exempt tax-free taxability third-party traditional transcript transcripts travel treasury underpayment vacation vehicle verification versus worker 가산세 감면 감사 거부 거주자 검증 경비 계정 고용세 공개 공제의 교육 교환 구매 구제 근로자 금융 기능 기부 기부금 기여 기준액 기타 농업 대리권 대리인의 대응 대출 독립계약자 등록 메디케어세 면책 목록 반환 발급 벌금 벌칙 변경 별거 보너스 보험료 복원 부상 부양가족 부채 분배금 분석 비거주 비자 사망 사망자 사본 사업상 사업용 사업체 사회보장 사회보장세 상계 상속 상환 설립 세금신고 세액공제 세율 소득의 수리 수수료 수정신고 시간 시스템 시효 식별번호 신고기한 신고와 신고자 신고지위 신속 신탁 실무자 양식 연금 연방세 영업소득 예치 외국인 외부기초 용역 운영 원금 위반 위임장 유산 은행 의료 의무와 의존 이자소득 인출 일반소득 임대소득 자금 자녀의 자선 자선기부 자영업세 자영업자 장부 장소 장애 재고 재산세 재산의 재해 쟁점 전년도 전자신고 전통 정보보고 정산 정정 제외액 제재 제한적 조사 종료 종류 종이 주거 주택 준비자 중복 증여 증여세 지급된 지분의 지원 지정 진술서 차량 채무 책임 철회 청산 추적 추정세 출석 출자 출처 취득가액 취소 크레딧 테스트 특례 특수 파산 표준공제 프로그램 플랜 필수 한도와 합의 항목별 항목의 해결 해석 해외 허위 형사 형태 환급청구 환수 활용 회계방법 회의 회피 효과 효력';
+var WR_RELW1='1040 1099 230 ability account accounts activity additional adjustments administrative agent agree agreement agreements allocation annual applicable application applying assessment asset assets attorney authority authorization balance ban bank benefit capital care cash change changes character child circular classification client collection collections computation consent contribution contributions corp corporate corporations cost court covered credit credits day deadline deadlines debt debts dependent dependents depreciation disposition dispositions distinctions distribution distributions dividends documentation documents due early earned earnings effects efin ein election elections electronic eligibility employee employees employer employment entity ero error estate estates examination excess excluded exclusion exclusions exempt expense expenses extension extensions fee final financial foreign formation fund funds having held home info information interest intl investment ira ird irm iso itin joint jointly law legal levels liability lien limitations limited llc loan loans loss losses material methods mfj misc nec needs net notice notices number numbers obligations office offsets opr ordinary org outside owners pal partner partnership partnerships party penalties penalty personal pin place plan plans positions power preparer prior procedures process profits property provisions public publications purchased qualified qualify quick rar real reasonable reasons receipt receipts recognition records reduction refund refunds relief rental rentals reporting representation representative request requested requests results retain revenue review right sale sales section security self-employment separately service services shareholder shareholders signature signatures simple social sold sole source sources special spouse standard standards stated statement statements statute stock student support taxes termination timing transaction transactions transfer treatment trust trusts type types unrelated values vision wages war withholding written 가능성 가능한 가족 감가상각 감소 거래 검토 계좌 고객 고용 고용주 고의 과세연도 권리 권한 규칙 금지 급여 기간 기록 기초 기한 납부 납세자가 납세자의 누락 대가 대리 대리인 동산 동의 매각 면제 목적 문서 미국 배당 배분 배우자 배제 범위 법인 법적 보관 보수 부과 부동산 부부 분류 분배 비과세 비교 비용 사업 사유 상태 상한 서류 서면 서명 서비스 선택 성격 세금 세무 세법 손실 수령 승인 신청 실질적 연간 연장 영향 요소 요청 원천 원천징수 유지 유형 의무 이월 이자 이전 인식 임금 임대 입증 자격 자료 자산 작성 잔액 재산 적격 전자 전환 절차 접근 정리 정보 정의 제공 제외 조정 주식 주주 증빙 지분 지침 직원 징수 차감 처분 청구 체계 총소득 추가 취득 통지 투자 파트너 파트너십 판정 포인트 한계 항목 행위 현금 환급 활동';
+var _WR_RELW=null, _WR_RELDF=null;
+function _wrRelW(){
+  if(_WR_RELW) return _WR_RELW;
+  _WR_RELW={};
+  [[3,WR_RELW3],[2,WR_RELW2],[1,WR_RELW1]].forEach(function(p){
+    p[1].split(' ').forEach(function(w){ if(w) _WR_RELW[w]=p[0]; });
+  });
+  return _WR_RELW;
+}
+function _wrRelToks(s){
+  var out={}, m, str=String(s||''), low=str.toLowerCase();
+  var reEn=/[a-z][a-z0-9\-]{2,}/g, reNum=/\b\d{3,5}(?:-[a-z]{1,4})?\b/g, reKo=/[\uAC00-\uD7A3]{2,}/g;
+  while((m=reEn.exec(low))!==null) out[m[0]]=1;
+  while((m=reNum.exec(low))!==null) out[m[0]]=1;
+  while((m=reKo.exec(str))!==null) out[m[0]]=1;
+  return Object.keys(out);
+}
+function _wrRelDF(){                       // 제목 370개 기준 용어 공유도 (1회 계산 후 캐시)
+  if(_WR_RELDF) return _WR_RELDF;
+  _WR_RELDF={};
+  (WR.rows||[]).forEach(function(r){
+    _wrRelToks((r.title_en||'')+' '+(r.title_ko||'')).forEach(function(t){
+      _WR_RELDF[t]=(_WR_RELDF[t]||0)+1;
+    });
+  });
+  return _WR_RELDF;
+}
+function _wrRelHit(b,t){                   // 단·복수 흡수(deduction↔deductions)
+  if(b.indexOf(t)>=0) return true;
+  if(t.length>4 && t.charAt(t.length-1)==='s' && b.indexOf(t.slice(0,-1))>=0) return true;
+  if(t.length>3 && b.indexOf(t+'s')>=0) return true;
+  return false;
+}
 function _wrRenderRelated(content, code){
   var sig=window._wrQSignal;
   if(!sig || sig.origin!==code || !WR.rows || !WR.rows.length) return;
+  var W=_wrRelW(), DF=_wrRelDF();
+  var lo=String(sig.topic||'').toLowerCase(), op=String(sig.opts||'').toLowerCase();
+  if(!lo && !op) return;
   var o=WR.rows.find(function(r){return r.outline_code===code;});
-  var ot=o?((o.title_en||'')+' '+(o.title_ko||'')):'';
-  var oPart=o?(o.part||1):0;
-  // 도착 토픽 제목이 이미 다루는 번호는 제외, topic명 번호(prio)가 앞
-  var ordered=(sig.prio||[]).concat(sig.rest||[]).filter(function(k){ return ot.indexOf(k)<0; });
-  if(!ordered.length) return;
-  function tHas(r,k){ return ((r.title_en||'')+' '+(r.title_ko||'')).indexOf(k)>=0; }
-  // 선정: 번호별 라운드로빈(각 번호 최대 2개, 우선순위 번호부터), 총 5개, 같은 Part 우선 — 반복 칩 방지
-  var picked=[], used={};
-  for(var pass=0; pass<2 && picked.length<5; pass++){
-    ordered.forEach(function(k){
-      if(picked.length>=5) return;
-      var cand=WR.rows.filter(function(r){ return r.outline_code!==code && !used[r.outline_code] && tHas(r,k); });
-      cand.sort(function(a,b){ return ((a.part===oPart)?0:1)-((b.part===oPart)?0:1); });
-      if(cand[0]){ used[cand[0].outline_code]=1; picked.push(cand[0]); }
+  var oPart=o?(o.part||1):0, scored=[];
+  WR.rows.forEach(function(r){
+    if(r.outline_code===code) return;
+    var sc=0;
+    _wrRelToks((r.title_en||'')+' '+(r.title_ko||'')).forEach(function(t){
+      var w=W[t]; if(!w) return;
+      var mult=_wrRelHit(lo,t)?3:(_wrRelHit(op,t)?2:0);
+      if(!mult) return;
+      sc+=w*mult/Math.sqrt(DF[t]||1);
     });
-  }
-  if(!picked.length) return;
-  var lang=_wrLang(), html='<div class="wr-related"><span class="wr-rel-lbl">📌 '+(lang==='en'?'Related to this question':'이 문제와 관련')+'</span>';
-  picked.forEach(function(r){
-    html+='<button class="wr-rel-chip" onclick="_wrGo('+(r.part||1)+',\''+r.outline_code+'\')"><span class="pb">P'+(r.part||1)+'</span>'+_wrEsc(_wrT(r))+(r.locked?' 🔒':'')+'</button>';
+    if(sc>=1.3) scored.push({r:r, sc:sc});
+  });
+  if(!scored.length) return;
+  scored.sort(function(a,b){
+    if(b.sc!==a.sc) return b.sc-a.sc;
+    var ap=((a.r.part||1)===oPart)?0:1, bp=((b.r.part||1)===oPart)?0:1;
+    if(ap!==bp) return ap-bp;
+    return String(a.r.outline_code).localeCompare(String(b.r.outline_code));
+  });
+  var lang=_wrLang(), html='<div class="wr-related"><span class="wr-rel-lbl">\uD83D\uDCCC '+(lang==='en'?'Related to this question':'\uC774 \uBB38\uC81C\uC640 \uAD00\uB828')+'</span>';
+  scored.slice(0,5).forEach(function(p){
+    var r=p.r;
+    html+='<button class="wr-rel-chip" onclick="_wrGo('+(r.part||1)+',\''+r.outline_code+'\')"><span class="pb">P'+(r.part||1)+'</span>'+_wrEsc(_wrT(r))+(r.locked?' \uD83D\uDD12':'')+'</button>';
   });
   html+='</div>';
   var t=content.querySelector('.wr-title');
@@ -8818,20 +8868,13 @@ function _wrNbspJoin(html){
 function openWarRoomTopic(code, q){
   code=((code||'')+'').trim(); if(!code) return;
   window._wrPendingCode=code;
-  // 문제 텍스트에서 Form 번호 추출 → 도착 토픽에서 '관련 치트시트' 칩 제안용 (예: C1013-003의 Form 3520 → C1902)
-  // 우선순위: 문제의 topic명에 등장한 번호(prio) > 본문·해설의 번호(rest) — 2026-07-30 개선
+  // 문항의 topic명·보기를 '관련 치트시트' 검색어로 넘긴다 (2026-08-06 개편 — 아래 _wrRenderRelated 참조)
   window._wrQSignal=null;
   if(q){
-    function _ex(s){
-      var out=[], m, re=/\bForm\s*([0-9]{3,5}(?:-[A-Za-z]{1,4})?)\b/gi;
-      s=(s==null?'':String(s));
-      while((m=re.exec(s))!==null){ if(m[1].length>=3 && out.indexOf(m[1])<0) out.push(m[1]); }
-      return out;
-    }
-    var prio=_ex(q.topic);
-    var rest=_ex([q.text,q.textEn,q.explanation,q.explanationEn,q.examTip,q.examTipEn].join(' '))
-      .filter(function(k){ return prio.indexOf(k)<0; });
-    if(prio.length||rest.length) window._wrQSignal={origin:code, prio:prio, rest:rest};
+    var _o=q.options||[];
+    if(typeof _o==='string'){ try{ _o=JSON.parse(_o); }catch(e){ _o=[_o]; } }
+    if(!Array.isArray(_o)) _o=[];
+    window._wrQSignal={origin:code, topic:(q.topic||''), opts:_o.join(' ')};
   }
   // 진행 중 학습 세션이 있으면 복귀 배지를 '문제로 돌아가기' 모드로
   window._wrFromQuiz = !!(S.quizQueue && S.quizQueue.length>0 && S.quizIdx<S.quizQueue.length);
