@@ -312,7 +312,10 @@ html,body{
 mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;border-radius:3px}
 .ap-mk-legend{font-size:11.5px;color:#8a999c;margin-bottom:8px}
 /* 구간 대조 — 실제 보이는 모습과 HTML 코드를 함께 본다 */
-.ap-col .ap-rendered{padding:10px;font-size:calc(13.5px * var(--fs));line-height:1.7;color:#20343a}
+/* 조각이 균형화돼도 표·긴 코드가 넘칠 수 있다 — 카드 안에서만 스크롤되게 가둔다 */
+.ap-col .ap-rendered{padding:10px;font-size:calc(13.5px * var(--fs));line-height:1.7;color:#20343a;overflow-x:auto;max-width:100%;min-width:0}
+.ap-col .ap-rendered table{max-width:100%;border-collapse:collapse}
+.ap-col .ap-rendered img{max-width:100%;height:auto}
 .ap-col .ap-rendered strong,.ap-col .ap-rendered b{color:#20343a;font-weight:700}
 .ap-code{border-top:1px dashed #dbe4e5}
 .ap-code summary{cursor:pointer;font-size:11px;color:#8a999c;padding:5px 10px;list-style:revert}
@@ -770,11 +773,22 @@ function apSheet(sh){
   </div>`;
 }
 
+/* 🔴 2026-08-06 — 치트시트 제안의 before/after 는 본문에서 잘라낸 **조각**이라 태그가
+   짝이 안 맞는 경우가 흔하다(예: '<div class="ex"><div class="ex-label">Example</div><p>Gabriela').
+   그대로 주입하면 열린 <div> 가 카드 밖까지 삼켜 화면 전체가 무너진다
+   (사용자 신고: "화면이 망가져서 잘 안보이고"). 떼어 놓은 노드에 한 번 넣었다 빼면
+   브라우저 파서가 열린 태그를 닫고 고아 닫힘태그를 버려 **균형 잡힌 HTML** 이 된다. */
+function apBalance(v){
+  const d = document.createElement('div');
+  d.innerHTML = (v == null ? '' : String(v));
+  return d.innerHTML;
+}
 function apDiff(c){
   const hasBefore = Object.prototype.hasOwnProperty.call(c, 'before');
-  /* c.html === true 면 값이 HTML 조각이다(치트시트). 보이는 모습 + 코드를 함께 보여준다. */
+  /* c.html === true 면 값이 HTML 조각이다(치트시트). 보이는 모습 + 코드를 함께 보여준다.
+     코드 보기에는 원본 그대로를 쓴다 — 무엇을 치환할지 확인해야 하므로 균형화하면 안 된다. */
   const cell = (v) => c.html
-    ? `<div class="ap-rendered">${v}</div>
+    ? `<div class="ap-rendered">${apBalance(v)}</div>
        <details class="ap-code"><summary>HTML 코드 보기</summary><pre>${esc(v)}</pre></details>`
     : `<pre>${esc(apVal(v))}</pre>`;
   return `<div class="ap-diff">
