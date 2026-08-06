@@ -1790,7 +1790,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
     <button id="atab-unconfirmed" class="admin-tab" onclick="adminTab('unconfirmed')">미확인 가입자</button>
     <button id="atab-qc" class="admin-tab" onclick="adminTab('qc')">문제 검토</button>
-    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')">Daily 문제</button>
+    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')">Pop Quiz 문제</button>
   </div>
 
   <!-- ═══ 공지 관리 ═══ -->
@@ -1914,10 +1914,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     </div>
   </div>
 
-  <!-- ═══ Daily 문제 지정 (daily.html 노출용) ═══ -->
+  <!-- ═══ Pop Quiz 문제 지정 (popquiz.html 노출용) ═══ -->
   <div id="admin-panel-daily" style="display:none;">
     <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
-      <strong>Daily Quiz</strong> (<a href="daily.html" target="_blank" style="color:var(--teal);">daily.html</a>)에 노출할 문제를 여기서 지정합니다.
+      <strong>Pop Quiz</strong> (<a href="popquiz.html" target="_blank" style="color:var(--teal);">popquiz.html</a>)에 노출할 문제를 여기서 지정합니다.
       지정 즉시 반영되며 <strong>배포는 필요 없습니다</strong>.
     </div>
 
@@ -4909,7 +4909,7 @@ function adminTab(name){
   else if(name === 'daily') renderDailyAdmin();
 }
 
-// ── 관리자: Daily Quiz 문제 지정 (daily.html 노출 · 2026-07-24) ──
+// ── 관리자: Pop Quiz 문제 지정 (popquiz.html 노출 · 2026-07-24) ──
 //   · daily_quiz 테이블에 insert (RLS: is_admin()만 허용) → get_daily_quiz() 최신 1행 노출
 //   · daily_quiz_setup.sql 미실행 시 조회/지정이 실패하나, 안내만 뜨고 앱은 정상
 function _dailyMsg(txt, ok){
@@ -5091,14 +5091,14 @@ async function adminDailySet(){
     if(!r || !r.question_id){ _dailyMsg('해당 question_id가 존재하지 않습니다', false); return; }
     var ins = await sb.from('daily_quiz').insert({ question_id: r.question_id, note: note || null });
     if(ins.error) throw ins.error;
-    _dailyMsg('✓ 지정 완료 — daily.html에 반영되었습니다', true);
+    _dailyMsg('✓ 지정 완료 — popquiz.html에 반영되었습니다', true);
     document.getElementById('daily-id-input').value = '';
     document.getElementById('daily-note-input').value = '';
     var box = document.getElementById('daily-preview'); if(box) box.style.display = 'none';
     await renderDailyAdmin();
 
     // 체크했으면 이어서 알림 메일. 지정 자체는 이미 끝났으므로,
-    // 메일이 실패해도 daily.html 반영은 그대로 유지된다.
+    // 메일이 실패해도 popquiz.html 반영은 그대로 유지된다.
     var chk = document.getElementById('daily-mail-chk');
     if(chk && chk.checked){
       chk.checked = false;              // 다음 지정 때 실수로 또 나가지 않게 즉시 해제
