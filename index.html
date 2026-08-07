@@ -701,7 +701,9 @@ section{padding:88px 0;}
   stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto; margin-top:2px;}
 
 /* ── CTA ───────────────────────────────────────────────── */
-.cta{text-align:center;}
+/* 위쪽 요금제 섹션과 배경이 같아 88+88=176px 이 통째로 빈 공간처럼 보였다.
+   마지막 CTA 의 위 여백만 없애 한 섹션 간격(88px)으로 줄임 — 2026-08-06 */
+.cta{text-align:center; padding-top:0;}
 .cta h2{margin-bottom:14px;}
 .cta p{max-width:520px; margin:0 auto 28px;}
 .cta-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
@@ -1264,7 +1266,10 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 <!-- ═══ FINAL CTA ═══ -->
 <section class="cta">
   <div class="wrap">
-    <h2><span class="ko">EA 시험을 실전처럼 완벽히 준비하세요</span><span class="en">Everything you need for complete EA exam preparation.</span></h2>
+    <h2>
+      <span class="ko">Ready to Master the Enrolled Agent Exam?</span>
+      <span class="en">Ready to Master the Enrolled Agent Exam?</span>
+    </h2>
     <p><span class="ko">지금 무료로 가입하고 Part 1부터 바로 시작해보세요.</span>
        <span class="en">Sign up free and start with Part 1 today.</span></p>
     <div class="cta-actions">
