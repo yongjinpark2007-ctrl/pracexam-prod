@@ -723,8 +723,9 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
   stroke-linecap:round; stroke-linejoin:round;}
 .social-link:hover{background:var(--navy-light); color:var(--navy);}
 .social-link:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
-/* 향후 YouTube·LinkedIn 확장용 빈 자리 — 공간만 확보(아이콘·링크 없음) */
-.social-slot{width:32px; height:32px; flex:0 0 auto;}
+/* 향후 YouTube·LinkedIn 확장용 자리 — 마크업 위치만 잡아두고 폭은 0.
+   (폭을 주면 보이지 않는 여백이 생겨 아이콘이 왼쪽으로 치우쳐 보인다 — 2026-08-06 수정) */
+.social-slot{display:none;}
 @media (max-width:640px){
   .footer-inner{justify-content:center; text-align:center;}
   .footer-meta{justify-content:center; gap:12px;}
@@ -1341,8 +1342,7 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       </div>
     </div>
     <p class="footer-legal">
-      <span class="ko">PracExam은 dxd investment group LLC(미국 캘리포니아 샌디에이고 카운티 등록)의 등록 가상 사업명(DBA)입니다.</span>
-      <span class="en">PracExam is a registered Fictitious Business Name (DBA) of dxd investment group LLC, San Diego County, California, USA.</span>
+      PracExam is a registered Fictitious Business Name (DBA) of dxd investment group LLC, San Diego County, California, USA.
     </p>
   </div>
 </footer>
