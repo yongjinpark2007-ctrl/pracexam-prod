@@ -324,6 +324,11 @@ html,body{
   white-space:pre-wrap;word-break:break-word;font-family:inherit;color:#20343a;overflow-x:auto}
 .ap-card textarea{min-height:220px;font-size:calc(14px * var(--fs));line-height:1.7}
 .ap-count{font-size:11px;color:#8a999c;text-align:right;margin-top:4px}
+/* 지난 회신에서 넘어온 글 — 그대로 두면 새 회신에 다시 실린다 */
+.ap-stale{margin-top:8px;padding:8px 10px;border:1px solid #E0A85A;border-radius:8px;
+  background:rgba(224,168,90,.12);font-size:12px;color:#7a5518;line-height:1.6;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ap-stale .btn{padding:4px 10px;font-size:11px;margin-left:auto;flex:none}
 /* ── 치트시트(War Room) 제안 검토 — kind:'sheet' ────────────────────────────
    본문이 HTML 이라 문항용(전부 escape)으로는 검토가 안 된다. 수정 반영본을 그대로 렌더하고
    바뀐 곳만 노란 표시(<mark class="ap-mk">)로 짚어 준다. */
@@ -1497,6 +1502,17 @@ function renderDetail(){
   }
 
   const ap = isAp();
+  /* 🔴 2026-08-07 — '지난 회신 글이 딸려 나가는' 문제.
+     판정을 묶음별로 기억하게 되면서, 이미 내보낸 묶음을 다시 검토하면 그때 적은 피드백 글이
+     칸에 그대로 남는다. 그 상태로 판정만 다시 누르면 **낡은 글이 새 회신에 그대로 실려 나간다**
+     (실측: 10건 전부에 지난 글이 붙어 나가 판정 의도를 읽기 어려웠다).
+     지우지는 않는다 — 다시 쓰려는 경우가 있으므로, 낡은 글임을 알리고 [비우기] 를 준다. */
+  let staleNote = false;
+  if (ap){
+    const b  = apCurBatch();
+    const fx = b && b.feedback ? b.feedback[r.question_id] : null;
+    staleNote = !!(fx && fx.feedback && b.exportedAt && fx.at && fx.at <= b.exportedAt);
+  }
   $('detail').innerHTML = mainHtml + `
     <div class="verdict-card${ap ? ' ap-card' : ''}">
       <div class="verdict-btns">
@@ -1507,6 +1523,9 @@ function renderDetail(){
       <textarea id="vnote" placeholder="${ap
         ? '피드백을 자유롭게 적으세요. 길이 제한 없습니다 — 다른 AI(Gemini 등)에게 받은 답변을 통째로 붙여넣어도 그대로 전달됩니다.'
         : '문제점·수정 지시를 적어두세요. 생성 파이프라인에서 이 메모를 보고 재작업합니다.'}">${esc(v.note)}</textarea>
+      ${ap && staleNote ? `<div class="ap-stale" id="apStale">
+        지난 회신에 적으신 글이 그대로 남아 있습니다 — 두면 이번 회신에도 함께 나갑니다.
+        <button class="btn" id="apClearNote">비우기</button></div>` : ''}
       ${ap ? '<div class="ap-count" id="apCount"></div>' : ''}
       <div class="verdict-foot">
         <button class="btn" id="btnPrev">← 이전</button>
@@ -1550,6 +1569,17 @@ function renderDetail(){
     }
   };
   $('vnote').addEventListener('input', () => { S.dirty = true; setSaveState('', ''); grow(); });
+  const clr = $('apClearNote');
+  if (clr) clr.addEventListener('click', () => {
+    const t = $('vnote');
+    if (t) t.value = '';
+    S.dirty = true;
+    const hint = $('apStale');
+    if (hint) hint.remove();
+    setSaveState('글을 비웠습니다 · 판정을 누르면 저장됩니다', '');
+    grow();
+    if (t) t.focus();
+  });
   grow();
 }
 
