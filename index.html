@@ -714,14 +714,36 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 .footer-links a:hover{color:var(--navy);}
 .footer-legal{width:100%; margin-top:14px; padding-top:14px; border-top:1px solid var(--border-clr); font-size:12px; line-height:1.7; color:var(--text-muted);}
 
-/* ── about ─────────────────────────────────────────────── */
-#about{background:var(--card-bg); border-top:1px solid var(--border-clr);}
-.about-card{max-width:720px; margin:0 auto; background:var(--page-bg); border:1px solid var(--border-clr); border-radius:var(--radius); padding:28px 32px;}
-.about-card p{color:var(--text-muted); font-size:14px; line-height:1.6; margin-bottom:14px;}
-.about-list{display:grid; grid-template-columns:auto 1fr; gap:8px 20px; margin-top:6px; font-size:13px;}
-.about-list dt{color:var(--text-muted); font-weight:600;}
-.about-list dd{color:var(--text-main);}
-@media (max-width:560px){ .about-card{padding:22px 20px;} .about-list{grid-template-columns:1fr; gap:2px 0;} .about-list dd{margin-bottom:10px;} }
+/* ── footer social (2026-08-06) ────────────────────────── */
+.footer-meta{display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+.footer-social{display:flex; align-items:center; gap:4px; padding-left:18px; border-left:1px solid var(--border-clr);}
+.social-link{display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;
+  border-radius:8px; color:var(--text-muted); transition:background .18s, color .18s;}
+.social-link svg{width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2;
+  stroke-linecap:round; stroke-linejoin:round;}
+.social-link:hover{background:var(--navy-light); color:var(--navy);}
+.social-link:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
+/* 향후 YouTube·LinkedIn 확장용 빈 자리 — 공간만 확보(아이콘·링크 없음) */
+.social-slot{width:32px; height:32px; flex:0 0 auto;}
+@media (max-width:640px){
+  .footer-inner{justify-content:center; text-align:center;}
+  .footer-meta{justify-content:center; gap:12px;}
+  .footer-links{flex-wrap:wrap; justify-content:center; gap:12px 18px;}
+  .footer-social{padding-left:0; border-left:none;}
+}
+
+/* ── about (사업자 정보 고지용 콜로폰 — 강조 최소화 2026-08-06) ── */
+#about{padding:28px 0; background:var(--card-bg); border-top:1px solid var(--border-clr);}
+.about-strip{max-width:840px; margin:0 auto; text-align:center; color:var(--text-muted);}
+.about-strip h2{font-size:13px; font-weight:700; line-height:1.5; margin:0 0 7px; color:var(--text-muted); letter-spacing:.01em;}
+.about-strip p{font-size:12.5px; line-height:1.7; margin:0 0 9px;}
+.about-facts{display:flex; flex-wrap:wrap; justify-content:center; gap:3px 15px; margin:0; font-size:12px; line-height:1.7;}
+.about-facts > div{display:flex; gap:5px;}
+.about-facts dt{font-weight:600; opacity:.75;}
+.about-facts dd{margin:0;}
+.about-facts a{color:inherit; text-decoration:none;}
+.about-facts a:hover{color:var(--navy); text-decoration:underline;}
+@media (max-width:560px){ .about-facts{flex-direction:column; align-items:center; gap:2px;} }
 
 /* ── modal ─────────────────────────────────────────────── */
 .modal-bg{
@@ -1255,29 +1277,36 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
   </div>
 </section>
 
-<!-- ═══ ABOUT ═══ -->
+<!-- ═══ ABOUT (사업자 정보 고지 — 광고 심사용, 강조 최소화) ═══ -->
 <section id="about">
   <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow"><span class="ko">회사 소개</span><span class="en">ABOUT</span></span>
+    <div class="about-strip">
       <h2><span class="ko">PracExam 소개</span><span class="en">About PracExam</span></h2>
-    </div>
-    <div class="about-card">
       <p>
-        <span class="ko">PracExam은 미국 IRS 등록 세무사(Enrolled Agent, EA) 시험을 준비하는 수험생을 위한 온라인 학습 플랫폼입니다. 최신 미국 세법과 IRS Content Outline을 반영한 Part 1·2·3 실전 문제 5,000개 이상과 한·영 상세 해설을 제공합니다.</span>
-        <span class="en">PracExam is an online exam-preparation platform for the U.S. IRS Enrolled Agent (EA) exam. It offers 5,000+ practice questions with detailed explanations across Parts 1, 2, and 3, based on current U.S. tax law.</span>
+        <span class="ko">PracExam은 미국 IRS 등록 세무사(Enrolled Agent, EA) 시험을 준비하는 수험생을 위한 온라인 학습 플랫폼입니다.</span>
+        <span class="en">PracExam is an online exam-preparation platform for the U.S. IRS Enrolled Agent (EA) exam.</span>
       </p>
-      <dl class="about-list">
-        <dt><span class="ko">운영 법인</span><span class="en">Legal entity</span></dt>
-        <dd>dxd investment group LLC</dd>
-        <dt><span class="ko">사업자명 (DBA / FBN)</span><span class="en">Doing Business As (DBA / FBN)</span></dt>
-        <dd>PracExam</dd>
-        <dt><span class="ko">등록지</span><span class="en">Registered</span></dt>
-        <dd>San Diego County, California, USA</dd>
-        <dt><span class="ko">사업장 주소</span><span class="en">Business address</span></dt>
-        <dd>1401 Air Wing Rd, San Diego, CA 92154, USA</dd>
-        <dt><span class="ko">문의</span><span class="en">Contact</span></dt>
-        <dd><a href="mailto:hello@pracexam.com">hello@pracexam.com</a></dd>
+      <dl class="about-facts">
+        <div>
+          <dt><span class="ko">운영 법인</span><span class="en">Legal entity</span></dt>
+          <dd>dxd investment group LLC</dd>
+        </div>
+        <div>
+          <dt><span class="ko">사업자명 (DBA / FBN)</span><span class="en">DBA / FBN</span></dt>
+          <dd>PracExam</dd>
+        </div>
+        <div>
+          <dt><span class="ko">등록지</span><span class="en">Registered</span></dt>
+          <dd>San Diego County, California, USA</dd>
+        </div>
+        <div>
+          <dt><span class="ko">사업장 주소</span><span class="en">Business address</span></dt>
+          <dd>1401 Air Wing Rd, San Diego, CA 92154, USA</dd>
+        </div>
+        <div>
+          <dt><span class="ko">문의</span><span class="en">Contact</span></dt>
+          <dd><a href="mailto:hello@pracexam.com">hello@pracexam.com</a></dd>
+        </div>
       </dl>
     </div>
   </div>
@@ -1287,13 +1316,29 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 <footer>
   <div class="wrap footer-inner">
     <span>© 2026 dxd investment group LLC. <span class="ko">All rights reserved.</span><span class="en">All rights reserved.</span></span>
-    <div class="footer-links">
-      <a href="popquiz.html"><span class="ko">Pop Quiz</span><span class="en">Pop Quiz</span></a>
-      <a href="#about"><span class="ko">회사 소개</span><span class="en">About</span></a>
-      <a href="mailto:hello@pracexam.com">Contact</a>
-      <a href="terms.html"><span class="ko">이용약관</span><span class="en">Terms</span></a>
-      <a href="privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
-      <a href="refund.html"><span class="ko">환불정책</span><span class="en">Refunds</span></a>
+    <div class="footer-meta">
+      <div class="footer-links">
+        <a href="popquiz.html"><span class="ko">Pop Quiz</span><span class="en">Pop Quiz</span></a>
+        <a href="#about"><span class="ko">회사 소개</span><span class="en">About</span></a>
+        <a href="mailto:hello@pracexam.com">Contact</a>
+        <a href="terms.html"><span class="ko">이용약관</span><span class="en">Terms</span></a>
+        <a href="privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
+        <a href="refund.html"><span class="ko">환불정책</span><span class="en">Refunds</span></a>
+      </div>
+      <div class="footer-social">
+        <a class="social-link" href="mailto:hello@pracexam.com" title="hello@pracexam.com" aria-label="Email PracExam — hello@pracexam.com">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+        </a>
+        <a class="social-link" href="https://www.facebook.com/profile.php?id=61554538887813" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="PracExam on Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a class="social-link" href="https://www.instagram.com/pracexam/" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="PracExam on Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <!-- 향후 YouTube / LinkedIn 자리 — 공간만 확보. 추가할 때 아래 span 을 social-link <a> 로 교체 -->
+        <span class="social-slot" aria-hidden="true"></span>
+        <span class="social-slot" aria-hidden="true"></span>
+      </div>
     </div>
     <p class="footer-legal">
       <span class="ko">PracExam은 dxd investment group LLC(미국 캘리포니아 샌디에이고 카운티 등록)의 등록 가상 사업명(DBA)입니다.</span>
