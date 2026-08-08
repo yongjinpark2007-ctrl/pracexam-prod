@@ -767,6 +767,24 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 }
 .modal input:focus{outline:none; border-color:var(--navy-mid);}
 .modal .btn{width:100%; margin-top:18px;}
+/* ── 유입 경로 선택 상자 (2026-08-07) ─────────────────────
+   가입 폼 맨 아래 선택 항목. 질문은 상자 첫 줄에 넣어 라벨 한 줄을 아꼈다.
+   ⚠️ line-height 를 px 로 못박은 이유 = 첫 줄만 13px 로 줄여도(아래 .is-empty)
+      상자 높이가 다른 입력칸과 어긋나지 않게 하려는 것. 22px ≈ 14px × 1.6. */
+.modal select{
+  width:100%; padding:11px 34px 11px 13px; margin-top:14px;
+  border:1.5px solid var(--border-clr); border-radius:9px;
+  font-size:14px; font-family:var(--font-sans); line-height:22px;
+  background-color:var(--card-bg); color:var(--text-main);
+  appearance:none; -webkit-appearance:none; cursor:pointer; text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%234E5C66' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 13px center;
+}
+.modal select:focus{outline:none; border-color:var(--navy-mid);}
+/* 아직 안 고른 상태 = 안내 글이므로 이 창의 다른 안내 글과 같은 13px.
+   고르고 나면 다른 입력칸과 같은 14px 로 돌아온다. */
+.modal select.is-empty{color:var(--text-muted); font-size:13px;}
+#su-ref-other{margin-top:8px; font-size:13.5px; padding:10px 13px;}
 .modal-close{
   position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer;
   width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;
@@ -1387,6 +1405,13 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <input type="email" id="su-email" autocomplete="email" placeholder="you@example.com">
       <label><span class="ko">비밀번호</span><span class="en">Password</span></label>
       <input type="password" id="su-pw" autocomplete="new-password" placeholder="••••••••">
+      <!-- ═══ 유입 경로 (2026-08-07) — 선택 사항 ═══
+           보기와 첫 줄 문구는 언어에 따라 달라서 JS(_refBuild)가 채운다.
+           옵션 안에는 <span class="ko/en"> 을 쓸 수 없기 때문이다.
+           ⚠️ 첫 줄 문구는 화면이 좁으면 짧은 것으로 바뀐다 — 가입 창이 380px 보다
+              좁아지면 긴 문구가 잘리기 때문(360px 안드로이드에서 글자 자리 217px). -->
+      <select id="su-ref"></select>
+      <input type="text" id="su-ref-other" maxlength="60" style="display:none;">
       <label for="su-marketing" style="display:flex; align-items:flex-start; gap:9px; margin-top:14px; margin-bottom:2px; font-size:13px; line-height:1.5; color:var(--text-mid); font-weight:400; cursor:pointer;">
         <input type="checkbox" id="su-marketing" style="width:16px; height:16px; margin-top:1px; flex-shrink:0; accent-color:var(--navy); cursor:pointer;">
         <span>
@@ -1509,7 +1534,78 @@ function setLang(lang){
   document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   try { localStorage.setItem('ea_lang', lang); } catch(e){}
+  try { _refBuild(); } catch(e){}   // 유입 경로 상자도 함께 다시 그린다
 }
+
+// ── 유입 경로 선택 상자 (2026-08-07) ─────────────────────────────────
+// 가입 폼 맨 아래 선택 항목. "어떤 경로로 알고 왔는지"를 묻는다.
+// UTM(주소에 붙는 표시)으로는 못 잡는 경로 — 친구 소개·강의·네이버 카페 — 를 잡는 것이 목적이다.
+// 강제하지 않는다. 안 고르면 null 로 나가고 가입은 그대로 된다.
+var _REF_OPTS = {
+  ko: [['google','Google'],['facebook','Facebook'],['instagram','Instagram'],
+       ['naver','네이버'],['friend','친구'],['class','강의'],['other','기타']],
+  // 영어 화면에는 네이버를 빼둔다 (영어권 고객에게는 없는 경로)
+  en: [['google','Google'],['facebook','Facebook'],['instagram','Instagram'],
+       ['friend','Friend'],['class','Class'],['other','Other']]
+};
+// 첫 줄 문구 — 화면이 좁으면 짧은 쪽을 쓴다.
+// 기준 420px = 가입 창(max-width 380px)이 더 이상 제 폭을 못 갖는 지점.
+var _REF_Q = {
+  ko: { wide:'궁금해서요 — 어디서 알고 오셨어요?', narrow:'어디서 알고 오셨어요?' },
+  en: { wide:"Just curious — how'd you find us?", narrow:"How'd you find us?" }
+};
+var _REF_ARIA  = { ko:'어디서 알고 오셨어요? (선택)', en:'How did you find us? (optional)' };
+var _REF_OTHER = { ko:'어디서 알고 오셨는지 적어 주세요', en:'Tell us where you heard about us' };
+
+function _curLang(){
+  return document.getElementById('html-root').className.indexOf('lang-en') > -1 ? 'en' : 'ko';
+}
+
+function _refBuild(){
+  var sel = document.getElementById('su-ref');
+  if (!sel) return;
+  var lang = _curLang();
+  var keep = sel.value;                       // 다시 그려도 고른 값은 지킨다
+  var q    = _REF_Q[lang][window.innerWidth < 420 ? 'narrow' : 'wide'];
+
+  sel.innerHTML = '';
+  var ph = document.createElement('option');
+  ph.value = ''; ph.textContent = q;
+  sel.appendChild(ph);
+  _REF_OPTS[lang].forEach(function(o){
+    var el = document.createElement('option');
+    el.value = o[0]; el.textContent = o[1];
+    sel.appendChild(el);
+  });
+
+  // 언어를 영어로 바꾸면 'naver' 가 목록에서 사라지므로 고른 값을 비운다
+  sel.value = keep;
+  if (sel.selectedIndex < 0) sel.value = '';
+
+  // 화면에 보이는 첫 줄이 폭에 따라 바뀌므로, 낭독기에는 언제나 같은 말을 준다
+  sel.setAttribute('aria-label', _REF_ARIA[lang]);
+  _refSync();
+}
+
+function _refSync(){
+  var sel   = document.getElementById('su-ref');
+  var other = document.getElementById('su-ref-other');
+  if (!sel || !other) return;
+  sel.classList.toggle('is-empty', !sel.value);
+  var isOther = (sel.value === 'other');
+  other.style.display = isOther ? 'block' : 'none';
+  other.placeholder = _REF_OTHER[_curLang()];
+  if (!isOther) other.value = '';
+}
+
+(function(){
+  var sel = document.getElementById('su-ref');
+  if (!sel) return;
+  sel.addEventListener('change', _refSync);
+  // 화면을 돌리거나 크기를 바꾸면 첫 줄 문구를 다시 고른다
+  window.addEventListener('resize', function(){ try { _refBuild(); } catch(e){} });
+  _refBuild();
+})();
 (function(){
   var saved = 'en';
   try { saved = localStorage.getItem('ea_lang') || 'en'; } catch(e){}
@@ -1772,6 +1868,17 @@ function doSignup(){
   var mktEl = document.getElementById('su-marketing');
   var marketingConsent = !!(mktEl && mktEl.checked);
 
+  // ── 유입 경로 (2026-08-07) — 선택 사항이라 없으면 그냥 null 로 보낸다 ──
+  var refEl   = document.getElementById('su-ref');
+  var refOth  = document.getElementById('su-ref-other');
+  var refSrc  = (refEl && refEl.value) ? refEl.value : null;
+  var refNote = (refSrc === 'other' && refOth && refOth.value.trim())
+              ? refOth.value.trim().slice(0, 60) : null;
+  // 광고·검색으로 들어온 흔적. 맨 위 스크립트가 주소에서 거둬 localStorage 에 담아 두는데
+  // 여태 아무 데도 안 쓰이고 있었다 → 가입할 때 같이 올려 보낸다.
+  var refAttrib = null;
+  try { refAttrib = JSON.parse(localStorage.getItem('pe_attrib') || 'null'); } catch(e){}
+
   if (!fname || !lname) {
     showMsg(lang === 'ko' ? '이름을 입력해주세요.' : 'Please enter your name.', false);
     return;
@@ -1834,7 +1941,10 @@ function doSignup(){
         last_name: lname,
         language: lang,
         marketing_consent: marketingConsent,
-        marketing_consent_at: marketingConsent ? new Date().toISOString() : null
+        marketing_consent_at: marketingConsent ? new Date().toISOString() : null,
+        referral_source: refSrc,
+        referral_note: refNote,
+        attrib: refAttrib
       }
     })
   })
