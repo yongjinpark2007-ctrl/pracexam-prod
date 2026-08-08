@@ -4505,7 +4505,7 @@ function exportData(){
 function resetData(){
   localStorage.removeItem('ea_prep_v3');
   S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={};
-  S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.retryFlaggedMode=false;
+  S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.adminQcMode=false; S.retryFlaggedMode=false;
   if(SB_USER){ sb.from('live_session').delete().eq('user_id', SB_USER.id); }
   renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
   updateResumeBadge();
@@ -5688,6 +5688,7 @@ async function _copSessionGo(code){
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = false;
+  S.adminQcMode = false;      // 2026-08-08: QC 검토 잔류 방지 (startQuiz 주석 참조)
   S.retryFlaggedMode = false;
   S.mode = 'normal';
   S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
@@ -6269,6 +6270,10 @@ async function startQuiz(){
 
   S.quizIdx=0; S.submitted=false; S.selected=null;
   S.reviewMode = false;
+  // 2026-08-08: 관리자 QC 검토를 중간에 빠져나온 뒤 학습을 시작하면 adminQcMode 가 켜진 채로
+  //   남아 라벨이 'ADMIN QC'로 뜨고, 진행 중 세션 저장·세션 기록이 통째로 건너뛰어졌다.
+  //   세션을 새로 시작하는 자리마다 반드시 끈다.
+  S.adminQcMode = false;
   S.sessionAnswers = new Array(S.quizQueue.length).fill(null);
   S.results={correct:0,wrong:0,total:S.quizQueue.length};
   save();
@@ -6353,6 +6358,7 @@ async function _reviewSessionGo(s, validIds){
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = true;          // 다시 풀기 (로컬 채점 · 일일 한도 무관)
+  S.adminQcMode = false;        // 2026-08-08: QC 검토 잔류 방지 (startQuiz 주석 참조)
   S.retryFlaggedMode = false;
   S.returnTo = 'bookmarks';   // Score 후 Review 탭으로 복귀
   S.mode = 'normal';
@@ -7602,6 +7608,7 @@ async function _retryFlaggedGo(ids){
 
   S.quizIdx = 0; S.submitted = false; S.selected = null;
   S.reviewMode = true;          // 다시 풀기 (로컬 채점 · 일일 한도 무관)
+  S.adminQcMode = false;        // 2026-08-08: QC 검토 잔류 방지 (startQuiz 주석 참조)
   S.retryFlaggedMode = false;
   S.returnTo = 'bookmarks';
   S.mode = 'normal';
