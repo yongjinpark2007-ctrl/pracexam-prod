@@ -8777,13 +8777,14 @@ async function wrShow(code){
       }
     }catch(e){}
     var en=(_wrLang()==='en');
+    // 개수는 라이브 목록에서 세어 쓴다 — 숫자를 박아 두면 토픽이 늘고 줄 때 문구가 거짓말이 된다
+    var _n=(WR.rows||[]).length;
+    var _desc=_n?(en?('Read all '+_n+' cheat sheets in full.'):('치트시트 '+_n+'개를 모두 볼 수 있습니다.'))
+                :(en?'Read every cheat sheet in full.':'치트시트 전체를 볼 수 있습니다.');
     content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div>'+peek
       +'<div class="wr-gate'+(peek?' peeked':'')+'"><div class="card"><div style="font-size:22px;">🔒</div><h4>'
-      +(peek?(en?'The rest is for Pro members':'이어지는 내용은 Pro 회원용입니다')
-             :(en?'Pro members only':'Pro 회원 전용'))+'</h4><p>'
-      +(peek?(en?'You are seeing the first part of this cheat sheet. Upgrade to Pro to read it in full, along with every other War Room sheet.'
-                :'이 치트시트의 앞부분을 보고 계십니다. Pro로 업그레이드하면 끝까지, 그리고 나머지 치트시트도 모두 보실 수 있어요.')
-             :(en?'Upgrade to Pro to unlock every War Room cheat sheet.':'Pro로 업그레이드하면 War Room 전체 치트시트를 볼 수 있어요.'))+'</p>'
+      +(peek?(en?'Full access is for Pro members':'전체 내용은 Pro 회원 전용입니다')
+             :(en?'Pro members only':'Pro 회원 전용입니다'))+'</h4><p>'+_desc+'</p>'
       +'<button id="wr-gate-up">'+(en?'Upgrade to Pro':'Pro로 업그레이드')+'</button></div></div>';
     var _up=document.getElementById('wr-gate-up');
     if(_up) _up.onclick=function(){ if(typeof showPricingModal==='function') showPricingModal(); };
