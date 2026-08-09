@@ -4,150 +4,357 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>PracExam 관리자 — 고객·운영</title>
+<title>PracExam 관리자 — 고객 관리</title>
 <link rel="icon" href="/favicon.ico">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ══ PracExam 관리자 콘솔 — 내부 전용 ══
-   app.html 의 하버 디자인을 최소한만 옮겨 왔다. 공통 파일로 빼지 않은 이유는
-   핸드오프 §5 참조(세 번째로 같은 코드를 복사하게 될 때 분리한다). */
+/* ══════════════════════════════════════════════════════════════════════════
+   PracExam 고객 관리 — Harbor 디자인
+   app.html 의 팔레트(354649 / 6C7A89 / A3C6C4 / E0E7E9)와
+   review_app.html 의 껍데기(네이비 헤더 + 흰 카드 + --fs 글자 배율)를 그대로 따른다.
+   두 화면 모두 다크 모드가 없으므로 여기도 밝은 화면 하나로만 만든다.
+   ══════════════════════════════════════════════════════════════════════════ */
 :root{
-  --bg:#f7f8fa; --card:#fff; --text-main:#0f172a; --text-mid:#475569; --text-muted:#94a3b8;
-  --border-clr:#e2e8f0; --border-hover:#cbd5e1; --navy:#1e3a5f; --gold:#c8a04a;
-  --danger:#dc2626; --success:#059669; --warn:#b45309; --warn-bg:#fffbeb;
+  --page-bg:      #E0E7E9;
+  --card-bg:      #ffffff;
+  --border-clr:   rgba(53,70,73,.14);
+  --border-hover: rgba(53,70,73,.32);
+  --sel-bg:       #d9ebe9;
+  --sel-border:   #6FA39E;
+  --card-shadow:  0 1px 4px rgba(53,70,73,.08);
+  --text-main:    #232e30;
+  --text-mid:     #4b5759;
+  --text-muted:   #6C7A89;
+  --navy:         #354649;
+  --teal:         #354649;
+  --success-color:#16a34a;
+  --danger-color: #dc2626;
+  --flag-color:   #d97706;
+  --gold:         #6FA39E;
+  --accent:       #DD8F75;
+  --accent-tint:  #FBF1EC;
+  --accent-border:#EFD0C1;
+
+  /* 글자 크기 배율 — 헤더의 A− / A+ 로 조절, localStorage 에 저장 (review_app 과 동일) */
+  --fs: 0.95;
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#0b1220; --card:#121a2b; --text-main:#e8eef8; --text-mid:#a9b6cc; --text-muted:#6b7a92;
-    --border-clr:#22304a; --border-hover:#334765; --navy:#8fb2e0; --gold:#d8b871;
-  }
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  height:100%;
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  background:var(--page-bg);color:var(--text-main);font-size:16px;
+  -webkit-text-size-adjust:100%;
 }
-*{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--text-main);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Malgun Gothic',sans-serif;
-  font-size:14px;line-height:1.6;}
-.wrap{max-width:920px;margin:0 auto;padding:1.5rem 1rem 4rem;}
-.section-title{font-size:19px;font-weight:700;color:var(--text-main);}
-.topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:1.25rem;}
-.topbar .grow{flex:1;}
-.card{background:var(--card);border:1px solid var(--border-clr);border-radius:12px;
-  padding:16px 18px;margin-bottom:14px;}
-.btn{background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:8px;
-  padding:9px 16px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;}
-.btn:hover{opacity:.9;}
-.btn:disabled{opacity:.45;cursor:not-allowed;}
-.btn-ghost{background:none;color:var(--text-mid);border:1px solid var(--border-clr);
-  border-radius:8px;padding:7px 13px;font-family:inherit;font-size:12.5px;cursor:pointer;}
-.btn-ghost:hover{border-color:var(--border-hover);}
-.btn-ghost.danger{color:var(--danger);border-color:rgba(220,38,38,.35);}
-.btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
+#app{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+
+/* ── 헤더 ───────────────────────────────────────────────────────────────── */
+.header{
+  background:var(--navy);display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:8px 1rem;min-height:60px;flex-shrink:0;flex-wrap:wrap;
+  box-shadow:0 2px 12px rgba(0,0,0,.18);z-index:100;
+}
+.header-brand{display:flex;align-items:baseline;gap:10px;min-width:0;}
+.header-title{font-size:calc(17.5px * var(--fs));font-weight:700;color:#E0E7E9;letter-spacing:-.01em;white-space:nowrap;}
+.header-sub{font-size:calc(11.5px * var(--fs));color:rgba(255,255,255,.6);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;}
+.hdr-stat{font-size:calc(14px * var(--fs));color:rgba(255,255,255,.72);font-weight:600;white-space:nowrap;}
+.hdr-stat b{color:#fff;}
+.icon-btn{
+  background:none;border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.8);
+  border-radius:8px;padding:7px 11px;font-family:inherit;font-size:calc(13.5px * var(--fs));
+  font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;
+}
+.icon-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+.fs-seg{display:inline-flex;border:1px solid rgba(255,255,255,.28);border-radius:8px;overflow:hidden;}
+.fs-seg button{
+  font-family:inherit;font-weight:700;font-size:calc(13px * var(--fs));padding:7px 10px;
+  border:none;background:transparent;color:rgba(255,255,255,.72);cursor:pointer;
+}
+.fs-seg button:hover{background:rgba(255,255,255,.12);color:#fff;}
+
+/* ── 알림 띠 ────────────────────────────────────────────────────────────── */
+.notice{padding:11px 1rem;font-size:calc(14.5px * var(--fs));line-height:1.7;flex-shrink:0;}
+.notice.warn{background:var(--accent-tint);border-bottom:1px solid var(--accent-border);color:#b85f3f;}
+.notice.info{background:#fff;border-bottom:1px solid var(--border-clr);color:var(--text-mid);}
+
+/* ── 위쪽 조작줄 ────────────────────────────────────────────────────────── */
+.toolbar{
+  background:var(--card-bg);border-bottom:1px solid var(--border-clr);
+  padding:11px 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:10px;
+}
+.tiles{display:flex;gap:7px;flex-wrap:wrap;}
+.tile{
+  font-family:inherit;text-align:left;cursor:pointer;
+  background:#fff;border:1px solid var(--border-clr);border-radius:10px;
+  padding:7px 13px;min-width:92px;transition:all .12s;
+}
+.tile:hover{border-color:var(--border-hover);}
+.tile.on{background:var(--sel-bg);border-color:var(--sel-border);box-shadow:inset 2px 0 0 var(--sel-border);}
+.tile .n{font-size:calc(19px * var(--fs));font-weight:800;line-height:1.25;color:var(--text-main);}
+.tile .l{font-size:calc(12.5px * var(--fs));color:var(--text-muted);font-weight:600;}
+
+.fields{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.field label{font-size:calc(12.5px * var(--fs));font-weight:700;color:var(--text-muted);letter-spacing:.02em;}
 input[type=text],input[type=email],input[type=password],select{
-  width:100%;padding:9px 12px;border:1px solid var(--border-clr);border-radius:8px;
-  background:var(--card);color:var(--text-main);font-family:inherit;font-size:14px;}
-label{display:block;font-size:12.5px;font-weight:600;color:var(--text-mid);margin-bottom:5px;}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
-.row > div{flex:1;min-width:150px;}
-.msg{font-size:13px;margin-top:8px;min-height:20px;}
-.msg.ok{color:var(--success);} .msg.err{color:var(--danger);}
-.sub{font-size:15px;font-weight:700;margin:0 0 10px;color:var(--text-main);}
-.muted{color:var(--text-muted);}
-.kv{display:grid;grid-template-columns:88px 1fr;gap:4px 12px;font-size:13.5px;}
-.kv dt{color:var(--text-muted);font-weight:600;}
-.kv dd{margin:0;color:var(--text-mid);word-break:break-all;}
-.hit{display:flex;align-items:center;gap:10px;border:1px solid var(--border-clr);
-  border-radius:10px;padding:10px 12px;margin-bottom:7px;cursor:pointer;background:var(--card);}
-.hit:hover{border-color:var(--border-hover);}
-.hit .who{flex:1;min-width:0;}
-.hit .em{font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.hit .nm{font-size:12px;color:var(--text-muted);}
-.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;
-  border:1px solid var(--border-clr);color:var(--text-mid);white-space:nowrap;}
-.pill.paid{color:var(--success);border-color:rgba(5,150,105,.35);}
-.pill.comp{color:var(--gold);border-color:rgba(200,160,74,.45);}
-.pill.free{color:var(--text-muted);}
-.banner{border-radius:10px;padding:10px 13px;font-size:13px;margin-bottom:12px;}
-.banner.warn{background:var(--warn-bg);border:1px solid rgba(180,83,9,.3);color:var(--warn);}
-.banner.info{border:1px dashed var(--border-clr);color:var(--text-mid);}
-table{width:100%;border-collapse:collapse;font-size:12.5px;}
-th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border-clr);}
-th{color:var(--text-muted);font-weight:600;}
-code{background:rgba(127,127,127,.12);padding:1px 5px;border-radius:4px;font-size:12px;}
-.gate{max-width:380px;margin:12vh auto;}
+  font-family:inherit;font-size:calc(15px * var(--fs));padding:9px 11px;border-radius:8px;
+  border:1px solid var(--border-clr);background:#fff;color:var(--text-main);min-width:0;
+}
+input::placeholder{color:#a8b3b6;}
+input:focus,select:focus{outline:none;border-color:var(--sel-border);}
+.hint{font-size:calc(13px * var(--fs));color:var(--text-muted);line-height:1.7;}
+
+/* ── 버튼 (review_app 과 같은 문법) ─────────────────────────────────────── */
+.btn{
+  font-family:inherit;font-size:calc(14.5px * var(--fs));font-weight:700;padding:9px 15px;
+  border-radius:9px;border:1px solid var(--border-clr);background:#fff;color:var(--text-mid);
+  cursor:pointer;transition:all .15s;
+}
+.btn:hover{border-color:var(--border-hover);}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff;}
+.btn.primary:hover{background:#2a383a;}
+.btn.danger{color:var(--danger-color);border-color:rgba(220,38,38,.35);}
+.btn.small{font-size:calc(13px * var(--fs));padding:6px 11px;border-radius:8px;}
+.btn:disabled{opacity:.42;cursor:not-allowed;}
+.btn:disabled:hover{border-color:var(--border-clr);}
+
+/* ── 표 ─────────────────────────────────────────────────────────────────── */
+.main{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--card-bg);}
+table{width:100%;border-collapse:separate;border-spacing:0;}
+thead th{
+  position:sticky;top:0;z-index:2;background:var(--card-bg);text-align:left;
+  padding:9px 11px;border-bottom:1.5px solid var(--border-clr);white-space:nowrap;
+  font-size:calc(12px * var(--fs));font-weight:700;color:var(--text-muted);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+thead th.sortable{cursor:pointer;user-select:none;}
+thead th.sortable:hover{color:var(--text-main);}
+thead th .arrow{color:var(--sel-border);font-size:calc(11px * var(--fs));}
+tbody td{
+  padding:9px 11px;border-bottom:1px solid var(--border-clr);vertical-align:middle;
+  font-size:calc(14px * var(--fs));color:var(--text-main);
+}
+tbody tr.r{cursor:pointer;transition:background .12s;}
+tbody tr.r:hover{background:rgba(53,70,73,.04);}
+tbody tr.r.open td{background:var(--sel-bg);}
+tbody tr.r.open td:first-child{box-shadow:inset 3px 0 0 var(--sel-border);}
+td.who{max-width:250px;}
+.who .em{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.who .nm{font-size:calc(12.5px * var(--fs));color:var(--text-muted);margin-top:1px;}
+.nowrap{white-space:nowrap;}
+.num{text-align:right;white-space:nowrap;}
+.sub2{font-size:calc(12.5px * var(--fs));color:var(--text-muted);}
+.empty{padding:40px 16px;text-align:center;color:var(--text-muted);font-size:calc(16px * var(--fs));}
+
+/* 배지 — app.html 의 q-badge 문법 */
+.badge{
+  display:inline-flex;align-items:center;border-radius:6px;padding:2px 9px;white-space:nowrap;
+  font-size:calc(12.5px * var(--fs));font-weight:700;
+  background:rgba(0,0,0,.03);color:var(--text-muted);border:1px solid var(--border-clr);
+}
+.badge.paying {background:rgba(22,163,74,.10); color:var(--success-color); border-color:rgba(22,163,74,.35);}
+.badge.comp   {background:var(--accent-tint);  color:#b85f3f;             border-color:var(--accent-border);}
+.badge.trial  {background:var(--sel-bg);       color:var(--teal);         border-color:var(--sel-border);}
+.badge.expired{background:rgba(0,0,0,.03);     color:var(--text-muted);}
+.badge.flagb  {background:rgba(217,119,6,.10); color:var(--flag-color);   border-color:rgba(217,119,6,.35);}
+code{background:rgba(53,70,73,.07);padding:1px 6px;border-radius:5px;font-size:calc(12.5px * var(--fs));}
+.dday{font-size:calc(12.5px * var(--fs));color:var(--text-muted);}
+.dday.soon{color:var(--flag-color);font-weight:700;}
+.dday.over{color:var(--danger-color);font-weight:700;}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--sel-border);cursor:pointer;}
+select.rowact{font-size:calc(13px * var(--fs));padding:6px 8px;}
+
+/* ── 펼친 상세 ──────────────────────────────────────────────────────────── */
+tr.detail > td{background:var(--page-bg);padding:0;border-bottom:1.5px solid var(--border-hover);}
+.detail-in{padding:1.1rem 1.25rem 1.25rem;}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;}
+.dcard{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;
+  padding:1rem 1.1rem;box-shadow:var(--card-shadow);}
+.dcard h3{font-size:calc(15px * var(--fs));color:var(--teal);font-weight:700;margin-bottom:9px;letter-spacing:-.01em;}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;font-size:calc(13.5px * var(--fs));}
+.kv dt{color:var(--text-muted);font-weight:700;}
+.kv dd{color:var(--text-mid);word-break:break-all;}
+.tip-box{background:var(--accent-tint);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;
+  padding:11px 14px;margin-top:11px;font-size:calc(13.5px * var(--fs));line-height:1.7;color:var(--text-mid);}
+.tip-box b{color:#b85f3f;}
+.info-box{background:#fff;border:1px dashed var(--border-hover);border-radius:8px;
+  padding:10px 13px;margin-top:11px;font-size:calc(13.5px * var(--fs));line-height:1.7;color:var(--text-mid);}
+.actrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+table.mini{margin-top:7px;}
+table.mini th{padding:5px 8px;border-bottom:1px solid var(--border-clr);text-align:left;
+  font-size:calc(11.5px * var(--fs));font-weight:700;color:var(--text-muted);
+  letter-spacing:.05em;text-transform:uppercase;}
+table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-size:calc(13px * var(--fs));color:var(--text-mid);}
+.msg{font-size:calc(13.5px * var(--fs));font-weight:600;min-height:20px;margin-top:7px;color:var(--text-muted);}
+.msg.ok{color:var(--success-color);} .msg.err{color:var(--danger-color);}
+
+/* ── 여러 명 한꺼번에 (아래 고정 막대) ──────────────────────────────────── */
+.bulk{
+  flex-shrink:0;background:var(--card-bg);border-top:1.5px solid var(--sel-border);
+  padding:10px 1rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  box-shadow:0 -3px 14px rgba(53,70,73,.10);
+}
+.bulk .cnt{font-size:calc(15px * var(--fs));font-weight:700;color:var(--teal);}
+
+/* ── 로그인 ─────────────────────────────────────────────────────────────── */
+.gate-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.gate{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:16px;
+  padding:1.75rem;box-shadow:0 1px 6px rgba(0,0,0,.08);width:100%;max-width:380px;}
+.gate h2{font-size:calc(19px * var(--fs));font-weight:700;color:var(--text-main);margin-bottom:3px;}
+.gate .sub{font-size:calc(13px * var(--fs));color:var(--text-muted);margin-bottom:1.1rem;}
+.gate .field{margin-bottom:11px;}
+.gate input{width:100%;}
 .hide{display:none !important;}
 </style>
 </head>
 <body>
 
-<!-- ══════════════ 로그인 ══════════════ -->
-<div id="gate" class="wrap gate">
-  <div class="card">
-    <div class="section-title" style="margin-bottom:4px;">PracExam 관리자</div>
-    <div class="muted" style="font-size:12.5px;margin-bottom:16px;">고객·운영 콘솔 (내부 전용)</div>
-    <div style="margin-bottom:10px;">
-      <label for="g-email">이메일</label>
-      <input type="email" id="g-email" autocomplete="username">
+<div id="app">
+
+  <!-- ══════════════ 헤더 ══════════════ -->
+  <header class="header">
+    <div class="header-brand">
+      <span class="header-title">PracExam</span>
+      <span class="header-sub">고객 관리</span>
     </div>
-    <div style="margin-bottom:14px;">
-      <label for="g-pw">비밀번호</label>
-      <input type="password" id="g-pw" autocomplete="current-password">
-    </div>
-    <button class="btn" style="width:100%;" onclick="doLogin()">로그인</button>
-    <div id="g-msg" class="msg"></div>
-  </div>
-</div>
-
-<!-- ══════════════ 본문 ══════════════ -->
-<div id="main" class="wrap hide">
-
-  <div class="topbar">
-    <div class="section-title grow">고객 · 운영</div>
-    <a class="btn-ghost" href="/app" style="text-decoration:none;">문항 관리 →</a>
-    <button class="btn-ghost" onclick="doLogout()">로그아웃</button>
-  </div>
-
-  <!-- 관리자가 아니거나 SQL 미실행일 때 -->
-  <div id="setup-note" class="banner info hide"></div>
-
-  <!-- 검색 -->
-  <div id="search-card" class="card hide">
-    <div class="row">
-      <div style="flex:3;">
-        <label for="q">이메일 또는 이름으로 검색 (두 글자 이상)</label>
-        <input type="text" id="q" placeholder="hong@ 또는 홍길동" onkeydown="if(event.key==='Enter')doSearch()">
+    <div class="header-right">
+      <span class="hdr-stat" id="hdr-count"></span>
+      <div class="fs-seg">
+        <button onclick="bumpFs(-1)" title="글자 작게">A−</button>
+        <button onclick="bumpFs(1)"  title="글자 크게">A+</button>
       </div>
-      <div style="flex:0 0 auto;min-width:0;">
-        <button class="btn" onclick="doSearch()">검색</button>
-      </div>
+      <button class="icon-btn" onclick="loadAll()">새로고침</button>
+      <button class="icon-btn" onclick="exportCsv()">CSV</button>
+      <a class="icon-btn" href="/admin/search.html" title="예전 검색 화면 (문제가 있을 때 대비용)">검색 화면</a>
+      <a class="icon-btn" href="/app">문항 관리</a>
+      <button class="icon-btn" onclick="doLogout()">로그아웃</button>
     </div>
-    <div id="q-msg" class="msg"></div>
-    <div id="hits" style="margin-top:6px;"></div>
+  </header>
+
+  <div id="notice" class="notice hide"></div>
+
+  <!-- ══════════════ 로그인 ══════════════ -->
+  <div id="gate" class="gate-wrap hide">
+    <div class="gate">
+      <h2>고객 관리</h2>
+      <div class="sub">내부 전용 화면입니다.</div>
+      <div class="field">
+        <label for="g-email">이메일</label>
+        <input type="email" id="g-email" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="g-pw">비밀번호</label>
+        <input type="password" id="g-pw" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn primary" style="width:100%;margin-top:6px;" onclick="doLogin()">로그인</button>
+      <div id="g-msg" class="msg"></div>
+    </div>
   </div>
 
-  <!-- 고객 카드 -->
-  <div id="cust" class="hide"></div>
+  <!-- ══════════════ 조작줄 ══════════════ -->
+  <div id="toolbar" class="toolbar hide">
+    <div id="tiles" class="tiles"></div>
+    <div class="fields">
+      <div class="field" style="flex:2;min-width:230px;">
+        <label for="q">검색 — 이메일 · 이름 (치는 대로 걸러집니다)</label>
+        <input type="text" id="q" placeholder="hong@ 또는 홍길동" oninput="render()">
+      </div>
+      <div class="field" style="flex:1;min-width:170px;">
+        <label for="gp">부여 프로그램</label>
+        <select id="gp"></select>
+      </div>
+      <div class="field" style="flex:2;min-width:210px;">
+        <label for="gn">메모 — 왜 주는지 (이력에 남습니다)</label>
+        <input type="text" id="gn" placeholder="예: 문의 응대, 세미나 감사">
+      </div>
+    </div>
+    <div class="hint">
+      표 오른쪽 <b>“부여…”</b> 를 고르면 위에서 정한 프로그램·메모로 들어갑니다.
+      줄을 누르면 그 고객의 상세가 펼쳐집니다.
+    </div>
+    <div id="top-msg" class="msg"></div>
+  </div>
+
+  <!-- ══════════════ 표 ══════════════ -->
+  <div id="main" class="main hide">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:34px;"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
+          <th class="sortable" data-sort="email">고객</th>
+          <th>상태</th>
+          <th>플랜</th>
+          <th class="sortable" data-sort="until">이용 만료</th>
+          <th class="sortable" data-sort="signed">가입</th>
+          <th class="sortable" data-sort="login">마지막 로그인</th>
+          <th class="sortable" data-sort="study">마지막 학습</th>
+          <th class="num">학습량</th>
+          <th style="width:130px;">작업</th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+
+  <!-- ══════════════ 여러 명 한꺼번에 ══════════════ -->
+  <div id="bulk" class="bulk hide">
+    <span class="cnt" id="bulk-n"></span>
+    <select id="bulk-act"></select>
+    <button class="btn primary" onclick="runBulk()">실행</button>
+    <button class="btn" onclick="clearSel()">선택 해제</button>
+    <span id="bulk-msg" class="hint"></span>
+  </div>
 
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
-   PracExam 관리자 콘솔 — /admin
+   PracExam 고객 관리 — /admin
    ───────────────────────────────────────────────────────────────────────
-   ⚠️ 이 파일이 공개되어 있어도 보안에는 영향이 없다. 여기 담긴 것은 anon 키뿐이고,
-      모든 조회·부여는 서버의 SECURITY DEFINER RPC 가 is_admin() 으로 막는다.
-      화면에서 감추는 것은 표시일 뿐 방어가 아니다.
+   2026-08-08: 검색해야만 사람이 나오던 화면을 **전 고객 표**로 바꿨다.
+   예전 검색 화면은 /admin/search.html 에 그대로 남겨 두었다(문제 생길 때 대비).
 
-   필요한 SQL = supabase/sql/admin_console.sql (RPC 7개)
-      admin_find_users · admin_get_customer · admin_list_comp_programs
-      admin_grant_comp · admin_grant_days · admin_revoke_comp  (+ grant_days)
-   아직 실행 전이면 화면이 깨지지 않고 안내만 뜬다.
+   목표 = Claude 없이, SQL 없이, 이 화면 하나로 고객 관리를 끝낸다.
+     · 전 고객이 표로 한눈에 · 치는 대로 검색 · 눌러서 정렬
+     · 줄마다 기간 부여(1주·2주·1개월·3개월·6개월·1년) · 회수 · 체험 연장
+     · 줄을 펼치면 결제·학습·메일·증정 이력, 데모 부여, 비밀번호 재설정 메일
+
+   필요한 SQL 2개 (한 번만 실행)
+     supabase/sql/admin_console.sql    ← 2026-08-06 실행 완료
+     supabase/sql/admin_customers.sql  ← 이번에 새로 실행할 것
+   아직 안 했으면 화면이 깨지지 않고 안내만 뜬다.
+
+   ⚠️ 이 파일이 공개되어도 보안에는 영향이 없다. 담긴 것은 anon 키뿐이고
+      모든 조회·부여는 서버 RPC 의 is_admin() 이 막는다.
+
+   ?sample=1 을 붙이면 로그인·DB 없이 **가짜 자료로 화면만** 볼 수 있다(초안 검토용).
    ═══════════════════════════════════════════════════════════════════════ */
 
-const SUPABASE_URL  = 'https://ufrhvodruulpgnmudzwh.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+var SUPABASE_URL  = 'https://ufrhvodruulpgnmudzwh.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8';
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-let PROGRAMS = [];   // admin_list_comp_programs() 결과 ('demo' 제외)
-let CUR = null;      // 지금 열어 둔 고객 { user_id, account, grants, study, billing }
+var SAMPLE   = /[?&]sample=1/.test(location.search);
+var ROWS     = [];              // 서버에서 받은 전 고객
+var PROGRAMS = [];              // comp_programs ('demo' 제외)
+var SEL      = {};              // 선택한 user_id
+var OPEN     = null;            // 펼쳐 둔 user_id
+var BUCKET   = 'all';           // 타일 거르개
+var SORT     = { key:'signed', dir:-1 };
+
+/* 부여 메뉴 — 한 곳에서 관리한다. kind 가 어떤 RPC 를 부를지 정한다. */
+var ACTIONS = [
+  { v:'days:7',   label:'1주 (7일) 부여',    kind:'days',   n:7  },
+  { v:'days:14',  label:'2주 (14일) 부여',   kind:'days',   n:14 },
+  { v:'days:30',  label:'1개월 (30일) 부여', kind:'days',   n:30 },
+  { v:'comp:3',   label:'3개월 부여',        kind:'comp',   n:3  },
+  { v:'comp:6',   label:'6개월 부여',        kind:'comp',   n:6  },
+  { v:'comp:12',  label:'1년 부여',          kind:'comp',   n:12 },
+  { v:'trial:14', label:'무료 체험 +14일',   kind:'trial',  n:14 },
+  { v:'trial:30', label:'무료 체험 +30일',   kind:'trial',  n:30 },
+  { v:'revoke:0', label:'증정 회수',         kind:'revoke', n:0  }
+];
 
 /* ── 유틸 ─────────────────────────────────────────────────────────── */
 function $(id){ return document.getElementById(id); }
@@ -156,357 +363,706 @@ function esc(s){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-function when(iso, withTime){
+function d(iso, withTime){
   if(!iso) return '—';
   try{
     return new Date(iso).toLocaleString('ko-KR',
       withTime ? { dateStyle:'medium', timeStyle:'short' } : { dateStyle:'medium' });
   }catch(e){ return String(iso); }
 }
+function short(iso){                       // 표 안에서 쓰는 짧은 날짜
+  if(!iso) return '—';
+  var t = new Date(iso);
+  if(isNaN(t)) return '—';
+  return String(t.getFullYear()).slice(2) + '/' + (t.getMonth()+1) + '/' + t.getDate();
+}
+function days(iso){                        // 오늘로부터 며칠 (음수 = 지남)
+  if(!iso) return null;
+  var t = new Date(iso).getTime();
+  if(isNaN(t)) return null;
+  return Math.ceil((t - Date.now()) / 86400000);
+}
+function ddayTag(iso){
+  var n = days(iso);
+  if(n === null) return '';
+  if(n < 0)  return '<span class="dday over">' + (-n) + '일 지남</span>';
+  if(n <= 7) return '<span class="dday soon">D-' + n + '</span>';
+  return '<span class="dday">D-' + n + '</span>';
+}
+function ts(iso){ var t = iso ? new Date(iso).getTime() : 0; return isNaN(t) ? 0 : t; }
 function msg(id, text, ok){
-  const el = $(id); if(!el) return;
+  var el = $(id); if(!el) return;
   el.textContent = text || '';
   el.className = 'msg' + (text ? (ok ? ' ok' : ' err') : '');
 }
-
-// RPC 오류를 사람이 읽을 말로. 미배포(PGRST202)는 따로 구분한다.
 function rpcErr(e){
-  const m = String((e && (e.message || e.msg || e)) || '');
+  var m = String((e && (e.message || e.msg || e)) || '');
   if(/PGRST202|Could not find the function|does not exist/i.test(m))
-    return '아직 SQL이 실행되지 않았습니다 — supabase/sql/admin_console.sql';
+    return '아직 SQL이 실행되지 않았습니다 — supabase/sql/admin_customers.sql';
   if(/NOT_AUTHORIZED/.test(m))  return '권한 없음 (관리자 전용)';
-  if(/PAYING_CUSTOMER/.test(m)) return '결제 중인 고객입니다 — 증정을 주면 만료 시 잠깁니다. 부여하지 않았습니다.';
+  if(/PAYING_CUSTOMER/.test(m)) return '결제 중인 고객입니다 — 증정을 주면 만료될 때 잠깁니다. 부여하지 않았습니다.';
   if(/NO_SUCH_USER/.test(m))    return '그런 계정이 없습니다';
-  if(/TOO_SHORT/.test(m))       return '두 글자 이상 입력하세요';
+  if(/NO_PROFILE/.test(m))      return '프로필이 없는 계정입니다';
+  if(/BAD_DAYS/.test(m))        return '기간이 올바르지 않습니다';
   return m || '알 수 없는 오류';
 }
-function isNotDeployed(e){
+function notDeployed(e){
   return /PGRST202|Could not find the function|does not exist/i.test(
     String((e && (e.message || e)) || ''));
 }
+function showNotice(kind, html){
+  var n = $('notice');
+  n.className = 'notice ' + kind;
+  n.innerHTML = html;
+  n.classList.remove('hide');
+}
+
+/* 글자 배율 — review_app 과 같은 방식 */
+var FS_KEY = 'pracexam_admin_fs';
+function applyFs(v){
+  document.documentElement.style.setProperty('--fs', String(v));
+  try{ localStorage.setItem(FS_KEY, String(v)); }catch(e){}
+}
+function bumpFs(dir){
+  var cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fs')) || 0.95;
+  applyFs(Math.min(1.45, Math.max(0.75, Math.round((cur + dir * 0.07) * 100) / 100)));
+}
+(function initFs(){
+  try{
+    var v = parseFloat(localStorage.getItem(FS_KEY));
+    if(v) document.documentElement.style.setProperty('--fs', String(v));
+  }catch(e){}
+})();
 
 /* ── 부팅 · 로그인 ────────────────────────────────────────────────── */
 (async function boot(){
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session) enter(); else $('gate').classList.remove('hide');
+  if(SAMPLE){ enterSample(); return; }
+  var r = await sb.auth.getSession();
+  if(r && r.data && r.data.session) enter();
+  else $('gate').classList.remove('hide');
 })();
 
 async function doLogin(){
-  const email = ($('g-email').value || '').trim();
-  const pw    = $('g-pw').value || '';
+  var email = ($('g-email').value || '').trim();
+  var pw    = $('g-pw').value || '';
   if(!email || !pw){ msg('g-msg', '이메일과 비밀번호를 입력하세요', false); return; }
   msg('g-msg', '확인 중…', true);
-  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if(error){ msg('g-msg', '로그인 실패: ' + error.message, false); return; }
+  var r = await sb.auth.signInWithPassword({ email:email, password:pw });
+  if(r.error){ msg('g-msg', '로그인 실패: ' + r.error.message, false); return; }
   msg('g-msg', '');
   enter();
 }
+async function doLogout(){ await sb.auth.signOut(); location.reload(); }
 
-async function doLogout(){
-  await sb.auth.signOut();
-  location.reload();
-}
-
-// 관리자인지는 서버에 물어본다(하드코딩한 UID 비교가 아니라).
 async function enter(){
   $('gate').classList.add('hide');
-  $('main').classList.remove('hide');
+  fillBulkMenu();
 
-  const res = await sb.rpc('admin_list_comp_programs');
-  if(res.error){
-    const note = $('setup-note');
-    note.classList.remove('hide');
-    if(isNotDeployed(res.error)){
-      note.className = 'banner warn';
-      note.innerHTML = '⚙️ <strong>아직 SQL이 실행되지 않았습니다.</strong><br>' +
-        'Supabase SQL Editor에서 <code>supabase/sql/admin_console.sql</code> 을 전체 실행한 뒤 ' +
-        '이 페이지를 새로고침하세요.';
-    }else{
-      note.className = 'banner warn';
-      note.innerHTML = '🔒 ' + esc(rpcErr(res.error)) +
-        '<br><span class="muted">관리자 계정으로 로그인했는지 확인하세요.</span>';
-    }
+  // 관리자인지는 서버에 물어본다 (UID 하드코딩 금지 — 서버가 진실)
+  var r = await sb.rpc('admin_list_comp_programs');
+  if(r.error){
+    showNotice('warn', notDeployed(r.error)
+      ? '⚙️ <b>먼저 SQL을 실행하세요.</b> Supabase SQL Editor에서 ' +
+        '<code>supabase/sql/admin_console.sql</code> → <code>supabase/sql/admin_customers.sql</code> ' +
+        '순서로 전체 실행한 뒤 이 페이지를 새로고침하세요.'
+      : '🔒 ' + esc(rpcErr(r.error)) + ' — 관리자 계정으로 로그인했는지 확인하세요.');
     return;
   }
+  PROGRAMS = (r.data || []).filter(function(p){ return p.is_active && p.code !== 'demo'; });
+  $('gp').innerHTML = PROGRAMS.map(function(p){
+    return '<option value="' + esc(p.code) + '"' + (p.code === 'gift' ? ' selected' : '') + '>' +
+      esc(p.name_ko) + ' (' + esc(p.code) + ')</option>';
+  }).join('');
 
-  PROGRAMS = (res.data || []).filter(p => p.is_active && p.code !== 'demo');
-  $('search-card').classList.remove('hide');
-  $('q').focus();
+  $('toolbar').classList.remove('hide');
+  $('main').classList.remove('hide');
+  loadAll();
 }
 
-/* ── 검색 ─────────────────────────────────────────────────────────── */
-async function doSearch(){
-  const q = ($('q').value || '').trim();
-  $('cust').classList.add('hide');
-  if(q.length < 2){ msg('q-msg', '두 글자 이상 입력하세요', false); return; }
-  msg('q-msg', '찾는 중…', true);
-  $('hits').innerHTML = '';
+/* 표본 모드 — DB 없이 화면 모양만 본다 */
+function enterSample(){
+  $('gate').classList.add('hide');
+  fillBulkMenu();
+  showNotice('warn', '🧪 <b>표본 보기</b> — 가짜 자료입니다. 버튼을 눌러도 아무 일도 일어나지 않습니다. ' +
+    '진짜 자료는 주소에서 <code>?sample=1</code> 을 빼고 여세요.');
+  PROGRAMS = [
+    { code:'gift',       name_ko:'무료 증정',      is_active:true },
+    { code:'ambassador', name_ko:'앰배서더',       is_active:true },
+    { code:'trial_ext',  name_ko:'체험 기간 제공', is_active:true }
+  ];
+  $('gp').innerHTML = PROGRAMS.map(function(p){
+    return '<option value="' + p.code + '">' + p.name_ko + ' (' + p.code + ')</option>';
+  }).join('');
+  $('toolbar').classList.remove('hide');
+  $('main').classList.remove('hide');
+  ROWS = sampleRows();
+  $('hdr-count').innerHTML = '<b>' + ROWS.length + '</b>명 (표본)';
+  render();
+}
 
-  const res = await sb.rpc('admin_find_users', { p_q: q });
-  if(res.error){ msg('q-msg', rpcErr(res.error), false); return; }
+function fillBulkMenu(){
+  $('bulk-act').innerHTML = '<option value="">여러 명에게 한꺼번에…</option>' +
+    ACTIONS.map(function(a){ return '<option value="' + a.v + '">' + a.label + '</option>'; }).join('');
+}
 
-  const rows = res.data || [];
-  if(!rows.length){ msg('q-msg', '결과가 없습니다', false); return; }
-  msg('q-msg', rows.length + '명' + (rows.length === 20 ? ' (상위 20명만 표시)' : ''), true);
+/* ── 자료 읽기 ────────────────────────────────────────────────────── */
+async function loadAll(){
+  if(SAMPLE) return;
+  $('tb').innerHTML = '<tr><td colspan="10" class="empty">불러오는 중…</td></tr>';
+  var r = await sb.rpc('admin_list_customers', { p_limit: 2000, p_offset: 0 });
+  if(r.error){
+    $('tb').innerHTML = '<tr><td colspan="10" class="empty" style="color:var(--danger-color);">' +
+      esc(rpcErr(r.error)) + '</td></tr>';
+    return;
+  }
+  ROWS = r.data || [];
+  OPEN = null;
+  $('hdr-count').innerHTML = '<b>' + ROWS.length + '</b>명';
+  render();
+}
 
-  $('hits').innerHTML = rows.map(function(r){
-    const name = [r.first_name, r.last_name].filter(Boolean).join(' ');
-    return '<div class="hit" onclick="openCustomer(\'' + esc(r.user_id) + '\')">' +
-      '<div class="who">' +
-        '<div class="em">' + esc(r.email) + '</div>' +
-        '<div class="nm">' + esc(name || '이름 없음') +
-          ' · ' + esc(r.language || '?') + ' · 가입 ' + when(r.signed_up_at) + '</div>' +
-      '</div>' + planPill(r) + '</div>';
+/* ── 상태 판정 ────────────────────────────────────────────────────── */
+function isComp(r){ return String(r.plan_code || '').slice(0,5) === 'comp_'; }
+function statusOf(r){
+  if(r.is_paid && !isComp(r)) return 'paying';   // 돈 내는 고객
+  if(r.is_paid)               return 'comp';     // 증정·데모·체험 부여
+  var te = ts(r.trial_ends_at);
+  if(te && te > Date.now())   return 'trial';    // 가입 30일 무료 체험 중
+  return 'expired';                              // 체험 끝 — 새 학습 잠김
+}
+var STATUS_LABEL = { paying:'결제', comp:'증정', trial:'체험중', expired:'체험만료' };
+function untilOf(r){ return r.is_paid ? r.paid_until : r.trial_ends_at; }
+
+function matches(r, q){
+  if(!q) return true;
+  var hay = (String(r.email||'') + ' ' + String(r.first_name||'') + ' ' +
+             String(r.last_name||'') + ' ' + String(r.plan_code||'') + ' ' +
+             String(r.comp_program||'')).toLowerCase();
+  return hay.indexOf(q) >= 0;
+}
+function inBucket(r, b){
+  if(b === 'all')    return true;
+  if(b === 'unconf') return !r.confirmed_at;
+  if(b === 'soon'){
+    var n = days(untilOf(r));
+    return n !== null && n >= 0 && n <= 7;
+  }
+  return statusOf(r) === b;
+}
+
+/* ── 그리기 ───────────────────────────────────────────────────────── */
+function visibleRows(){
+  var q = ($('q').value || '').trim().toLowerCase();
+  var out = ROWS.filter(function(r){ return matches(r, q) && inBucket(r, BUCKET); });
+  var k = SORT.key, dir = SORT.dir;
+  out.sort(function(a,b){
+    var x, y;
+    if(k === 'email'){
+      x = String(a.email||'').toLowerCase(); y = String(b.email||'').toLowerCase();
+      return x < y ? -dir : (x > y ? dir : 0);
+    }
+    if(k === 'until')      { x = ts(untilOf(a));        y = ts(untilOf(b)); }
+    else if(k === 'login') { x = ts(a.last_sign_in_at); y = ts(b.last_sign_in_at); }
+    else if(k === 'study') { x = ts(a.last_study);      y = ts(b.last_study); }
+    else                   { x = ts(a.signed_up_at);    y = ts(b.signed_up_at); }
+    return (x - y) * dir;
+  });
+  return out;
+}
+
+function renderTiles(){
+  var c = { all:ROWS.length, paying:0, comp:0, trial:0, expired:0, unconf:0, soon:0 };
+  ROWS.forEach(function(r){
+    c[statusOf(r)]++;
+    if(!r.confirmed_at) c.unconf++;
+    var n = days(untilOf(r));
+    if(n !== null && n >= 0 && n <= 7) c.soon++;
+  });
+  var defs = [
+    ['all','전체'], ['paying','결제 중'], ['comp','증정 중'], ['trial','체험 중'],
+    ['expired','체험 만료'], ['unconf','메일 미확인'], ['soon','7일 내 만료']
+  ];
+  $('tiles').innerHTML = defs.map(function(t){
+    return '<button class="tile' + (BUCKET === t[0] ? ' on' : '') + '" data-bucket="' + t[0] + '">' +
+      '<div class="n">' + c[t[0]] + '</div><div class="l">' + t[1] + '</div></button>';
   }).join('');
 }
 
-function planPill(r){
-  const comp = String(r.plan_code || '').slice(0,5) === 'comp_';
-  if(r.is_paid && comp)  return '<span class="pill comp">증정 ' + esc(r.plan_code) + '</span>';
-  if(r.is_paid)          return '<span class="pill paid">유료 ' + esc(r.plan_code || '') + '</span>';
-  return '<span class="pill free">무료</span>';
+function sortArrow(k){
+  if(SORT.key !== k) return '';
+  return ' <span class="arrow">' + (SORT.dir < 0 ? '▼' : '▲') + '</span>';
+}
+function paintHeaders(){
+  var ths = document.querySelectorAll('thead th.sortable');
+  for(var i = 0; i < ths.length; i++){
+    var k = ths[i].getAttribute('data-sort');
+    var base = ths[i].getAttribute('data-label');
+    if(!base){ base = ths[i].textContent.replace(/[▼▲]\s*$/,'').trim(); ths[i].setAttribute('data-label', base); }
+    ths[i].innerHTML = esc(base) + sortArrow(k);
+  }
 }
 
-/* ── 고객 카드 ────────────────────────────────────────────────────── */
-async function openCustomer(uid){
-  const box = $('cust');
-  box.classList.remove('hide');
-  box.innerHTML = '<div class="card muted">불러오는 중…</div>';
+function render(){
+  renderTiles();
+  paintHeaders();
+  var rows = visibleRows();
+  var actOpts = '<option value="">부여…</option>' + ACTIONS.map(function(a){
+    return '<option value="' + a.v + '">' + a.label + '</option>';
+  }).join('');
 
-  const res = await sb.rpc('admin_get_customer', { p_user_id: uid });
-  if(res.error){
-    box.innerHTML = '<div class="card banner warn">' + esc(rpcErr(res.error)) + '</div>';
-    return;
-  }
-  const row = Array.isArray(res.data) ? res.data[0] : res.data;
-  if(!row || !row.account){
-    box.innerHTML = '<div class="card muted">계정을 찾을 수 없습니다.</div>';
-    return;
-  }
-  CUR = {
-    user_id: uid,
-    account: row.account || {},
-    grants:  row.grants  || [],
-    study:   row.study   || {},
-    billing: row.billing || []
-  };
-  renderCustomer();
-  box.scrollIntoView({ behavior:'smooth', block:'start' });
+  var html = rows.map(function(r){
+    var st   = statusOf(r);
+    var name = [r.first_name, r.last_name].filter(Boolean).join(' ');
+    var un   = untilOf(r);
+    var pct  = r.attempts > 0 ? Math.round(r.correct / r.attempts * 100) : null;
+
+    var line =
+      '<tr class="r' + (OPEN === r.user_id ? ' open' : '') + '" data-uid="' + esc(r.user_id) + '">' +
+        '<td><input type="checkbox" class="cb" data-uid="' + esc(r.user_id) + '"' +
+            (SEL[r.user_id] ? ' checked' : '') + '></td>' +
+        '<td class="who"><div class="em">' + esc(r.email) + '</div>' +
+          '<div class="nm">' + esc(name || '이름 없음') + ' · ' + esc(r.language || '?') +
+          (r.confirmed_at ? '' : ' · <b style="color:var(--flag-color);">메일 미확인</b>') +
+          '</div></td>' +
+        '<td class="nowrap"><span class="badge ' + st + '">' + STATUS_LABEL[st] + '</span>' +
+          (r.sub_canceled ? ' <span class="badge flagb">해지예약</span>' : '') + '</td>' +
+        '<td class="nowrap">' + (r.plan_code ? '<code>' + esc(r.plan_code) + '</code>' : '—') +
+          (r.comp_program ? '<div class="sub2">' + esc(r.comp_program) + '</div>' : '') + '</td>' +
+        '<td class="nowrap">' + short(un) + ' ' + ddayTag(un) + '</td>' +
+        '<td class="nowrap">' + short(r.signed_up_at) + '</td>' +
+        '<td class="nowrap">' + short(r.last_sign_in_at) + '</td>' +
+        '<td class="nowrap">' + short(r.last_study) + '</td>' +
+        '<td class="num">' + (r.answered || 0) + '문항' +
+          (pct === null ? '' : '<div class="sub2">정답률 ' + pct + '%</div>') + '</td>' +
+        '<td><select class="rowact" data-uid="' + esc(r.user_id) + '">' + actOpts + '</select></td>' +
+      '</tr>';
+
+    if(OPEN === r.user_id){
+      line += '<tr class="detail"><td colspan="10"><div class="detail-in" id="det-' +
+              esc(r.user_id) + '">불러오는 중…</div></td></tr>';
+    }
+    return line;
+  }).join('');
+
+  $('tb').innerHTML = html || '<tr><td colspan="10" class="empty">해당하는 고객이 없습니다.</td></tr>';
+
+  if(OPEN) renderDetail(OPEN);
+  renderBulk();
 }
 
-// 결제 중인 고객인가 = 유료인데 plan_code 가 comp_ 로 시작하지 않는다
-function isPayingCustomer(a){
-  return !!a.is_paid && String(a.plan_code || '').slice(0,5) !== 'comp_';
-}
+/* ── 펼친 상세 ────────────────────────────────────────────────────── */
+function renderDetail(uid){
+  var box = $('det-' + uid);
+  if(!box) return;
+  var r = rowOf(uid);
+  if(!r) return;
 
-function renderCustomer(){
-  const a = CUR.account, s = CUR.study;
-  const name = [a.first_name, a.last_name].filter(Boolean).join(' ');
-  const paying = isPayingCustomer(a);
-  const activeGrant = (CUR.grants || []).filter(function(g){ return g.status === 'active'; })[0];
+  var st     = statusOf(r);
+  var paying = (st === 'paying');
+  var name   = [r.first_name, r.last_name].filter(Boolean).join(' ');
+  var pct    = r.attempts > 0 ? Math.round(r.correct / r.attempts * 100) : null;
 
-  let h = '';
+  var h = '<div class="dgrid">';
 
-  /* ── 머리 ── */
-  h += '<div class="card">' +
-    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">' +
-      '<div class="section-title">' + esc(name || '이름 없음') + '</div>' +
-      planPill(a) +
-      '<div class="grow" style="flex:1;"></div>' +
-      '<button class="btn-ghost" onclick="openCustomer(\'' + esc(CUR.user_id) + '\')">새로고침</button>' +
-    '</div>' +
-    '<dl class="kv">' +
-      '<dt>이메일</dt><dd>' + esc(a.email) + '</dd>' +
-      '<dt>가입</dt><dd>' + when(a.signed_up_at, true) + ' · 언어 ' + esc(a.language || '?') + '</dd>' +
-      '<dt>이메일확인</dt><dd>' + (a.auth_confirmed_at ? '✓ ' + when(a.auth_confirmed_at) : '✗ 미확인') + '</dd>' +
-      '<dt>마지막 로그인</dt><dd>' + when(a.last_sign_in_at, true) + '</dd>' +
-      '<dt>마케팅 수신</dt><dd>' + (a.marketing_consent ? '✓ 동의' : '✗ 미동의') + '</dd>' +
-      '<dt>체험 종료</dt><dd>' + when(a.trial_ends_at, true) + '</dd>' +
-    '</dl></div>';
+  /* 계정 · 로그인 */
+  h += '<div class="dcard"><h3>계정 · 로그인</h3><dl class="kv">' +
+    '<dt>이름</dt><dd>' + esc(name || '이름 없음') + '</dd>' +
+    '<dt>이메일</dt><dd>' + esc(r.email) + ' ' + copyBtn(r.email) + '</dd>' +
+    '<dt>언어</dt><dd>' + esc(r.language || '?') + '</dd>' +
+    '<dt>가입</dt><dd>' + d(r.signed_up_at, true) + '</dd>' +
+    '<dt>메일 확인</dt><dd>' + (r.confirmed_at
+        ? '✓ ' + d(r.confirmed_at)
+        : '<b style="color:var(--flag-color);">✗ 미확인</b>') + '</dd>' +
+    '<dt>마지막 로그인</dt><dd>' + d(r.last_sign_in_at, true) + '</dd>' +
+    '<dt>마케팅 수신</dt><dd>' + (r.marketing_consent ? '✓ 동의' : '✗ 미동의') + '</dd>' +
+  '</dl>' +
+  '<div class="actrow">' +
+    '<button class="btn small" data-act="pwreset" data-uid="' + esc(uid) + '">비밀번호 재설정 메일</button>' +
+    (r.confirmed_at ? '' :
+      '<button class="btn small" data-act="confirm" data-uid="' + esc(uid) + '">메일 확인 처리</button>') +
+  '</div>' +
+  '<div class="info-box">“마지막 로그인”은 비밀번호로 새로 들어온 시각입니다. ' +
+    '로그인 상태가 유지되면 안 바뀌니 실제 활동은 <b>마지막 학습</b>으로 보세요.</div></div>';
 
-  /* ── 결제 ── */
-  h += '<div class="card"><div class="sub">결제</div>' +
-    '<dl class="kv">' +
-      '<dt>상태</dt><dd>' + (a.is_paid ? '유료 ✓' : '무료') +
-        (a.plan_code ? ' · <code>' + esc(a.plan_code) + '</code>' : '') +
-        (a.sub_canceled ? ' · <span style="color:var(--warn);">해지 예약됨</span>' : '') + '</dd>' +
-      '<dt>이용 만료</dt><dd>' + when(a.paid_until, true) + '</dd>' +
-      '<dt>Paddle 고객</dt><dd>' + (a.customer_ref
-        ? '<code>' + esc(a.customer_ref) + '</code> ' + copyBtn(a.customer_ref) : '—') + '</dd>' +
-      '<dt>Paddle 구독</dt><dd>' + (a.subscription_ref
-        ? '<code>' + esc(a.subscription_ref) + '</code> ' + copyBtn(a.subscription_ref) : '—') + '</dd>' +
-    '</dl>';
-
-  if(a.customer_ref || a.subscription_ref){
-    h += '<div class="banner info" style="margin-top:12px;">' +
-      '💳 <strong>환불·해지는 Paddle에서 처리합니다.</strong> ' +
-      'Paddle이 세금까지 대신 처리하는 구조라 여기서 하면 회계가 어긋납니다. ' +
-      '환불하면 웹훅이 접근권을 자동으로 내립니다.<br>' +
-      '<a href="https://vendors.paddle.com/" target="_blank" rel="noopener">Paddle 대시보드 열기 →</a> ' +
-      '<span class="muted">(위 ID를 복사해 검색하세요)</span></div>';
-  }
-
-  // 결제 이벤트
-  if((CUR.billing || []).length){
-    h += '<div class="sub" style="margin-top:14px;">최근 결제 이벤트</div><table>' +
-      '<tr><th>언제</th><th>종류</th></tr>' +
-      CUR.billing.map(function(b){
-        return '<tr><td>' + when(b.at, true) + '</td><td><code>' + esc(b.type) + '</code></td></tr>';
-      }).join('') + '</table>';
+  /* 결제 */
+  h += '<div class="dcard"><h3>결제</h3><dl class="kv">' +
+    '<dt>상태</dt><dd>' + STATUS_LABEL[st] + (r.sub_canceled ? ' · 해지 예약됨' : '') + '</dd>' +
+    '<dt>플랜</dt><dd>' + (r.plan_code ? '<code>' + esc(r.plan_code) + '</code>' : '—') + '</dd>' +
+    '<dt>이용 만료</dt><dd>' + d(r.paid_until, true) + '</dd>' +
+    '<dt>체험 종료</dt><dd>' + d(r.trial_ends_at, true) + '</dd>' +
+    '<dt>Paddle 고객</dt><dd>' + (r.customer_ref
+      ? '<code>' + esc(r.customer_ref) + '</code> ' + copyBtn(r.customer_ref) : '—') + '</dd>' +
+    '<dt>Paddle 구독</dt><dd>' + (r.subscription_ref
+      ? '<code>' + esc(r.subscription_ref) + '</code> ' + copyBtn(r.subscription_ref) : '—') + '</dd>' +
+  '</dl>';
+  if(r.customer_ref || r.subscription_ref){
+    h += '<div class="info-box">💳 환불·해지는 <a href="https://vendors.paddle.com/" target="_blank" ' +
+      'rel="noopener" style="color:var(--teal);">Paddle</a> 에서 합니다. 위 ID를 복사해 검색하세요. ' +
+      '환불하면 웹훅이 접근권을 자동으로 내립니다.</div>';
   }
   h += '</div>';
 
-  /* ── 증정 / 체험 부여 ── */
-  h += '<div class="card"><div class="sub">무료 체험 · 증정</div>';
-
-  if(activeGrant){
-    h += '<div class="banner info">' +
-      '🎁 현재 <strong>' + esc(activeGrant.program) + '</strong> ' +
-      (activeGrant.days ? activeGrant.days + '일' : activeGrant.months + '개월') +
-      ' 진행 중 · 종료 ' + when(activeGrant.expires_at, true) +
-      (activeGrant.note ? '<br><span class="muted">메모: ' + esc(activeGrant.note) + '</span>' : '') +
-      '</div>';
-  }
-
-  if(paying){
-    h += '<div class="banner warn">⚠️ <strong>결제 중인 고객입니다 — 증정을 줄 수 없습니다.</strong><br>' +
-      '증정을 주면 <code>plan_code</code>가 <code>comp_*</code>로 덮이고, 증정이 끝나는 순간 ' +
-      '만료 크론이 이 고객을 잠급니다. 돈을 내는 고객이 못 들어오게 됩니다.</div>';
-  }
-
-  h += '<div class="row" style="margin-bottom:12px;">' +
-    '<div><label for="gp">프로그램</label><select id="gp">' +
-      PROGRAMS.map(function(p){
-        return '<option value="' + esc(p.code) + '"' + (p.code === 'gift' ? ' selected' : '') + '>' +
-          esc(p.name_ko) + ' (' + esc(p.code) + ')</option>';
-      }).join('') +
-    '</select></div>' +
-    '<div style="flex:2;"><label for="gn">메모 (왜 주는지 — 이력에 남습니다)</label>' +
-      '<input type="text" id="gn" placeholder="예: 문의 응대, 세미나 감사"></div>' +
+  /* 학습 · 증정 */
+  h += '<div class="dcard"><h3>학습</h3><dl class="kv">' +
+    '<dt>푼 문제</dt><dd>' + (r.answered || 0) + '문항 · 총 ' + (r.attempts || 0) + '회 시도' +
+      (pct === null ? '' : ' · 정답률 ' + pct + '%') + '</dd>' +
+    '<dt>모의고사</dt><dd>' + (r.mock_done || 0) + '회 완료</dd>' +
+    '<dt>마지막 학습</dt><dd>' + d(r.last_study, true) + '</dd>' +
+  '</dl>' +
+  '<h3 style="margin-top:14px;">지금 살아 있는 증정</h3>' +
+  (r.grant_program
+    ? '<div class="tip-box">🎁 <b>' + esc(r.grant_program) + '</b> · 종료 ' + d(r.grant_expires_at, true) +
+      (r.grant_note ? '<br>메모: ' + esc(r.grant_note) : '') + '</div>'
+    : '<div class="sub2">없음</div>') +
   '</div>';
 
-  const dis = paying ? ' disabled' : '';
-  h += '<div class="row" style="gap:8px;">' +
-    '<button class="btn" style="flex:0;" onclick="doGrant(\'days\',7)"'    + dis + '>1주</button>' +
-    '<button class="btn" style="flex:0;" onclick="doGrant(\'comp\',3)"'    + dis + '>3개월</button>' +
-    '<button class="btn" style="flex:0;" onclick="doGrant(\'comp\',6)"'    + dis + '>6개월</button>' +
-    '<button class="btn" style="flex:0;" onclick="doGrant(\'comp\',12)"'   + dis + '>1년</button>' +
-    '<div style="flex:1;"></div>' +
-    '<button class="btn-ghost danger" style="flex:0;" onclick="doRevoke()"' +
-      (activeGrant ? '' : ' disabled') + '>회수</button>' +
-  '</div>' +
-  '<div id="g2-msg" class="msg"></div>';
+  h += '</div>'; /* dgrid 끝 */
 
-  // 증정 이력
-  if((CUR.grants || []).length){
-    h += '<div class="sub" style="margin-top:14px;">이력</div><table>' +
+  /* 부여 · 회수 */
+  h += '<div class="dcard" style="margin-top:12px;"><h3>기간 부여 · 회수</h3>';
+  if(paying){
+    h += '<div class="tip-box" style="margin-top:0;">⚠️ <b>결제 중인 고객입니다 — 증정을 줄 수 없습니다.</b><br>' +
+      '증정을 주면 플랜이 <code>comp_*</code>로 덮이고, 증정이 끝나는 순간 만료 처리가 이 고객을 잠급니다. ' +
+      '기간만 더 주고 싶으면 아래 <b>무료 체험 연장</b>을 쓰세요 — 결제를 전혀 건드리지 않습니다.</div>';
+  }
+  h += '<div class="actrow">';
+  ACTIONS.forEach(function(a){
+    var off = (paying && a.kind !== 'trial') || (a.kind === 'revoke' && !r.grant_program);
+    h += '<button class="btn small' + (a.kind === 'revoke' ? ' danger' : '') + '"' +
+         ' data-act="one" data-v="' + a.v + '" data-uid="' + esc(uid) + '"' +
+         (off ? ' disabled' : '') + '>' + a.label + '</button>';
+  });
+  h += '<button class="btn small" data-act="demo" data-uid="' + esc(uid) + '"' +
+       (paying ? ' disabled' : '') + '>공용 데모 7일</button>';
+  h += '</div>' +
+  '<div class="info-box">🔴 <b>공용 데모</b>는 회사 시연용 계정 전용입니다 — 이 프로그램으로 준 계정은 ' +
+    '데모가 끝나고 30일 뒤 <b>비밀번호가 자동으로 바뀝니다</b>. 진짜 고객에게는 쓰지 마세요.</div>' +
+  '<div class="msg" id="dmsg-' + esc(uid) + '"></div></div>';
+
+  /* 이력 */
+  h += '<div class="dcard" style="margin-top:12px;" id="hist-' + esc(uid) + '">' +
+       '<h3>이력</h3><div class="sub2">불러오는 중…</div></div>';
+
+  box.innerHTML = h;
+  loadHistory(uid);
+}
+
+/* 증정·결제·메일 이력은 기존 admin_get_customer 를 그대로 쓴다 */
+async function loadHistory(uid){
+  var box = $('hist-' + uid);
+  if(!box) return;
+  if(SAMPLE){ box.innerHTML = '<h3>이력</h3><div class="sub2">(표본 보기 — 이력 없음)</div>'; return; }
+
+  var r = await sb.rpc('admin_get_customer', { p_user_id: uid });
+  if(r.error){
+    box.innerHTML = '<h3>이력</h3><div class="sub2">이력을 못 읽었습니다: ' + esc(rpcErr(r.error)) + '</div>';
+    return;
+  }
+  var row = Array.isArray(r.data) ? r.data[0] : r.data;
+  if(!row){ box.innerHTML = ''; return; }
+  var g = row.grants || [], b = row.billing || [], a = row.account || {};
+  var h = '<h3>이력</h3>';
+
+  if(g.length){
+    h += '<div class="sub2" style="margin-top:8px;font-weight:700;">증정</div><table class="mini">' +
       '<tr><th>프로그램</th><th>기간</th><th>종료</th><th>상태</th><th>메모</th></tr>' +
-      CUR.grants.map(function(g){
-        return '<tr><td>' + esc(g.program) + '</td>' +
-          '<td>' + (g.days ? g.days + '일' : g.months + '개월') + '</td>' +
-          '<td>' + when(g.expires_at) + '</td>' +
-          '<td>' + esc(g.status) + '</td>' +
-          '<td class="muted">' + esc(g.note || '') + '</td></tr>';
+      g.map(function(x){
+        return '<tr><td>' + esc(x.program) + '</td><td>' +
+          (x.days ? x.days + '일' : x.months + '개월') + '</td><td>' + d(x.expires_at) +
+          '</td><td>' + esc(x.status) + '</td><td>' + esc(x.note || '') + '</td></tr>';
       }).join('') + '</table>';
   }
-  h += '</div>';
-
-  /* ── 학습 ── */
-  const att = Number(s.attempts || 0), cor = Number(s.correct || 0);
-  const pct = att > 0 ? Math.round(cor / att * 100) : null;
-  h += '<div class="card"><div class="sub">학습</div><dl class="kv">' +
-    '<dt>푼 문제</dt><dd>' + (s.answered || 0) + '문항 · 총 ' + att + '회 시도' +
-      (pct === null ? '' : ' · 정답률 ' + pct + '%') + '</dd>' +
-    '<dt>플래그</dt><dd>' + (s.flagged || 0) + '문항</dd>' +
-    '<dt>세션</dt><dd>' + (s.sessions || 0) + '회</dd>' +
-    '<dt>모의고사</dt><dd>' + (s.mock_done || 0) + '회 완료' +
-      (s.mock_last ? ' · 최근 Part ' + esc(s.mock_last.part) + ' ' +
-        esc(s.mock_last.correct) + '/' + esc(s.mock_last.total) +
-        ' (' + when(s.mock_last.at) + ')' : '') + '</dd>' +
-    '<dt>마지막 학습</dt><dd>' + when(s.last_study, true) + '</dd>' +
-  '</dl></div>';
-
-  /* ── 메일 ── */
-  h += '<div class="card"><div class="sub">메일</div><dl class="kv">' +
-    '<dt>가입 환영</dt><dd>' + flag(a.signup_welcome_sent) + '</dd>' +
-    '<dt>유료 환영</dt><dd>' + flag(a.welcome_email_sent) + '</dd>' +
-    '<dt>프로모</dt><dd>'    + flag(a.promo_email_sent) + '</dd>' +
-    '<dt>War Room</dt><dd>'  + flag(a.warroom_email_sent) + '</dd>' +
-  '</dl>' +
-  '<div class="banner info" style="margin-top:12px;">' +
-    '📮 지금은 <strong>보냈다/안 보냈다</strong>만 남습니다 — 언제 보냈는지는 기록이 없습니다. ' +
-    'Pop Quiz 메일은 회원별이 아니라 회차별(<code>daily_quiz.email_sent_at</code>)로 기록됩니다.' +
-  '</div></div>';
-
-  $('cust').innerHTML = h;
+  if(b.length){
+    h += '<div class="sub2" style="margin-top:12px;font-weight:700;">결제 이벤트</div><table class="mini">' +
+      '<tr><th>언제</th><th>종류</th></tr>' +
+      b.map(function(x){
+        return '<tr><td>' + d(x.at, true) + '</td><td><code>' + esc(x.type) + '</code></td></tr>';
+      }).join('') + '</table>';
+  }
+  h += '<div class="sub2" style="margin-top:12px;font-weight:700;">보낸 메일</div>' +
+    '<div class="sub2" style="margin-top:3px;">' +
+      '가입 환영 ' + flag(a.signup_welcome_sent) + ' · 유료 환영 ' + flag(a.welcome_email_sent) +
+      ' · 프로모 ' + flag(a.promo_email_sent) + ' · War Room ' + flag(a.warroom_email_sent) +
+      ' · 확인 독촉 ' + flag(a.confirm_reminder_sent) +
+      '<br>보냈다/안 보냈다만 남습니다 — 언제 보냈는지는 아직 기록이 없습니다.</div>';
+  box.innerHTML = h;
 }
+function flag(v){ return v ? '✓' : '✗'; }
 
-function flag(v){ return v ? '✓ 보냄' : '✗ 안 보냄'; }
-
-// 값을 onclick 문자열에 끼워 넣지 않는다 — 따옴표가 든 값이 오면 코드가 깨진다.
-// data 속성에 담고 읽어 쓴다.
 function copyBtn(v){
-  return '<button class="btn-ghost" style="padding:2px 8px;font-size:11px;" ' +
-    'data-copy="' + esc(v) + '" onclick="copyFrom(this)">복사</button>';
+  return '<button class="btn small" style="padding:2px 8px;font-weight:600;" ' +
+    'data-copy="' + esc(v) + '">복사</button>';
 }
-function copyFrom(el){
-  const v = el.getAttribute('data-copy') || '';
-  navigator.clipboard.writeText(v).then(function(){
-    const old = el.textContent;
-    el.textContent = '복사됨';
-    setTimeout(function(){ el.textContent = old; }, 1200);
+
+/* ── 눌렀을 때 ────────────────────────────────────────────────────────────
+   🔴 줄 전체가 눌리는 화면이라, 줄 안에 있는 조작 요소(부여 상자·체크박스·버튼)를
+      누른 것까지 "줄을 눌렀다"로 치면 표를 다시 그려서 **열려던 메뉴가 사라진다.**
+      그래서 조작 요소를 눌렀으면 줄 펼치기로 넘어가지 않고 여기서 끝낸다. */
+document.addEventListener('click', function(ev){
+  var t = ev.target;
+  if(!t || !t.closest) return;
+
+  // 복사 단추
+  var copy = t.closest('[data-copy]');
+  if(copy){
+    navigator.clipboard.writeText(copy.getAttribute('data-copy') || '');
+    var old = copy.textContent; copy.textContent = '복사됨';
+    setTimeout(function(){ copy.textContent = old; }, 1200);
+    return;
+  }
+
+  // 요약 타일 = 거르개
+  var tile = t.closest('[data-bucket]');
+  if(tile){ BUCKET = tile.getAttribute('data-bucket'); render(); return; }
+
+  // 제목 눌러 정렬
+  var th = t.closest('th.sortable');
+  if(th){
+    var k = th.getAttribute('data-sort');
+    if(SORT.key === k) SORT.dir = -SORT.dir; else { SORT.key = k; SORT.dir = -1; }
+    render(); return;
+  }
+
+  // 체크박스
+  if(t.classList && t.classList.contains('cb')){
+    var u = t.getAttribute('data-uid');
+    if(t.checked) SEL[u] = true; else delete SEL[u];
+    renderBulk(); return;
+  }
+
+  // 상세 안의 작업 단추
+  var btn = t.closest('[data-act]');
+  if(btn){
+    var uid = btn.getAttribute('data-uid');
+    var act = btn.getAttribute('data-act');
+    if(act === 'one')          applyOne(uid, btn.getAttribute('data-v'));
+    else if(act === 'demo')    grantDemo(uid);
+    else if(act === 'pwreset') sendReset(uid);
+    else if(act === 'confirm') confirmEmail(uid);
+    return;
+  }
+
+  // ⬇︎ 여기가 핵심 — 조작 요소를 눌렀으면 줄을 펼치지 않는다(표를 다시 안 그린다)
+  if(t.closest('select, input, button, a, label, .detail')) return;
+
+  var tr = t.closest('tr.r');
+  if(tr){
+    var id = tr.getAttribute('data-uid');
+    OPEN = (OPEN === id) ? null : id;
+    render();
+  }
+});
+
+document.addEventListener('change', function(ev){
+  var s = ev.target;
+  if(s.classList && s.classList.contains('rowact')){
+    var v = s.value, uid = s.getAttribute('data-uid');
+    s.value = '';                       // 다음에 또 고를 수 있게 되돌린다
+    if(v) applyOne(uid, v);
+  }
+});
+
+/* ── 실제 실행 ────────────────────────────────────────────────────── */
+function rowOf(uid){
+  for(var i = 0; i < ROWS.length; i++) if(String(ROWS[i].user_id) === String(uid)) return ROWS[i];
+  return null;
+}
+function actionOf(v){
+  for(var i = 0; i < ACTIONS.length; i++) if(ACTIONS[i].v === v) return ACTIONS[i];
+  return null;
+}
+function say(uid, text, ok){
+  var el = $('dmsg-' + uid);
+  if(el){ el.textContent = text; el.className = 'msg' + (ok ? ' ok' : ' err'); }
+  else msg('top-msg', text, ok);
+}
+
+async function applyOne(uid, v){
+  var r = rowOf(uid), a = actionOf(v);
+  if(!r || !a) return;
+  var program = $('gp').value;
+  var note    = ($('gn').value || '').trim();
+
+  var what = a.kind === 'revoke' ? '증정을 회수'
+           : a.kind === 'trial'  ? '무료 체험을 ' + a.n + '일 연장'
+           : a.label + ' (프로그램: ' + program + ')';
+  if(!confirm('아래 고객에게 실행합니다.\n\n  ' + r.email + '\n  ' + what +
+              '\n  메모: ' + (note || '(없음)') + '\n\n진행할까요?')) return;
+
+  if(SAMPLE){ say(uid, '표본 보기라 실행하지 않았습니다.', false); return; }
+  say(uid, '처리 중…', true);
+  var res = await callOne(uid, a, program, note);
+  if(res.error){ say(uid, rpcErr(res.error), false); return; }
+  say(uid, '✓ 완료', true);
+  await loadAll();
+}
+
+function callOne(uid, a, program, note){
+  if(a.kind === 'days')
+    return sb.rpc('admin_grant_days',  { p_user_id:uid, p_program:program, p_days:a.n,   p_note:note || null });
+  if(a.kind === 'comp')
+    return sb.rpc('admin_grant_comp',  { p_user_id:uid, p_program:program, p_months:a.n, p_note:note || null });
+  if(a.kind === 'trial')
+    return sb.rpc('admin_extend_trial',{ p_user_id:uid, p_days:a.n });
+  if(a.kind === 'revoke')
+    return sb.rpc('admin_revoke_comp', { p_user_id:uid, p_reason:note || null });
+  return Promise.resolve({ error:{ message:'알 수 없는 작업' } });
+}
+
+async function grantDemo(uid){
+  var r = rowOf(uid); if(!r) return;
+  if(!confirm('⚠️ 공용 데모(7일)를 부여합니다.\n\n  ' + r.email +
+    '\n\n이 프로그램으로 준 계정은 데모가 끝나고 30일 뒤 비밀번호가 자동으로 바뀝니다.\n' +
+    '진짜 고객이라면 대신 “1주 부여”를 쓰세요.\n\n그래도 진행할까요?')) return;
+  if(SAMPLE){ say(uid, '표본 보기라 실행하지 않았습니다.', false); return; }
+  say(uid, '처리 중…', true);
+  var res = await sb.rpc('admin_grant_demo', {
+    p_user_id: uid, p_days: 7, p_note: ($('gn').value || '').trim() || null });
+  if(res.error){ say(uid, rpcErr(res.error), false); return; }
+  say(uid, '✓ 데모 7일 부여 완료', true);
+  await loadAll();
+}
+
+async function sendReset(uid){
+  var r = rowOf(uid); if(!r) return;
+  if(!confirm('이 주소로 비밀번호 재설정 메일을 보냅니다.\n\n  ' + r.email + '\n\n진행할까요?')) return;
+  if(SAMPLE){ say(uid, '표본 보기라 보내지 않았습니다.', false); return; }
+  say(uid, '보내는 중…', true);
+  var res = await sb.auth.resetPasswordForEmail(r.email, { redirectTo:'https://pracexam.com/app.html' });
+  if(res && res.error){ say(uid, '보내지 못했습니다: ' + res.error.message, false); return; }
+  say(uid, '✓ 보냈습니다 — 고객에게 스팸함도 확인하라고 알려 주세요.', true);
+}
+
+async function confirmEmail(uid){
+  var r = rowOf(uid); if(!r) return;
+  if(!confirm('이메일 확인을 손으로 처리합니다.\n\n  ' + r.email +
+    '\n\n고객이 확인 메일을 받지 못한 것이 확실할 때만 쓰세요. 바로 로그인할 수 있게 됩니다.\n\n진행할까요?')) return;
+  if(SAMPLE){ say(uid, '표본 보기라 실행하지 않았습니다.', false); return; }
+  say(uid, '처리 중…', true);
+  var res = await sb.rpc('admin_confirm_email', { p_user_id: uid });
+  if(res.error){ say(uid, rpcErr(res.error), false); return; }
+  say(uid, '✓ 확인 처리 완료', true);
+  await loadAll();
+}
+
+/* ── 여러 명 한꺼번에 ─────────────────────────────────────────────── */
+function selIds(){ return Object.keys(SEL); }
+function renderBulk(){
+  var n = selIds().length;
+  $('bulk').classList.toggle('hide', n === 0);
+  $('bulk-n').textContent = n + '명 선택됨';
+  var all = $('chk-all');
+  if(all){
+    var vis = visibleRows();
+    all.checked = vis.length > 0 && vis.every(function(r){ return SEL[r.user_id]; });
+  }
+}
+function toggleAll(box){
+  var rows = visibleRows();
+  if(box.checked) rows.forEach(function(r){ SEL[r.user_id] = true; });
+  else            rows.forEach(function(r){ delete SEL[r.user_id]; });
+  render();
+}
+function clearSel(){ SEL = {}; render(); }
+
+async function runBulk(){
+  var ids = selIds();
+  var a   = actionOf($('bulk-act').value);
+  if(!ids.length || !a){ $('bulk-msg').textContent = '고객과 작업을 먼저 고르세요.'; return; }
+  var program = $('gp').value, note = ($('gn').value || '').trim();
+
+  var names = ids.slice(0, 5).map(function(u){ var r = rowOf(u); return r ? r.email : u; });
+  if(!confirm(ids.length + '명에게 “' + a.label + '”을 실행합니다.\n\n  ' +
+      names.join('\n  ') + (ids.length > 5 ? '\n  … 외 ' + (ids.length - 5) + '명' : '') +
+      '\n\n메모: ' + (note || '(없음)') + '\n\n진행할까요?')) return;
+  if(SAMPLE){ $('bulk-msg').textContent = '표본 보기라 실행하지 않았습니다.'; return; }
+
+  var ok = 0, fail = [];
+  for(var i = 0; i < ids.length; i++){
+    $('bulk-msg').textContent = (i + 1) + '/' + ids.length + ' 처리 중…';
+    var res = await callOne(ids[i], a, program, note);
+    if(res.error){
+      var r = rowOf(ids[i]);
+      fail.push((r ? r.email : ids[i]) + ' — ' + rpcErr(res.error));
+    } else ok++;
+  }
+  $('bulk-msg').textContent = '완료 ' + ok + '명' + (fail.length ? ' · 실패 ' + fail.length + '명' : '');
+  if(fail.length) alert('실패한 고객\n\n' + fail.join('\n'));
+  SEL = {};
+  await loadAll();
+}
+
+/* ── CSV ──────────────────────────────────────────────────────────── */
+function exportCsv(){
+  var rows = visibleRows();
+  if(!rows.length){ return; }
+  var head = ['이메일','이름','언어','상태','플랜','프로그램','이용만료','체험종료',
+              '가입','메일확인','마지막로그인','마지막학습','푼문항','시도','정답','모의고사','마케팅동의'];
+  var lines = [head.join(',')];
+  rows.forEach(function(r){
+    lines.push([
+      r.email, [r.first_name, r.last_name].filter(Boolean).join(' '), r.language,
+      STATUS_LABEL[statusOf(r)], r.plan_code, r.comp_program,
+      r.paid_until, r.trial_ends_at, r.signed_up_at, r.confirmed_at,
+      r.last_sign_in_at, r.last_study, r.answered, r.attempts, r.correct, r.mock_done,
+      r.marketing_consent ? 'Y' : 'N'
+    ].map(function(v){
+      var s = (v == null) ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(','));
   });
+  // 엑셀이 한글을 깨뜨리지 않도록 BOM 을 앞에 붙인다
+  var blob = new Blob(['﻿' + lines.join('\r\n')], { type:'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pracexam_customers.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
-/* ── 부여 · 회수 ──────────────────────────────────────────────────── */
-async function doGrant(kind, n){
-  if(!CUR) return;
-  const program = ($('gp') || {}).value;
-  const note    = (($('gn') || {}).value || '').trim();
-  if(!program){ msg('g2-msg', '프로그램을 고르세요', false); return; }
-
-  const label = (kind === 'days') ? (n + '일') : (n + '개월');
-  const ok = confirm(
-    '이 계정에 무료 이용을 부여합니다.\n\n' +
-    '  대상: ' + (CUR.account.email || '') + '\n' +
-    '  프로그램: ' + program + '\n' +
-    '  기간: ' + label + '\n' +
-    '  메모: ' + (note || '(없음)') + '\n\n' +
-    '기간이 끝나면 자동으로 무료 회원으로 돌아갑니다. 진행할까요?');
-  if(!ok) return;
-
-  msg('g2-msg', '부여 중…', true);
-  const fn   = (kind === 'days') ? 'admin_grant_days' : 'admin_grant_comp';
-  const args = (kind === 'days')
-    ? { p_user_id: CUR.user_id, p_program: program, p_days:   n, p_note: note || null }
-    : { p_user_id: CUR.user_id, p_program: program, p_months: n, p_note: note || null };
-
-  const res = await sb.rpc(fn, args);
-  if(res.error){ msg('g2-msg', rpcErr(res.error), false); return; }
-
-  const r = Array.isArray(res.data) ? res.data[0] : res.data;
-  msg('g2-msg', '✓ 부여 완료 — ' + label + ' · 종료 ' + when(r && r.expires_at, true), true);
-  await openCustomer(CUR.user_id);
-}
-
-async function doRevoke(){
-  if(!CUR) return;
-  const reason = prompt('회수 사유를 적어 주세요 (이력에 남습니다)', '');
-  if(reason === null) return;
-
-  const ok = confirm('이 계정의 무료 이용을 지금 즉시 회수합니다.\n\n' +
-    '  대상: ' + (CUR.account.email || '') + '\n\n' +
-    '바로 무료 회원(하루 5문제)으로 내려갑니다. 진행할까요?');
-  if(!ok) return;
-
-  msg('g2-msg', '회수 중…', true);
-  const res = await sb.rpc('admin_revoke_comp', {
-    p_user_id: CUR.user_id, p_reason: reason || null });
-  if(res.error){ msg('g2-msg', rpcErr(res.error), false); return; }
-
-  const r = Array.isArray(res.data) ? res.data[0] : res.data;
-  msg('g2-msg', '✓ 회수 완료 (' + ((r && r.revoked) || 0) + '건)', true);
-  await openCustomer(CUR.user_id);
+/* ── 표본 자료 (초안 검토용 · 실제와 무관) ──────────────────────────── */
+function sampleRows(){
+  var day = 86400000, now = Date.now();
+  function iso(off){ return new Date(now + off * day).toISOString(); }
+  //     이메일, 이름, 성, 언어, 가입(일전), 유료, 플랜, 만료(일후), 프로그램, 메모, 문항, 시도, 정답, 학습(일전), 모의
+  var mk = [
+    ['grace.lee@example.com',     'Grace','Lee',   'en', -220, true,  'monthly',  25,   null,        null,          412, 610, 402, -1,   3],
+    ['minsu.park@example.com',    '민수', '박',    'ko', -180, true,  'monthly',  4,    null,        null,          305, 480, 300, -3,   2],
+    ['ambassador@example.com',    'Dana', 'Cruz',  'en', -40,  true,  'comp_3m',  62,   'ambassador','세미나 감사',  190, 250, 170, -2,   1],
+    ['gift.user@example.com',     'Ken',  'Ito',   'en', -35,  true,  'comp_1y',  330,  'gift',      '초기 후원자',  88,  120, 70,  -10,  0],
+    ['demo.calutech@example.com', 'Calutech','Demo','ko',-3,   true,  'comp_7d',  4,    'demo',      '데모 시연',    12,  15,  9,   0,    0],
+    ['newbie1@example.com',       'Ana',  'Reyes', 'en', -2,   false, null,       null, null,        null,          18,  22,  15,  0,    0],
+    ['newbie2@example.com',       '정우', '김',    'ko', -5,   false, null,       null, null,        null,          46,  60,  41,  -1,   0],
+    ['soon.expire@example.com',   'Tom',  'Fisher','en', -27,  false, null,       null, null,        null,          130, 190, 120, -4,   1],
+    ['lapsed1@example.com',       'Rita', 'Gomez', 'en', -95,  false, null,       null, null,        null,          240, 330, 210, -60,  1],
+    ['lapsed2@example.com',       '수진', '이',    'ko', -120, false, null,       null, null,        null,          5,   6,   3,   -110, 0],
+    ['unconfirmed@example.com',   'Pat',  'Nolan', 'en', -1,   false, null,       null, null,        null,          0,   0,   0,   null, 0],
+    ['typo.bounce@example.com',   'Lee',  'Byrd',  'en', -9,   false, null,       null, null,        null,          0,   0,   0,   null, 0]
+  ];
+  return mk.map(function(m, i){
+    var unconf = (m[0].indexOf('unconfirmed') === 0 || m[0].indexOf('typo') === 0);
+    return {
+      user_id:'sample-' + i, email:m[0], first_name:m[1], last_name:m[2], language:m[3],
+      signed_up_at:    iso(m[4]),
+      confirmed_at:    unconf ? null : iso(m[4]),
+      last_sign_in_at: iso(Math.max(m[4], -14)),
+      is_paid:   m[5],
+      plan_code: m[6],
+      paid_until:    m[7] === null ? null : iso(m[7]),
+      trial_ends_at: iso(m[4] + 30),
+      comp_program: m[8],
+      sub_canceled: (i === 1),
+      marketing_consent: (i % 3 !== 0),
+      customer_ref:     (m[5] && !m[8]) ? 'ctm_01hxsample' + i : null,
+      subscription_ref: (m[5] && !m[8]) ? 'sub_01hxsample' + i : null,
+      answered:m[10], attempts:m[11], correct:m[12],
+      last_study: m[13] === null ? null : iso(m[13]),
+      mock_done:m[14],
+      grant_program:    m[8],
+      grant_expires_at: m[8] ? iso(m[7]) : null,
+      grant_note:       m[9]
+    };
+  });
 }
 </script>
 </body>
