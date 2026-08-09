@@ -6684,7 +6684,7 @@ async function showExplanation(q, isOk, timeout){
     const _oc = ((q.outlineCode || '') + '').trim();
     if(_oc){
       // COP 매핑 문제: 배지 클릭 → War Room 해당 토픽 (2026-07-30)
-      topicBadge.innerHTML = '📖 Topic: ' + _escHtml(_tn) + ' <span style="opacity:.65;">↗</span>';
+      topicBadge.innerHTML = '<svg class="wr-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' + 'War Room · ' + _escHtml(_tn) + ' <span style="opacity:.7;">↗</span>';
       topicBadge.classList.add('exp-topic-link');
       topicBadge.title = (LANG === 'en') ? 'View this topic\'s War Room cheat sheet' : 'War Room에서 이 토픽 치트시트 보기';
       topicBadge.onclick = function(){ openWarRoomTopic(_oc, q); };
@@ -8594,8 +8594,9 @@ if ('serviceWorker' in navigator) {
 .wr-rel-chip .pb{font-size:9px;font-weight:800;color:#3E837A;margin-right:5px;}
 .wr-rel-chip.active{background:#3E837A;border-color:#3E837A;color:#fff;cursor:default;}
 .wr-rel-chip.active .pb{color:rgba(255,255,255,.8);}
-.exp-topic-link{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
-.exp-topic-link:hover{background:#d9ebe9;color:#354649;}
+.exp-topic-link{cursor:pointer;background:var(--accent-tint);color:#a4552f;border-color:var(--accent-border);font-weight:700;}
+.exp-topic-link:hover{background:#f7e3d8;color:#8f4526;}
+.exp-topic-link .wr-bolt{width:12px;height:12px;vertical-align:-1px;margin-right:5px;}
 .wr-search{position:relative;margin:2px 2px 10px;}
 .wr-search input{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px 28px 8px 30px;border:1px solid rgba(53,70,73,.18);border-radius:9px;color:#354649;background:#fff;outline:none;}
 .wr-search input:focus{border-color:#3E837A;}
