@@ -82,7 +82,9 @@ html,body{
   background:var(--card-bg);border-bottom:1px solid var(--border-clr);
   padding:11px 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:10px;
 }
-.tiles{display:flex;gap:7px;flex-wrap:wrap;}
+.tiles{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.tiles-label{font-size:calc(12.5px * var(--fs));font-weight:700;color:var(--text-muted);
+  letter-spacing:.02em;margin-right:2px;white-space:nowrap;}
 .tile{
   font-family:inherit;text-align:left;cursor:pointer;
   background:#fff;border:1px solid var(--border-clr);border-radius:10px;
@@ -129,7 +131,10 @@ thead th{
 }
 thead th.sortable{cursor:pointer;user-select:none;}
 thead th.sortable:hover{color:var(--text-main);}
+thead th.sortable:hover .arrow.off{opacity:.85;}
 thead th .arrow{color:var(--sel-border);font-size:calc(11px * var(--fs));}
+/* 아직 안 고른 제목의 흐린 ↕ — 누를 수 있다는 표시 */
+thead th .arrow.off{color:var(--text-muted);opacity:.4;}
 tbody td{
   padding:9px 11px;border-bottom:1px solid var(--border-clr);vertical-align:middle;
   font-size:calc(14px * var(--fs));color:var(--text-main);
@@ -272,7 +277,8 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
     </div>
     <div class="hint">
       표 오른쪽 <b>“부여…”</b> 를 고르면 위에서 정한 프로그램·메모로 들어갑니다.
-      줄을 누르면 그 고객의 상세가 펼쳐집니다.
+      줄을 누르면 그 고객의 상세가 펼쳐집니다. <b>제목을 누르면 그 열로 정렬</b>됩니다(다시 누르면 반대 순서).
+      <br>🕒 <b>모든 시각은 미국 서부 시간(PT)</b>입니다 — 이 화면을 어디서 열든 같은 숫자가 나옵니다.
     </div>
     <div id="top-msg" class="msg"></div>
   </div>
@@ -284,13 +290,13 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
         <tr>
           <th style="width:34px;"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
           <th class="sortable" data-sort="email">고객</th>
-          <th>상태</th>
+          <th class="sortable" data-sort="status">상태</th>
           <th>플랜</th>
           <th class="sortable" data-sort="until">이용 만료</th>
           <th class="sortable" data-sort="signed">가입</th>
           <th class="sortable" data-sort="login">마지막 로그인</th>
           <th class="sortable" data-sort="study">마지막 학습</th>
-          <th class="num">학습량</th>
+          <th class="sortable num" data-sort="volume">학습량 · Part별 정답률</th>
           <th style="width:130px;">작업</th>
         </tr>
       </thead>
@@ -364,18 +370,44 @@ function esc(s){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-function d(iso, withTime){
-  if(!iso) return '—';
-  try{
-    return new Date(iso).toLocaleString('ko-KR',
-      withTime ? { dateStyle:'medium', timeStyle:'short' } : { dateStyle:'medium' });
-  }catch(e){ return String(iso); }
+/* ── 시각 표기 = 미국 서부(PT) 고정 ────────────────────────────────────────
+   2026-08-08 사용자 지시. 브라우저가 어느 시간대에 있든 **항상 PT 로 보여 준다.**
+   (한국에서 열어도, 미국에서 열어도 같은 숫자가 나와야 고객과 말이 맞는다.)
+   여름/겨울(PDT·PST)은 Intl 이 알아서 갈아 준다 — 우리가 계산하지 않는다. */
+var TZ = 'America/Los_Angeles';
+function _fmt(opts){
+  try{ return new Intl.DateTimeFormat('en-US', Object.assign({ timeZone:TZ }, opts)); }
+  catch(e){ return null; }
 }
-function short(iso){                       // 표 안에서 쓰는 짧은 날짜
+var F_DATE  = _fmt({ year:'2-digit', month:'2-digit', day:'2-digit' });          // 08/08/26
+var F_TIME  = _fmt({ hour:'numeric', minute:'2-digit', hour12:true });           // 3:04 PM
+// 🔴 dateStyle/timeStyle 과 timeZoneName 은 같이 못 쓴다(TypeError) — 항목을 하나씩 적는다.
+//    처음에 같이 썼다가 상세 화면에 날것의 ISO 문자열이 나올 뻔했다.
+var F_FULL  = _fmt({ year:'numeric', month:'short', day:'numeric',
+                     hour:'numeric', minute:'2-digit', hour12:true, timeZoneName:'short' });
+var F_DAY   = _fmt({ year:'numeric', month:'short', day:'numeric' });
+
+function d(iso, withTime){                 // 상세 화면에서 쓰는 긴 표기
   if(!iso) return '—';
   var t = new Date(iso);
-  if(isNaN(t)) return '—';
-  return String(t.getFullYear()).slice(2) + '/' + (t.getMonth()+1) + '/' + t.getDate();
+  if(isNaN(t)) return String(iso);
+  var f = withTime ? F_FULL : F_DAY;
+  try{ return f ? f.format(t) : t.toISOString(); }catch(e){ return String(iso); }
+}
+function short(iso){                       // 표 안에서 쓰는 짧은 날짜 (PT)
+  if(!iso) return '—';
+  var t = new Date(iso);
+  if(isNaN(t) || !F_DATE) return '—';
+  return F_DATE.format(t);
+}
+function clock(iso){                       // 표 안에서 쓰는 시각 (PT)
+  if(!iso) return '';
+  var t = new Date(iso);
+  if(isNaN(t) || !F_TIME) return '';
+  return F_TIME.format(t);
+}
+function dcsv(iso){                        // CSV 용 — 비었으면 '—' 대신 빈칸
+  return iso ? d(iso, true) : '';
 }
 function days(iso){                        // 오늘로부터 며칠 (음수 = 지남)
   if(!iso) return null;
@@ -532,7 +564,35 @@ function statusOf(r){
   return 'expired';                              // 체험 끝 — 새 학습 잠김
 }
 var STATUS_LABEL = { paying:'결제', comp:'증정', trial:'체험중', expired:'체험만료' };
+var STATUS_RANK  = { paying:0, comp:1, trial:2, expired:3 };   // 상태로 정렬할 때의 차례
 function untilOf(r){ return r.is_paid ? r.paid_until : r.trial_ends_at; }
+
+/* ── Part별 학습 ──────────────────────────────────────────────────────────
+   서버가 [{part,answered,attempts,correct}, …] 로 준다. part 0 = 문항이 지워져
+   Part 를 알 수 없는 기록 — 합계가 어긋나 보이지 않게 '기타'로 따로 보여 준다. */
+function pctOf(correct, attempts){
+  return attempts > 0 ? Math.round(correct / attempts * 100) : null;
+}
+function partList(r){
+  var a = r.parts;
+  if(typeof a === 'string'){ try{ a = JSON.parse(a); }catch(e){ a = []; } }
+  return Array.isArray(a) ? a.filter(function(x){ return x && x.answered > 0; }) : [];
+}
+function partLabel(n){ return (Number(n) === 0) ? '기타' : ('P' + n); }
+// 표 안에 한 줄로: "P1 72% · P2 65%"
+function partSummary(r){
+  var list = partList(r);
+  if(!list.length) return '';
+  return list.map(function(x){
+    var p = pctOf(x.correct, x.attempts);
+    return partLabel(x.part) + ' ' + (p === null ? '—' : p + '%');
+  }).join(' · ');
+}
+function mockList(r){
+  var a = r.mock_parts;
+  if(typeof a === 'string'){ try{ a = JSON.parse(a); }catch(e){ a = []; } }
+  return Array.isArray(a) ? a : [];
+}
 
 function matches(r, q){
   if(!q) return true;
@@ -562,10 +622,17 @@ function visibleRows(){
       x = String(a.email||'').toLowerCase(); y = String(b.email||'').toLowerCase();
       return x < y ? -dir : (x > y ? dir : 0);
     }
-    if(k === 'until')      { x = ts(untilOf(a));        y = ts(untilOf(b)); }
-    else if(k === 'login') { x = ts(a.last_sign_in_at); y = ts(b.last_sign_in_at); }
-    else if(k === 'study') { x = ts(a.last_study);      y = ts(b.last_study); }
-    else                   { x = ts(a.signed_up_at);    y = ts(b.signed_up_at); }
+    if(k === 'status'){
+      // 결제 → 증정 → 체험중 → 체험만료 차례. 같은 상태면 만료가 임박한 순서로.
+      x = STATUS_RANK[statusOf(a)]; y = STATUS_RANK[statusOf(b)];
+      if(x !== y) return (x - y) * -dir;
+      return (ts(untilOf(a)) - ts(untilOf(b))) * dir;
+    }
+    if(k === 'until')       { x = ts(untilOf(a));        y = ts(untilOf(b)); }
+    else if(k === 'login')  { x = ts(a.last_sign_in_at); y = ts(b.last_sign_in_at); }
+    else if(k === 'study')  { x = ts(a.last_study);      y = ts(b.last_study); }
+    else if(k === 'volume') { x = Number(a.answered||0); y = Number(b.answered||0); }
+    else                    { x = ts(a.signed_up_at);    y = ts(b.signed_up_at); }
     return (x - y) * dir;
   });
   return out;
@@ -583,14 +650,15 @@ function renderTiles(){
     ['all','전체'], ['paying','결제 중'], ['comp','증정 중'], ['trial','체험 중'],
     ['expired','체험 만료'], ['unconf','메일 미확인'], ['soon','7일 내 만료']
   ];
-  $('tiles').innerHTML = defs.map(function(t){
+  $('tiles').innerHTML = '<span class="tiles-label">눌러서 거르기 →</span>' + defs.map(function(t){
     return '<button class="tile' + (BUCKET === t[0] ? ' on' : '') + '" data-bucket="' + t[0] + '">' +
       '<div class="n">' + c[t[0]] + '</div><div class="l">' + t[1] + '</div></button>';
   }).join('');
 }
 
+// 아직 안 고른 제목에도 흐린 ↕ 를 붙인다 — 안 그러면 누를 수 있는 줄 모른다(사용자 지적).
 function sortArrow(k){
-  if(SORT.key !== k) return '';
+  if(SORT.key !== k) return ' <span class="arrow off">↕</span>';
   return ' <span class="arrow">' + (SORT.dir < 0 ? '▼' : '▲') + '</span>';
 }
 function paintHeaders(){
@@ -630,11 +698,15 @@ function render(){
         '<td class="nowrap">' + (r.plan_code ? '<code>' + esc(r.plan_code) + '</code>' : '—') +
           (r.comp_program ? '<div class="sub2">' + esc(r.comp_program) + '</div>' : '') + '</td>' +
         '<td class="nowrap">' + short(un) + ' ' + ddayTag(un) + '</td>' +
-        '<td class="nowrap">' + short(r.signed_up_at) + '</td>' +
-        '<td class="nowrap">' + short(r.last_sign_in_at) + '</td>' +
-        '<td class="nowrap">' + short(r.last_study) + '</td>' +
+        '<td class="nowrap">' + short(r.signed_up_at) +
+          '<div class="sub2">' + clock(r.signed_up_at) + '</div></td>' +
+        '<td class="nowrap">' + short(r.last_sign_in_at) +
+          '<div class="sub2">' + clock(r.last_sign_in_at) + '</div></td>' +
+        '<td class="nowrap">' + short(r.last_study) +
+          '<div class="sub2">' + clock(r.last_study) + '</div></td>' +
         '<td class="num">' + (r.answered || 0) + '문항' +
-          (pct === null ? '' : '<div class="sub2">정답률 ' + pct + '%</div>') + '</td>' +
+          (pct === null ? '' : ' · ' + pct + '%') +
+          (partSummary(r) ? '<div class="sub2">' + partSummary(r) + '</div>' : '') + '</td>' +
         '<td><select class="rowact" data-uid="' + esc(r.user_id) + '">' + actOpts + '</select></td>' +
       '</tr>';
 
@@ -704,13 +776,44 @@ function renderDetail(uid){
   h += '</div>';
 
   /* 학습 · 증정 */
+  var plist = partList(r), mlist = mockList(r);
   h += '<div class="dcard"><h3>학습</h3><dl class="kv">' +
     '<dt>푼 문제</dt><dd>' + (r.answered || 0) + '문항 · 총 ' + (r.attempts || 0) + '회 시도' +
       (pct === null ? '' : ' · 정답률 ' + pct + '%') + '</dd>' +
-    '<dt>모의고사</dt><dd>' + (r.mock_done || 0) + '회 완료</dd>' +
     '<dt>마지막 학습</dt><dd>' + d(r.last_study, true) + '</dd>' +
-  '</dl>' +
-  '<h3 style="margin-top:14px;">지금 살아 있는 증정</h3>' +
+  '</dl>';
+
+  // Part별 학습 — 어느 Part 가 약한지 한눈에
+  if(plist.length){
+    h += '<table class="mini"><tr><th>Part</th><th>푼 문항</th><th>시도</th><th>정답률</th></tr>' +
+      plist.map(function(x){
+        var p = pctOf(x.correct, x.attempts);
+        return '<tr><td><b>' + partLabel(x.part) + '</b></td>' +
+          '<td>' + x.answered + '</td><td>' + x.attempts + '</td>' +
+          '<td>' + (p === null ? '—' : p + '%') + '</td></tr>';
+      }).join('') + '</table>' +
+      (plist.some(function(x){ return Number(x.part) === 0; })
+        ? '<div class="sub2" style="margin-top:5px;">“기타” = 문항이 지워져 Part 를 알 수 없는 기록입니다.</div>'
+        : '');
+  } else {
+    h += '<div class="sub2">아직 푼 문항이 없습니다.</div>';
+  }
+
+  // Part별 모의고사 — 점수는 가장 최근 회차
+  h += '<h3 style="margin-top:14px;">모의고사</h3>';
+  if(mlist.length){
+    h += '<table class="mini"><tr><th>Part</th><th>완료</th><th>최근 점수</th><th>최근 응시</th></tr>' +
+      mlist.map(function(x){
+        var p = (x.total > 0) ? Math.round(x.correct / x.total * 100) : null;
+        return '<tr><td><b>P' + x.part + '</b></td><td>' + x.done + '회</td>' +
+          '<td>' + (x.correct == null ? '—' : x.correct + '/' + x.total +
+            (p === null ? '' : ' (' + p + '%)')) + '</td>' +
+          '<td>' + d(x.at) + '</td></tr>';
+      }).join('') + '</table>';
+  } else {
+    h += '<div class="sub2">완료한 모의고사가 없습니다.</div>';
+  }
+  h += '<h3 style="margin-top:14px;">지금 살아 있는 증정</h3>' +
   (r.grant_program
     ? '<div class="tip-box">🎁 <b>' + esc(r.grant_program) + '</b> · 종료 ' + d(r.grant_expires_at, true) +
       (r.grant_note ? '<br>메모: ' + esc(r.grant_note) : '') + '</div>'
@@ -998,14 +1101,29 @@ function exportCsv(){
   var rows = visibleRows();
   if(!rows.length){ return; }
   var head = ['이메일','이름','언어','상태','플랜','프로그램','이용만료','체험종료',
-              '가입','메일확인','마지막로그인','마지막학습','푼문항','시도','정답','모의고사','마케팅동의'];
+              '가입(PT)','메일확인(PT)','마지막로그인(PT)','마지막학습(PT)',
+              '푼문항','시도','정답','정답률%',
+              'P1문항','P1정답률%','P2문항','P2정답률%','P3문항','P3정답률%',
+              '모의고사','마케팅동의'];
   var lines = [head.join(',')];
   rows.forEach(function(r){
+    // Part 별 값을 1·2·3 자리에 맞춰 꺼낸다 (없으면 빈칸)
+    var byPart = {};
+    partList(r).forEach(function(x){ byPart[Number(x.part)] = x; });
+    function pCell(n, what){
+      var x = byPart[n];
+      if(!x) return '';
+      return (what === 'a') ? x.answered : (pctOf(x.correct, x.attempts));
+    }
     lines.push([
       r.email, [r.first_name, r.last_name].filter(Boolean).join(' '), r.language,
       STATUS_LABEL[statusOf(r)], r.plan_code, r.comp_program,
-      r.paid_until, r.trial_ends_at, r.signed_up_at, r.confirmed_at,
-      r.last_sign_in_at, r.last_study, r.answered, r.attempts, r.correct, r.mock_done,
+      dcsv(r.paid_until), dcsv(r.trial_ends_at),
+      dcsv(r.signed_up_at), dcsv(r.confirmed_at),
+      dcsv(r.last_sign_in_at), dcsv(r.last_study),
+      r.answered, r.attempts, r.correct, pctOf(r.correct, r.attempts),
+      pCell(1,'a'), pCell(1,'p'), pCell(2,'a'), pCell(2,'p'), pCell(3,'a'), pCell(3,'p'),
+      r.mock_done,
       r.marketing_consent ? 'Y' : 'N'
     ].map(function(v){
       var s = (v == null) ? '' : String(v);
@@ -1021,7 +1139,29 @@ function exportCsv(){
   URL.revokeObjectURL(a.href);
 }
 
-/* ── 표본 자료 (초안 검토용 · 실제와 무관) ──────────────────────────── */
+/* ── 표본 자료 (화면 검토용 · 실제와 무관) ──────────────────────────── */
+// 총계를 Part 1·2·3 으로 대충 갈라 놓는다 — 모양만 보려는 것이라 정확할 필요가 없다
+function samParts(answered, attempts, correct, seed){
+  if(!answered) return [];
+  var w = [[.45,.35,.20],[.34,.33,.33],[.25,.30,.45]][seed % 3];
+  var out = [];
+  for(var i = 0; i < 3; i++){
+    var a = Math.round(answered * w[i]);
+    if(a <= 0) continue;
+    var at = Math.max(a, Math.round(attempts * w[i]));
+    var co = Math.round(correct * w[i] * (0.85 + 0.1 * i));
+    out.push({ part:i + 1, answered:a, attempts:at, correct:Math.min(co, at) });
+  }
+  return out;
+}
+function samMock(done, iso){
+  if(!done) return [];
+  var out = [];
+  for(var p = 1; p <= Math.min(done, 3); p++){
+    out.push({ part:p, done:1, correct:50 + p * 7, total:85, at:iso(-(p * 6)) });
+  }
+  return out;
+}
 function sampleRows(){
   var day = 86400000, now = Date.now();
   function iso(off){ return new Date(now + off * day).toISOString(); }
@@ -1058,7 +1198,9 @@ function sampleRows(){
       subscription_ref: (m[5] && !m[8]) ? 'sub_01hxsample' + i : null,
       answered:m[10], attempts:m[11], correct:m[12],
       last_study: m[13] === null ? null : iso(m[13]),
-      mock_done:m[14],
+      parts:      samParts(m[10], m[11], m[12], i),
+      mock_done:  m[14],
+      mock_parts: samMock(m[14], iso),
       grant_program:    m[8],
       grant_expires_at: m[8] ? iso(m[7]) : null,
       grant_note:       m[9]
