@@ -225,7 +225,8 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
       </div>
       <button class="icon-btn" onclick="loadAll()">새로고침</button>
       <button class="icon-btn" onclick="exportCsv()">CSV</button>
-      <a class="icon-btn" href="/admin/search.html" title="예전 검색 화면 (문제가 있을 때 대비용)">검색 화면</a>
+      <!-- Cloudflare Pages 가 .html 을 떼고 308 로 넘기므로 붙인 주소로 바로 건다 -->
+      <a class="icon-btn" href="/admin/search" title="예전 검색 화면 (문제가 있을 때 대비용)">검색 화면</a>
       <a class="icon-btn" href="/app">문항 관리</a>
       <button class="icon-btn" onclick="doLogout()">로그아웃</button>
     </div>
