@@ -8508,8 +8508,14 @@ if ('serviceWorker' in navigator) {
    번개 아이콘은 상단 메뉴·서랍 메뉴·해설 배지와 같은 SVG — 해설에서 그 배지를 눌러 들어온 사람이
    글자를 읽기 전에 모양으로 알아본다. 색은 새로 만들지 않고 해설 배지의 #a4552f 를 쓴다
    (--accent 원색은 이 페이지 배경에서 대비 2.0:1 로 모자란다). */
-.wr-head{max-width:1040px;margin:0 auto;}
-.wr-head .section-title{display:flex;align-items:center;gap:7px;margin-bottom:.7rem;}
+/* 여백 (2026-08-09 사용자 지적 "제목이 위로 치받고 왼쪽으로 치우쳤다 · 모바일에서 상단
+   네이비 헤더와 안 어울린다") — 원인은 이 화면만 `#screen-warroom{padding:0}` 이라
+   제목이 화면 왼쪽 끝·헤더 바로 밑에 그대로 붙었던 것.
+   다른 화면이 `.screen` 에서 받는 값(1.5rem · 640px 이하 1rem)을 제목에만 그대로 줘서
+   앱 전체의 제목 위치와 같아지게 한다. 본문(.wr-wrap)은 원래대로 폭을 꽉 채운다. */
+.wr-head{max-width:1040px;margin:0 auto;padding:1.5rem 1.5rem 0;}
+.wr-head .section-title{display:flex;align-items:center;gap:7px;margin-bottom:.85rem;}
+@media(max-width:640px){ .wr-head{padding:1rem 1rem 0;} }
 .wr-head-bolt{width:19px;height:19px;flex:0 0 auto;stroke:#a4552f;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 /* 🔴 가로 넘침 수정 (2026-08-06)
    grid 의 1fr 은 minmax(auto,1fr) 이라 트랙 최소폭이 '내용물의 min-content' 가 된다.
