@@ -601,9 +601,25 @@ function matches(r, q){
              String(r.comp_program||'')).toLowerCase();
   return hay.indexOf(q) >= 0;
 }
+/* ── 확인 메일이 실제로 나갔는지 ────────────────────────────────────────
+   admin_list_customers 가 두 열을 돌려주기 전(구버전 SQL)에는 값이 아예 없다.
+   그때 r.confirm_reminder_sent 는 undefined 라서 "안 보냄"으로 잘못 읽히므로,
+   열이 있는지부터 보고 없으면 아무 판단도 하지 않는다. */
+function hasMailCols(){
+  return ROWS.length > 0 && ('confirmation_sent_at' in ROWS[0]);
+}
+// 가입 24시간이 지났는데 독촉 메일이 아직 안 나간 사람 = 자동발송이 멈췄다는 신호
+function remindOverdue(r){
+  if(!hasMailCols()) return false;
+  if(r.confirmed_at || r.confirm_reminder_sent) return false;
+  var t = ts(r.signed_up_at);
+  return t > 0 && (Date.now() - t) >= 24 * 3600 * 1000;
+}
+
 function inBucket(r, b){
-  if(b === 'all')    return true;
-  if(b === 'unconf') return !r.confirmed_at;
+  if(b === 'all')      return true;
+  if(b === 'unconf')   return !r.confirmed_at;
+  if(b === 'noremind') return remindOverdue(r);
   if(b === 'soon'){
     var n = days(untilOf(r));
     return n !== null && n >= 0 && n <= 7;
@@ -639,10 +655,11 @@ function visibleRows(){
 }
 
 function renderTiles(){
-  var c = { all:ROWS.length, paying:0, comp:0, trial:0, expired:0, unconf:0, soon:0 };
+  var c = { all:ROWS.length, paying:0, comp:0, trial:0, expired:0, unconf:0, noremind:0, soon:0 };
   ROWS.forEach(function(r){
     c[statusOf(r)]++;
     if(!r.confirmed_at) c.unconf++;
+    if(remindOverdue(r)) c.noremind++;
     var n = days(untilOf(r));
     if(n !== null && n >= 0 && n <= 7) c.soon++;
   });
@@ -650,6 +667,8 @@ function renderTiles(){
     ['all','전체'], ['paying','결제 중'], ['comp','증정 중'], ['trial','체험 중'],
     ['expired','체험 만료'], ['unconf','메일 미확인'], ['soon','7일 내 만료']
   ];
+  // 독촉 미발송은 평소엔 0이라 자리만 차지한다 — 실제로 밀린 사람이 있을 때만 띄운다.
+  if(c.noremind > 0) defs.splice(6, 0, ['noremind','독촉 미발송']);
   $('tiles').innerHTML = '<span class="tiles-label">눌러서 거르기 →</span>' + defs.map(function(t){
     return '<button class="tile' + (BUCKET === t[0] ? ' on' : '') + '" data-bucket="' + t[0] + '">' +
       '<div class="n">' + c[t[0]] + '</div><div class="l">' + t[1] + '</div></button>';
@@ -692,6 +711,7 @@ function render(){
         '<td class="who"><div class="em">' + esc(r.email) + '</div>' +
           '<div class="nm">' + esc(name || '이름 없음') + ' · ' + esc(r.language || '?') +
           (r.confirmed_at ? '' : ' · <b style="color:var(--flag-color);">메일 미확인</b>') +
+          (remindOverdue(r) ? ' <b style="color:var(--flag-color);">· 독촉 미발송</b>' : '') +
           '</div></td>' +
         '<td class="nowrap"><span class="badge ' + st + '">' + STATUS_LABEL[st] + '</span>' +
           (r.sub_canceled ? ' <span class="badge flagb">해지예약</span>' : '') + '</td>' +
@@ -746,8 +766,10 @@ function renderDetail(uid){
     '<dt>메일 확인</dt><dd>' + (r.confirmed_at
         ? '✓ ' + d(r.confirmed_at)
         : '<b style="color:var(--flag-color);">✗ 미확인</b>') + '</dd>' +
+    mailRows(r) +
     '<dt>마지막 로그인</dt><dd>' + d(r.last_sign_in_at, true) + '</dd>' +
     '<dt>마케팅 수신</dt><dd>' + (r.marketing_consent ? '✓ 동의' : '✗ 미동의') + '</dd>' +
+    popquizRow(r) +
   '</dl>' +
   '<div class="actrow">' +
     '<button class="btn small" data-act="pwreset" data-uid="' + esc(uid) + '">비밀번호 재설정 메일</button>' +
@@ -755,7 +777,15 @@ function renderDetail(uid){
       '<button class="btn small" data-act="confirm" data-uid="' + esc(uid) + '">메일 확인 처리</button>') +
   '</div>' +
   '<div class="info-box">“마지막 로그인”은 비밀번호로 새로 들어온 시각입니다. ' +
-    '로그인 상태가 유지되면 안 바뀌니 실제 활동은 <b>마지막 학습</b>으로 보세요.</div></div>';
+    '로그인 상태가 유지되면 안 바뀌니 실제 활동은 <b>마지막 학습</b>으로 보세요.</div>' +
+  (r.confirmed_at ? '' :
+    '<div class="info-box">📧 위 두 줄은 <b>우리가 보냈는지</b>만 알려 줍니다 — ' +
+    '고객 받은편지함에 도착했는지는 알 수 없습니다. ' +
+    '“확인 메일”은 나갔는데 고객이 못 봤다면 대개 스팸함에 있습니다.</div>') +
+  '<div class="info-box">📮 “팝퀴즈 메일”은 <b>마케팅 수신 동의</b>와 <b>이메일 확인</b>을 ' +
+    '둘 다 마친 분에게만 나갑니다. 다만 메일 안의 수신거부 링크로 빠진 분은 ' +
+    'Brevo 에만 기록이 남아, 여기서는 그대로 “대상”으로 보입니다.</div>' +
+  '</div>';
 
   /* 결제 */
   h += '<div class="dcard"><h3>결제</h3><dl class="kv">' +
@@ -892,6 +922,59 @@ async function loadHistory(uid){
   box.innerHTML = h;
 }
 function flag(v){ return v ? '✓' : '✗'; }
+
+/* 상세 "계정 · 로그인" 칸에 들어가는 메일 두 줄.
+   · 확인 메일 = 가입 직후 자동으로 나가는 메일 (auth.users.confirmation_sent_at)
+   · 확인 독촉 = 가입 24시간 뒤 1회 나가는 스팸함 안내 (profiles.confirm_reminder_sent)
+   미확인 고객이 문의해 왔을 때 "우리가 보내긴 했나"를 여기서 바로 본다.
+   독촉 줄은 아직 확인 안 한 사람에게만 보인다 — 확인한 사람에겐 의미가 없다. */
+function mailRows(r){
+  if(!hasMailCols()){
+    return '<dt>확인 메일</dt><dd class="sub2">' +
+           '<code>admin_list_customers</code> 를 새로 배포하면 발송 시각이 여기 나옵니다.</dd>';
+  }
+  var h = '<dt>확인 메일</dt><dd>' + (r.confirmation_sent_at
+    ? '✓ ' + d(r.confirmation_sent_at, true)
+    : '<b style="color:var(--flag-color);">✗ 발송 기록 없음</b>') + '</dd>';
+  if(!r.confirmed_at){
+    var rem;
+    if(r.confirm_reminder_sent)   rem = '✓ 보냄';
+    else if(remindOverdue(r))     rem = '<b style="color:var(--flag-color);">✗ 미발송 — 가입 24시간이 지났습니다</b>';
+    else                          rem = '아직 (가입 24시간 뒤 나갑니다)';
+    h += '<dt>확인 독촉</dt><dd>' + rem + '</dd>';
+  }
+  return h;
+}
+
+/* ── 팝퀴즈 메일이 나가는 대상인지 ──────────────────────────────────────
+   실제 발송 함수 get_daily_quiz_recipients() 의 조건을 그대로 옮긴 것이다.
+   셋을 다 만족해야 발송된다:
+     ⓐ profiles.marketing_consent = true   (설정에서 켠 마케팅 수신 동의)
+     ⓑ auth.users.email_confirmed_at 존재  (확인 메일을 실제로 누른 사람)
+     ⓒ 이메일 주소 존재
+   ⓑ 를 빼면 안 된다 — 미확인 주소로 계속 보내면 반송률이 올라가고, 그게 곧
+   도메인 평판 하락 → 전원 스팸함 직행으로 이어진다.
+
+   🔴 조건을 화면에서 다시 계산하는 것이므로 SQL 을 고치면 여기도 같이 고칠 것.
+      2026-08-11 라이브 대조 = 이 계산 72명 : RPC 실제 반환 72명, 어긋남 0건.
+   ⚠️ 메일 안의 수신거부 링크로 빠진 사람은 Brevo 에만 기록이 남아 우리 DB 는
+      모른다. 그래서 여기서 "대상"이어도 실제 발송 때는 빠질 수 있다.
+   🔴 사유는 걸리는 것을 **전부** 모은다. 먼저 걸린 하나만 보이면, 두 가지가 함께
+      막고 있는 사람(라이브 4명)에게 그 하나만 풀어 주고 "이제 나가겠지" 하게 된다. */
+function popquizTarget(r){
+  var why = [];
+  if(!r.confirmed_at)               why.push('이메일 미확인');
+  if(!r.marketing_consent)          why.push('마케팅 수신 미동의');
+  if(!String(r.email || '').trim()) why.push('이메일 주소 없음');
+  return { ok: why.length === 0, why: why.join(' · ') };
+}
+function popquizRow(r){
+  var pq = popquizTarget(r);
+  return '<dt>팝퀴즈 메일</dt><dd>' + (pq.ok
+    ? '✓ 대상 <span class="sub2">— 새 팝퀴즈를 보내면 이분에게도 갑니다</span>'
+    : '<b style="color:var(--flag-color);">✗ 비대상</b> ' +
+      '<span class="sub2">— ' + pq.why + '</span>') + '</dd>';
+}
 
 function copyBtn(v){
   return '<button class="btn small" style="padding:2px 8px;font-weight:600;" ' +
@@ -1186,6 +1269,10 @@ function sampleRows(){
       user_id:'sample-' + i, email:m[0], first_name:m[1], last_name:m[2], language:m[3],
       signed_up_at:    iso(m[4]),
       confirmed_at:    unconf ? null : iso(m[4]),
+      // 표본에서도 새 두 열이 보이게 한다. typo.bounce = 가입 9일이 지나도록 독촉이
+      // 안 나간 사람 — 자동발송이 멈췄을 때 화면이 어떻게 보이는지 그대로 보여 준다.
+      confirmation_sent_at:  iso(m[4]),
+      confirm_reminder_sent: unconf ? (m[0].indexOf('typo') !== 0) : false,
       last_sign_in_at: iso(Math.max(m[4], -14)),
       is_paid:   m[5],
       plan_code: m[6],
