@@ -362,7 +362,16 @@ var OPEN     = null;            // 펼쳐 둔 user_id
 var BUCKET   = 'all';           // 타일 거르개
 var SORT     = { key:'signed', dir:-1 };
 
-/* 부여 메뉴 — 한 곳에서 관리한다. kind 가 어떤 RPC 를 부를지 정한다. */
+/* 부여 메뉴 — 한 곳에서 관리한다. kind 가 어떤 RPC 를 부를지 정한다.
+
+   두 가지 표시가 더 있다 (2026-08-12):
+     rowOnly    = 줄마다 있는 메뉴에만 넣고 «여러 명 한꺼번에» 에서는 뺀다
+     unconfOnly = 아직 이메일을 확인하지 않은 고객에게만 보여 준다
+
+   🔴 「메일 확인 처리」를 일괄 적용에서 뺀 이유(사용자 결정 2026-08-12):
+      주소 오타로 반송된 사람까지 한꺼번에 "확인됨"이 되면, 그 사람은 여전히
+      로그인을 못 하는데 화면에는 정상으로 보여 문제를 놓친다. 한 명씩 눌러야
+      "이 주소가 살아 있는 게 맞나"를 한 번 더 생각하게 된다. */
 var ACTIONS = [
   { v:'days:7',   label:'1주 (7일) 부여',    kind:'days',   n:7  },
   { v:'days:14',  label:'2주 (14일) 부여',   kind:'days',   n:14 },
@@ -370,10 +379,21 @@ var ACTIONS = [
   { v:'comp:3',   label:'3개월 부여',        kind:'comp',   n:3  },
   { v:'comp:6',   label:'6개월 부여',        kind:'comp',   n:6  },
   { v:'comp:12',  label:'1년 부여',          kind:'comp',   n:12 },
-  { v:'trial:14', label:'무료 체험 +14일',   kind:'trial',  n:14 },
-  { v:'trial:30', label:'무료 체험 +30일',   kind:'trial',  n:30 },
-  { v:'revoke:0', label:'증정 회수',         kind:'revoke', n:0  }
+  // 이름은 상세 칸 안내문("아래 무료 체험 연장을 쓰세요")과 같은 말로 맞춘다.
+  { v:'trial:14', label:'무료 체험 연장 +14일', kind:'trial',  n:14 },
+  { v:'trial:30', label:'무료 체험 연장 +30일', kind:'trial',  n:30 },
+  { v:'revoke:0', label:'증정 회수',         kind:'revoke', n:0  },
+  { v:'confirm:0', label:'메일 확인 처리 — 바로 로그인 가능', kind:'confirm', n:0,
+    rowOnly:true, unconfOnly:true }
 ];
+/* 이 고객의 줄에 보여 줄 메뉴 항목만 고른다.
+   🔴 부여를 아무리 해도 이메일 확인 전에는 로그인 자체가 안 된다 — 부여는
+      profiles 를, 로그인 문은 auth 를 본다. 그래서 확인 처리를 같은 자리에 뒀다. */
+function actionsFor(r){
+  return ACTIONS.filter(function(a){
+    return !(a.unconfOnly && r.confirmed_at);
+  });
+}
 
 /* ── 유틸 ─────────────────────────────────────────────────────────── */
 function $(id){ return document.getElementById(id); }
@@ -546,8 +566,10 @@ function enterSample(){
 }
 
 function fillBulkMenu(){
+  // rowOnly 는 여기서 뺀다 — 한 명씩만 하게 한 것이 이 메뉴의 안전장치다.
   $('bulk-act').innerHTML = '<option value="">여러 명에게 한꺼번에…</option>' +
-    ACTIONS.map(function(a){ return '<option value="' + a.v + '">' + a.label + '</option>'; }).join('');
+    ACTIONS.filter(function(a){ return !a.rowOnly; })
+           .map(function(a){ return '<option value="' + a.v + '">' + a.label + '</option>'; }).join('');
 }
 
 /* ── 자료 읽기 ────────────────────────────────────────────────────── */
@@ -707,11 +729,12 @@ function render(){
   renderRefStats();
   paintHeaders();
   var rows = visibleRows();
-  var actOpts = '<option value="">부여…</option>' + ACTIONS.map(function(a){
-    return '<option value="' + a.v + '">' + a.label + '</option>';
-  }).join('');
 
   var html = rows.map(function(r){
+    // 메뉴는 줄마다 다르다 — 메일을 확인한 고객에게는 「메일 확인 처리」가 없다.
+    var actOpts = '<option value="">부여…</option>' + actionsFor(r).map(function(a){
+      return '<option value="' + a.v + '">' + a.label + '</option>';
+    }).join('');
     var st   = statusOf(r);
     var name = [r.first_name, r.last_name].filter(Boolean).join(' ');
     var un   = untilOf(r);
@@ -1159,6 +1182,11 @@ function say(uid, text, ok){
 async function applyOne(uid, v){
   var r = rowOf(uid), a = actionOf(v);
   if(!r || !a) return;
+
+  // 메일 확인 처리는 부여가 아니다 — 프로그램·메모를 쓰지 않고, 경고 문구도 다르다.
+  // 이미 있던 confirmEmail() 을 그대로 부른다(묻는 말이 두 자리에서 갈리지 않게).
+  if(a.kind === 'confirm'){ await confirmEmail(uid); return; }
+
   var program = $('gp').value;
   var note    = ($('gn').value || '').trim();
 
@@ -1248,6 +1276,11 @@ async function runBulk(){
   var ids = selIds();
   var a   = actionOf($('bulk-act').value);
   if(!ids.length || !a){ $('bulk-msg').textContent = '고객과 작업을 먼저 고르세요.'; return; }
+  // 메뉴에서 이미 뺐지만 여기서도 막는다 — 이 통로로 새는 순간 무더기 사고가 된다.
+  if(a.rowOnly){
+    $('bulk-msg').textContent = '“' + a.label + '”은 한 명씩만 할 수 있습니다 — 고객 줄의 부여 메뉴에서 하세요.';
+    return;
+  }
   var program = $('gp').value, note = ($('gn').value || '').trim();
 
   var names = ids.slice(0, 5).map(function(u){ var r = rowOf(u); return r ? r.email : u; });
