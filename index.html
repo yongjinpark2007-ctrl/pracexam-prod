@@ -1443,16 +1443,19 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
         <!-- 세 줄을 한 덩어리로 (2026-08-12 사용자 지시).
              예전에는 제목·주소·안내문이 크기가 제각각이라 "어디로 보냈는지"와
              "무엇을 해야 하는지"가 따로 놀아 헷갈렸다. 이제 세 줄 모두 같은 크기·같은
-             굵기로 둔다. 폭이 좁으면 세 줄이 함께 줄어들도록 clamp 를 쓴다
-             (380px 창 기준 13.5px 로 셋째 줄이 한 줄에 들어간다).
+             굵기로 둔다. 폭이 좁으면 세 줄이 함께 줄어들도록 clamp 를 쓴다.
+             2026-08-12 사용자 요청으로 13.5 → 14.5px. 그 크기로 셋째 줄("등록 완료를
+             위해…")이 한 줄에 들어가려면 폭이 330px 넘게 필요해서, 좌우 margin 을 -8px
+             주어 창 안쪽 여백(28px)을 조금 빌려 쓴다. 가운데 정렬이라 눈에 띄지 않는다.
+             ⚠️ 글자를 더 키우려면 셋째 줄이 두 줄로 갈라진다 — 문구부터 줄여야 한다.
              ⚠️ word-break 을 지정하지 말 것. body 의 keep-all(한국어 어절 단위) +
              overflow-wrap:break-word 를 그대로 물려받아야 단어 중간이 깨지지 않는다.
              긴 이메일 주소는 overflow-wrap 이 필요할 때만 알아서 접는다.
              ⚠️ 이메일 칸(.cf-email)이 한·영 두 벌이다 — 문장 안에서 놓이는 자리가
              다르기 때문. _cfStart() 가 두 칸을 모두 채운다. -->
-        <h3 style="font-family:var(--font-sans); font-size:clamp(11px,3.2vw,13.5px);
-                   font-weight:700; line-height:1.75; letter-spacing:0;
-                   color:var(--navy); margin:0 0 14px;">
+        <h3 style="font-family:var(--font-sans); font-size:clamp(11px,3.2vw,14.5px);
+                   font-weight:700; line-height:1.75; letter-spacing:-.01em;
+                   color:var(--navy); margin:0 -8px 14px;">
           <span class="ko"><span class="cf-email"></span> 으로<br>확인 이메일을 보내드렸습니다.<br>등록 완료를 위해 이메일에 있는 링크를 눌러주세요.</span>
           <span class="en">We've sent a confirmation email to<br><span class="cf-email"></span><br>Click the link in it to finish signing up.</span>
         </h3>
@@ -1498,21 +1501,27 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
         </div>
       </div>
 
-      <!-- 위 안내 상자와 52px 띄운다 (2026-08-12 사용자 지시로 14 → 26 → 52px).
-           화면에 글이 많은 만큼, 「읽는 곳(안내 상자)」과 「누르는 곳(버튼)」을 눈에 띄게
-           갈라 놓아야 덜 복잡해 보인다. -->
-      <button class="btn btn-ghost" id="cf-resend" onclick="doResendSignup()" style="margin-top:52px;">
-        <!-- 앱(app.html) 로그인 화면의 재발송 버튼과 같은 이름으로 맞춘다 (2026-08-12). -->
-        <span class="ko">새로운 링크 보내기</span><span class="en">Send new link</span>
-      </button>
-      <div class="modal-msg" id="cf-msg"></div>
-      <!-- 마지막 구제 안내 (2026-08-12 사용자 지시). 다시 보내기까지 해도 안 될 때 갈 곳.
-           버튼에 바짝 붙이면 버튼의 일부처럼 보이므로 18px 띄워 별개의 안내로 읽히게 한다.
-           재발송 결과 문구(#cf-msg)보다 «아래»에 둔다 — 메시지가 떠도 이 줄이 맨 밑에 남는다. -->
-      <p style="margin:18px 0 0; text-align:center; font-size:12.5px; line-height:1.7; color:var(--text-muted);">
-        <span class="ko">그래도 안 되면 <a href="mailto:hello@pracexam.com" style="color:var(--navy); font-weight:700;">hello@pracexam.com</a> 으로 메일 주세요.</span>
-        <span class="en">If you still have a problem, email us at <a href="mailto:hello@pracexam.com" style="color:var(--navy); font-weight:700;">hello@pracexam.com</a>.</span>
-      </p>
+      <!-- 「그래도 안 되나요?」 묶음 (2026-08-12 사용자 지시).
+           새 링크를 받는 것과 메일로 묻는 것은 «막혔을 때 빠져나가는 길» 하나로 묶는다.
+           · 위 안내 상자와는 64px  — 딴 덩어리로 보이게 (14 → 26 → 52 → 64px)
+           · 묶음 안은 10px       — 제목·버튼·메일 줄이 한 덩어리로 붙어 보이게
+           멀고 가까움만으로 묶는다(테두리를 더 그리면 화면이 더 복잡해진다). -->
+      <div style="margin-top:64px; text-align:center;">
+        <div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:10px;">
+          <span class="ko">그래도 안 되나요?</span><span class="en">Still have a problem?</span>
+        </div>
+        <!-- 앱(app.html) 로그인 화면의 재발송 버튼과 같은 이름으로 맞춘다 (2026-08-12).
+             ⚠️ .modal .btn 의 margin-top:18px 을 여기서 0 으로 덮는다 — 위 제목과 10px 만 띄운다. -->
+        <button class="btn btn-ghost" id="cf-resend" onclick="doResendSignup()" style="margin-top:0;">
+          <span class="ko">새로운 링크 보내기</span><span class="en">Send new link</span>
+        </button>
+        <div class="modal-msg" id="cf-msg"></div>
+        <!-- 재발송 결과 문구(#cf-msg)보다 «아래» — 메시지가 떠도 이 줄이 맨 밑에 남는다. -->
+        <p style="margin:10px 0 0; font-size:12.5px; line-height:1.7; color:var(--text-muted);">
+          <span class="ko">또는 <a href="mailto:hello@pracexam.com" style="color:var(--navy); font-weight:700;">hello@pracexam.com</a> 으로 메일 주세요.</span>
+          <span class="en">Or email us at <a href="mailto:hello@pracexam.com" style="color:var(--navy); font-weight:700;">hello@pracexam.com</a></span>
+        </p>
+      </div>
     </div>
 
     <div id="modal-login" style="display:none;">
