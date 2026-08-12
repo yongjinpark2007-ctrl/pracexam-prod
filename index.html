@@ -1498,7 +1498,10 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
         </div>
       </div>
 
-      <button class="btn btn-ghost" id="cf-resend" onclick="doResendSignup()" style="margin-top:14px;">
+      <!-- 위 안내 상자와 26px 띄운다 (2026-08-12 사용자 지시 — 14px 은 상자에 붙어 보였다).
+           화면에 글이 많은 만큼, 「읽는 곳(안내 상자)」과 「누르는 곳(버튼)」을 눈에 띄게
+           갈라 놓아야 덜 복잡해 보인다. -->
+      <button class="btn btn-ghost" id="cf-resend" onclick="doResendSignup()" style="margin-top:26px;">
         <span class="ko">메일 다시 보내기</span><span class="en">Resend the email</span>
       </button>
       <div class="modal-msg" id="cf-msg"></div>
