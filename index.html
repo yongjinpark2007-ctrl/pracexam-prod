@@ -1502,6 +1502,13 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
         <span class="ko">메일 다시 보내기</span><span class="en">Resend the email</span>
       </button>
       <div class="modal-msg" id="cf-msg"></div>
+      <!-- 마지막 구제 안내 (2026-08-12 사용자 지시). 다시 보내기까지 해도 안 될 때 갈 곳.
+           버튼에 바짝 붙이면 버튼의 일부처럼 보이므로 18px 띄워 별개의 안내로 읽히게 한다.
+           재발송 결과 문구(#cf-msg)보다 «아래»에 둔다 — 메시지가 떠도 이 줄이 맨 밑에 남는다. -->
+      <p style="margin:18px 0 0; text-align:center; font-size:12.5px; line-height:1.7; color:var(--text-muted);">
+        <span class="ko">그래도 안 되면 <a href="mailto:hello@pracexam.com" style="color:var(--navy); font-weight:700;">hello@pracexam.com</a> 으로 메일 주세요.</span>
+        <span class="en">If you still have a problem, email us at <a href="mailto:hello@pracexam.com" style="color:var(--navy); font-weight:700;">hello@pracexam.com</a>.</span>
+      </p>
     </div>
 
     <div id="modal-login" style="display:none;">
