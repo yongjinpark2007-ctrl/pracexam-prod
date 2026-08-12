@@ -95,6 +95,17 @@ html,body{
 .tile .n{font-size:calc(19px * var(--fs));font-weight:800;line-height:1.25;color:var(--text-main);}
 .tile .l{font-size:calc(12.5px * var(--fs));color:var(--text-muted);font-weight:600;}
 
+/* 알게 된 경로 집계 줄 — 위 타일과 달리 **누르는 것이 아니다**(거르개가 아님).
+   그래서 모서리를 둥글게 하고 배경을 죽여 "읽는 것"으로 보이게 구분한다. */
+.refstats{display:flex;gap:7px;flex-wrap:wrap;align-items:center;
+  font-size:calc(12.5px * var(--fs));color:var(--text-muted);}
+.refstats .rlab{font-weight:700;letter-spacing:.02em;white-space:nowrap;}
+.rchip{background:var(--sel-bg);border:1px solid var(--border-clr);border-radius:999px;
+  padding:3px 11px;white-space:nowrap;font-weight:600;color:var(--text-main);}
+.rchip b{font-weight:800;}
+.rchip.muted{background:transparent;color:var(--text-muted);}
+.rchip.ad{background:transparent;border-style:dashed;}
+
 .fields{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
 .field{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .field label{font-size:calc(12.5px * var(--fs));font-weight:700;color:var(--text-muted);letter-spacing:.02em;}
@@ -261,6 +272,7 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
   <!-- ══════════════ 조작줄 ══════════════ -->
   <div id="toolbar" class="toolbar hide">
     <div id="tiles" class="tiles"></div>
+    <div id="refstats" class="refstats"></div>
     <div class="fields">
       <div class="field" style="flex:2;min-width:230px;">
         <label for="q">검색 — 이메일 · 이름 (치는 대로 걸러집니다)</label>
@@ -692,6 +704,7 @@ function paintHeaders(){
 
 function render(){
   renderTiles();
+  renderRefStats();
   paintHeaders();
   var rows = visibleRows();
   var actOpts = '<option value="">부여…</option>' + ACTIONS.map(function(a){
@@ -763,6 +776,7 @@ function renderDetail(uid){
     '<dt>이메일</dt><dd>' + esc(r.email) + ' ' + copyBtn(r.email) + '</dd>' +
     '<dt>언어</dt><dd>' + esc(r.language || '?') + '</dd>' +
     '<dt>가입</dt><dd>' + d(r.signed_up_at, true) + '</dd>' +
+    refRow(r) +
     '<dt>메일 확인</dt><dd>' + (r.confirmed_at
         ? '✓ ' + d(r.confirmed_at)
         : '<b style="color:var(--flag-color);">✗ 미확인</b>') + '</dd>' +
@@ -974,6 +988,84 @@ function popquizRow(r){
     ? '✓ 대상 <span class="sub2">— 새 팝퀴즈를 보내면 이분에게도 갑니다</span>'
     : '<b style="color:var(--flag-color);">✗ 비대상</b> ' +
       '<span class="sub2">— ' + pq.why + '</span>') + '</dd>';
+}
+
+/* ── 알게 된 경로 ────────────────────────────────────────────────────────
+   가입 폼 맨 아래 "어디서 알고 오셨어요?" 에서 고른 값(2026-08-08 부터 쌓임).
+   고르지 않아도 가입되므로 **비어 있는 것이 정상**이다. 그보다 앞서 가입한
+   분들은 물어본 적이 없어 영영 비어 있다 — "안 골랐다"와 구별되지 않는다.
+   그래서 화면에서는 둘을 합쳐 «기록 없음» 한 덩어리로만 말한다.
+
+   🔴 본인 응답과 광고 클릭 기록(gclid)은 **다른 것**이라 따로 센다. 실측 사례:
+      "강의"라고 답한 분에게 구글 광고 클릭 기록이 함께 남아 있었다. 본인 응답만
+      세면 광고 성과가 실제보다 낮게 보인다. */
+var REF_LABEL = {
+  google:'Google', facebook:'Facebook', instagram:'Instagram',
+  naver:'네이버', friend:'친구', class:'강의', other:'기타'
+};
+function hasRefCols(){
+  return ROWS.length > 0 && ('referral_source' in ROWS[0]);
+}
+function refLabel(v){
+  if(!v) return '';
+  return REF_LABEL[v] || v;          // 모르는 값이면 원문 그대로 (선택지가 늘어도 안 사라진다)
+}
+function refRow(r){
+  if(!hasRefCols()){
+    return '<dt>알게 된 경로</dt><dd class="sub2">' +
+           '<code>admin_list_customers</code> 를 새로 배포하면 여기 나옵니다.</dd>';
+  }
+  var parts = [];
+  if(r.referral_source){
+    var lab = esc(refLabel(r.referral_source));
+    if(r.referral_source === 'other' && r.referral_note) lab += ' — “' + esc(r.referral_note) + '”';
+    parts.push(lab);
+  }
+  if(r.ad_click)         parts.push('광고 클릭으로 들어옴');
+  else if(r.utm_source)  parts.push('링크 표시 <code>' + esc(r.utm_source) + '</code>');
+  if(!parts.length){
+    return '<dt>알게 된 경로</dt><dd class="sub2">기록 없음 ' +
+           '<span class="sub2">(안 고르셨거나, 묻기 전에 가입한 분입니다)</span></dd>';
+  }
+  return '<dt>알게 된 경로</dt><dd>' + parts.join(' · ') + '</dd>';
+}
+
+/* 조작줄 아래 한 줄 — 고른 사람만 모수로 잡아 경로별 인원을 센다.
+   🔴 비율의 분모는 «응답한 사람»이다. 전체 가입자로 나누면 묻기 전에 가입한
+      분들까지 분모에 들어가 모든 경로가 실제보다 작아 보인다. */
+function renderRefStats(){
+  var box = $('refstats');
+  if(!box) return;
+  if(!hasRefCols()){ box.innerHTML = ''; return; }
+
+  var c = {}, answered = 0, ad = 0;
+  ROWS.forEach(function(r){
+    if(r.referral_source){ c[r.referral_source] = (c[r.referral_source] || 0) + 1; answered++; }
+    if(r.ad_click) ad++;
+  });
+
+  if(answered === 0){
+    box.innerHTML = '<span class="rlab">알게 된 경로</span>' +
+      '<span class="rchip muted">아직 응답한 가입자가 없습니다</span>';
+    return;
+  }
+
+  var keys = Object.keys(c).sort(function(a, b){
+    if(c[b] !== c[a]) return c[b] - c[a];
+    return a < b ? -1 : 1;                       // 같은 수면 이름순 — 새로고침해도 자리가 안 바뀐다
+  });
+  var h = '<span class="rlab">알게 된 경로</span>' +
+    keys.map(function(k){
+      return '<span class="rchip">' + esc(refLabel(k)) + ' <b>' + c[k] + '</b>' +
+             '<span class="sub2"> · ' + Math.round(c[k] / answered * 100) + '%</span></span>';
+    }).join('') +
+    '<span class="rchip muted">응답 <b>' + answered + '</b>명 / 전체 ' + ROWS.length + '명</span>';
+  // 🔴 "이 중"이라고 쓰지 않는다 — 이건 응답자의 부분집합이 아니라 따로 센 값이다.
+  //    (본인은 "강의"라고 답했는데 광고 클릭 기록이 남은 분이 실제로 있다.)
+  if(ad > 0){
+    h += '<span class="rchip ad">광고 클릭 기록 <b>' + ad + '</b>명 <span class="sub2">· 응답과 별개</span></span>';
+  }
+  box.innerHTML = h;
 }
 
 function copyBtn(v){
@@ -1245,6 +1337,8 @@ function samMock(done, iso){
   }
   return out;
 }
+// 표본용 유입 경로. null 이 섞여 있어야 "응답 N명 / 전체 M명"이 표본에서도 맞게 보인다.
+var SAMPLE_REF = ['google', 'friend', null, 'facebook', 'class', 'google', null, 'other', 'naver', null, 'instagram', 'friend'];
 function sampleRows(){
   var day = 86400000, now = Date.now();
   function iso(off){ return new Date(now + off * day).toISOString(); }
@@ -1273,6 +1367,13 @@ function sampleRows(){
       // 안 나간 사람 — 자동발송이 멈췄을 때 화면이 어떻게 보이는지 그대로 보여 준다.
       confirmation_sent_at:  iso(m[4]),
       confirm_reminder_sent: unconf ? (m[0].indexOf('typo') !== 0) : false,
+      // 표본에서도 "알게 된 경로" 줄과 집계가 보이게 한다.
+      // 일부러 3명은 비워 둔다 — 안 고른 사람·묻기 전에 가입한 사람이 섞인
+      // 실제 모습이 그렇고, 분모가 «응답자»라는 것이 표본에서도 드러난다.
+      referral_source: SAMPLE_REF[i % SAMPLE_REF.length],
+      referral_note:   (SAMPLE_REF[i % SAMPLE_REF.length] === 'other') ? '세미나에서 들었어요' : null,
+      ad_click:        (i === 0 || i === 5),
+      utm_source:      null,
       last_sign_in_at: iso(Math.max(m[4], -14)),
       is_paid:   m[5],
       plan_code: m[6],
