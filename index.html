@@ -342,13 +342,13 @@ section{padding:88px 0;}
 .hero-demo-opt.correct .dot{color:var(--success-color);}
 .hero-demo-opt.correct .tick{margin-left:auto; width:15px; height:15px; stroke:var(--success-color); fill:none; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto;}
 .hero-demo-exp{border-top:1px dashed var(--border-strong); padding-top:11px;}
-.hero-demo-lang{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; line-height:1.6; color:var(--text-mid);}
-.hero-demo-lang + .hero-demo-lang{margin-top:7px;}
-.hero-demo-lang .tag{
-  flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:.06em;
-  color:#43706B; background:var(--accent-tint); border:1px solid var(--accent-border);
-  border-radius:5px; padding:1px 6px; margin-top:2px;
-}
+/* 해설 — 보는 사람의 «한 언어만» 나온다 (2026-08-13 사용자 지시).
+   예전에는 KO·EN 두 덩어리를 뱃지와 함께 나란히 띄웠는데, 실제 앱은 고른 언어 하나만
+   보여 준다. 첫 화면이 제품과 달라 보이면 안 되므로 .ko/.en 토글로 바꿨다.
+   (언어 뱃지 .tag 도 함께 없앴다 — 한 언어만 나오면 알려 줄 것이 없다.) */
+.hero-demo-lang{display:block; font-size:12.5px; line-height:1.6; color:var(--text-mid);}
+.hero-demo-lang p{margin:0;}
+.hero-demo-lang p + p{margin-top:7px;}
 /* Exam Tip — 본문 예제(.sample-exp .tip)와 동일한 테라코타 콜아웃 (원래 색 유지, 포인트 컬러) */
 .hero-demo-tip{
   background:var(--terracotta-tint); border-left:3px solid var(--terracotta);
@@ -886,13 +886,24 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
           <div class="hero-demo-opt"><span class="dot">D</span>$39,100</div>
         </div>
         <div class="hero-demo-exp">
-          <div class="hero-demo-lang"><span class="tag">KO</span><span>정답은 B. 신고 의무 기준(filing threshold)은 기본 표준공제와 연령·시각장애 추가공제의 합으로 결정됩니다(Pub. 501). 2025년 MFJ 기본 표준공제 $31,500에 65세 이상인 Charles의 추가공제 $1,600을 더해 $33,100. A는 연령 추가공제를 누락한 값이고, C·D는 Senior Bonus를 잘못 합산한 오답입니다.</span></div>
-          <div class="hero-demo-lang"><span class="tag">EN</span><span>Correct: B. The filing threshold is the basic standard deduction plus any additional deduction for age or blindness (Pub. 501). For 2025 MFJ: $31,500 + $1,600 for Charles (age 65+) = $33,100. A omits the age addition; C and D wrongly add the Senior Bonus.</span></div>
+          <!-- 해설 = 보는 언어 하나만. 한글 화면엔 국문만, 영문 화면엔 영문만 나온다.
+               문구는 아래 SAMPLE_QUESTIONS[0] 의 실제 해설을 줄인 것이라 말이 갈리지 않는다.
+               용어는 용어사전(PRACEXAM_TERMS_KO-EN.md §3-D) 표준 — 시니어 특별 공제 /
+               enhanced deduction for seniors. ⚠️ 예전 표기 'Senior Bonus·고령자 추가 공제' 는
+               «추가 표준공제»와 헷갈리게 만드는 말이라 쓰지 않는다(이 문항이 노리는 함정 그 자체). -->
+          <div class="hero-demo-lang ko">
+            <p>정답은 B입니다. 신고 의무 기준(filing threshold)은 기본 표준공제액에 연령(65세 이상)·시각장애에 따른 추가 표준공제액을 합산해 정합니다(Pub. 501). 2025년 부부공동신고(MFJ)의 기본 표준공제액은 $31,500이고, 부부 중 찰스가 65세 이상이므로 1인당 추가 표준공제액 $1,600을 합산해 $33,100이 됩니다.</p>
+            <p>보기 A는 찰스의 추가 표준공제액을 누락한 값입니다. 보기 C와 D는 시니어 특별 공제 $6,000을 신고 의무 기준에 잘못 합산한 값으로, 이 공제는 세액을 계산할 때만 차감하며 신고 의무 기준에는 포함하지 않습니다.</p>
+          </div>
+          <div class="hero-demo-lang en">
+            <p>Correct answer: B. The filing threshold is the basic standard deduction plus the additional standard deduction for age (65+) or blindness (Pub. 501). For 2025, married filing jointly has a basic standard deduction of $31,500; because Charles is 65 or older, one additional standard deduction of $1,600 is added — $31,500 + $1,600 = $33,100.</p>
+            <p>Choice A leaves out Charles's additional standard deduction. Choices C and D add the $6,000 enhanced deduction for seniors to the threshold: that deduction reduces the tax you compute, but it is never counted toward the gross-income filing threshold.</p>
+          </div>
           <div class="hero-demo-tip">
             <span class="tip-label"><span class="ko">Exam Tip</span><span class="en">Exam Tip</span></span>
             <span class="tip-body">
-              <span class="ko">최대 함정은 추가 공제의 합산 여부입니다. 신고 기준에는 기본 표준공제와 연령·시각장애 추가공제(부부 1인당 $1,600, 단독·가장 $2,000)만 더합니다. 신설 Senior Bonus($6,000)와 팁·오버타임 공제는 세금 계산에는 반영되지만, 신고 의무 기준에는 절대 합산하지 않습니다.</span>
-              <span class="en">The biggest trap is which additions count. Only the basic standard deduction plus the age/blindness addition ($1,600 per spouse; $2,000 single/HoH) enter the threshold. The new $6,000 Senior Bonus and tip/overtime deductions reduce your tax — but are never counted toward the filing threshold.</span>
+              <span class="ko">가장 큰 함정은 어떤 공제를 합산하느냐입니다. 신고 의무 기준에 합산하는 것은 기본 표준공제액과 추가 표준공제액(65세 이상·시각장애 1인당 부부공동신고 $1,600, 단독·세대주 $2,000)뿐입니다. 2025년에 새로 도입된 시니어 특별 공제($6,000)와 팁·오버타임 공제는 납부 세액을 줄여 주지만 신고 의무 기준에는 포함하지 않습니다. 명칭이 비슷해 이 둘을 혼동하게 만드는 것이 시험의 단골 함정입니다.</span>
+              <span class="en">The trap is which deductions count. Only the basic standard deduction and the additional standard deduction for age or blindness ($1,600 per person filing jointly; $2,000 single or head of household) enter the filing threshold. The 2025 enhanced deduction for seniors ($6,000) and the tip and overtime deductions reduce the tax you owe, but never enter the threshold — the exam leans on that mix-up.</span>
             </span>
           </div>
         </div>
@@ -1697,12 +1708,12 @@ var SAMPLE_QUESTIONS = [
     ],
     correct: 1,
     explanation: {
-      ko: "정답은 B입니다.\n미국 시민권자나 거주자의 소득세 신고 의무 기준(filing threshold)은 기본 표준공제액(basic standard deduction)과 연령(65세 이상) 또는 시각장애에 따른 추가 표준공제액(additional standard deduction)의 합계로 결정됩니다(Pub. 501). 2025년 세법(OBBBA 개정 반영)에 따라 부부공동신고(MFJ)의 기본 표준공제액은 31,500달러입니다. 또한, 부부 중 한 명인 찰스가 65세 이상이므로 1명의 연령 추가 표준공제액이 더해집니다. 2025년 부부 세액 신고 시 65세 이상 자에 대한 추가 표준공제액은 1인당 1,600달러입니다. 따라서 이들의 소득세 신고 의무 기준은 31,500달러에 1,600달러를 더한 33,100달러가 됩니다. 한편, A를 선택한 경우는 찰스의 연령 추가 공제액을 누락한 결과입니다. C와 D는 2025년에 새로 도입된 고령자 추가 공제(Senior Bonus Deduction)인 6,000달러를 신고 의무 기준에 잘못 합산한 경우입니다. 세법 규정상 고령자 추가 공제($6,000)는 실제 세금 계산 시 공제되지만, 소득세 신고 의무 기준(gross-income filing threshold)을 판정할 때는 합산하지 않으므로 주의해야 합니다.",
-      en: "The correct answer is B.\nThe filing threshold for U.S. citizens or residents is determined by the sum of the basic standard deduction and any additional standard deduction for age (65+) or blindness (Pub. 501). Under the 2025 tax law (reflecting OBBBA amendments), the basic standard deduction for married filing jointly (MFJ) is $31,500. Because one spouse, Charles, is age 65 or older, an additional standard deduction for one person applies. For 2025, the additional standard deduction for someone age 65 or older is $1,600 per person. Therefore their filing threshold is $31,500 + $1,600 = $33,100.\n\nChoice A omitted Charles’s additional age-related standard deduction. Choices C and D incorrectly added the newly introduced Senior Bonus Deduction of $6,000 to the filing threshold. Under the tax rules, the Senior Bonus Deduction ($6,000) is allowed when computing tax, but it is not included in determining the gross-income filing threshold."
+      ko: "정답은 B입니다.\n미국 시민권자나 거주자의 소득세 신고 의무 기준(filing threshold)은 기본 표준공제액(basic standard deduction)과 연령(65세 이상) 또는 시각장애에 따른 추가 표준공제액(additional standard deduction)의 합계로 결정됩니다(Pub. 501). 2025년 세법(OBBBA 개정 반영)에 따라 부부공동신고(MFJ)의 기본 표준공제액은 31,500달러입니다. 또한, 부부 중 한 명인 찰스가 65세 이상이므로 1명의 연령 추가 표준공제액이 더해집니다. 2025년 부부 세액 신고 시 65세 이상 자에 대한 추가 표준공제액은 1인당 1,600달러입니다. 따라서 이들의 소득세 신고 의무 기준은 31,500달러에 1,600달러를 더한 33,100달러가 됩니다. 한편, A를 선택한 경우는 찰스의 연령 추가 공제액을 누락한 결과입니다. C와 D는 2025년에 새로 도입된 시니어 특별 공제(enhanced deduction for seniors)인 6,000달러를 신고 의무 기준에 잘못 합산한 경우입니다. 세법 규정상 시니어 특별 공제($6,000)는 실제 세금 계산 시 공제되지만, 소득세 신고 의무 기준(gross-income filing threshold)을 판정할 때는 합산하지 않으므로 주의해야 합니다.",
+      en: "The correct answer is B.\nThe filing threshold for U.S. citizens or residents is determined by the sum of the basic standard deduction and any additional standard deduction for age (65+) or blindness (Pub. 501). Under the 2025 tax law (reflecting OBBBA amendments), the basic standard deduction for married filing jointly (MFJ) is $31,500. Because one spouse, Charles, is age 65 or older, an additional standard deduction for one person applies. For 2025, the additional standard deduction for someone age 65 or older is $1,600 per person. Therefore their filing threshold is $31,500 + $1,600 = $33,100.\n\nChoice A omitted Charles’s additional age-related standard deduction. Choices C and D incorrectly added the newly introduced enhanced deduction for seniors of $6,000 to the filing threshold. Under the tax rules, the enhanced deduction for seniors ($6,000) is allowed when computing tax, but it is not included in determining the gross-income filing threshold."
     },
     examTip: {
-      ko: "시험에서 신고 의무 기준을 계산할 때 가장 큰 함정은 추가 공제 항목들의 반영 여부입니다. 기본 표준공제와 연령/시각장애 추가 표준공제(65세 이상 단독/가장 2,000달러, 부부 1,600달러)만 신고 의무 기준에 더해집니다. 신설된 고령자 추가 공제(Senior Bonus $6,000)나 팁/오버타임 공제 등은 신고 의무 기준 계산에 절대로 더하면 안 된다는 점을 명심하시기 바랍니다.",
-      en: "The biggest pitfall when calculating the filing threshold on the exam is whether to include additional deductions. Only the basic standard deduction and the additional standard deduction for age/blindness (65 or older single/head of household $2,000, married $1,600) are added to the filing threshold. Remember that newly introduced senior additional deduction (Senior Bonus $6,000) or tip/overtime deductions, etc., must never be added to the filing-threshold calculation."
+      ko: "시험에서 신고 의무 기준을 계산할 때 가장 큰 함정은 추가 공제 항목들의 반영 여부입니다. 기본 표준공제와 연령/시각장애 추가 표준공제(65세 이상 단독·세대주 2,000달러, 부부 1,600달러)만 신고 의무 기준에 더해집니다. 신설된 시니어 특별 공제($6,000)나 팁/오버타임 공제 등은 신고 의무 기준 계산에 절대로 더하면 안 된다는 점을 명심하시기 바랍니다.",
+      en: "The biggest pitfall when calculating the filing threshold on the exam is whether to include additional deductions. Only the basic standard deduction and the additional standard deduction for age/blindness (65 or older single/head of household $2,000, married $1,600) are added to the filing threshold. Remember that the newly introduced enhanced deduction for seniors ($6,000) or tip/overtime deductions, etc., must never be added to the filing-threshold calculation."
     }
   },
   {
