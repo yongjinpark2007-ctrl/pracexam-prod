@@ -478,7 +478,7 @@ section{padding:88px 0;}
 .sample-exp-label{font-size:11px; color:var(--navy); letter-spacing:.1em; margin-bottom:8px; font-weight:700; text-transform:uppercase;}
 /* white-space:pre-line = 해설 원문의 빈 줄(\n\n)을 그대로 문단으로 보여 준다 (2026-08-13).
    그전에는 이 설정이 없어 «영문 해설의 문단 나눔까지» 한 덩어리로 붙어 나왔다. */
-.sample-exp-body{font-size:15.5px; line-height:1.8; color:var(--text-mid); margin-bottom:1rem; white-space:pre-line;}
+.sample-exp-body{font-size:16.5px; line-height:1.85; color:var(--text-mid); margin-bottom:1rem; white-space:pre-line;}
 .sample-exp .tip{
   background:var(--terracotta-tint); border-left:3px solid var(--terracotta); border-radius:0 8px 8px 0;
   padding:12px 14px; margin:0; display:block;
@@ -488,7 +488,9 @@ section{padding:88px 0;}
 /* War Room 토픽 단추 — 앱의 해설 화면에 있는 배지(⚡ War Room · 토픽 ↗)와 같은 모양.
    랜딩에서는 로그인 전이라 시트를 열 수 없으므로, 누르면 «로그인 후 볼 수 있다»고 알려 준다.
    (2026-08-13 사용자 요청 — 앱에 있는 길을 랜딩에서도 미리 보여 주자는 것) */
-.sample-wr{margin-top:12px;}
+/* 위(결과 배너)와 아래(해설) 양쪽으로 띄운다 — 2026-08-13.
+   아래 여백이 0이라 해설 라벨에 붙어 보였다. 단추는 «해설의 일부»가 아니라 딴 길이므로 떼어 놓는다. */
+.sample-wr{margin:6px 0 22px;}
 .sample-wr-btn{
   display:inline-flex; align-items:center; gap:7px; padding:8px 13px;
   background:var(--terracotta-tint); border:1px solid var(--terracotta-border);
