@@ -1573,8 +1573,10 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
         </div>
       </div>
       <p style="font-size:13.5px; line-height:1.75; color:var(--text-mid); margin:14px 0 0;">
-        <span class="ko">이 주제의 세법 근거·서식·금액 기준과 함정을 한자리에 정리해 두었습니다. 30일 무료 체험으로 바로 보실 수 있습니다.</span>
-        <span class="en">The rule behind this topic — code sections, forms, figures and the traps — is laid out in one place. Your 30-day free trial opens it right away.</span>
+        <!-- ⚠️ '30일 무료 체험으로 바로 보실 수 있습니다' 를 넣지 말 것 (2026-08-13 사용자 지적).
+             체험으로 열리는 것은 무료 공개 토픽뿐이라 «다 볼 수 있다»고 약속하면 과장이 된다. -->
+        <span class="ko">이 주제의 세법 근거·서식·금액 기준과 함정을 한자리에 정리해 두었습니다.</span>
+        <span class="en">The rule behind this topic — code sections, forms, figures and the traps — is laid out in one place.</span>
       </p>
       <button class="btn btn-primary" onclick="switchModal('signup')">
         <span class="ko">무료로 시작하기</span><span class="en">Start Free</span>
@@ -1847,16 +1849,18 @@ function renderSampleQuestions(){
     html += '<span class="banner-ok"><span class="ko">✓ 정답입니다! 잘하셨어요.</span><span class="en">✓ Correct! Well done.</span></span>';
     html += '<span class="banner-fail"><span class="ko">✗ 오답입니다 — 아래 해설을 확인하세요.</span><span class="en">✗ Incorrect — review the explanation below.</span></span>';
     html += '</div>';
-    html += '<div class="sample-exp-label"><span class="ko">해설</span><span class="en">Explanation</span></div>';
-    html += '<div class="sample-exp-body"><span class="ko">' + q.explanation.ko + '</span><span class="en">' + q.explanation.en + '</span></div>';
-    html += '<div class="tip"><div class="tip-label"><span class="ko">Exam Tip</span><span class="en">Exam Tip</span></div><div class="tip-body"><span class="ko">' + q.examTip.ko + '</span><span class="en">' + q.examTip.en + '</span></div></div>';
-    // War Room 토픽 단추 — 앱에서는 이 자리를 눌러 시트로 건너뛴다. 랜딩에서는 안내 모달이 뜬다.
+    // War Room 토픽 단추 — 앱과 같은 자리(결과 배너 바로 아래, 해설 위)에 둔다.
+    //   앱: result-banner → exp-topic-badge → Explanation (app.html:1559~1566)
+    // 앱에서는 눌러 시트로 건너뛰고, 랜딩에서는 로그인 전이라 안내 모달이 뜬다.
     if(q.warRoom){
       html += '<div class="sample-wr"><button class="sample-wr-btn" type="button" onclick="showWarRoomLocked(' + qi + ')">' +
               '<svg class="wr-bolt" viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' +
               '<span>War Room · <span class="ko">' + q.warRoom.ko + '</span><span class="en">' + q.warRoom.en + '</span></span>' +
               '<span class="wr-arrow">↗</span></button></div>';
     }
+    html += '<div class="sample-exp-label"><span class="ko">해설</span><span class="en">Explanation</span></div>';
+    html += '<div class="sample-exp-body"><span class="ko">' + q.explanation.ko + '</span><span class="en">' + q.explanation.en + '</span></div>';
+    html += '<div class="tip"><div class="tip-label"><span class="ko">Exam Tip</span><span class="en">Exam Tip</span></div><div class="tip-body"><span class="ko">' + q.examTip.ko + '</span><span class="en">' + q.examTip.en + '</span></div></div>';
     html += '</div>';
     html += '</div>';
   });
