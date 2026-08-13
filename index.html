@@ -1562,9 +1562,12 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
          없으므로, 막다른 길로 두지 않고 «로그인하면 볼 수 있다»고 알려 주고 가입/로그인으로 잇는다.
          토픽 이름은 누른 문항의 것을 그대로 넣는다(#wr-topic-ko / #wr-topic-en). -->
     <div id="modal-warroom" style="display:none;">
-      <div style="text-align:center;">
-        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--terracotta-deep)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-        <h3 style="margin-bottom:6px;"><span class="ko">War Room은 로그인 후 열립니다</span><span class="en">War Room opens after you log in</span></h3>
+      <!-- 번개와 제목을 «한 줄»로 (2026-08-13 사용자 지적 — 아이콘이 따로 놀아 두 줄로 보였다).
+           flex 로 나란히 두고, 좁은 창에서도 한 줄을 지키도록 글자 크기를 clamp 로 줄인다.
+           ⚠️ h3 기본값(세리프 20px)을 여기서 덮는다 — 그 크기로는 한 줄에 안 들어간다. -->
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--terracotta-deep)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+        <h3 style="margin:0; font-family:var(--font-sans); font-size:clamp(13px,4vw,17px); font-weight:700; letter-spacing:-.01em; white-space:nowrap; color:var(--navy);"><span class="ko">War Room은 로그인 후 열립니다</span><span class="en">War Room opens after you log in</span></h3>
       </div>
       <div style="background:var(--terracotta-tint); border:1px solid var(--terracotta-border); border-radius:10px; padding:12px 14px; margin:14px 0 0; text-align:center;">
         <div style="font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--terracotta-deep); text-transform:uppercase; margin-bottom:4px;">
