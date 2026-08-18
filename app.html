@@ -225,7 +225,8 @@ html, body {
 .screen.active{display:block;}
 
 /* APP FOOTER — 법인/DBA 명시 (Google 검증용) */
-.app-footer{max-width:900px;margin:0 auto;padding:20px 1.5rem 8px;border-top:1px solid var(--border-clr);font-size:12px;line-height:1.7;color:var(--text-muted);text-align:center;}
+.app-footer{max-width:900px;margin:34px auto 0;padding:20px 1.5rem calc(14px + env(safe-area-inset-bottom, 0px));border-top:1px solid var(--border-clr);font-size:12px;line-height:1.7;color:var(--text-muted);text-align:center;}
+.app-footer-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 2px;margin-top:8px;}
 .app-footer a{color:var(--text-muted);}
 .app-footer a:hover{color:var(--navy);}
 .app-footer .app-footer-sep{margin:0 8px;opacity:.5;}
@@ -1882,6 +1883,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       가입은 했지만 <strong>확인 이메일 링크를 아직 클릭하지 않은</strong> 사용자 목록입니다. 대개 확인 메일이
       스팸함으로 가서 못 본 경우이니, 아래 <strong>이메일을 복사해 안내 메일</strong>(스팸함 확인 요청)을 보내세요.
       링크를 클릭하면 이 목록에서 자동으로 사라집니다. <em>(읽기 전용 · 이 화면은 아무것도 변경하지 않습니다)</em>
+      <div style="margin-top:8px;">
+        <strong>확인 메일</strong> = 가입 직후 자동으로 나간 확인 메일의 발송 시각.
+        <strong>리마인더</strong> = 가입 24시간 뒤 1회 나가는 스팸함 안내 메일.
+        <span style="color:#dc2626;">빨간 글씨</span>는 나갔어야 할 메일이 안 나갔다는 뜻입니다.
+        <em>(둘 다 "우리가 보냈는지"만 알려줍니다 — 고객 받은편지함에 도착했는지는 별개입니다.)</em>
+      </div>
     </div>
 
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;">
@@ -2153,6 +2160,25 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div class="wr-head"><div class="section-title"><svg class="wr-head-bolt" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>War Room</div></div>
   <div id="warroom-mount"></div>
 </div>
+
+
+<!-- ═══ APP FOOTER (2026-08-18) ═══
+     로그인 후 화면에 푸터가 없다는 지적을 받아 넣었다. 로그인 게이트의 .lg-footer 와 같은
+     내용에 이용약관·환불정책을 더했다(랜딩 푸터와 링크를 맞춤).
+     · .content 안 «맨 끝»에 둔다 — .content 가 스크롤 영역이라 바깥에 두면 모바일에서
+       세로 공간을 상시 잡아먹는다.
+     · 법인·DBA 문구는 영문 그대로(법인명이라 번역하지 않는다). 링크 이름만 한/영 전환. -->
+<footer class="app-footer">
+  © 2026 dxd investment group LLC. All rights reserved.<br>
+  PracExam is a registered Fictitious Business Name (DBA) of dxd investment group LLC.
+  <div class="app-footer-links">
+    <a href="index.html#about" data-i18n="ft_about">About</a>
+    <span class="app-footer-sep">·</span><a href="terms.html" data-i18n="ft_terms">Terms</a>
+    <span class="app-footer-sep">·</span><a href="privacy.html" data-i18n="ft_privacy">Privacy</a>
+    <span class="app-footer-sep">·</span><a href="refund.html" data-i18n="ft_refunds">Refunds</a>
+    <span class="app-footer-sep">·</span><a href="mailto:hello@pracexam.com" data-i18n="ft_contact">Contact</a>
+  </div>
+</footer>
 
 </div><!-- /content -->
 </div><!-- /app -->
@@ -4021,6 +4047,13 @@ var UI_TEXT = {
   nav_statistics:{ko:'통계',     en:'Statistics'},
   nav_upload:    {ko:'업로드',   en:'Upload'},
   mob_dashboard: {ko:'대시보드', en:'Dashboard'},
+  // 앱 푸터 (2026-08-18) — 로그인 «후» 화면에는 푸터가 아예 없다는 지적을 받아 추가했다.
+  //   (.app-footer CSS 는 예전부터 있었는데 정작 <footer> 요소가 빠져 있었다)
+  ft_about:   {ko:'회사 소개',        en:'About'},
+  ft_terms:   {ko:'이용약관',         en:'Terms'},
+  ft_privacy: {ko:'개인정보처리방침',  en:'Privacy'},
+  ft_refunds: {ko:'환불정책',         en:'Refunds'},
+  ft_contact: {ko:'문의',            en:'Contact'},
   mob_study:     {ko:'학습',     en:'Study'},
   mob_review:    {ko:'복습',     en:'Review'},
   mob_statistics:{ko:'통계',     en:'Statistics'},
@@ -4845,11 +4878,27 @@ async function renderUnconfirmed(){
 
   var rows = res.data || [];
   _UNCONF_ROWS = rows;
-  if(summary) summary.textContent = '미확인 가입자 ' + rows.length + '명';
 
   if(!rows.length){
+    if(summary) summary.textContent = '미확인 가입자 0명';
     body.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">이메일 미확인 가입자가 없습니다. 👍</div>';
     return;
+  }
+
+  // 함수가 아직 메일 관련 컬럼을 안 돌려주면(구버전) 두 열은 '—'로 두고 안내만 붙인다.
+  var hasMailCols = ('confirmation_sent_at' in rows[0]) || ('confirm_reminder_sent' in rows[0]);
+
+  // 가입 24시간이 지났는데 리마인더가 안 나간 사람 = 자동발송이 멈췄다는 신호.
+  var overdueCnt = 0;
+  rows.forEach(function(r){
+    if(!('confirm_reminder_sent' in r) || r.confirm_reminder_sent) return;
+    try{
+      if((Date.now() - new Date(r.created_at).getTime()) / 3600000 >= 24) overdueCnt++;
+    }catch(e){}
+  });
+  if(summary){
+    summary.innerHTML = '미확인 가입자 ' + rows.length + '명' +
+      (overdueCnt ? ' · <span style="color:#dc2626;font-weight:700;">리마인더 미발송 ' + overdueCnt + '명</span>' : '');
   }
 
   function fmtDate(s){
@@ -4859,12 +4908,14 @@ async function renderUnconfirmed(){
 
   var html = ''+
     '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'+
-    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:560px;">'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:820px;">'+
     '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
       '<th style="padding:8px 10px;">이메일</th>'+
       '<th style="padding:8px 10px;">이름</th>'+
       '<th style="padding:8px 10px;">언어</th>'+
       '<th style="padding:8px 10px;">가입 시각</th>'+
+      '<th style="padding:8px 10px;">확인 메일</th>'+
+      '<th style="padding:8px 10px;">리마인더</th>'+
     '</tr></thead><tbody>';
   rows.forEach(function(r){
     var name = [r.first_name, r.last_name].filter(Boolean).join(' ') || '—';
@@ -4874,10 +4925,47 @@ async function renderUnconfirmed(){
         '<td style="padding:8px 10px;color:var(--text-mid);">'+_anomEsc(name)+'</td>'+
         '<td style="padding:8px 10px;color:var(--text-muted);">'+_anomEsc(r.language||'—')+'</td>'+
         '<td style="padding:8px 10px;color:var(--text-muted);white-space:nowrap;">'+fmtDate(r.created_at)+'</td>'+
+        '<td style="padding:8px 10px;white-space:nowrap;">'+_unconfSentCell(r)+'</td>'+
+        '<td style="padding:8px 10px;white-space:nowrap;">'+_unconfReminderCell(r)+'</td>'+
       '</tr>';
   });
   html += '</tbody></table></div>';
+  if(!hasMailCols){
+    html +=
+      '<div style="margin-top:10px;padding:10px 12px;border:1px dashed var(--border-clr);border-radius:10px;'+
+      'font-size:12.5px;color:var(--text-muted);line-height:1.7;">'+
+      '⚙️ "확인 메일 · 리마인더" 두 열은 <code>get_unconfirmed_users()</code> 함수가 '+
+      '<code>confirmation_sent_at</code>·<code>confirm_reminder_sent</code> 를 함께 돌려줘야 채워집니다. '+
+      'Supabase에서 함수를 다시 실행하면 값이 나옵니다.</div>';
+  }
   body.innerHTML = html;
+}
+
+// ── 미확인 가입자 표: "확인 메일" 칸 ──
+//   가입 직후 Supabase가 보내는 확인 메일의 발송 시각(auth.users.confirmation_sent_at).
+//   값이 없으면 = 우리 쪽에서 보낸 기록 자체가 없다는 뜻이라 빨갛게 표시한다.
+//   (배달 성공 여부가 아니라 "발송했는지"만 알려주는 값이다 — Resend 경유라 도착 여부는 별개.)
+function _unconfSentCell(r){
+  if(!('confirmation_sent_at' in r)) return '<span style="color:var(--text-muted);">—</span>';
+  if(!r.confirmation_sent_at) return '<span style="color:#dc2626;font-weight:600;">발송 기록 없음</span>';
+  var s;
+  try{ s = new Date(r.confirmation_sent_at).toLocaleString(); }catch(e){ s = r.confirmation_sent_at; }
+  return '<span style="color:var(--text-mid);">'+_anomEsc(s)+'</span>';
+}
+
+// ── 미확인 가입자 표: "리마인더" 칸 ──
+//   가입 24시간 뒤 1회 나가는 안내 메일(send-confirm-reminder). profiles.confirm_reminder_sent.
+//   24시간이 지났는데 아직 false면 자동발송이 멈춘 것이므로 눈에 띄게 표시한다.
+function _unconfReminderCell(r){
+  if(!('confirm_reminder_sent' in r)) return '<span style="color:var(--text-muted);">—</span>';
+  if(r.confirm_reminder_sent) return '<span style="color:var(--text-mid);">발송함</span>';
+  var overdue = false;
+  try{
+    var h = (Date.now() - new Date(r.created_at).getTime()) / 3600000;
+    overdue = h >= 24;
+  }catch(e){}
+  if(overdue) return '<span style="color:#dc2626;font-weight:600;">미발송 ⚠️ 24시간 초과</span>';
+  return '<span style="color:var(--text-muted);">대기 중 (24시간 전)</span>';
 }
 
 function copyUnconfirmedEmails(){
