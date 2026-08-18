@@ -842,6 +842,40 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 }
 .modal input:focus{outline:none; border-color:var(--navy-mid);}
 .modal .btn{width:100%; margin-top:18px;}
+
+/* ── 비밀번호 [보기] 토글 (2026-08-18) ─────────────────────
+   SDSU Global Campus 가입 화면을 참고했다. 오타로 가입이 막히는 일을 줄인다.
+   ⚠️ 비밀번호 «규칙» 안내와 Supabase 정책 변경은 하지 않기로 했다(사용자 결정). */
+.pw-wrap{position:relative;}
+.modal .pw-wrap input{padding-right:66px;}
+.pw-toggle{
+  position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  border:none; background:none; cursor:pointer;
+  font-family:var(--font-sans); font-size:12.5px; font-weight:700; color:var(--navy-mid);
+  padding:7px 10px; border-radius:7px;
+}
+.pw-toggle:hover{background:var(--navy-light); color:var(--navy);}
+
+/* ── 동의 체크박스 (2026-08-18) ────────────────────────────
+   🔴 약관(필수)과 마케팅(선택)을 «한 칸으로 묶지 말 것». 필수와 선택을 묶으면
+      한국 개인정보보호법상 문제가 되고 동의 자체가 무효로 다뤄질 수 있다.
+   ⚠️ .modal label 이 display:block 이라 클래스 하나로는 못 이긴다 → label.su-agree 로 쓴다. */
+.modal label.su-agree{
+  display:flex; align-items:flex-start; gap:9px;
+  margin-top:14px; margin-bottom:0;
+  font-size:13px; line-height:1.55; font-weight:400; color:var(--text-mid); cursor:pointer;
+}
+.modal label.su-agree input{
+  width:16px; height:16px; margin-top:2px; flex-shrink:0;
+  accent-color:var(--navy); cursor:pointer;
+}
+.modal label.su-agree a{color:var(--navy); text-decoration:underline;}
+.modal label.su-agree b{font-weight:700;}
+.su-consent-note{font-size:11.5px; line-height:1.65; color:var(--text-muted); margin:6px 0 0 25px;}
+.su-consent-note a{color:var(--text-muted); text-decoration:underline;}
+/* 약관 미동의 상태 — 흐리게 두되 «누를 수는 있게» 한다. 눌렀을 때 왜 안 되는지 알려 줘야 한다
+   (disabled 로 막으면 아무 반응이 없어 이유를 모른다). */
+.btn.needs-agree{opacity:.55;}
 /* ── 유입 경로 선택 상자 (2026-08-07) ─────────────────────
    가입 폼 맨 아래 선택 항목. 질문은 상자 첫 줄에 넣어 라벨 한 줄을 아꼈다.
    ⚠️ line-height 를 px 로 못박은 이유 = 첫 줄만 13px 로 줄여도(아래 .is-empty)
@@ -1525,7 +1559,12 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <label><span class="ko">이메일</span><span class="en">Email</span></label>
       <input type="email" id="su-email" autocomplete="email" placeholder="you@example.com">
       <label><span class="ko">비밀번호</span><span class="en">Password</span></label>
-      <input type="password" id="su-pw" autocomplete="new-password" placeholder="••••••••">
+      <div class="pw-wrap">
+        <input type="password" id="su-pw" autocomplete="new-password" placeholder="••••••••">
+        <button type="button" class="pw-toggle" id="su-pw-toggle" onclick="togglePw('su-pw','su-pw-toggle')">
+          <span class="ko">보기</span><span class="en">Show</span>
+        </button>
+      </div>
       <!-- ═══ 유입 경로 (2026-08-07) — 선택 사항 ═══
            보기와 첫 줄 문구는 언어에 따라 달라서 JS(_refBuild)가 채운다.
            옵션 안에는 <span class="ko/en"> 을 쓸 수 없기 때문이다.
@@ -1533,14 +1572,36 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
               좁아지면 긴 문구가 잘리기 때문(360px 안드로이드에서 글자 자리 217px). -->
       <select id="su-ref"></select>
       <input type="text" id="su-ref-other" maxlength="60" style="display:none;">
-      <label for="su-marketing" style="display:flex; align-items:flex-start; gap:9px; margin-top:14px; margin-bottom:2px; font-size:13px; line-height:1.5; color:var(--text-mid); font-weight:400; cursor:pointer;">
-        <input type="checkbox" id="su-marketing" style="width:16px; height:16px; margin-top:1px; flex-shrink:0; accent-color:var(--navy); cursor:pointer;">
+      <!-- ═══ 약관 동의 (2026-08-18) — 필수 ═══
+           가입 시 약관 동의가 있어야 한다는 의견을 받아 넣었다.
+           🔴 아래 마케팅(선택) 동의와 «절대 한 칸으로 묶지 말 것».
+           ⚠️ 링크를 누르면 라벨이 체크박스를 토글하므로 event.stopPropagation() 이 필요하다. -->
+      <label for="su-terms" class="su-agree">
+        <input type="checkbox" id="su-terms" onchange="_suTermsSync()">
         <span>
-          <span class="ko">학습 팁, 할인 코드, 시험 정보를 이메일로 받아볼게요. 선택 사항이며 언제든지 수신을 해지할 수 있습니다.</span>
-          <span class="en">Send me study tips, discount codes, and exam updates by email. Optional, and you can unsubscribe anytime.</span>
+          <span class="ko"><a href="terms.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">이용약관</a>과 <a href="privacy.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">개인정보처리방침</a>에 동의합니다. <b>(필수)</b></span>
+          <span class="en">I agree to the <a href="terms.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">Privacy Policy</a>. <b>(required)</b></span>
         </span>
       </label>
-      <button class="btn btn-primary" onclick="doSignup()">
+
+      <!-- 마케팅 수신 (선택). 체크박스에는 한 줄만 두고, 발신 주체·해지 안내는 아래 회색 문단으로
+           내렸다 — 예전에는 이 문구가 전부 체크박스 안에 들어가 답답했다. -->
+      <label for="su-marketing" class="su-agree">
+        <input type="checkbox" id="su-marketing">
+        <span>
+          <span class="ko">학습 팁·할인 코드·시험 정보를 이메일로 받아볼게요. <b>(선택)</b></span>
+          <span class="en">Send me study tips, discount codes, and exam updates by email. <b>(optional)</b></span>
+        </span>
+      </label>
+      <!-- 법인명(dxd investment group LLC)과 개인정보처리방침 링크는 여기에 넣지 않는다 (2026-08-18 사용자 지시).
+           · 법인·DBA 고지는 «푸터»가 한다 — 랜딩·앱 푸터 둘 다 이미 하고 있다.
+             법인명을 반드시 밝혀야 하는 곳은 마케팅 «메일 본문» 이지 가입 폼이 아니다.
+           · 개인정보처리방침 링크는 바로 두 줄 위 약관 체크박스에 이미 있다. -->
+      <p class="su-consent-note">
+        <span class="ko">PracExam에서 발송합니다. 언제든지 수신을 거부할 수 있습니다.</span>
+        <span class="en">Sent by PracExam. You can unsubscribe at any time.</span>
+      </p>
+      <button class="btn btn-primary needs-agree" id="su-submit" onclick="doSignup()">
         <span class="ko">계정 만들기</span><span class="en">Create Account</span>
       </button>
       <div class="modal-msg" id="su-msg"></div>
@@ -2018,6 +2079,7 @@ function switchModal(which){
   if(_cfView) _cfView.style.display = (which === 'confirm') ? 'block' : 'none';
   var _wrView = document.getElementById('modal-warroom');
   if(_wrView) _wrView.style.display = (which === 'warroom') ? 'block' : 'none';
+  if(which === 'signup') _suTermsSync();   // 약관 체크 상태에 맞춰 버튼 흐림 (2026-08-18)
   // 확인 대기 화면을 벗어나면 불필요한 인증 요청이 계속 나가지 않도록 멈춘다
   if(which !== 'confirm') _cfStop();
   // 구독 의도로 가입 모달을 열면 안내 배너 표시
@@ -2075,6 +2137,29 @@ function _emailTypoCheck(email){
   return null;
 }
 
+// ── 비밀번호 [보기] 토글 (2026-08-18) ──
+function togglePw(inputId, btnId){
+  var i = document.getElementById(inputId), b = document.getElementById(btnId);
+  if(!i || !b) return;
+  var show = (i.type === 'password');
+  i.type = show ? 'text' : 'password';
+  b.innerHTML = show
+    ? '<span class="ko">숨기기</span><span class="en">Hide</span>'
+    : '<span class="ko">보기</span><span class="en">Show</span>';
+  try{ i.focus(); }catch(e){}
+}
+
+// ── 약관 동의 상태 → 버튼 흐림 (2026-08-18) ──
+//    막는 것은 doSignup 이 하고, 여기서는 «눌러도 되는지» 를 눈으로만 알린다.
+//    disabled 를 쓰지 않는 이유 = 눌러도 아무 반응이 없으면 왜 안 되는지 알 수 없다.
+function _suTermsSync(){
+  var c = document.getElementById('su-terms');
+  var b = document.getElementById('su-submit');
+  if(!b) return;
+  if(c && c.checked) b.classList.remove('needs-agree');
+  else               b.classList.add('needs-agree');
+}
+
 function doSignup(){
   var fname = document.getElementById('su-fname').value.trim();
   var lname = document.getElementById('su-lname').value.trim();
@@ -2105,6 +2190,15 @@ function doSignup(){
   }
   if (pw.length < 6) {
     showMsg(lang === 'ko' ? '비밀번호는 6자 이상이어야 합니다.' : 'Password must be at least 6 characters.', false);
+    return;
+  }
+
+  // 약관 동의 (2026-08-18) — 필수. 화면 순서대로 비밀번호 다음에 본다.
+  var trmEl = document.getElementById('su-terms');
+  if (!(trmEl && trmEl.checked)) {
+    showMsg(lang === 'ko' ? '이용약관과 개인정보처리방침에 동의해주세요.'
+                          : 'Please agree to the Terms of Service and Privacy Policy.', false);
+    try { trmEl.focus(); } catch(e){}
     return;
   }
 
@@ -2158,6 +2252,11 @@ function doSignup(){
         language: lang,
         marketing_consent: marketingConsent,
         marketing_consent_at: marketingConsent ? new Date().toISOString() : null,
+        // 약관 동의 기록 (2026-08-18) — 마케팅 동의와 같은 자리(user_metadata)라 SQL 변경이 없다.
+        // 버전은 문서의 'Last updated' 날짜. terms.html·privacy.html 을 고치면 여기도 같이 고칠 것.
+        terms_accepted_at: new Date().toISOString(),
+        terms_version: '2026-07-06',
+        privacy_version: '2026-07-05',
         referral_source: refSrc,
         referral_note: refNote,
         attrib: refAttrib
