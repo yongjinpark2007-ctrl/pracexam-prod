@@ -479,39 +479,19 @@ html, body {
 .setup-cta-btn:hover{background:linear-gradient(135deg,#4d6164,#354649);transform:translateY(-1px);}
 .setup-cta-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
 .setup-cta-note{font-size:13px;color:var(--text-muted);text-align:center;margin-top:8px;}
-/* 학습 모드 설명 «풍선» (2026-08-20)
-   줄글 각주였을 때 ①자리를 차지해 아래 정렬이 흐트러졌고 ②모드를 바꿀 때마다 높이가 달라져
-   시작 버튼이 위아래로 튀었다. 절대위치로 띄워 레이아웃을 전혀 밀지 않게 했다.
-   뜨는 때 = 마우스 올림(데스크톱) · 버튼 누름(터치, 4.5초 뒤 사라짐) · 설정 화면 진입 시 1회.
-
-   색 정정 — 처음에 var(--teal) 진한 색으로 했더니 바로 아래 「세션 시작」 버튼과 같은 색이라,
-   풍선이 버튼을 덮으면 버튼이 사라진 것처럼 보였다(사용자 지적). 선택 상태 토큰(연한 seafoam)
-   + 반투명으로 바꿨다. */
-.mode-tip{
-  position:absolute; left:0; right:0; top:calc(100% + 12px); z-index:30;
-  /* 반투명 + 뒤 흐림 — 뒤에 있는 「세션 시작」이 비쳐 보여 «가려진 것»이지 사라진 게 아님을 알 수 있다.
-     흐림을 못 쓰는 옛 브라우저에서는 72% 불투명 풍선으로 보인다(글은 그대로 읽힘).
-     투명도를 더/덜 하려면 아래 rgba 의 «.72» 두 곳(풍선·화살표)만 같이 고치면 된다. */
-  background:rgba(217,235,233,.72); color:var(--sel-text);
-  -webkit-backdrop-filter:blur(10px) saturate(1.15); backdrop-filter:blur(10px) saturate(1.15);
-  border:1px solid var(--sel-border); border-radius:11px; padding:11px 14px;
-  font-size:12.5px; line-height:1.6; text-align:left; font-weight:500;
-  box-shadow:0 6px 18px rgba(53,70,73,.14);
-  opacity:0; visibility:hidden; transform:translateY(-5px);
-  transition:opacity .16s ease, transform .16s ease, visibility .16s;
-  pointer-events:none;   /* 풍선이 버튼 클릭을 가로채지 않게 */
-}
-.mode-tip.show{opacity:1; visibility:visible; transform:translateY(0);}
-.mode-tip .mode-tip-arrow{
-  position:absolute; top:-6px; width:11px; height:11px; background:rgba(217,235,233,.72);
-  border-left:1px solid var(--sel-border); border-top:1px solid var(--sel-border);
-  transform:translateX(-50%) rotate(45deg); border-radius:2px 0 0 0;
-}
-.mode-tip .mode-tip-name{display:block; font-weight:700; margin-bottom:2px; letter-spacing:-.01em;}
-.mode-tip .mode-tip-algo{display:block; margin-top:6px; padding-top:6px; font-size:11.5px;
-  color:var(--text-muted); border-top:1px solid rgba(53,70,73,.18);}
+/* 학습 모드 설명 한 줄 (Study Mode 아래) — 2026-08-20
+   풍선(툴팁)으로 바꿨다가 되돌렸다. 모바일에서 풍선이 「세션 시작」 버튼을 덮는데
+   닫는 표시가 없어 헷갈린다는 사용자 지적. 원래대로 «자리를 차지하는 정적인 글»이 맞다.
+   높이를 min-height 로 잡아 두어 모드를 바꿔도 아래 버튼이 위아래로 튀지 않는다. */
+.setup-mode-hint{font-size:12px;color:var(--text-muted);text-align:center;margin-top:9px;
+  line-height:1.55;min-height:34px;}
+.setup-mode-hint .mode-hint-name{color:var(--text-mid);font-weight:700;}
+.setup-mode-hint .mode-hint-algo{display:block;margin-top:1px;font-size:11px;opacity:.85;}
 /* 모바일: 아이콘 약간 축소 */
 @media(max-width:640px){
+  /* 좁은 화면에선 설명이 여러 줄로 접힌다. 자리를 넉넉히 잡아 두어 모드를 바꿀 때
+     아래 「세션 시작」이 크게 움직이지 않게 한다 (2026-08-20) */
+  .setup-mode-hint{min-height:50px;text-align:left;}
   .setup-icon-circle{width:48px;height:48px;}
   .setup-icon-circle svg{width:22px;height:22px;}
   .setup-icon-label{font-size:12px;}
@@ -1513,37 +1493,38 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
       <!-- ④ 학습 모드 — 무료 체험 사용자 포함 항상 노출 (advanced-options 밖) -->
       <div class="setup-section-label" data-i18n="setup_mode">학습 모드</div>
-      <div class="setup-icon-grid setup-icon-grid-4" id="mode-row" style="position:relative;">
+      <div class="setup-icon-grid setup-icon-grid-4" id="mode-row">
         <!-- 2026-08-20: 기본값을 스마트(TPIQ)로 — Normal 과 자리를 맞바꿨다.
              ⚠️ 이 버튼 순서는 syncModeIconUI() 의 vals 배열·applyTrialLocks() 의 인덱스와 «짝»이다. -->
-        <button class="setup-icon-btn selected" onclick="selectMode('tpiq',this)" onmouseenter="showModeTip('tpiq',0,false)" onmouseleave="hideModeTip()" onfocus="showModeTip('tpiq',0,false)" onblur="hideModeTip()">
+        <button class="setup-icon-btn selected" onclick="selectMode('tpiq',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><path d="M12 3l1.6 3.9L17.5 8l-3.9 1.6L12 13l-1.6-3.4L6.5 8l3.9-1.1L12 3z"/><path d="M5 15l.9 2.1L8 18l-2.1.9L5 21l-.9-2.1L2 18l2.1-.9L5 15z"/><path d="M19 14l.7 1.6L21.5 16l-1.8.4L19 18l-.7-1.6L16.5 16l1.8-.4L19 14z"/></svg>
           </div>
           <div class="setup-icon-label" data-i18n="mode_tpiq">Smart (TPIQ)</div>
         </button>
-        <button class="setup-icon-btn" onclick="selectMode('normal',this)" onmouseenter="showModeTip('normal',1,false)" onmouseleave="hideModeTip()" onfocus="showModeTip('normal',1,false)" onblur="hideModeTip()">
+        <button class="setup-icon-btn" onclick="selectMode('normal',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           </div>
           <div class="setup-icon-label" data-i18n="mode_normal">Normal</div>
         </button>
-        <button class="setup-icon-btn" onclick="selectMode('review',this)" onmouseenter="showModeTip('review',2,false)" onmouseleave="hideModeTip()" onfocus="showModeTip('review',2,false)" onblur="hideModeTip()">
+        <button class="setup-icon-btn" onclick="selectMode('review',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <div class="setup-icon-label" data-i18n="mode_review">Review Wrong</div>
         </button>
-        <button class="setup-icon-btn" onclick="selectMode('timed',this)" onmouseenter="showModeTip('timed',3,false)" onmouseleave="hideModeTip()" onfocus="showModeTip('timed',3,false)" onblur="hideModeTip()">
+        <button class="setup-icon-btn" onclick="selectMode('timed',this)">
           <div class="setup-icon-circle">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 3"/><path d="M9 2h6M12 2v3"/></svg>
           </div>
           <div class="setup-icon-label" data-i18n="mode_timed">Timed 90s</div>
         </button>
-        <!-- 학습 모드 설명 풍선 (2026-08-20) — 예전엔 줄글 각주였는데 자리를 차지해 정렬이 흐트러졌다.
-             이제 절대위치라 «레이아웃을 밀지 않는다». 마우스를 올리거나 버튼을 누르면 뜬다. -->
-        <div class="mode-tip" id="mode-tip" role="tooltip" aria-hidden="true"></div>
       </div>
+      <!-- 학습 모드 한 줄 설명. updateModeHint() 가 「모드이름 — 설명」으로 조립하므로
+           data-i18n 을 달지 않는다(applyLang 이 textContent 로 덮어써 버린다).
+           언어 토글은 applyLang() 이 updateModeHint() 를 다시 부르는 것으로 따라간다. -->
+      <div class="setup-mode-hint" id="mode-hint"></div>
 
       <div class="setup-divider"></div>
 
@@ -4263,16 +4244,18 @@ var UI_TEXT = {
   mode_tpiq:      {ko:'스마트 (TPIQ)', en:'Smart (TPIQ)'},
   mode_review:    {ko:'오답 복습', en:'Review Wrong'},
   mode_timed:     {ko:'타이머 90초', en:'Timed 90s'},
-  mode_hint_normal:{ko:'선택한 범위의 문제를 무작위 순서로 풉니다.', en:'Questions from your selected scope, in random order.'},
-  // 2026-08-20 다시 씀 — 사용자 지적("한글 표현이 이상하다") + GPT-5.6·Gemini 검수.
-  //   두 모델이 겹쳐 짚은 것 = ①'학습 효과를 높여줍니다'는 광고성(혜택 주체가 회사)
-  //   ②'배점이 큰 곳'은 사실이 틀림 — IRS Content Outline 은 «문항 수» 비중이지 문제당 배점이 아님.
-  mode_hint_tpiq: {ko:'출제 비중이 높은 주제부터 풀어 한정된 시간을 효율적으로 씁니다.', en:'Puts the most heavily tested topics first, so limited study time goes further.'},
-  // TPIQ 약어 풀이 (스마트 모드에서만 한 줄 더 붙는다)
-  mode_algo_tpiq: {ko:'TPIQ(Tier-Priority Interleaved Queue)는 PracExam의 자체 출제 알고리즘입니다.', en:"TPIQ (Tier-Priority Interleaved Queue) is PracExam's own question-ordering algorithm."},
-  mode_hint_review:{ko:'이전에 틀린 문제만 다시 풉니다.', en:'Retry only the questions you previously got wrong.'},
-  // 2026-08-20: 각주가 「* 이름 — 설명」 꼴이 되면서 안쪽 붙임표와 겹쳐 두 번 나왔다 → 붙임표를 뺐다
-  mode_hint_timed:{ko:'한 문제를 90초 안에 풀며 실전처럼 연습합니다.', en:'Practice at real exam pace with a 90-second cap per question.'},
+  // ── 학습 모드 한 줄 설명 (Study Mode 아래) ──────────────────────────────
+  //   2026-08-20 사용자 문구. 네 줄이 «같은 자리»에 번갈아 뜨므로 말투를 맞춘다 —
+  //   전부 「…하기」 명사형·짧게. 짧아야 휴대폰에서 한 줄에 들어가고, 모드를 바꿔도
+  //   아래 「세션 시작」 버튼이 크게 움직이지 않는다.
+  //   ⚠️ 한 줄을 고치면 «네 줄을 다 훑어» 말투가 갈리지 않는지 본다(부분 교정 금지).
+  mode_hint_tpiq:  {ko:'시험에 자주 나오는 주제부터 문제 풀기', en:'Practice the most heavily tested topics first'},
+  mode_hint_normal:{ko:'고른 범위에서 무작위 순서로 문제 풀기', en:'Practice your selected scope in random order'},
+  mode_hint_review:{ko:'전에 틀린 문제만 다시 풀기', en:'Retry only the ones you got wrong'},
+  mode_hint_timed: {ko:'한 문제 90초, 실전처럼 풀기', en:'90 seconds per question, at exam pace'},
+  // TPIQ 약어 풀이 — 스마트 모드에서만 괄호로 한 줄 더 붙는다.
+  //   🔴 t() 는 «없는 키를 키 이름 그대로» 돌려준다 → 있는지는 UI_TEXT 로 직접 본다(updateModeHint 참조).
+  mode_algo_tpiq:  {ko:'(TPIQ : PracExam 출제 알고리즘)', en:"(TPIQ: PracExam's question-ordering algorithm)"},
   cnt_quick:      {ko:'빠르게',  en:'Quick'},
   cnt_standard:   {ko:'표준',    en:'Standard'},
   cnt_extended:   {ko:'확장',    en:'Extended'},
@@ -4439,7 +4422,7 @@ function applyLang(){
   try{ if(typeof renderStatistics === 'function' && S && S.sessions) renderStatistics(); }catch(e){}
   try{ if(typeof renderBookmarks === 'function' && S && S.questions) renderBookmarks(); }catch(e){}
   try{ if(typeof updateSetupBanner === 'function') updateSetupBanner(); }catch(e){}
-  // 학습 모드 각주는 조립한 글이라 [data-i18n] 경로로는 안 바뀐다 → 여기서 다시 그린다 (2026-08-20)
+  // 학습 모드 설명은 조립한 글이라 [data-i18n] 경로로는 안 바뀐다 → 여기서 다시 그린다 (2026-08-20)
   try{ if(typeof updateModeHint === 'function') updateModeHint(); }catch(e){}
   try{ if(typeof updateAvailCount === 'function') updateAvailCount(); }catch(e){}
   try{ if(typeof updateTrialQuotaBanner === 'function') updateTrialQuotaBanner(); }catch(e){}
@@ -4740,8 +4723,6 @@ function openStudy(){
 function _openStudySetup(){
   showScreen('quiz-setup');
   setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); syncSubsetIconUI(); updateAvailCount(); applyTrialSetupRestrictions();
-    // 화면에 들어오면 지금 고른 모드가 무엇인지 풍선으로 한 번 알린다 (4.5초 뒤 스스로 사라짐)
-    if(typeof showModeTip==='function') showModeTip(S.mode||'tpiq', MODE_ORDER.indexOf(S.mode||'tpiq'), true);
   }, 50);
 }
 
@@ -6150,8 +6131,6 @@ function dashStartFocusPart(part){
     syncModeIconUI();
     syncSubsetIconUI();
     if(typeof updateAvailCount === 'function') updateAvailCount();
-    // 대시보드에서 바로 들어온 길 — 여기서도 모드 풍선을 한 번 띄운다
-    if(typeof showModeTip === 'function') showModeTip(S.mode||'tpiq', MODE_ORDER.indexOf(S.mode||'tpiq'), true);
   }, 50);
 }
 
@@ -6180,52 +6159,27 @@ function selectMode(m,btn){
   document.querySelectorAll('#mode-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   updateAvailCount();   // review 모드는 getPool()을 오답만으로 좁히므로 개수 갱신 필요
-  // 고른 순간 그 모드가 무엇인지 풍선으로 알린다 — 터치 기기엔 마우스 올림이 없으므로 이 길뿐이다
-  if(typeof showModeTip==='function') showModeTip(m, MODE_ORDER.indexOf(m), true);
+  updateModeHint();
 }
-// ══ 학습 모드 설명 «풍선» (2026-08-20) ══════════════════════════════
-//   전에는 mode-row 아래 «줄글 각주»였다. 사용자 지적 둘 —
-//     ① 정렬이 흐트러진다(각주가 자리를 차지하고, 모드마다 높이가 달라 시작 버튼이 튐)
-//     ② 「mode_algo_normal」 같은 «키 이름»이 그대로 화면에 찍혔다
-//   ②의 뿌리 = t() 는 «없는 키를 키 이름 그대로» 돌려준다(t() 정의 참조).
-//      그래서 `if(t('mode_algo_normal'))` 이 늘 참이 됐다.
-//      🔑 있는가/없는가는 반드시 UI_TEXT 를 «직접» 본다.
-var MODE_ORDER = ['tpiq','normal','review','timed'];   // ⚠️ #mode-row 버튼 순서와 «짝»
-var _modeTipTimer = null;
-
-// m=모드키 · idx=몇 번째 버튼인가(화살표 위치) · sticky=잠깐 띄웠다 스스로 사라지는가(터치용)
-function showModeTip(m, idx, sticky){
-  var tip=document.getElementById('mode-tip');
-  if(!tip) return;
+// ══ 학습 모드 한 줄 설명 (Study Mode 아래) ═══════════════════════════
+//   「모드이름 — 설명」으로 조립한다. 이름을 앞에 붙이는 것은, 설명만 있으면
+//   네 버튼 중 무엇을 가리키는지 안 보인다는 사용자 지적 때문이다.
+//   🔴 풍선(툴팁)으로 만들었다가 되돌렸다 — 모바일에서 「세션 시작」을 덮는데
+//      닫는 표시가 없어 헷갈렸다. 정적인 글이 맞다.
+//   🔴 t() 는 «없는 키를 키 이름 그대로» 돌려준다(t() 정의 참조). 그래서
+//      `if(t('mode_algo_normal'))` 이 늘 참이 되어 키 이름이 화면에 찍힌 적이 있다.
+//      있는가/없는가는 반드시 UI_TEXT 를 «직접» 본다.
+function updateModeHint(){
+  var el=document.getElementById('mode-hint');
+  if(!el) return;
+  var m=S.mode||'tpiq';
   var esc=(typeof _copEsc==='function') ? _copEsc : function(x){ return (x||'')+''; };
   var name=t('mode_'+m)||'';
   var body=t('mode_hint_'+m)||'';
-  var algo=(typeof UI_TEXT!=='undefined' && UI_TEXT['mode_algo_'+m]) ? t('mode_algo_'+m) : '';  // 없는 키 방어
-  if(idx==null || idx<0){ idx=MODE_ORDER.indexOf(m); if(idx<0) idx=0; }
-  var arrowLeft=(12.5 + idx*25) + '%';    // 4칸 그리드의 각 칸 가운데
-  var html='<span class="mode-tip-arrow" style="left:'+arrowLeft+';"></span>'+
-           '<span class="mode-tip-name">'+esc(name)+'</span>'+esc(body);
-  if(algo) html+='<span class="mode-tip-algo">'+esc(algo)+'</span>';
-  tip.innerHTML=html;
-  tip.classList.add('show');
-  tip.setAttribute('aria-hidden','false');
-  clearTimeout(_modeTipTimer);
-  if(sticky) _modeTipTimer=setTimeout(hideModeTip, 4500);   // 터치엔 mouseleave 가 없다 → 스스로 사라진다
-}
-function hideModeTip(){
-  var tip=document.getElementById('mode-tip');
-  if(!tip) return;
-  clearTimeout(_modeTipTimer);
-  tip.classList.remove('show');
-  tip.setAttribute('aria-hidden','true');
-}
-// 예전 이름 유지 — selectMode()·syncModeIconUI()·applyLang() 세 곳이 부른다.
-//   화면에 이미 떠 있는 풍선을 «지금 고른 모드·지금 언어»로 다시 그린다.
-function updateModeHint(){
-  var tip=document.getElementById('mode-tip');
-  if(!tip || !tip.classList.contains('show')) return;
-  var m=S.mode||'tpiq';
-  showModeTip(m, MODE_ORDER.indexOf(m), true);
+  var html='<span class="mode-hint-name">'+esc(name)+'</span> — '+esc(body);
+  var algo=(typeof UI_TEXT!=='undefined' && UI_TEXT['mode_algo_'+m]) ? t('mode_algo_'+m) : '';
+  if(algo) html+='<span class="mode-hint-algo">'+esc(algo)+'</span>';
+  el.innerHTML=html;
 }
 function selectRepeatIcon(val,btn){
   if(_trialLockGuard(btn))return;
