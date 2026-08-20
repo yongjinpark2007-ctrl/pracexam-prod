@@ -978,6 +978,12 @@ html, body {
 .ann-tag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
 .ann-dot{width:8px;height:8px;border-radius:50%;background:var(--danger-color);flex:0 0 auto;}
 .ann-body{color:var(--text-mid);font-size:12.5px;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+/* 공지 본문 안의 링크 — 눌리는 것이 «보여야» 한다 (2026-08-20).
+   ⚠️ 접힌 상태는 1줄만 보이므로(-webkit-line-clamp:1) 둘째 줄에 있는 링크는
+      공지를 «펼쳐야» 나온다. 링크는 공지 첫 줄에 두는 편이 낫다. */
+.ann-body a{color:var(--navy);text-decoration:underline;text-underline-offset:2px;
+  font-weight:600;word-break:break-all;}
+.ann-body a:hover{color:var(--accent);}
 .ann-item.open .ann-body{-webkit-line-clamp:unset;}
 .ann-date-inline{font-size:11px;color:var(--text-muted);white-space:nowrap;flex:0 0 auto;}
 .ann-date{font-size:11px;color:var(--text-muted);margin-top:7px;}
@@ -4950,7 +4956,7 @@ function paintAnnouncements(){
         (dateTxt ? '<span class="ann-date-inline">'+ dateTxt +'</span>' : '')+
         (isUnread ? '<span class="ann-dot"></span>' : '')+
       '</div>'+
-      (body ? '<div class="ann-body">'+ _annEsc(body) +'</div>' : '')+
+      (body ? '<div class="ann-body">'+ _annLinkify(body) +'</div>' : '')+
     '</div>';
   }).join('');
 
@@ -4960,6 +4966,38 @@ function _annEsc(s){
   return String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// 공지 본문의 «주소»를 눌리는 링크로 바꾼다 (2026-08-20)
+//   전에는 _annEsc() 만 거쳐서 https://pracexam.com/install-guide 가 그냥 «글자»로 남았다
+//   — 눌러도 아무 일이 없었다(사용자 지적).
+//
+//   🔒 안전 — 이스케이프한 «결과»를 정규식으로 훑지 않는다. 원문을 주소 단위로 잘라
+//      토막마다 _annEsc() 를 따로 먹인다. 그래서 DB 글이 통째로 HTML 로 들어올 길이 없다.
+//      (이스케이프한 글을 훑으면 &quot; 의 세미콜론까지 주소로 빨려 들어가 href 가 깨진다.)
+//   🔑 항목 전체에 펼치기 onclick 이 걸려 있으므로 링크에 event.stopPropagation() 이 «반드시»
+//      필요하다 — 없으면 링크를 눌러도 공지가 접혔다 펴질 뿐이다.
+//   · 붙는 주소 = http(s):// 로 시작하는 것 · 프로토콜 없는 pracexam.com/… · www.…
+//   · 줄바꿈은 <br> 로 살린다 (관리자가 여러 줄로 쓴 공지가 한 줄로 붙어 보였다)
+function _annLinkify(raw){
+  var s = String(raw == null ? '' : raw);
+  var re = /(https?:\/\/[^\s<>"']+|(?:www\.)?pracexam\.com\/[^\s<>"']*)/gi;
+  var out = '', last = 0, m;
+  while((m = re.exec(s)) !== null){
+    out += _annEsc(s.slice(last, m.index));
+    var url = m[0], tail = '';
+    var tm = url.match(/[.,;:!?)\]}]+$/);          // 문장 끝 부호는 주소에서 뺀다
+    if(tm){ tail = tm[0]; url = url.slice(0, url.length - tail.length); }
+    if(url){
+      var href = /^https?:\/\//i.test(url) ? url : ('https://' + url);
+      out += '<a href="' + _annEsc(href) + '" target="_blank" rel="noopener noreferrer"' +
+             ' onclick="event.stopPropagation();">' + _annEsc(url) + '</a>';
+    }
+    out += _annEsc(tail);
+    last = m.index + m[0].length;
+  }
+  out += _annEsc(s.slice(last));
+  return out.replace(/\n/g, '<br>');
 }
 
 // ══════════════════════════════════════════════════════
