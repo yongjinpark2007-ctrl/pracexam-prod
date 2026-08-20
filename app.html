@@ -2257,6 +2257,9 @@ const PADDLE_PRICE_MONTHLY = 'pri_01kxdeyzxqyph78xpzt81w2qxb';      // Live $29/
 try{
   if(window.Paddle){
     Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN, eventCallback: onPaddleEvent });
+    // 나라별 가격을 미리 받아 둔다 — 결제 모달이 열릴 때 «이미» 있어야 한 번에 옳게 보인다.
+    // (같은 블록의 함수 선언이라 여기서 불러도 된다. 실패해도 조용히 기본값으로 물러난다.)
+    setTimeout(function(){ try{ peFetchPrice(); }catch(e){} }, 0);
   } else {
     console.warn('Paddle.js 미로드 — 결제 버튼 비활성');
   }
@@ -3535,6 +3538,43 @@ function pollEntitlement(tries){
   }, 2000);
 }
 
+// ── 가격 표시 현지화 (2026-08-20) ──────────────────────────────
+//   한국 고객은 결제창이 **원화(₩39,000)** 로 열린다(가격에 KR 전용 KRW 를 넣었다).
+//   앱이 "$29" 를 그대로 보여 주면 화면과 결제창이 어긋나므로, Paddle 이 계산해 준
+//   «그 나라 가격»을 그대로 가져다 쓴다. 나라는 Paddle 이 IP 로 판단한다.
+//
+//   🔴 `formattedTotals.total` 은 통화기호·자릿점까지 붙은 «완성된 문자열»이다
+//      ("$29.00" · "₩39,000"). 다시 포맷하거나 100 으로 나누지 말 것 —
+//      원화·엔화는 소수점이 없어서 나누면 100배 작아진다.
+//   🔴 실패해도 화면이 비면 안 된다 — 못 가져오면 기본 문구($29)를 그대로 쓴다.
+var _pePriceStr = null;                 // 예) "$29.00" · "₩39,000"
+var _pePricePromise = null;
+
+function peFetchPrice(){
+  if(_pePriceStr) return Promise.resolve(_pePriceStr);
+  if(_pePricePromise) return _pePricePromise;
+  if(!window.Paddle || typeof Paddle.PricePreview !== 'function') return Promise.resolve(null);
+  _pePricePromise = Paddle.PricePreview({ items: [{ priceId: PADDLE_PRICE_MONTHLY, quantity: 1 }] })
+    .then(function(res){
+      var li = res && res.data && res.data.details && res.data.details.lineItems;
+      if(li && li[0] && li[0].formattedTotals && li[0].formattedTotals.total){
+        _pePriceStr = String(li[0].formattedTotals.total);
+      }
+      return _pePriceStr;
+    })
+    .catch(function(e){ console.warn('PricePreview 실패 — 기본 가격 표시:', e); return null; });
+  return _pePricePromise;
+}
+
+// 모달이 열린 뒤에 값이 도착해도 그 자리에 채워 넣는다.
+function pePaintPrice(){
+  var amt = document.getElementById('pricing-amt');
+  var btn = document.getElementById('pricing-sub-btn');
+  if(!_pePriceStr) return;
+  if(amt) amt.textContent = _pePriceStr;
+  if(btn) btn.textContent = t('pricing_subscribe_pre') + ' (' + _pePriceStr + ' ' + t('pricing_permonth') + ')';
+}
+
 // 가격/혜택 안내 모달 — "구독하기" → openCheckout
 function showPricingModal(){
   if(!SB_USER){ showToast(t('login_required')); return; }
@@ -3545,15 +3585,21 @@ function showPricingModal(){
     '<div style="text-align:center;padding:1rem 0;">' +
       '<div style="font-size:36px;margin-bottom:.4rem;">🚀</div>' +
       '<div style="font-size:19px;font-weight:800;margin-bottom:.2rem;">' + t('pricing_title') + '</div>' +
-      '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' + t('pricing_price') + '</div>' +
+      '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' +
+        '<span id="pricing-amt">' + (_pePriceStr || '$29') + '</span> ' +
+        '<span style="font-size:15px;font-weight:700;">' + t('pricing_permonth') + '</span>' +
+      '</div>' +
       '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.9;margin:.75rem auto 1.1rem;text-align:left;display:inline-block;">' +
         t('pricing_benefits') +
       '</div>' +
-      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="openCheckout()">' + t('pricing_subscribe') + '</button>' +
+      '<button class="btn-navy" id="pricing-sub-btn" style="width:100%;margin-bottom:8px;" onclick="openCheckout()">' +
+        t('pricing_subscribe_pre') + ' (' + (_pePriceStr || '$29') + ' ' + t('pricing_permonth') + ')' +
+      '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
       '<div style="font-size:11.5px;color:var(--text-mid);margin-top:10px;line-height:1.6;">' + t('pricing_fineprint') + '</div>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
+  peFetchPrice().then(pePaintPrice);      // 늦게 와도 그 자리에 채워 넣는다
 }
 
 // 유료 멤버 — 구독 상태 + 결제/해지 관리 안내 (설정 메뉴 대체 진입점)
@@ -4255,9 +4301,12 @@ var UI_TEXT = {
   checkout_success:{ko:'✅ 결제 완료! 이제 무제한으로 이용하실 수 있습니다.', en:'✅ Payment complete! You now have unlimited access.'},
   checkout_pending:{ko:'결제가 접수되었습니다. 반영까지 잠시 걸릴 수 있어요 (다음 로그인 시 적용).', en:'Payment received. It may take a moment to apply (or on next login).'},
   pricing_title:  {ko:'전체 문제은행 무제한', en:'Unlimited Full Question Bank'},
+  // 🔴 금액은 Paddle 이 나라에 맞게 계산해 준 값을 쓴다(peFetchPrice). 아래는 «못 가져왔을 때»의 기본값.
   pricing_price:  {ko:'$29 / 월', en:'$29 / month'},
+  pricing_permonth:{ko:'/ 월', en:'/ month'},
   pricing_benefits:{ko:'• 5,000+ 전 문항 무제한 풀이<br>• Part 1·2·3 전 영역<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 5,000+ questions<br>• All of Part 1, 2, 3<br>• Korean/English explanations<br>• Cancel anytime · 14-day money-back'},
   pricing_subscribe:{ko:'구독하기 ($29/월)', en:'Subscribe ($29/mo)'},
+  pricing_subscribe_pre:{ko:'구독하기', en:'Subscribe'},
   pricing_fineprint:{ko:'매월 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews monthly · cancel anytime. Payments securely handled by Paddle.'},
   paid_until_label:{ko:'다음 결제일', en:'Renews'},
   manage_billing: {ko:'결제·해지 관리: 구매 시 받은 Paddle 영수증 메일 또는 hello@pracexam.com', en:'Manage/cancel billing: your Paddle receipt email or hello@pracexam.com'},
