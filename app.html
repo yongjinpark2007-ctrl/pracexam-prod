@@ -448,6 +448,12 @@ html, body {
   color:var(--text-mid);cursor:pointer;
 }
 @media(hover:hover){.topic-all button:hover{border-color:var(--border-hover);}}
+/* 접었다 펴는 목록 칸 — 배너 바로 밑에 붙는다 */
+.topic-panel{margin:-1.1rem 0 1.5rem;}
+.topic-bar-ico svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.topic-bar-names{
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
 .topic-hint{
   background:var(--ann-item-bg);border:1px solid rgba(53,70,73,.10);border-radius:10px;
   padding:11px 13px;font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;
@@ -1479,8 +1485,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       </div>
 
       <!-- ⓪ 주제 고르기 (Selective Study, 2026-08-21) — «범위» 축이므로 Part 바로 아래.
-           내용은 renderTopicPicker() 가 채운다 (고른 Part 에 따라 달라지므로). -->
-      <div class="setup-section-label" data-i18n="setup_topic">주제</div>
+           내용은 renderTopicPicker() 가 채운다 (고른 Part 에 따라 달라지므로).
+           ⚠️ 제목 줄(.setup-section-label)을 일부러 안 둔다 — 접힌 배너가 스스로
+              '주제 전체'/'주제 2개 선택' 이라고 말하고, 휴대폰 세로를 아끼기 위해서다. -->
       <div id="topic-pick"></div>
 
       <!-- ① 문제 수 -->
@@ -4335,6 +4342,9 @@ var UI_TEXT = {
   topic_empty:    {ko:'이 주제에 지금 풀 수 있는 문제가 없습니다. 위의 범위·반복 조건을 넓혀 보세요.',
                    en:'No questions available in the chosen topics. Try widening Scope or Repeats above.'},
   topic_onexam:   {ko:'실제 시험 출제', en:'on exam'},
+  topic_bar_all:  {ko:'주제 전체', en:'All topics'},
+  topic_bar_none: {ko:'선택하지 않으면 Part 전체에서 출제됩니다',
+                   en:'Nothing selected — questions come from the whole Part'},
   setup_repeat:   {ko:'반복 횟수', en:'Repeats'},
   setup_saved:    {ko:'기억됨',  en:'Saved'},
   setup_mode:     {ko:'학습 모드', en:'Study Mode'},
@@ -6521,12 +6531,43 @@ function renderTopicPicker(){
       (chosen.length
         ? (LANG === 'en' ? (chosen.length + ' selected · ' + t('topic_only'))
                          : (chosen.length + '개 선택 · ' + t('topic_only')))
-        : t('topic_all')) +
-    '</span>' +
+        : t('topic_all'))
+    + '</span>' +
     (chosen.length ? '<button type="button" onclick="topicSelectAll()">' + t('topic_clear') + '</button>' : '') +
   '</div>';
 
-  el.innerHTML = head + '<div class="topic-list">' + rows + '</div>';
+  // ── 접힌 한 줄 (Part 고르기와 같은 .setup-banner 문법) ──
+  //    고른 주제가 있으면 그 이름을 그대로 보여 준다 — 열지 않아도 무엇을 골랐는지 보인다.
+  var barTitle = chosen.length
+    ? (LANG === 'en' ? (chosen.length + ' topics selected') : ('주제 ' + chosen.length + '개 선택됨'))
+    : t('topic_bar_all');
+  var barSub = chosen.length
+    ? '<span class="topic-bar-names">' + chosen.join(', ') + '</span>'
+    : t('topic_bar_none');
+  var bar =
+    '<div class="setup-banner" onclick="topicToggleOpen()" style="cursor:pointer;">' +
+      '<div class="setup-banner-icon topic-bar-ico">' +
+        '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>' +
+        '<line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>' +
+        '<line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>' +
+      '</div>' +
+      '<div class="setup-banner-info">' +
+        '<div class="setup-banner-title">' + barTitle + '</div>' +
+        '<div class="setup-banner-sub">' + barSub + '</div>' +
+      '</div>' +
+      '<div class="setup-banner-change">' + t('setup_change') + '</div>' +
+    '</div>';
+
+  el.innerHTML = bar + (_TOPIC_OPEN
+    ? ('<div class="topic-panel">' + head + '<div class="topic-list">' + rows + '</div></div>')
+    : '');
+}
+
+// 접기/펴기 — 펼침 여부는 다시 그려도 살아남아야 한다(주제를 하나 고를 때마다 다시 그린다)
+var _TOPIC_OPEN = false;
+function topicToggleOpen(){
+  _TOPIC_OPEN = !_TOPIC_OPEN;
+  renderTopicPicker();
 }
 
 function toggleTopic(btn, name){
