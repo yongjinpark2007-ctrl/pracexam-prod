@@ -909,6 +909,9 @@ html, body {
 .dash-hero-label{font-size:14px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;}
 .dash-hero-title{font-size:24px;font-weight:700;color:var(--text-main);letter-spacing:-.01em;margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .dash-hero-title svg{width:29px;height:29px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.dash-hero-ico{width:38px;height:38px;border-radius:10px;background:rgba(198,161,91,.18);
+  display:flex;align-items:center;justify-content:center;flex:none;}
+.dash-hero-title .dash-hero-ico svg{width:21px;height:21px;stroke:#8a5e22;stroke-width:2;}
 .dash-hero-status{font-size:14px;font-weight:700;padding:6px 12px;border-radius:8px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;
   background:rgba(245,158,11,.1);color:var(--flag-color);border:1px solid rgba(245,158,11,.25);}
 .dash-hero-status.ready{background:rgba(74,222,128,.1);color:var(--success-color);border-color:rgba(74,222,128,.3);}
@@ -956,6 +959,15 @@ html, body {
 .dash-part-row.active{border:1.5px solid var(--hero-gold-bd);border-left:3px solid var(--hero-gold);background:var(--hero-cream);}
 .dash-part-row-name{display:flex;flex-direction:column;align-items:flex-start;gap:9px;font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;line-height:1.3;}
 .dash-part-row.active .dash-part-row-name{color:var(--sel-text);}
+/* Part 타일·히어로 아이콘 = 모의고사/War Room 카드(.prem-ico)와 «같은 문법»으로 통일
+   (2026-08-20 사용자 지시) — 전에는 맨 SVG 라 바로 아래 프리미엄 카드의 둥근 사각 칩과 따로 놀았다.
+   칩 크기·모서리·안쪽 SVG 비율을 .prem-ico 에서 그대로 가져왔다. */
+.dash-part-ico{width:34px;height:34px;border-radius:9px;background:rgba(111,163,158,.16);
+  display:flex;align-items:center;justify-content:center;flex:none;}
+.dash-part-row-name .dash-part-ico svg{width:19px;height:19px;stroke:#4E7D78;stroke-width:2;}
+/* 선택된 Part = 히어로와 같은 크림+골드 계열이므로 칩도 골드 톤으로 (고정 배지와 같은 #8a5e22) */
+.dash-part-row.active .dash-part-ico{background:rgba(198,161,91,.18);}
+.dash-part-row.active .dash-part-ico svg{stroke:#8a5e22;}
 .dash-part-row-name svg{width:26px;height:26px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .dash-part-row-stats{font-size:12.5px;color:var(--text-mid);margin-bottom:11px;}
 .dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;margin-top:auto;}
@@ -1114,6 +1126,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-part-row{padding:12px 10px;border-radius:12px;}
   .dash-part-row-name{font-size:12.5px;gap:7px;margin-bottom:7px;}
   .dash-part-row-name svg{width:22px;height:22px;}
+  .dash-part-ico{width:30px;height:30px;border-radius:8px;}
+  .dash-part-row-name .dash-part-ico svg{width:17px;height:17px;}
+  .dash-hero-ico{width:32px;height:32px;border-radius:9px;}
+  .dash-hero-title .dash-hero-ico svg{width:18px;height:18px;}
   .dash-part-row-stats{font-size:11px;margin-bottom:9px;}
   .dash-part-row-acc{display:none;}  /* 모바일: 진도만 표시, 정확도 숨김 */
 
@@ -5836,7 +5852,7 @@ function renderDashHero(focusPart){
       '<div class="dash-hero-head">' +
         '<div>' +
           '<div class="dash-hero-label">' + t('hero_focus') + '</div>' +
-          '<div class="dash-hero-title">' + info.icon + ' ' + partLabel(focusPart) + '</div>' +
+          '<div class="dash-hero-title"><span class="dash-hero-ico">' + info.icon + '</span>' + partLabel(focusPart) + '</div>' +
           ambBadgeHtml() +
         '</div>' +
         '<span class="dash-hero-status ' + st.cls + '">' + st.text + '</span>' +
@@ -5887,7 +5903,7 @@ function renderDashPartsGrid(){
     const shortLabel = partLabel(pk).replace(' — ', ' · ');
     const isActive = (pk===focusPart);
     return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
-      '<div class="dash-part-row-name">'+(meta.icon||'')+' '+shortLabel+'</div>'+
+      '<div class="dash-part-row-name"><span class="dash-part-ico">'+(meta.icon||'')+'</span>'+shortLabel+'</div>'+
       '<div class="dash-part-row-stats">'+t('dash_progress')+' '+progressPct+'%<span class="dash-part-row-acc"> · '+t('dash_accuracy')+' '+accLabel+'</span></div>'+
       '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressBarColor()+';"></div></div>'+
     '</div>';
@@ -9114,7 +9130,7 @@ function _wrSearchInput(){
   var inp=document.getElementById('wr-search'); if(!inp) return;
   var q=inp.value, clr=document.getElementById('wr-search-clear');
   if(clr) clr.style.display=q?'block':'none';
-  if(_wrNorm(q).trim().length<2){ _wrRenderDomains(WR.curPart); return; }
+  if(_wrNorm(q).trim().length<2){ _wrExitSearch(); return; }
   _wrRenderSearch(q);
 }
 // 🆕 2026-08-21 — 본문까지 찾는다 (고객 지적: `UBIA` 를 넣으면 0건이었다).
@@ -9149,7 +9165,7 @@ function _wrFetchBody(nq){
   }catch(e){ return Promise.resolve(null); }
 }
 function _wrPaintSearch(nq){
-  var lang=_wrLang(), body=_WR_BODY[nq]||null, html='', total=0;
+  var lang=_wrLang(), body=_WR_BODY[nq]||null, html='', total=0, codes=[];
   [1,2,3].forEach(function(p){
     var buck=(WR.byPart&&WR.byPart[p])||{};
     (WR_SKELETON[p]||[]).forEach(function(row){
@@ -9159,10 +9175,12 @@ function _wrPaintSearch(nq){
         var titleHit=domHit || _wrNorm(r.title_en).indexOf(nq)>=0 || _wrNorm(r.title_ko).indexOf(nq)>=0 || _wrNorm(r.outline_code).indexOf(nq)>=0;
         var bodyHit=!!(body && body[r.outline_code]);
         if(!titleHit && !bodyHit) return;
-        total++;
+        total++; codes.push(r.outline_code);
         var lk=r.locked?'<span class="lk">🔒 </span>':'';
         var bd=(!titleHit&&bodyHit)?'<span class="wr-sr-in">'+(lang==='en'?'in text':'본문')+'</span>':'';
-        html+='<div class="wr-topic-link wr-sr" onclick="_wrGo('+p+',\''+r.outline_code+'\')">'+lk
+        // id 를 다는 까닭 = wrShow 가 'wr-nav-<코드>' 로 «지금 보는 것»에 표시를 한다.
+        // 검색 중에는 왼쪽에 목차 대신 결과만 있으므로 id 가 겹치지 않는다.
+        html+='<div class="wr-topic-link wr-sr" id="wr-nav-'+r.outline_code+'" onclick="_wrGo('+p+',\''+r.outline_code+'\')">'+lk
           +'<span><span class="wr-sr-pb">P'+p+'</span>'+_wrEsc(_wrT(r))+bd
           +'<span class="wr-sr-dom">'+_wrEsc(lang==='ko'?ko:key)+'</span></span></div>';
       });
@@ -9172,21 +9190,48 @@ function _wrPaintSearch(nq){
   el.innerHTML = total
     ? '<div class="wr-sr-count">'+(lang==='en'?(total+' result'+(total>1?'s':'')):(total+'개 결과'))+'</div>'+html
     : '<div class="wr-dom-empty">'+(lang==='en'?'No topics found.':'검색 결과가 없습니다.')+'</div>';
+  // 🆕 2026-08-21 — 이전/다음이 «검색 결과 안»에서 넘어가게 한다 (고객 지적).
+  WR.searchOrder = total ? codes : null;
+  if(total){
+    WR.order = codes.slice();
+    if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
+    _wrUpdateNav();
+  }
 }
 function _wrSearchClear(){
   var inp=document.getElementById('wr-search'); if(inp) inp.value='';
   var clr=document.getElementById('wr-search-clear'); if(clr) clr.style.display='none';
+  _wrExitSearch();
+}
+// 검색을 접고 목차로 돌아간다 — 지금 보던 토픽 표시와 이전/다음 차례를 되돌린다
+function _wrExitSearch(){
+  WR.searchOrder=null;
   _wrRenderDomains(WR.curPart);
+  WR.order=_wrPartOrder(WR.curPart);
+  if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
+  _wrUpdateNav();
+}
+// 한 파트의 토픽 차례 = 목차(도메인 그룹)에 보이는 순서 그대로
+function _wrPartOrder(p){
+  var buck=(WR.byPart&&WR.byPart[p])||{}, out=[];
+  (WR_SKELETON[p]||[]).forEach(function(row){ (buck[row[0]]||[]).forEach(function(r){ out.push(r.outline_code); }); });
+  return out;
 }
 function _wrSearchKey(e){
   e.stopPropagation();
   if(e.key==='Enter'){ var f=document.querySelector('#wr-doms .wr-sr'); if(f) f.click(); }
   else if(e.key==='Escape'){ _wrSearchClear(); }
 }
+// 🆕 2026-08-21 — 검색 결과를 «지우지 않는다».
+// 고객 지적: 결과 하나를 고르면 오른쪽에 내용이 뜨자마자 «왼쪽 목록이 통째로 사라져» 나머지를 볼 수 없었다.
+// 이제 목록이 그대로 남고, 고른 것에 표시가 붙으며, 이전/다음도 «결과 안»에서 넘어간다.
 function _wrGo(p, code){
-  _wrSearchClear();
-  if(p!==WR.curPart){ _wrSetPart(p, code); }
-  else { wrShow(code); }
+  if(p!==WR.curPart){
+    WR.curPart=p;   // 파트 표는 바꾸되 목차를 다시 그리지 않는다 (그리면 결과가 지워진다)
+    document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
+  }
+  WR.order=(WR.searchOrder&&WR.searchOrder.length)?WR.searchOrder.slice():_wrPartOrder(p);
+  wrShow(code);
 }
 function _wrSetPart(p, preferCode){
   WR.curPart=p;
@@ -9196,8 +9241,8 @@ function _wrSetPart(p, preferCode){
   _wrRenderDomains(p);
   var buck=(WR.byPart&&WR.byPart[p])||{};
   // 이전/다음 순서 = 현재 Part의 토픽만, 목차(도메인 그룹)에 보이는 순서 그대로 (2026-07-27)
-  WR.order=[];
-  (WR_SKELETON[p]||[]).forEach(function(row){ (buck[row[0]]||[]).forEach(function(r){ WR.order.push(r.outline_code); }); });
+  WR.searchOrder=null;                 // 파트 표를 누르면 검색은 접힌다
+  WR.order=_wrPartOrder(p);
   var firstCode=WR.order.length?WR.order[0]:null;
   var showCode=firstCode;
   if(preferCode && Object.keys(buck).some(function(k){ return (buck[k]||[]).some(function(r){ return r.outline_code===preferCode; }); })){ showCode=preferCode; }
@@ -9267,8 +9312,12 @@ async function wrShow(code){
 function _wrUpdateNav(){
   var i=WR.order.indexOf(WR.cur);
   var p=document.getElementById('wr-prev'), n=document.getElementById('wr-next'), pos=document.getElementById('wr-pos');
-  if(p)p.disabled=(i<=0); if(n)n.disabled=(i>=WR.order.length-1);
-  if(pos)pos.innerHTML=(i+1)+' / '+WR.order.length+'<span class="k">'+(_wrLang()==='en'?'← → to flip':'← → 키로 넘기기')+'</span>';
+  if(p)p.disabled=(i<=0); if(n)n.disabled=(i<0 || i>=WR.order.length-1);
+  var _inSr=!!(WR.searchOrder&&WR.searchOrder.length), en=(_wrLang()==='en');
+  // 지금 보는 토픽이 이 차례 안에 없을 수 있다(검색 결과에 없는 것을 보던 중) — 그때는 개수만 보인다
+  var _txt=(i<0)?(WR.order.length+(en?' results':'개 결과')):((i+1)+' / '+WR.order.length);
+  if(pos)pos.innerHTML=_txt+'<span class="k">'
+    +(_inSr?(en?'in results · ← →':'검색 결과 안 · ← →'):(en?'← → to flip':'← → 키로 넘기기'))+'</span>';
 }
 function wrNav(dir){ var i=WR.order.indexOf(WR.cur); if(i<0)i=0; var j=i+dir; if(j<0||j>=WR.order.length)return; wrShow(WR.order[j]); }
 // ── 렌더 후처리 (2026-07-30) ──
