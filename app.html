@@ -404,6 +404,9 @@ html, body {
 .setup-count-num{font-size:32px;font-weight:800;display:block;color:var(--text-main);}
 .setup-count-card.selected .setup-count-num{color:var(--sel-text);}
 .setup-count-sub{font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.04em;text-transform:uppercase;margin-top:4px;}
+/* 한 낱말이 «가운데서» 갈라지지 않게 — .screen 의 word-break:break-word 를 라벨에서만 끈다.
+   (2026-08-21: 영문 모바일에서 STANDARD 가 'STANDAR / D' 로 갈라졌다) */
+.setup-count-sub,.setup-icon-label,.setup-repeat-sub{word-break:normal;overflow-wrap:normal;}
 .setup-count-card.selected .setup-count-sub{color:var(--sel-text);opacity:.75;}
 /* 무료 체험: 잠긴(비활성) 옵션 — 보이지만 선택 불가 */
 .setup-locked{position:relative;opacity:.42;filter:grayscale(.65);}
@@ -434,10 +437,11 @@ html, body {
 .topic-row.selected .topic-box{background:var(--sel-border);border-color:var(--sel-border);}
 .topic-box svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
 .topic-row.selected .topic-box svg{opacity:1;}
-.topic-txt{flex:1;min-width:0;}
-.topic-name{font-size:13px;font-weight:600;color:var(--text-main);line-height:1.3;}
+.topic-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+/* ⚠️ 이름·밑줄은 <span> 이라 display 를 «반드시» 준다 — 안 주면 인라인이라 한 줄로 붙는다 */
+.topic-name{display:block;font-size:13px;font-weight:600;color:var(--text-main);line-height:1.3;}
 .topic-row.selected .topic-name{color:var(--sel-text);}
-.topic-meta{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.topic-meta{display:block;font-size:11px;color:var(--text-muted);line-height:1.35;}
 .topic-all{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   margin-bottom:9px;font-size:12.5px;color:var(--text-muted);
@@ -547,11 +551,12 @@ html, body {
   .setup-mode-hint{min-height:50px;text-align:left;}
   .setup-icon-circle{width:48px;height:48px;}
   .setup-icon-circle svg{width:22px;height:22px;}
-  .setup-icon-label{font-size:12px;}
+  .setup-icon-label{font-size:clamp(10px,2.9vw,12px);}
   .setup-repeat-circle{width:48px;height:48px;font-size:15px;}
   .setup-repeat-sub{font-size:12px;}
   .setup-count-num{font-size:26px;}
-  .setup-count-sub{font-size:12px;}
+  /* 칸 폭에 맞춰 줄어든다 — 360px 짜리 휴대폰에서도 STANDARD·EXTENDED 가 한 줄에 들어간다 */
+  .setup-count-sub{font-size:clamp(9.5px,2.7vw,12px);letter-spacing:.02em;}
   .setup-count-card{padding:16px 6px 12px;}
   .setup-icon-grid{gap:8px;}
   .setup-repeat-grid{gap:8px;}
@@ -1008,6 +1013,12 @@ html, body {
    — 골드 포인트 선을 상단→왼쪽으로 이동해 히어로·프리미엄·공지 카드의 좌측선 문법과 통일 (2026-07-27) */
 .dash-part-row.active{border:1.5px solid var(--hero-gold-bd);border-left:3px solid var(--hero-gold);background:var(--hero-cream);}
 .dash-part-row-name{display:flex;flex-direction:column;align-items:flex-start;gap:9px;font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:8px;line-height:1.3;}
+/* 이름은 두 칸으로 나눈다 — 「Part 1」과 「Individuals」. 글자 길이에 따라 아무 데서나
+   접히지 않게 하려는 것이다(2026-08-21). ⚠️ span 이므로 display 를 반드시 준다. */
+.dash-part-txt{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.dash-part-key{display:block;font-size:15px;font-weight:700;color:var(--text-main);line-height:1.2;}
+.dash-part-sub{display:block;font-size:12.5px;font-weight:600;color:var(--text-mid);line-height:1.25;word-break:normal;overflow-wrap:normal;}
+.dash-part-row.active .dash-part-key,.dash-part-row.active .dash-part-sub{color:var(--sel-text);}
 .dash-part-row.active .dash-part-row-name{color:var(--sel-text);}
 /* Part 타일·히어로 아이콘 = 모의고사/War Room 카드(.prem-ico)와 «같은 문법»으로 통일
    (2026-08-20 사용자 지시) — 전에는 맨 SVG 라 바로 아래 프리미엄 카드의 둥근 사각 칩과 따로 놀았다.
@@ -1181,6 +1192,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-parts-list{gap:8px;}
   .dash-part-row{padding:12px 10px;border-radius:12px;}
   .dash-part-row-name{font-size:12.5px;gap:7px;margin-bottom:7px;}
+  .dash-part-key{font-size:13px;}
+  .dash-part-sub{font-size:11px;}
   .dash-part-row-name svg{width:22px;height:22px;}
   .dash-part-ico{width:30px;height:30px;border-radius:8px;}
   .dash-part-row-name .dash-part-ico svg{width:17px;height:17px;}
@@ -5992,10 +6005,17 @@ function renderDashPartsGrid(){
     const accPct = tAttempts>0 ? Math.round(tCorrect/tAttempts*100) : 0;
     const accLabel = tAttempts>0 ? accPct+'%' : '—';
     const meta = PART_META[pk] || {};
-    const shortLabel = partLabel(pk).replace(' — ', ' · ');
+    // 「Part 1 — Individuals」를 두 칸으로 쪼갠다 (없으면 통째로 윗줄에)
+    const _full = partLabel(pk);
+    const _bits = _full.split(' — ');
+    const _key  = _bits[0];
+    const _sub  = _bits.length > 1 ? _bits.slice(1).join(' — ') : '';
     const isActive = (pk===focusPart);
     return '<div class="dash-part-row'+(isActive?' active':'')+'" onclick="dashSetFocusPart(\''+pk+'\')">'+
-      '<div class="dash-part-row-name"><span class="dash-part-ico">'+(meta.icon||'')+'</span>'+shortLabel+'</div>'+
+      '<div class="dash-part-row-name"><span class="dash-part-ico">'+(meta.icon||'')+'</span>'+
+        '<span class="dash-part-txt"><span class="dash-part-key">'+_key+'</span>'+
+        (_sub ? '<span class="dash-part-sub">'+_sub+'</span>' : '')+'</span>'+
+      '</div>'+
       '<div class="dash-part-row-stats">'+t('dash_progress')+' '+progressPct+'%<span class="dash-part-row-acc"> · '+t('dash_accuracy')+' '+accLabel+'</span></div>'+
       '<div class="dash-part-row-bar"><div class="dash-part-row-bar-fill" style="width:'+progressPct+'%;background:'+progressBarColor()+';"></div></div>'+
     '</div>';
