@@ -972,7 +972,9 @@ html, body {
 /* ⚠️ flex-wrap 을 쓰지 않는다 — 쓰면 아이콘과 글자가 한 줄에 안 들어갈 때 «글자 덩어리째»
    아래로 내려가, Part 마다(글자 길이마다) 줄 수가 달라진다 (2026-08-21).
    아이콘은 왼쪽에 두고, 글자는 min-width:0 인 자기 칸 안에서 접히게 한다. */
-.dash-hero-title{font-size:24px;font-weight:700;color:var(--text-main);letter-spacing:-.01em;margin-top:5px;display:flex;align-items:center;gap:10px;}
+/* 라벨(「지금 집중 학습 중」)과 제목 사이 여백 — 5px 는 붙어 보여 답답했다.
+   9·13·17px 를 찍어 견주어 12px 로 (사용자 지적 2026-08-21). */
+.dash-hero-title{font-size:24px;font-weight:700;color:var(--text-main);letter-spacing:-.01em;margin-top:12px;display:flex;align-items:center;gap:10px;}
 .dash-hero-ttx{min-width:0;display:flex;flex-direction:column;gap:1px;}
 .dash-hero-key{display:block;line-height:1.15;}
 .dash-hero-sub{display:block;font-size:14px;font-weight:600;color:var(--text-mid);
