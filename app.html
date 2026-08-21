@@ -9238,10 +9238,6 @@ async function mockSubmit(){
     var res=await sb.rpc('grade_mock_exam',{ p_attempt_id:Mock.attemptId, p_answers:answers });
     if(res.error) throw res.error;
     Mock.result=res.data; Mock.result.part=Mock.part;
-    // ⚑ 는 이제 서버가 per_question.flagged 로 돌려준다(2026-08-21 SQL 패치).
-    // 아래 _flags 는 «그물»일 뿐이다 — 함수가 아직 옛 판인 환경에서도 방금 친 응시만은
-    // 표시가 보이게 한다. 이력에서 ⚑ 가 남는 것을 확인하면 이 두 줄은 지워도 된다.
-    try{ Mock.result._flags = JSON.parse(JSON.stringify(Mock.flags||{})); }catch(e){ Mock.result._flags = {}; }
     mockClearLS(); Mock._practiceAck=false;
     renderMockResult(Mock.result);
     showScreen('mock-result');
@@ -9276,9 +9272,9 @@ function renderMockResult(r){
       '<div class="mk-dom-track"><div class="mk-dom-fill" style="width:'+p+'%;background:'+accuracyColor(p)+';"></div></div>'+
       '<span class="mk-dom-pct">'+p+'%</span></div>';
   }).join('');
-  // ⚑ 검토 표시 — 서버가 per_question.flagged 로 준다. _flags 는 옛 함수용 그물(§ mockSubmit).
-  var _fl=(r&&r._flags)||{};
-  var isFlagged=function(x){ return !!(x.flagged || _fl[x.question_id]); };
+  // ⚑ 검토 표시 — grade_mock_exam 이 answers(jsonb)에 저장해 per_question 으로 돌려준다.
+  //   그래서 이력에서 다시 열어도 남는다. 2026-08-21 SQL 패치 전에 친 응시는 값이 없어 안 뜬다(정상).
+  var isFlagged=function(x){ return !!x.flagged; };
   var flagN=pq.filter(isFlagged).length;
 
   // 약점 카드 = 그 토픽에서 «틀린/미응답» 문항을 눌러 바로 해설을 열 수 있게 한다.
@@ -9418,9 +9414,7 @@ async function mockReviewItem(qid){
     }
     var expl=pickLang(q.explanation||'', q.explanation_en||'')||q.explanation_en||q.explanation||'';
     var tip=pickLang(q.examtip||'', q.examtip_en||'');
-    // ⚑ — 서버가 준 per_question.flagged 를 먼저 보고, 없으면 옛 함수용 그물을 본다
-    var _mfl=(Mock.result&&Mock.result._flags)||{};
-    var _mFlagged=!!((mine&&mine.flagged)||_mfl[qid]);
+    var _mFlagged=!!(mine&&mine.flagged);
     var hdr = (mineIdx>=0)
       ? ('<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;border-bottom:1px solid var(--border-clr);padding-bottom:10px;">'+
          '<span style="font-size:19px;font-weight:800;color:var(--text-main);">Q'+(mineIdx+1)+'</span>'+
