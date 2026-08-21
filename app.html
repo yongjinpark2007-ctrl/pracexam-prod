@@ -2293,7 +2293,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   /* ⚑ 검토 표시 — 문항 줄과 해설 머리에 */
   .mk-qflag{flex:none;color:var(--flag-color);font-size:13px;line-height:1;}
   /* 약점 카드 — 틀린 문항을 눌러 바로 해설을 연다 */
-  .mk-weak-qs{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+  .mk-weak-lab{font-size:11px;color:var(--text-muted);font-weight:700;letter-spacing:.02em;margin-top:11px;padding-top:9px;border-top:1px solid var(--border-clr);}
+  .mk-weak-qs{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
   .mk-weak-q{border:1px solid var(--border-clr);background:var(--card-bg);border-radius:7px;
     min-width:28px;padding:4px 7px;font:inherit;font-size:12px;font-weight:700;
     color:var(--danger-color);cursor:pointer;font-variant-numeric:tabular-nums;line-height:1.2;}
@@ -4919,6 +4920,9 @@ function showScreen(name){
   if(name==='dashboard') { renderDashboard(); resetResumeBadgeDismiss(); }
   if(name==='warroom'){ var _wpc=window._wrPendingCode||null; window._wrPendingCode=null; renderWarRoom(_wpc); }
   else if(window._wrFromQuiz||window._wrQSignal){ window._wrFromQuiz=false; window._wrQSignal=null; } // War Room을 떠나면 '돌아가기' 모드·관련칩 해제
+  // 모의고사 결과에서 War Room 으로 온 경우의 «돌아가기» 배지 (2026-08-21)
+  if(name!=='warroom' && name!=='mock-result') window._mkReturn=false;
+  try{ updateMockReturnBadge(); }catch(e){}
   if(name==='bookmarks') renderBookmarks();
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
@@ -9288,12 +9292,17 @@ function renderMockResult(r){
       if(x.is_correct) return;                       // 맞힌 것은 뺀다 — 다시 볼 것은 틀린 것
       miss.push('<button class="mk-weak-q'+(x.choice===-1?' un':'')+'" '+
         'onclick="mockReviewItem(\''+x.question_id+'\')" title="'+mL('해설 보기','See explanation')+'">'+
-        (i+1)+(isFlagged(x)?' ⚑':'')+'</button>');
+        'Q'+(i+1)+(isFlagged(x)?' ⚑':'')+'</button>');
     });
     return '<div class="mk-weak-c">'+
       '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div>'+
-      '<div class="mk-weak-s">'+t.c+'/'+t.n+' · '+Math.round(t.c/t.n*100)+'%</div>'+
-      (miss.length?'<div class="mk-weak-qs">'+miss.join('')+'</div>':'')+
+      '<div class="mk-weak-s">'+t.c+' / '+t.n+' · '+Math.round(t.c/t.n*100)+'%</div>'+
+      // 🔴 숫자만 늘어놓으면 «이게 무엇인지» 안 보인다(사용자 지적 2026-08-21).
+      //    무엇인지 적어 주고, 칩도 Q12 처럼 문항 번호임이 드러나게 쓴다.
+      (miss.length
+        ? '<div class="mk-weak-lab">'+mL('틀린 문항 — 눌러서 해설 보기','Missed — tap to review')+'</div>'+
+          '<div class="mk-weak-qs">'+miss.join('')+'</div>'
+        : '')+
       (t.code && t.code!=='—'
         ? '<button class="mk-weak-wr" onclick="mockGoWarRoom(\''+t.code+'\')">'+
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
@@ -9340,7 +9349,42 @@ function renderMockResult(r){
 //    학습 흐름까지 영향을 받는다. 돌아올 때는 메뉴 → 모의고사 → 이력.
 function mockGoWarRoom(code, qLike){
   try{ closeModal(); }catch(e){}
+  // 돌아올 길을 남긴다 — 사용자가 두 곳에서 다 갇혔다(2026-08-21).
+  window._mkReturn = !!(Mock && Mock.result);
   openWarRoomTopic(code, qLike || null);
+}
+
+// 「← 모의고사 결과로」 배지.
+// 🔴 학습용 resume 배지(updateResumeBadge)를 «건드리지 않는다» — 그쪽은 S.quizQueue 를 전제로
+//    돌아가는 공용 컴포넌트라 손대면 학습 흐름까지 번진다. 따로 만들어 서로 모르게 둔다.
+//    둘이 동시에 뜰 수 있으므로(학습 세션 중에 모의고사 복습을 하는 경우) 위로 비켜 놓는다.
+function updateMockReturnBadge(){
+  var show = !!window._mkReturn
+          && !!(Mock && Mock.result)
+          && !!document.getElementById('screen-warroom')
+          && document.getElementById('screen-warroom').classList.contains('active');
+  var b = document.getElementById('mock-return-badge');
+  if(!show){ if(b) b.style.display='none'; return; }
+
+  if(!b){
+    b = document.createElement('button');
+    b.id = 'mock-return-badge';
+    b.onclick = function(){
+      window._mkReturn = false;
+      try{ renderMockResult(Mock.result); }catch(e){}
+      showScreen('mock-result');
+    };
+    document.body.appendChild(b);
+  }
+  b.textContent = '← ' + mL('모의고사 결과로', 'Back to results');
+  // 학습 배지가 떠 있으면 그 위로
+  var rb = document.getElementById('resume-badge');
+  var stacked = rb && rb.style.display !== 'none';
+  b.style.cssText =
+    'position:fixed;right:16px;bottom:' + (stacked ? '136px' : '80px') + ';z-index:1000;' +
+    'background:#DD8F75;color:#fff;border:none;border-radius:24px;' +
+    'box-shadow:0 4px 16px rgba(221,143,117,.55);padding:11px 16px;' +
+    'font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;opacity:.97;display:flex;';
 }
 
 // ── 복습(한 문항씩, get_review_payload 재사용) ──
