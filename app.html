@@ -2274,9 +2274,41 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .mk-ring-n{font-size:32px;font-weight:800;color:var(--text-main);font-variant-numeric:tabular-nums;line-height:1.05;}
   .mk-ring-d{font-size:13px;color:var(--text-muted);}
-  .mk-kpis{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-  .mk-kpi{border:1px solid var(--border-clr);border-radius:10px;padding:8px 12px;font-size:12.5px;color:var(--text-muted);}
-  .mk-kpi b{display:block;font-size:17px;color:var(--text-main);font-variant-numeric:tabular-nums;}
+  /* KPI 넷(+검토 표시) — 칸을 같은 너비로 나누고 가운데 정렬한다 (2026-08-21 사용자 지적).
+     예전엔 flex + padding 이라 글자 길이대로 상자 크기가 제각각이었고, 가운데 정렬이 없어
+     숫자와 라벨이 어긋난 채 왼쪽에 몰려 있었다. */
+  .mk-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px;}
+  .mk-kpis.k5{grid-template-columns:repeat(5,minmax(0,1fr));}   /* :has() 는 구형 브라우저에서 안 먹어 JS 가 붙인다 */
+  .mk-kpi{border:1px solid var(--border-clr);border-radius:10px;padding:10px 6px;font-size:12px;
+    color:var(--text-muted);text-align:center;line-height:1.35;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:3px;background:var(--card-bg);}
+  .mk-kpi b{display:block;font-size:19px;color:var(--text-main);font-variant-numeric:tabular-nums;line-height:1;}
+  .mk-kpi.flag{border-color:rgba(217,119,6,.35);background:#fef8ec;color:var(--flag-color);}
+  .mk-kpi.flag b{color:var(--flag-color);}
+  @media(max-width:560px){
+    .mk-kpis,.mk-kpis.k5{grid-template-columns:repeat(2,minmax(0,1fr));}
+    /* 홀수 개면 마지막 칸이 혼자 왼쪽에 남는다 — 폭을 채운다 */
+    .mk-kpis .mk-kpi:last-child:nth-child(odd){grid-column:1 / -1;}
+  }
+  /* ⚑ 검토 표시 — 문항 줄과 해설 머리에 */
+  .mk-qflag{flex:none;color:var(--flag-color);font-size:13px;line-height:1;}
+  /* 약점 카드 — 틀린 문항을 눌러 바로 해설을 연다 */
+  .mk-weak-qs{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+  .mk-weak-q{border:1px solid var(--border-clr);background:var(--card-bg);border-radius:7px;
+    min-width:28px;padding:4px 7px;font:inherit;font-size:12px;font-weight:700;
+    color:var(--danger-color);cursor:pointer;font-variant-numeric:tabular-nums;line-height:1.2;}
+  .mk-weak-q.un{color:var(--text-muted);}
+  @media(hover:hover){ .mk-weak-q:hover{border-color:var(--danger-color);background:#fef2f2;} }
+  /* War Room 으로 — 약점 카드 · 해설 모달 공용 (학습 화면 Topic 배지와 같은 언어) */
+  .mk-weak-wr,.mk-wr-link{
+    display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+    border:1px solid var(--accent-border);background:var(--accent-tint);border-radius:9px;
+    padding:7px 11px;font:inherit;font-size:12.5px;font-weight:700;color:#a4552f;cursor:pointer;
+    max-width:100%;text-align:left;line-height:1.35;
+  }
+  .mk-weak-wr svg,.mk-wr-link svg{width:13px;height:13px;flex:none;fill:currentColor;stroke:none;}
+  @media(hover:hover){ .mk-weak-wr:hover,.mk-wr-link:hover{border-color:var(--accent);} }
+  .mk-wr-link{font-size:13.5px;padding:9px 13px;}
   .mk-sect{font-size:14px;font-weight:800;color:var(--text-main);margin:22px 0 10px;}
   /* 토픽 정답률: 토픽명 넓게, 바는 짧게 (2026-07-17 피드백 6) */
   .mk-dom{display:grid;grid-template-columns:minmax(170px,2.3fr) 1fr 52px;gap:10px;align-items:center;font-size:13px;color:var(--text-mid);padding:5px 0;}
@@ -2285,7 +2317,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-dom-pct{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--text-main);}
   .mk-weak{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
   .mk-weak-c{border:1px solid var(--border-clr);border-radius:12px;padding:12px;background:var(--card-bg);}
-  .mk-weak-code{font-size:11px;font-weight:800;color:var(--acc-low);letter-spacing:.06em;}
   .mk-weak-t{font-size:13px;font-weight:700;color:var(--text-main);margin:4px 0 6px;line-height:1.4;}
   .mk-weak-s{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums;}
   .mk-qlist{margin-top:6px;border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;}
@@ -9197,6 +9228,12 @@ async function mockSubmit(){
     var res=await sb.rpc('grade_mock_exam',{ p_attempt_id:Mock.attemptId, p_answers:answers });
     if(res.error) throw res.error;
     Mock.result=res.data; Mock.result.part=Mock.part;
+    // ⚑ 검토 표시 — 서버(grade_mock_exam)는 choice 만 받으므로 플래그가 결과에 없다.
+    //   방금 친 응시에 한해 메모리의 Mock.flags 를 «결과에 붙여» 화면에 살린다.
+    //   🔴 Mock.flags 를 그대로 읽으면 안 된다 — 이력에서 옛 결과를 열 때 직전 응시의
+    //      플래그가 엉뚱한 문항에 찍힌다. 그래서 결과 객체 안에 «그 응시 것»으로 박아 둔다.
+    //   ⚠️ DB 에는 여전히 안 남는다 → 이력에서 다시 열면 안 보인다(Jay 께 요청 예정).
+    try{ Mock.result._flags = JSON.parse(JSON.stringify(Mock.flags||{})); }catch(e){ Mock.result._flags = {}; }
     mockClearLS(); Mock._practiceAck=false;
     renderMockResult(Mock.result);
     showScreen('mock-result');
@@ -9231,33 +9268,74 @@ function renderMockResult(r){
       '<div class="mk-dom-track"><div class="mk-dom-fill" style="width:'+p+'%;background:'+accuracyColor(p)+';"></div></div>'+
       '<span class="mk-dom-pct">'+p+'%</span></div>';
   }).join('');
-  var weakHtml=weak.map(function(t){ return '<div class="mk-weak-c"><div class="mk-weak-code">'+mockEsc(t.code)+'</div>'+
-    '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div><div class="mk-weak-s">'+t.c+'/'+t.n+' · '+Math.round(t.c/t.n*100)+'%</div></div>'; }).join('');
+  // ⚑ 검토 표시 — 방금 친 응시에만 있다(§ mockSubmit 주석). 이력에서 연 결과에는 없다.
+  var flags=(r&&r._flags)||{};
+  var flagN=pq.filter(function(x){ return !!flags[x.question_id]; }).length;
+
+  // 약점 카드 = 그 토픽에서 «틀린/미응답» 문항을 눌러 바로 해설을 열 수 있게 한다.
+  //   코드(C2114)는 화면에서 뺐다 — 고객에게 뜻이 없고 바로 아래 토픽 이름이 있다.
+  //   대신 값은 남겨 War Room 으로 가는 열쇠로 쓴다 (사용자 결정 2026-08-21).
+  var weakHtml=weak.map(function(t){
+    var miss=[];
+    pq.forEach(function(x,i){
+      if(!x.is_scored) return;
+      if((x.outline_code||x.topic||'—')!==t.code) return;
+      if(x.is_correct) return;                       // 맞힌 것은 뺀다 — 다시 볼 것은 틀린 것
+      miss.push('<button class="mk-weak-q'+(x.choice===-1?' un':'')+'" '+
+        'onclick="mockReviewItem(\''+x.question_id+'\')" title="'+mL('해설 보기','See explanation')+'">'+
+        (i+1)+(flags[x.question_id]?' ⚑':'')+'</button>');
+    });
+    return '<div class="mk-weak-c">'+
+      '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div>'+
+      '<div class="mk-weak-s">'+t.c+'/'+t.n+' · '+Math.round(t.c/t.n*100)+'%</div>'+
+      (miss.length?'<div class="mk-weak-qs">'+miss.join('')+'</div>':'')+
+      (t.code && t.code!=='—'
+        ? '<button class="mk-weak-wr" onclick="mockGoWarRoom(\''+t.code+'\')">'+
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
+          mL('War Room 에서 보기','Open in War Room')+'</button>' : '')+
+      '</div>';
+  }).join('');
+
   var rows=pq.map(function(x,i){
     var cls=(x.choice===-1)?'u':(x.is_correct?'o':'x'); var mk=(x.choice===-1)?'–':(x.is_correct?'O':'X');
     return '<div class="mk-qrow" onclick="mockReviewItem(\''+x.question_id+'\')"><span class="mk-ox '+cls+'">'+mk+'</span>'+
-      '<span class="mk-qnum">'+(i+1)+'</span><span class="mk-qtopic">'+mockEsc(x.topic||x.outline_code||'')+'</span>'+
+      '<span class="mk-qnum">'+(i+1)+'</span>'+
+      (flags[x.question_id]?'<span class="mk-qflag" title="'+mL('검토 표시한 문항','Marked for review')+'">⚑</span>':'')+
+      '<span class="mk-qtopic">'+mockEsc(x.topic||x.outline_code||'')+'</span>'+
       (x.is_scored?'':'<span class="mk-exp-badge">'+mL('채점 미반영','Unscored')+'</span>')+
       '<span style="color:var(--text-muted);font-size:12px;">'+mL('해설','Review')+' →</span></div>';
   }).join('');
   document.getElementById('mock-result-wrap').innerHTML =
     '<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 결과','Mock Exam Result')+' — Part '+part+'</h2>'+
     '<div class="card"><div class="mk-result-hero">'+
-    '<div class="mk-ring" style="background:conic-gradient(var(--progress-bar) 0 '+pct+'%, #e8eeef '+pct+'% 100%);" role="img" aria-label="'+correct+' / '+total+'">'+
+    // 🔴 이 원은 «정답률»이다(원 안 글자도 「정답률 N%」). 예전엔 진도색(--progress-bar)을 쓰고
+    //    있어서, 바로 아래 토픽별 정답률 막대(accuracyColor)와 한 화면에서 색 규칙이 갈렸다.
+    '<div class="mk-ring" style="background:conic-gradient('+accuracyColor(pct)+' 0 '+pct+'%, var(--ring-track) '+pct+'% 100%);" role="img" aria-label="'+correct+' / '+total+'">'+
     '<div class="mk-ring-in"><div class="mk-ring-n">'+correct+'<span style="font-size:17px;color:var(--text-muted);">/'+total+'</span></div>'+
     '<div class="mk-ring-d">'+mL('정답률','Accuracy')+' '+pct+'%</div></div></div>'+
     '<div style="flex:1;min-width:230px;"><div class="mk-eyebrow">'+mL('채점 대상 85문항 기준','Based on 85 scored items')+'</div>'+
     '<div style="font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.6;">'+mL('실험 문항 15개는 점수에 반영되지 않습니다. 실제 SEE는 환산점수제라 백분율과 1:1 대응하지 않습니다.','15 experimental items do not count. The real SEE uses a scaled score, not a raw percentage.')+'</div>'+
-    '<div class="mk-kpis"><span class="mk-kpi"><b>'+correct+'</b>'+mL('정답','Correct')+'</span>'+
+    '<div class="mk-kpis'+(flagN?' k5':'')+'"><span class="mk-kpi"><b>'+correct+'</b>'+mL('정답','Correct')+'</span>'+
     '<span class="mk-kpi"><b>'+wrong+'</b>'+mL('오답','Wrong')+'</span>'+
     '<span class="mk-kpi"><b>'+unans+'</b>'+mL('미응답','Unanswered')+'</span>'+
-    '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span></div></div></div>'+
+    '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span>'+
+    (flagN?'<span class="mk-kpi flag"><b>'+flagN+'</b>⚑ '+mL('검토 표시','Marked')+'</span>':'')+
+    '</div></div></div>'+
     (weakHtml?'<div class="mk-sect">'+mL('약점 Top 3','Weakest 3')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
     (domHtml?'<div class="mk-sect">'+mL('토픽별 정답률','Accuracy by topic')+'</div><div>'+domHtml+'</div>':'')+
     '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('각 문제를 클릭하셔서 해설을 확인하세요.','Click each question to see its explanation.')+'</span></div>'+
     '<div class="mk-qlist">'+rows+'</div>'+
     '<div style="margin-top:16px;display:flex;gap:8px;"><button class="btn-ghost" onclick="showScreen(\'mock\')">'+mL('모의고사 홈','Mock home')+'</button>'+
     '<button class="btn-ghost" onclick="showScreen(\'mock-history\')">'+mL('이력','History')+'</button></div></div>';
+}
+
+// 모의고사 결과·해설에서 War Room 으로. 모달이 떠 있으면 먼저 닫는다 —
+// openWarRoomTopic() 이 showScreen() 을 부르므로 모달을 남겨 두면 War Room 위에 덮인다.
+// ⚠️ 「결과로 돌아가기」 배지는 붙이지 않았다 — 그 배지는 학습 세션 전용이라 손대면
+//    학습 흐름까지 영향을 받는다. 돌아올 때는 메뉴 → 모의고사 → 이력.
+function mockGoWarRoom(code, qLike){
+  try{ closeModal(); }catch(e){}
+  openWarRoomTopic(code, qLike || null);
 }
 
 // ── 복습(한 문항씩, get_review_payload 재사용) ──
@@ -9291,11 +9369,24 @@ async function mockReviewItem(qid){
     }
     var expl=pickLang(q.explanation||'', q.explanation_en||'')||q.explanation_en||q.explanation||'';
     var tip=pickLang(q.examtip||'', q.examtip_en||'');
+    var _mflags=(Mock.result&&Mock.result._flags)||{};
     var hdr = (mineIdx>=0)
       ? ('<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;border-bottom:1px solid var(--border-clr);padding-bottom:10px;">'+
          '<span style="font-size:19px;font-weight:800;color:var(--text-main);">Q'+(mineIdx+1)+'</span>'+
          (mine?('<span class="mk-ox '+(mine.choice===-1?'u':(mine.is_correct?'o':'x'))+'">'+(mine.choice===-1?'–':(mine.is_correct?'O':'X'))+'</span>'):'')+
+         (_mflags[qid]?'<span class="mk-qflag" title="'+mL('검토 표시한 문항','Marked for review')+'">⚑</span>':'')+
          '<span style="font-size:13px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+mockEsc((mine&&(mine.topic||mine.outline_code))||'')+'</span></div>')
+      : '';
+    // War Room 링크 — 학습 화면 해설의 Topic 배지(showExplanation)와 «같은 방식».
+    // 문항의 topic·보기를 함께 넘겨야 War Room 이 「이 문제와 관련」 칩을 만든다.
+    var _woc=((mine&&mine.outline_code)||'').trim();
+    var _wtn=(mine&&(mine.topic||mine.outline_code))||'';
+    window._mkWrQ = _woc ? { topic:(mine&&mine.topic)||'', options:(q.options||[]) } : null;
+    var wrBtn = _woc
+      ? ('<button class="mk-wr-link" onclick="mockGoWarRoom(\''+_woc+'\', window._mkWrQ)" '+
+         'title="'+mL('War Room에서 이 주제 자세히 보기','Open this topic in War Room')+'">'+
+         '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
+         'War Room · '+mockEsc(_wtn)+' <span style="opacity:.7;">↗</span></button>')
       : '';
     document.getElementById('modal-content').innerHTML =
       '<div id="mk-review-box" style="text-align:left;">'+hdr+
@@ -9303,6 +9394,7 @@ async function mockReviewItem(qid){
       '<div style="font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;margin:14px 0 6px;">'+mL('해설','Explanation')+'</div>'+
       '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;">'+mockEsc(expl)+'</div>'+
       (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+mL('EA 시험 팁','EA Exam Tip')+'</b> · '+mockEsc(tip)+'</div>':'')+
+      (wrBtn?'<div style="margin-top:14px;">'+wrBtn+'</div>':'')+
       '<div style="margin-top:16px;text-align:right;"><button class="btn-ghost" onclick="closeModal()">'+mL('닫기','Close')+'</button></div></div>';
     // copy guard — War Room(.wr-protected)과 동일: 우클릭·복사·잘라내기·드래그·선택 차단 (박스 스코프, 다른 모달 무영향)
     var _mrb=document.getElementById('mk-review-box');
