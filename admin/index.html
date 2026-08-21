@@ -221,6 +221,28 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
 .gate .field{margin-bottom:11px;}
 .gate input{width:100%;}
 .hide{display:none !important;}
+
+/* ── 결제 실패 (2026-08-20) ────────────────────────────────────────────
+   Paddle 알림 메일은 웹훅 원문을 그대로 붙여 보내서 «누구인지» 알 수 없다.
+   웹훅이 payment_alerts 에 남긴 것을 여기서 사람 읽는 형태로 보여 준다.
+   실패가 없으면 이 칸 자체가 안 보인다(평소 화면을 어지럽히지 않게). */
+.payfail{margin:0 0 14px;border:1px solid var(--terracotta-border,#EFD0C1);
+  border-radius:12px;background:#FBF1EC;padding:13px 15px;}
+.payfail h3{margin:0 0 3px;font-size:calc(14.5px * var(--fs));font-weight:800;color:#b85f3f;}
+.payfail .pf-sub{font-size:calc(12.5px * var(--fs));color:var(--text-muted);margin-bottom:9px;line-height:1.6;}
+.payfail table{width:100%;border-collapse:collapse;background:#fff;border-radius:9px;overflow:hidden;}
+.payfail th{padding:7px 9px;text-align:left;font-size:calc(11.5px * var(--fs));font-weight:700;
+  color:var(--text-muted);background:#fff;border-bottom:1px solid var(--border-clr);white-space:nowrap;}
+.payfail td{padding:8px 9px;border-bottom:1px solid var(--border-clr);
+  font-size:calc(12.5px * var(--fs));color:var(--text-mid);vertical-align:top;}
+.payfail tr:last-child td{border-bottom:none;}
+.payfail .who{font-weight:700;color:var(--text-main);}
+.payfail .why{color:#b85f3f;font-weight:600;}
+.payfail .btn-mini{font:inherit;font-size:calc(11.5px * var(--fs));font-weight:700;
+  padding:4px 9px;border-radius:7px;border:1px solid var(--border-clr);background:#fff;
+  color:var(--text-mid);cursor:pointer;white-space:nowrap;}
+.payfail .btn-mini:hover{background:var(--navy-light,#d9ebe9);}
+.payfail .pf-note{font-size:calc(11.5px * var(--fs));color:var(--text-muted);margin-top:8px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -294,6 +316,9 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
     </div>
     <div id="top-msg" class="msg"></div>
   </div>
+
+  <!-- ══════════════ 결제 실패 (2026-08-20) ══════════════ -->
+  <div id="payfail" class="payfail hide"></div>
 
   <!-- ══════════════ 표 ══════════════ -->
   <div id="main" class="main hide">
@@ -573,6 +598,117 @@ function fillBulkMenu(){
 }
 
 /* ── 자료 읽기 ────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   결제 실패 (2026-08-20)
+   ──────────────────────────────────────────────────────────────────────
+   왜 만들었나: Paddle 이 보내는 알림 메일은 웹훅 원문(JSON)을 그대로 붙여
+   보내서 customer_id(ctm_...) 밖에 없다 — «누가» 실패했는지 알 수 없어
+   2026-08-20 실제 실패 건에서 고객을 찾는 데만 한참 걸렸다.
+   이제 payment-webhook 이 우리 DB·Paddle 과 대조해 payment_alerts 에
+   이메일·이름·사유까지 남기고, 이 칸이 그것을 읽어 보여 준다.
+   ⚠️ 아직 SQL 을 안 돌렸으면 조용히 숨긴다 — 화면이 깨지면 안 된다. */
+var PAYFAILS = [];
+
+async function loadPayFails(){
+  if(SAMPLE) return;
+  var box = $('payfail');
+  var r = await sb.rpc('admin_list_payment_alerts', { p_include_resolved: false });
+  if(r.error){
+    // 함수 미배포(구버전)면 아무것도 안 보여 준다. 그 밖의 오류만 알린다.
+    if(notDeployed(r.error)){ box.classList.add('hide'); return; }
+    box.classList.remove('hide');
+    box.innerHTML = '<h3>결제 실패</h3><div class="pf-sub" style="color:var(--danger-color);">' +
+      esc(rpcErr(r.error)) + '</div>';
+    return;
+  }
+  PAYFAILS = r.data || [];
+  renderPayFails();
+}
+
+// 금액은 Paddle 이 최소 단위로 준다(USD 는 센트). KRW·JPY 는 소수가 없어 100 으로 나누면 안 된다.
+var PF_ZERO_DEC = ['JPY','KRW','CLP'];
+function pfMoney(cents, cur){
+  if(cents === null || cents === undefined) return '';
+  var c = String(cur || 'USD').toUpperCase();
+  var v = Number(cents);
+  if(!isFinite(v)) return '';
+  if(PF_ZERO_DEC.indexOf(c) < 0) v = v / 100;
+  try{ return new Intl.NumberFormat('en-US',{style:'currency',currency:c}).format(v); }
+  catch(e){ return v.toFixed(2) + ' ' + c; }
+}
+
+// 거절 코드는 카드사가 내려보내는 말이라 그대로 두면 아무도 못 읽는다.
+var PF_REASON = {
+  transaction_not_permitted: '카드사가 이런 결제를 허용하지 않음 (정기결제·해외결제 차단 등)',
+  insufficient_funds:        '잔액 부족',
+  card_expired:              '카드 유효기간 지남',
+  invalid_card_details:      '카드 정보가 맞지 않음',
+  card_declined:             '카드사 거절 (사유 미상)',
+  authentication_required:   '은행 추가 인증(3-D Secure)을 끝내지 않음',
+  fraud:                     '카드사가 사기 의심으로 막음',
+  declined_not_retryable:    '카드사가 «다시 시도하지 말라»고 지시함'
+};
+function pfReason(code){
+  if(!code) return '사유 없음';
+  var ko = PF_REASON[code];
+  if(ko) return ko;
+  return code;   // 모르는 코드는 원문 그대로 — 지어내지 않는다
+}
+
+function renderPayFails(){
+  var box = $('payfail');
+  if(!PAYFAILS.length){ box.classList.add('hide'); box.innerHTML = ''; return; }
+  box.classList.remove('hide');
+
+  var rows = PAYFAILS.map(function(a){
+    var who = a.customer_email || a.account_email || '(이메일 모름)';
+    var sub = [];
+    if(a.customer_name) sub.push(esc(a.customer_name));
+    if(a.country) sub.push(esc(a.country));
+    if(!a.user_id) sub.push('<span style="color:var(--danger-color);font-weight:700;">우리 계정과 매칭 안 됨</span>');
+
+    var card = '';
+    if(a.card_brand || a.card_last4) card = esc(String(a.card_brand||'')) + ' ···' + esc(String(a.card_last4||''));
+    else if(a.payment_method) card = esc(a.payment_method);
+
+    // 지금 이 사람이 앱을 쓸 수 있는 상태인가 — 가장 급한 정보
+    var access;
+    if(a.user_id == null) access = '—';
+    else if(a.is_paid) access = '이용 가능 <span style="color:var(--text-muted);">(만료 ' + esc(d(a.paid_until)) + ')</span>';
+    else access = '<span style="color:var(--danger-color);font-weight:700;">막힘</span>';
+
+    var link = '';
+    if(a.payment_link) link = '<a href="' + esc(a.payment_link) + '" target="_blank" rel="noopener">결제 링크</a>';
+
+    return '<tr>' +
+      '<td>' + esc(d(a.occurred_at, true)) + '</td>' +
+      '<td><span class="who">' + esc(who) + '</span>' +
+        (sub.length ? '<br><span style="color:var(--text-muted);">' + sub.join(' · ') + '</span>' : '') + '</td>' +
+      '<td>' + esc(pfMoney(a.amount_cents, a.currency)) + '</td>' +
+      '<td><span class="why">' + esc(pfReason(a.error_code)) + '</span>' +
+        (card ? '<br><span style="color:var(--text-muted);">' + card + '</span>' : '') + '</td>' +
+      '<td>' + access + '</td>' +
+      '<td>' + link + '</td>' +
+      '<td><button class="btn-mini" onclick="resolvePayFail(' + Number(a.id) + ')">처리함</button></td>' +
+    '</tr>';
+  }).join('');
+
+  box.innerHTML =
+    '<h3>결제 실패 ' + PAYFAILS.length + '건</h3>' +
+    '<div class="pf-sub">Paddle 이 며칠에 걸쳐 <b>자동으로 다시 시도</b>하고 고객에게도 메일을 보냅니다. ' +
+      '결제 실패만으로 이용이 막히지는 않습니다 — 이미 낸 기간이 끝나면 그때 막힙니다.</div>' +
+    '<table><thead><tr>' +
+      '<th>언제</th><th>고객</th><th>금액</th><th>사유</th><th>지금 이용</th><th></th><th style="width:70px;"></th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div class="pf-note">〔처리함〕을 누르면 목록에서 사라집니다(기록은 남습니다). 잘못 눌렀으면 SQL 로 되돌릴 수 있습니다.</div>';
+}
+
+async function resolvePayFail(id){
+  var r = await sb.rpc('admin_resolve_payment_alert', { p_id: id, p_note: null });
+  if(r.error){ msg('top-msg', rpcErr(r.error), false); return; }
+  await loadPayFails();
+}
+
 async function loadAll(){
   if(SAMPLE) return;
   $('tb').innerHTML = '<tr><td colspan="10" class="empty">불러오는 중…</td></tr>';
@@ -586,6 +722,7 @@ async function loadAll(){
   OPEN = null;
   $('hdr-count').innerHTML = '<b>' + ROWS.length + '</b>명';
   render();
+  loadPayFails();   // 결제 실패 칸 (2026-08-20) — 실패가 없으면 스스로 숨는다
 }
 
 /* ── 상태 판정 ────────────────────────────────────────────────────── */
