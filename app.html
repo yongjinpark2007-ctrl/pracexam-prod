@@ -412,6 +412,50 @@ html, body {
 .setup-count-card.setup-locked.selected .setup-count-num,
 .setup-count-card.setup-locked.selected .setup-count-sub{color:var(--text-muted);}
 @media(hover:hover){.setup-locked:hover{border-color:var(--border-clr);}}
+/* ── 주제 고르기 (Selective Study, 2026-08-21) ──
+   큰 주제 = IRS Candidate Information Bulletin 의 시험범위 갈래. 이름은 영문 그대로 둔다
+   (사용자 지시 — 공식 명칭이고 고객 대부분이 영어권). 행 문법은 범위·반복 버튼과 같은
+   흰 카드 + 선택 시 seafoam tint 로 맞췄다. */
+.topic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px;}
+.topic-row{
+  display:flex;align-items:center;gap:9px;
+  background:var(--card-bg);border:1px solid var(--border-clr);border-radius:10px;
+  padding:10px 12px;cursor:pointer;text-align:left;font-family:inherit;
+  transition:border-color .15s,background .15s;
+}
+.topic-row.selected{background:var(--sel-bg);border-color:var(--sel-border);}
+@media(hover:hover){.topic-row:hover{border-color:var(--border-hover);}}
+.topic-row:active{opacity:.85;}
+.topic-box{
+  width:17px;height:17px;border-radius:5px;flex:0 0 auto;
+  border:1.5px solid var(--border-hover);background:var(--card-bg);
+  display:flex;align-items:center;justify-content:center;
+}
+.topic-row.selected .topic-box{background:var(--sel-border);border-color:var(--sel-border);}
+.topic-box svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.topic-row.selected .topic-box svg{opacity:1;}
+.topic-txt{flex:1;min-width:0;}
+.topic-name{font-size:13px;font-weight:600;color:var(--text-main);line-height:1.3;}
+.topic-row.selected .topic-name{color:var(--sel-text);}
+.topic-meta{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.topic-all{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:9px;font-size:12.5px;color:var(--text-muted);
+}
+.topic-all button{
+  background:none;border:1px solid var(--border-clr);border-radius:7px;
+  padding:5px 10px;font-family:inherit;font-size:12px;font-weight:600;
+  color:var(--text-mid);cursor:pointer;
+}
+@media(hover:hover){.topic-all button:hover{border-color:var(--border-hover);}}
+.topic-hint{
+  background:var(--ann-item-bg);border:1px solid rgba(53,70,73,.10);border-radius:10px;
+  padding:11px 13px;font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;
+}
+@media(max-width:640px){
+  .topic-list{grid-template-columns:1fr;gap:7px;}
+  .topic-name{font-size:12.5px;}
+}
 /* 아이콘 원형 그리드 */
 .setup-icon-grid{display:grid;gap:12px;margin-bottom:0;}
 .setup-icon-grid-4{grid-template-columns:repeat(4,1fr);}
@@ -1374,14 +1418,17 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <!-- 모의고사 진입 카드 — 전체 Part(학습 시작) 섹션 아래 (2026-07-17 피드백 4) -->
   <div id="dash-mock"></div>
 
-  <!-- 공지사항 (Announcements) — Part 선택 버튼 아래 배치 -->
-  <div id="dash-announcements"></div>
-
   <!-- Weak topics widget (Phase 2-5 에서 활성화) -->
   <div id="dash-weak-topics"></div>
 
   <!-- Recent 2 sessions -->
   <div id="dash-recent-2"></div>
+
+  <!-- 공지사항 (Announcements) — 맨 아래 (2026-08-21 사용자 결정).
+       위쪽은 «지금 무엇을 할까»(히어로·Part·모의고사), 가운데는 «내가 어디까지 왔나»
+       (약점·최근)다. 공지는 알림이라 그 흐름을 끊지 않게 뒤로 뺐다.
+       ⚠️ 그리는 함수(paintAnnouncements)는 id 로 찾으므로 순서만 바꾸면 된다. -->
+  <div id="dash-announcements"></div>
 </div>
 
 <!-- ═══ QUIZ SETUP ═══ -->
@@ -1406,13 +1453,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       </div>
       <!-- Part 변경 picker (기본 숨김) -->
       <div id="setup-part-picker" style="display:none;margin-bottom:1.25rem;">
-        <div class="setup-icon-grid" style="grid-template-columns:repeat(4,1fr);gap:12px;" id="part-row">
-          <button class="setup-icon-btn selected" onclick="selectPart('all',this)">
-            <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            </div>
-            <div class="setup-icon-label">All</div>
-          </button>
+        <!-- 2026-08-21: All Parts 를 뺐다. 세 파트를 섞어 푸는 사람이 없고(사용자 판단),
+             섞으면 주제 고르기도 열 수 없다(주제는 파트에 딸린 것). 기본값은 대시보드에서
+             고른 Part 를 따라간다 — _setupDefaultPart() 참조. -->
+        <div class="setup-icon-grid" style="grid-template-columns:repeat(3,1fr);gap:12px;" id="part-row">
           <button class="setup-icon-btn" onclick="selectPart('part1',this)">
             <div class="setup-icon-circle">
               <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1433,6 +1477,11 @@ textarea.ann-input{resize:vertical;min-height:60px;}
           </button>
         </div>
       </div>
+
+      <!-- ⓪ 주제 고르기 (Selective Study, 2026-08-21) — «범위» 축이므로 Part 바로 아래.
+           내용은 renderTopicPicker() 가 채운다 (고른 Part 에 따라 달라지므로). -->
+      <div class="setup-section-label" data-i18n="setup_topic">주제</div>
+      <div id="topic-pick"></div>
 
       <!-- ① 문제 수 -->
       <div class="setup-section-label" data-i18n="setup_count">문제 수</div>
@@ -2249,7 +2298,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 <div id="screen-mock-result" class="screen"><div id="mock-result-wrap" style="max-width:760px;margin:0 auto;"></div></div>
 <div id="screen-mock-history" class="screen"><div id="mock-history-wrap" style="max-width:760px;margin:0 auto;"></div></div>
 
-<!-- ═══ WAR ROOM (시험 직전 치트시트) — 2026-07-25 ═══ -->
+<!-- ═══ WAR ROOM (주제별 세법 자세히 보기) — 2026-07-25 ═══
+     2026-08-21: '치트시트'라는 말을 앱 전체에서 뺐다. 시험 직전에 훑는 요약본처럼
+     읽혔지만, 지금은 문제 전체를 덮고 해설이 못 다 한 세법 개념까지 파고드는
+     공부 도구다. 랜딩은 2026-08-13 에 먼저 바꿨고 여기가 뒤늦게 따라간다. -->
 <div id="screen-warroom" class="screen">
   <div class="wr-head"><div class="section-title"><svg class="wr-head-bolt" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>War Room</div></div>
   <div id="warroom-mount"></div>
@@ -3294,7 +3346,7 @@ function applyTrialLocks(limited){
   var groups = [
     ['#setup-count-grid .setup-count-card', [0]],       // 5 / Quick
     ['#mode-row .setup-icon-btn',           [0,1]],      // Smart(TPIQ), Normal — 2026-08-20 자리 맞바꿈
-    ['#part-row .setup-icon-btn',           [0,1,2,3]],  // Part: All·1·2·3 모두 허용
+    ['#part-row .setup-icon-btn',           [0,1,2]],    // Part: 1·2·3 모두 허용 (All 은 2026-08-21 삭제)
     ['#subset-row .setup-icon-btn',         [0,2]],      // 범위: Unseen(0)·Random(2) 허용 — 2026-08-20 자리 이동
     ['#repeat-row .setup-repeat-btn',       []]          // 반복: 전부 잠금
   ];
@@ -3940,7 +3992,10 @@ async function loadFromCloud(){
           tier: (r.frequency_tier != null ? Number(r.frequency_tier) : null),
           weight: (w != null && !isNaN(w) ? w : 0),
           // 주제명: 자동 탐지된 컬럼(_topicCol) 우선, 없으면 알려진 이름 폴백 체인
-          topic: ((((_topicCol ? r[_topicCol] : null) || r.topic_name || r.topic_name_en || r.topic_name_ko || '') + '').trim() || null)   // TPIQ 주제 인터리빙 + 약점 위젯 표시명
+          topic: ((((_topicCol ? r[_topicCol] : null) || r.topic_name || r.topic_name_en || r.topic_name_ko || '') + '').trim() || null),   // TPIQ 주제 인터리빙 + 약점 위젯 표시명
+          // 큰 주제(도메인) — 2026-08-21. 아직 라이브 표에 이 칸이 없어 대개 null 이고,
+          // 그때는 EXAM_DOMAINS 구간표가 대신 판정한다(domainOfCode 참조).
+          domain: ((r.domain || '') + '').trim() || null
         };
       });
       S.copRef = copMap;
@@ -4094,7 +4149,9 @@ const S = {
   questions:[], sessions:[], flagged:new Set(), answered:{},
   quizQueue:[], quizIdx:0, submitted:false, selected:null,
   // 2026-08-20 기본값 변경 — 학습 모드 = 스마트(TPIQ) · 범위 = 안 푼 문제(Unseen)
-  count:5, filter:'all', part:'all', subset:'unseen', mode:'tpiq',
+  // part 기본값 = 'part1'. 2026-08-21 에 All Parts 를 없앴으므로 'all' 은 더 쓰지 않는다
+  // (예전 저장분이 'all' 이어도 syncPartIconUI() 가 대시보드 포커스 Part 로 바꿔 준다).
+  count:5, filter:'all', part:'part1', subset:'unseen', mode:'tpiq',
   // setupMode = Study Setup 화면에서 «고른» 모드. S.mode 는 특수 세션(COP 미니·플래그 다시풀기·
   //   관리자 QC)이 'normal' 로 덮어쓰므로, 설정 화면으로 돌아왔을 때 되살릴 값을 따로 둔다.
   setupMode:'tpiq',
@@ -4103,6 +4160,7 @@ const S = {
   retryFlaggedMode: false,
   returnTo: null,
   repeatFilter: 'all',
+  domains: [],          // 고른 큰 주제 이름들 (빈 배열 = 전체). Part 를 바꾸면 비운다.
   copRef: {},           // TPIQ: outline_code -> { tier, weight } (cop_reference에서 로드)
   sessionAnswers: [],   // Phase 3: per-question {selected, submitted, isCorrect}
   results:{correct:0,wrong:0,total:0},
@@ -4267,6 +4325,16 @@ var UI_TEXT = {
   setup_change:   {ko:'변경 ›', en:'Change ›'},
   setup_count:    {ko:'문제 수', en:'Questions'},
   setup_subset:   {ko:'범위',    en:'Scope'},
+  setup_topic:    {ko:'주제', en:'Topic'},
+  topic_all:      {ko:'아무 주제도 선택하지 않으면 이 Part 전체에서 문제가 출제됩니다. 원하는 주제만 선택해도 됩니다.',
+                   en:'Optional — leave all unchecked to draw from the whole Part.'},
+  topic_clear:    {ko:'모두 해제', en:'Clear all'},
+  topic_only:     {ko:'선택한 주제에서만 출제됩니다', en:'Drawing from selected topics only'},
+  topic_none:     {ko:'Part를 선택하면 해당 Part의 주제를 선택할 수 있습니다.',
+                   en:'Pick a single Part to choose topics within it.'},
+  topic_empty:    {ko:'이 주제에 지금 풀 수 있는 문제가 없습니다. 위의 범위·반복 조건을 넓혀 보세요.',
+                   en:'No questions available in the chosen topics. Try widening Scope or Repeats above.'},
+  topic_onexam:   {ko:'실제 시험 출제', en:'on exam'},
   setup_repeat:   {ko:'반복 횟수', en:'Repeats'},
   setup_saved:    {ko:'기억됨',  en:'Saved'},
   setup_mode:     {ko:'학습 모드', en:'Study Mode'},
@@ -4753,7 +4821,7 @@ function openStudy(){
 // Quiz Setup 화면 진입 공통 헬퍼
 function _openStudySetup(){
   showScreen('quiz-setup');
-  setTimeout(function(){ updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); syncSubsetIconUI(); updateAvailCount(); applyTrialSetupRestrictions();
+  setTimeout(function(){ syncPartIconUI(); updateSetupBanner(); syncRepeatIconUI(); syncModeIconUI(); syncSubsetIconUI(); renderTopicPicker(); updateAvailCount(); applyTrialSetupRestrictions();
   }, 50);
 }
 
@@ -6190,14 +6258,17 @@ function dashStartFocusPart(part){
   localStorage.setItem('ea_focus_part', part);
   const partVal = {
     'Part 1':'part1','Part 2':'part2','Part 3':'part3'
-  }[part] || 'all';
+  }[part] || 'part1';   // 2026-08-21: All Parts 삭제 — 알 수 없으면 Part 1
   S.part = partVal;
+  S.domains = [];       // Part 가 바뀌면 고른 주제는 뜻을 잃는다
   showScreen('quiz-setup');
   setTimeout(function(){
+    syncPartIconUI();
     updateSetupBanner();
     syncRepeatIconUI();
     syncModeIconUI();
     syncSubsetIconUI();
+    if(typeof renderTopicPicker === 'function') renderTopicPicker();
     if(typeof updateAvailCount === 'function') updateAvailCount();
   }, 50);
 }
@@ -6209,9 +6280,11 @@ function selectCount(n,btn){if(_trialLockGuard(btn))return;S.count=n;document.qu
 function selectPart(p,btn){
   if(_trialLockGuard(btn))return;
   S.part=p;
+  S.domains=[];   // 주제는 Part 에 딸린 것 — Part 가 바뀌면 고른 주제는 뜻을 잃는다
   document.querySelectorAll('#part-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   updateSetupBanner();
+  if(typeof renderTopicPicker==='function') renderTopicPicker();
   updateAvailCount();
 }
 function selectSubset(s,btn){
@@ -6219,6 +6292,7 @@ function selectSubset(s,btn){
   S.subset=s;save();
   document.querySelectorAll('#subset-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
+  if(typeof renderTopicPicker==='function') renderTopicPicker();   // 주제별 남은 개수 갱신
   updateAvailCount();
 }
 function selectMode(m,btn){
@@ -6226,6 +6300,7 @@ function selectMode(m,btn){
   S.mode=m; S.setupMode=m;   // setupMode = 특수 세션이 S.mode 를 덮어써도 남는 «고른 값»
   document.querySelectorAll('#mode-row .setup-icon-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
+  if(typeof renderTopicPicker==='function') renderTopicPicker();   // 주제별 남은 개수 갱신
   updateAvailCount();   // review 모드는 getPool()을 오답만으로 좁히므로 개수 갱신 필요
   updateModeHint();
 }
@@ -6254,6 +6329,7 @@ function selectRepeatIcon(val,btn){
   S.repeatFilter=val;save();
   document.querySelectorAll('#repeat-row .setup-repeat-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
+  if(typeof renderTopicPicker==='function') renderTopicPicker();   // 주제별 남은 개수 갱신
   updateAvailCount();
 }
 // 기존 selectRepeat(dropdown용) — 호환 유지
@@ -6268,20 +6344,17 @@ function updateSetupBanner(){
     part3:'<svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
   };
   var LABELS={
-    all:'All Parts',part1:partLabel('Part 1'),part2:partLabel('Part 2'),part3:partLabel('Part 3')
+    part1:partLabel('Part 1'),part2:partLabel('Part 2'),part3:partLabel('Part 3')
   };
-  var p=S.part||'all';
+  var p=SETUP_PART_KEY[S.part] ? S.part : _setupDefaultPart();   // 'all' 은 2026-08-21 삭제
   var iconEl=document.getElementById('setup-banner-icon');
   var titleEl=document.getElementById('setup-banner-title');
   var subEl=document.getElementById('setup-banner-sub');
-  if(iconEl) iconEl.innerHTML=ICONS[p]||ICONS['all'];
-  if(titleEl) titleEl.textContent=LABELS[p]||'All Parts';
+  if(iconEl) iconEl.innerHTML=ICONS[p]||ICONS['part1'];
+  if(titleEl) titleEl.textContent=LABELS[p]||partLabel('Part 1');
   if(subEl){
     var pool=S.questions||[];
-    var filtered=p==='all'?pool:pool.filter(function(q){
-      var map={part1:'Part 1',part2:'Part 2',part3:'Part 3'};
-      return q.part===(map[p]||'');
-    });
+    var filtered=pool.filter(function(q){ return q.part===(SETUP_PART_KEY[p]||'Part 1'); });
     var total=filtered.length;
     var correct=0,attempts=0;
     filtered.forEach(function(q){var a=S.answered[q.id];if(a){correct+=(a.correct||0);attempts+=(a.times||0);}});
@@ -6315,12 +6388,160 @@ function syncModeIconUI(){
   btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
   if(typeof updateModeHint==='function') updateModeHint();
 }
+// Part 기본값 — 대시보드에서 고른 Part 를 따른다 (2026-08-21, All 삭제와 함께 들어옴).
+//   대시보드 히어로와 학습 설정이 다른 Part 를 가리키면 사용자가 헷갈린다.
+function _setupDefaultPart(){
+  var f = '';
+  try{ f = localStorage.getItem('ea_focus_part') || ''; }catch(e){}
+  var map = { 'Part 1':'part1', 'Part 2':'part2', 'Part 3':'part3' };
+  return map[f] || 'part1';
+}
+// part-row UI 동기화 — 예전 설정에 남아 있던 'all' 도 여기서 걸러진다
+function syncPartIconUI(){
+  if(!SETUP_PART_KEY[S.part]) S.part = _setupDefaultPart();
+  var btns = document.querySelectorAll('#part-row .setup-icon-btn');
+  var vals = ['part1','part2','part3'];   // ⚠️ #part-row 버튼 순서와 «짝»
+  btns.forEach(function(b,i){ b.classList.toggle('selected', vals[i]===S.part); });
+}
 // subset-row(범위) UI 동기화
 function syncSubsetIconUI(){
   var val=S.subset||'unseen';
   var btns=document.querySelectorAll('#subset-row .setup-icon-btn');
   var vals=['unseen','practiced','all','flagged'];   // ⚠️ #subset-row 버튼 순서와 «짝»
   btns.forEach(function(b,i){b.classList.toggle('selected',vals[i]===val);});
+}
+
+// ══════════════════════════════════════════════════════
+// SELECTIVE STUDY — 큰 주제(도메인) 고르기   2026-08-21
+//   출처 = IRS SEE Candidate Information Bulletin (June 2026) 시험범위 개요·Content Outline.
+//   q = 실제 시험 85문항 중 그 주제에서 나오는 «채점» 문항 수 (공식 배점).
+//   r = 그 주제에 속하는 outline_code 구간 [처음, 끝] — 코드는 다섯 글자라 글자 비교로 판정된다.
+//
+//   ⚠️ 이 표는 «폴백»이다. cop_reference 에 domain 칸이 생기면 그 값을 먼저 쓴다
+//      (아래 domainOfCode 참조). 표는 새 COP(C19xx 처럼 나중에 붙는 것)가 생기면
+//      구간이 어긋날 수 있으므로, DB 칸이 들어오면 그쪽이 진실이다.
+// ══════════════════════════════════════════════════════
+var EXAM_DOMAINS = {
+  'Part 1': [
+    { name:'Preliminary Work and Taxpayer Data',    q:14, r:[['C1001','C1017'],['C1907','C1908']] },
+    { name:'Income and Assets',                     q:17, r:[['C1018','C1060'],['C1901','C1901'],['C1903','C1903'],['C1912','C1912'],['C1915','C1916']] },
+    { name:'Deductions and Credits',                q:17, r:[['C1061','C1076'],['C1913','C1914']] },
+    { name:'Taxation',                              q:15, r:[['C1077','C1088'],['C1905','C1906'],['C1910','C1910']] },
+    { name:'Advising the Individual Taxpayer',      q:11, r:[['C1089','C1103']] },
+    { name:'Specialized Returns for Individuals',   q:11, r:[['C1104','C1117'],['C1900','C1900'],['C1902','C1902'],['C1909','C1909'],['C1911','C1911']] }
+  ],
+  'Part 2': [
+    { name:'Business Entities and Considerations',  q:30, r:[['C2001','C2043']] },
+    { name:'Business Tax Preparation',              q:37, r:[['C2044','C2089']] },
+    { name:'Specialized Returns and Taxpayers',     q:18, r:[['C2090','C2117']] }
+  ],
+  'Part 3': [
+    { name:'Practices and Procedures',              q:26, r:[['C3001','C3028']] },
+    { name:'Representation before the IRS',         q:25, r:[['C3029','C3072']] },
+    { name:'Specific Areas of Representation',      q:20, r:[['C3073','C3107']] },
+    { name:'Filing Process',                        q:14, r:[['C3108','C3120']] }
+  ]
+};
+var SETUP_PART_KEY = { part1:'Part 1', part2:'Part 2', part3:'Part 3' };
+
+// outline_code -> 큰 주제 이름. DB(cop_reference.domain) 가 있으면 그것을 쓰고, 없으면 구간표.
+function domainOfCode(code, partKey){
+  code = ((code || '') + '').trim();
+  if(!code) return null;
+  var ref = (S.copRef && S.copRef[code]) ? S.copRef[code] : null;
+  if(ref && ref.domain) return ref.domain;
+  var list = EXAM_DOMAINS[partKey] || [];
+  for(var i=0; i<list.length; i++){
+    var rs = list[i].r;
+    for(var j=0; j<rs.length; j++){
+      if(code >= rs[j][0] && code <= rs[j][1]) return list[i].name;
+    }
+  }
+  return null;
+}
+function domainOfQ(q){ return domainOfCode(q.outlineCode, q.part); }
+
+// 지금 고른 Part 안에서, 큰 주제별로 «지금 조건에 맞는» 문제가 몇 개인지 센다.
+//   조건 = 범위(subset)·반복(repeatFilter)·모드(review) 까지 반영해야 숫자가 거짓말을 안 한다
+//   → getPool() 을 주제 필터만 끄고 한 번 돌려서 그 결과를 센다.
+function topicCounts(partKey){
+  var keep = S.domains;
+  S.domains = [];                 // 주제 필터를 잠시 끄고
+  var pool = getPool();
+  S.domains = keep;
+  var map = {};
+  pool.forEach(function(q){
+    if(q.part !== partKey) return;
+    var d = domainOfQ(q);
+    if(!d) return;                // outline_code 없는 문제는 주제로 못 묶는다
+    map[d] = (map[d] || 0) + 1;
+  });
+  return map;
+}
+
+function renderTopicPicker(){
+  var el = document.getElementById('topic-pick');
+  if(!el) return;
+  var partKey = SETUP_PART_KEY[S.part];
+
+  // Part 를 안 고르면(All Parts) 주제 고르기를 열지 않는다 — 13개를 한 번에 늘어놓으면
+  // 고르기 어렵고, 파트별 배점 뜻도 흐려진다.
+  if(!partKey){
+    S.domains = [];
+    el.innerHTML = '<div class="topic-hint">' + t('topic_none') + '</div>';
+    return;
+  }
+
+  // 주제 고르기는 «무료 체험도» 쓸 수 있다 (2026-08-21 사용자 결정).
+  //   문제 수 5개·반복 잠금은 그대로이므로 무료로 새는 양은 늘지 않고,
+  //   처음 온 사람이 원하는 주제를 골라 볼 수 있어 첫인상이 낫다.
+  var counts = topicCounts(partKey);
+  var list = EXAM_DOMAINS[partKey] || [];
+  var chosen = S.domains || [];
+
+  var rows = list.map(function(d){
+    var n = counts[d.name] || 0;
+    var on = chosen.indexOf(d.name) >= 0;
+    return '<button type="button" class="topic-row' + (on ? ' selected' : '') + '"' +
+           ' onclick="toggleTopic(this, \'' + d.name.replace(/'/g, "\\'") + '\')">' +
+      '<span class="topic-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>' +
+      '<span class="topic-txt">' +
+        '<span class="topic-name">' + d.name + '</span>' +
+        '<span class="topic-meta">' +
+          (LANG === 'en' ? (uQuestions(n) + ' · ' + d.q + ' ' + t('topic_onexam'))
+                         : ('연습 ' + uQuestions(n) + ' · ' + t('topic_onexam') + ' ' + d.q + '문제')) +
+        '</span>' +
+      '</span>' +
+    '</button>';
+  }).join('');
+
+  // 머리글은 «지금 어떻게 나오는지»를 말한다 — 안 고른 상태가 곧 Part 전체라는 것을
+  // 적어 두지 않으면, 고르는 것이 필수인지 아닌지 알 수 없다 (2026-08-21 사용자 지적).
+  var head = '<div class="topic-all"><span>' +
+      (chosen.length
+        ? (LANG === 'en' ? (chosen.length + ' selected · ' + t('topic_only'))
+                         : (chosen.length + '개 선택 · ' + t('topic_only')))
+        : t('topic_all')) +
+    '</span>' +
+    (chosen.length ? '<button type="button" onclick="topicSelectAll()">' + t('topic_clear') + '</button>' : '') +
+  '</div>';
+
+  el.innerHTML = head + '<div class="topic-list">' + rows + '</div>';
+}
+
+function toggleTopic(btn, name){
+  if(_trialLockGuard(btn)) return;
+  var arr = S.domains || (S.domains = []);
+  var i = arr.indexOf(name);
+  if(i >= 0) arr.splice(i, 1); else arr.push(name);
+  renderTopicPicker();
+  updateAvailCount();
+}
+// 「전체로」 = 고른 주제를 모두 풀어 Part 전체로 되돌린다
+function topicSelectAll(){
+  S.domains = [];
+  renderTopicPicker();
+  updateAvailCount();
 }
 
 function updateAvailCount(){
@@ -6354,6 +6575,13 @@ function getPool(){
   }
 
   if(S.mode==='review') p=p.filter(q=>S.answered[q.id]&&S.answered[q.id].wrong>0);
+
+  // 주제 고르기 (Selective Study, 2026-08-21) — 빈 배열이면 거르지 않는다.
+  //   Part 를 안 고른 상태(All Parts)에서는 renderTopicPicker() 가 S.domains 를 비우므로
+  //   여기서 파트 검사를 다시 하지 않아도 된다.
+  if(S.domains && S.domains.length){
+    p = p.filter(function(q){ return S.domains.indexOf(domainOfQ(q)) >= 0; });
+  }
   return p;
 }
 
@@ -7121,7 +7349,7 @@ async function showExplanation(q, isOk, timeout){
       // COP 매핑 문제: 배지 클릭 → War Room 해당 토픽 (2026-07-30)
       topicBadge.innerHTML = '<svg class="wr-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' + 'War Room · ' + _escHtml(_tn) + ' <span style="opacity:.7;">↗</span>';
       topicBadge.classList.add('exp-topic-link');
-      topicBadge.title = (LANG === 'en') ? 'View this topic\'s War Room cheat sheet' : 'War Room에서 이 토픽 치트시트 보기';
+      topicBadge.title = (LANG === 'en') ? 'Open this topic in War Room' : 'War Room에서 이 주제 자세히 보기';
       topicBadge.onclick = function(){ openWarRoomTopic(_oc, q); };
     } else {
       topicBadge.textContent = 'Topic: ' + _tn;
@@ -8585,7 +8813,7 @@ function renderMockDashCard(){
     '<div class="prem-card" onclick="showScreen(\'warroom\')">'+
       '<div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
       '<div><div class="prem-tt">War Room</div>'+
-      '<div class="prem-sub">'+mL('시험 직전 치트시트','Last-minute cheat sheets')+'</div></div>'+
+      '<div class="prem-sub">'+mL('주제별 세법 자세히 보기','Topic deep dives')+'</div></div>'+
     '</div>'+
     '</div>';
 }
@@ -8929,7 +9157,7 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-<!-- ═══ WAR ROOM 모듈 (치트시트 · RPC 로딩 · 이전/다음 · 복사차단 · 2026-07-25) ═══ -->
+<!-- ═══ WAR ROOM 모듈 (주제 본문 · RPC 로딩 · 이전/다음 · 복사차단 · 2026-07-25) ═══ -->
 <style id="wr-style">
 #screen-warroom{padding:0;}
 /* 화면 제목 (2026-08-09)
@@ -9145,7 +9373,7 @@ function _wrSearchInput(){
   _wrRenderSearch(q);
 }
 // 🆕 2026-08-21 — 본문까지 찾는다 (고객 지적: `UBIA` 를 넣으면 0건이었다).
-// 뜻은 C1068 치트시트 «본문»에 있는데 검색이 제목·도메인·코드만 훑었다. 약어·서식번호·조문번호는
+// 뜻은 C1068 주제 «본문»에 있는데 검색이 제목·도메인·코드만 훑었다. 약어·서식번호·조문번호는
 // 거의 언제나 본문에만 있으므로 구조적으로 못 찾았다.
 // 본문 찾기는 DB 함수 search_war_room 이 «서버에서» 하고 «어느 토픽인지»만 돌려준다 —
 // 본문 글자는 한 자도 내려오지 않으므로 유료 콘텐츠가 새지 않는다.
@@ -9260,7 +9488,7 @@ function _wrSetPart(p, preferCode){
   if(showCode){ wrShow(showCode); }
   else {
     var c=document.getElementById('wr-content');
-    if(c) c.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?('Part '+p+' cheat sheets are coming soon.'):('Part '+p+' 치트시트는 곧 추가됩니다.'))+'</div>';
+    if(c) c.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?('Part '+p+' topics are coming soon.'):('Part '+p+' 주제는 곧 추가됩니다.'))+'</div>';
     var pos=document.getElementById('wr-pos'); if(pos)pos.textContent='';
     var pv=document.getElementById('wr-prev'),nx=document.getElementById('wr-next'); if(pv)pv.disabled=true; if(nx)nx.disabled=true;
   }
@@ -9294,8 +9522,8 @@ async function wrShow(code){
     var en=(_wrLang()==='en');
     // 개수는 라이브 목록에서 세어 쓴다 — 숫자를 박아 두면 토픽이 늘고 줄 때 문구가 거짓말이 된다
     var _n=(WR.rows||[]).length;
-    var _desc=_n?(en?('Read all '+_n+' cheat sheets in full.'):('치트시트 '+_n+'개를 모두 볼 수 있습니다.'))
-                :(en?'Read every cheat sheet in full.':'치트시트 전체를 볼 수 있습니다.');
+    var _desc=_n?(en?('Read all '+_n+' topics in full.'):('주제 '+_n+'개를 모두 볼 수 있습니다.'))
+                :(en?'Read every topic in full.':'주제 전체를 볼 수 있습니다.');
     content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div>'+peek
       +'<div class="wr-gate'+(peek?' peeked':'')+'"><div class="card"><div style="font-size:22px;">🔒</div><h4>'
       +(peek?(en?'Full access is for Pro members':'전체 내용은 Pro 회원 전용입니다')
@@ -9350,7 +9578,7 @@ function _wrPostProcess(root){
     t.parentNode.insertBefore(w,t); w.appendChild(t);
   });
 }
-// ── 문제→딥링크 도착 시 '관련 치트시트' 칩 (2026-08-06 전면 개편) ──────────────
+// ── 문제→딥링크 도착 시 '이 문제와 관련' 칩 (2026-08-06 전면 개편) ──────────────
 // 옛 방식은 문항 속 "Form ####" 번호만 신호로 썼다. 실측 결과 문항의 47.8%가 번호를 아예 안 담고
 // 있어 칩이 뜨는 문항은 27.5%뿐이었다(C1057-018 처럼 주제가 명백히 겹쳐도 0개 — 사용자 지적).
 // 새 방식(사용자 지시): **문항 topic명(x3) → 보기(x2)** 의 용어로 War Room 제목을 검색한다.
@@ -9460,7 +9688,7 @@ function _wrNbspJoin(html){
 function openWarRoomTopic(code, q){
   code=((code||'')+'').trim(); if(!code) return;
   window._wrPendingCode=code;
-  // 문항의 topic명·보기를 '관련 치트시트' 검색어로 넘긴다 (2026-08-06 개편 — 아래 _wrRenderRelated 참조)
+  // 문항의 topic명·보기를 '이 문제와 관련' 검색어로 넘긴다 (2026-08-06 개편 — 아래 _wrRenderRelated 참조)
   window._wrQSignal=null;
   if(q){
     var _o=q.options||[];
