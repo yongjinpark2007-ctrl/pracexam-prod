@@ -81,8 +81,15 @@
   --ann-bg:       #ffffff;              /* 흰 배경 */
   --ann-bd:       rgba(53,70,73,.14);   /* 기본 카드 보더와 동일 */
   --ann-item-bg:  #f7f9fa;              /* 안쪽 공지 항목 — 흰 카드 안에서 살짝 구분되는 옅은 회색 */
-  /* 진행률 바 — 완주도는 "낮아도 나쁜 게 아님" → 경고색 대신 차분한 브랜드 색 (2026-07-05) */
-  --progress-bar: #5B9089;              /* Deep Seafoam — 진행률(완주도) 전용 */
+  /* 진행률 바 — 완주도는 "낮아도 나쁜 게 아님" → 경고색 대신 차분한 브랜드 색 (2026-07-05).
+     🔴 2026-08-21 딥 시폼(#5B9089) → 하버 잉크(밝게). 히어로가 원그래프가 되면서 진도 원과
+        정답률 원이 나란히 서는데, 정답률 50~69% 구간색(#2F8F87 틸)과 딥 시폼이 «거의 같은 색»
+        이라 두 원이 한 덩어리로 보였다. 진도는 「좋고 나쁨」이 아니라 「얼마나 왔나」라서
+        성과색(앰버·틸·그린)과 계열이 갈리는 편이 뜻에도 맞다.
+        Part 타일 막대·모의고사 결과 링에도 같이 쓰이므로 앱 전체가 함께 바뀐다(사용자 결정 (가)). */
+  --progress-bar: #4D6164;              /* Harbor Ink (밝게) — 진행률(완주도) 전용 */
+  --ring-track:   #e6ebec;              /* 링에서 아직 안 채워진 부분 */
+  --ring-freq:    #8A6A2F;              /* 공부 빈도 링 — 다크 골드 (사용자 결정 2026-08-21) */
   /* 정답률 바 — 성과 구간별 색상 (앰버 → 틸 → 그린) */
   --acc-low:      #D99A2B;              /* 50% 미만 — 앰버 (개선 필요) */
   --acc-mid:      #2F8F87;              /* 50–69% — 틸 (향상 중) */
@@ -980,30 +987,74 @@ html, body {
 .dash-hero-status.neutral{background:var(--teal-glow);color:var(--teal);border-color:rgba(53,70,73,.18);}
 .lang-toggle{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--teal);background:var(--teal-dim);border:1px solid rgba(53,70,73,.18);border-radius:7px;padding:5px 10px;cursor:pointer;min-width:34px;transition:all .15s;}
 .lang-toggle:hover{background:var(--teal);color:#fff;border-color:var(--teal);}
-.dash-hero-metrics{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1rem 0;}
-.dash-metric-label{font-size:13px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin-bottom:6px;}
-.dash-metric-value{font-size:32px;font-weight:700;color:var(--text-main);letter-spacing:-.02em;line-height:1;}
-.dash-metric-value .pct{font-size:18px;color:var(--text-muted);font-weight:600;}
-.dash-metric-sub{font-size:12px;color:var(--text-muted);margin-top:5px;}
-.dash-metric-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;margin-top:9px;overflow:hidden;}
-.dash-metric-bar-fill{height:100%;border-radius:3px;transition:width .4s,background .3s;}
-.dash-hero-target{
-  background:rgba(53,70,73,.06);border:1px solid rgba(53,70,73,.18);
-  border-radius:10px;padding:13px 16px;font-size:16px;color:var(--text-mid);
-  margin:1rem 0;display:flex;align-items:center;gap:9px;
-}
-.dash-hero-target.warning{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2);color:#f59e0b;}
-.dash-hero-target.ready{background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.2);color:var(--success-color);}
-.dash-hero-target svg{width:20px;height:20px;flex-shrink:0;stroke-width:2;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;}
+/* ── 히어로 지표 = 원그래프 셋 (2026-08-21) ────────────────────────────────
+   가로 막대 → 링. 모의고사 결과의 .mk-ring 과 같은 conic-gradient 문법이다.
+   ⚠️ 회차(「1회차」)와 권장(「권장 85%」)은 «둘 다 큰 숫자 아래»에 둔다 —
+      한쪽만 위에 두면 두 원의 큰 숫자 높이가 어긋난다 (사용자 지적 2026-08-21). */
+.dash-hero-rings{display:flex;gap:6px;}
+.hr-cell{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;}
+/* 🔴 휴대폰에서 크기는 «화면 폭에 따라» 늘고 준다 (2026-08-21).
+   360px 에서 칸 하나가 약 93px 이라 88px 까지 키울 수 있지만, 320px 짜리 옛 기기에서는
+   3개가 안 들어간다. min()·clamp() 로 두 경우를 한 번에 맞춘다 — 고정값으로 두면
+   좁은 기기에서 링이 서로 겹친다. */
+.hr-ring{width:min(88px,24vw);height:min(88px,24vw);border-radius:50%;position:relative;flex:none;}
+.hr-ring::before{content:"";position:absolute;inset:9px;background:var(--hero-cream);border-radius:50%;z-index:2;}
+/* 12시 시작점 — 늘 켜 두면 0% 일 때만 저절로 드러난다(호가 자라면 그 자리를 덮는다) */
+.hr-ring::after{content:"";position:absolute;top:1px;left:50%;width:6px;height:6px;margin-left:-3px;
+  border-radius:50%;background:var(--dot,transparent);z-index:0;}
+/* 지난 회차 — 같은 색을 옅게 뒤에 깔아 «한 바퀴 돌았음»을 보인다 */
+.hr-back{position:absolute;inset:0;border-radius:50%;opacity:.34;z-index:0;}
+/* 권장 눈금 — 12시에서 회전시켜 자리를 잡는다 */
+.hr-tgt{position:absolute;inset:0;z-index:3;}
+.hr-tgt::before{content:"";position:absolute;top:-1px;left:50%;width:2.5px;height:10px;margin-left:-1.25px;
+  background:var(--text-main);opacity:.5;border-radius:2px;}
+.hr-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;}
+.hr-n{font-size:clamp(17px,5.6vw,22px);font-weight:800;color:var(--text-main);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;}
+.hr-n i{font-style:normal;font-size:clamp(10px,3vw,12px);color:var(--text-muted);font-weight:700;}
+.hr-b{font-size:clamp(9px,2.6vw,10.5px);font-weight:700;color:var(--text-muted);letter-spacing:.01em;line-height:1;margin-top:3px;white-space:nowrap;}
+.hr-lab{font-size:clamp(9.5px,2.9vw,11.5px);color:var(--text-muted);letter-spacing:.04em;text-transform:uppercase;font-weight:700;margin-top:6px;}
+/* ⚠️ .screen 의 overflow-wrap:anywhere 가 여기까지 미쳐 「포함」이 낱말 가운데서 갈렸다.
+   이 줄만 낱말 경계에서 접히게 되돌린다 (2026-08-21). */
+.hr-sub{font-size:clamp(9px,2.7vw,10.5px);color:var(--text-muted);margin-top:2px;
+  font-variant-numeric:tabular-nums;line-height:1.4;overflow-wrap:normal;word-break:keep-all;}
+/* 「반복 풀이 포함」은 «늘» 아랫줄로 내린다 (2026-08-21 사용자 지시).
+   흘려 두면 숫자 자릿수에 따라 끊기는 자리가 달라져 카드마다 모양이 달라진다
+   (288 / 615 처럼 자리가 늘면 「포함」만 내려가 어그러졌다). */
+.hr-dim{display:block;font-size:clamp(8.5px,2.5vw,10px);opacity:.75;margin-top:1px;}
+
+/* 휴대폰 = 링 셋 + 버튼 아래 / 데스크톱 = 링 왼쪽 + 버튼 오른쪽 */
+.dash-hero-split{margin:1.1rem 0 .2rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.dash-hero-split .dash-hero-rings{flex:1;justify-content:space-around;width:100%;}
+.dash-hero-act{min-width:100%;display:flex;justify-content:center;}
 .dash-hero-cta{
-  width:100%;background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;
-  border:none;border-radius:12px;padding:16px 24px;margin-top:1.5rem;
+  background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;
+  border:none;border-radius:12px;padding:16px 24px;margin-top:0;width:100%;
   font-family:inherit;font-size:19px;font-weight:800;
   cursor:pointer;transition:all .18s;letter-spacing:.01em;
   display:flex;align-items:center;justify-content:center;gap:9px;
 }
 .dash-hero-cta:hover{background:linear-gradient(135deg,#4d6164,#354649);box-shadow:0 0 18px rgba(53,70,73,.3);transform:translateY(-1px);}
 .dash-hero-cta svg{width:17px;height:17px;fill:currentColor;stroke:none;}
+
+@media(min-width:721px){
+  .dash-hero-split{gap:30px;}
+  .dash-hero-split .dash-hero-rings{flex:none;width:auto;gap:18px;justify-content:flex-start;}
+  /* 칸 너비를 붙박이로 — 아래 글씨 길이에 따라 칸이 늘면 Part 를 바꿀 때마다
+     원이 옆으로 움직인다(2026-08-21 화면 확인). */
+  .hr-cell{width:132px;}
+  .dash-hero-act{flex:1;min-width:200px;}
+  .dash-hero-cta{width:86%;}
+  .hr-ring{width:112px;height:112px;}
+  .hr-ring::before{inset:11px;}
+  .hr-ring::after{width:9px;height:9px;margin-left:-4.5px;}
+  .hr-tgt::before{height:13px;}
+  .hr-n{font-size:27px;}
+  .hr-n i{font-size:15px;}
+  .hr-b{font-size:11px;margin-top:5px;}
+  .hr-lab{font-size:12px;margin-top:9px;}
+  .hr-sub{font-size:11.5px;}
+  .hr-dim{font-size:10px;}
+}
 
 /* Part 목록 — 3개 타일 한 줄 정렬 (tile grid) */
 .dash-parts-section-label{font-size:15px;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin:1.5rem 4px 10px;}
@@ -1186,14 +1237,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
   /* ── Dashboard v2 Hero ── */
   .dash-hero{padding:1.1rem 1.1rem 1rem;}
-  .dash-hero-metrics{gap:.85rem;}
-  .dash-metric-value{font-size:29px;}
-  .dash-metric-label{font-size:13px;}
   .dash-hero-title{font-size:20px;}
   .dash-hero-sub{font-size:12.5px;}
   .dash-hero-status{font-size:12px;padding:5px 10px;}
   .dash-hero-cta{font-size:15px;padding:11px 18px;}
-  .dash-hero-target{font-size:13px;padding:8px 12px;}
 
   /* ── Dashboard v2 Parts list (모바일 타일 3열) ── */
   .dash-parts-section-label{font-size:12px;margin:1.2rem 2px 8px;}
@@ -4347,6 +4394,11 @@ var UI_TEXT = {
   hero_almost:   {ko:'거의 다 왔어요', en:'Almost there'},
   hero_learning: {ko:'학습 중',   en:'In progress'},
   hero_basics:   {ko:'기초 다지기', en:'Building basics'},
+  // 히어로 원그래프 (2026-08-21)
+  hero_cycle:    {ko:'회차', en:'Cycle'},          // 국문 'N회차' / 영문 'Cycle N' — heroCycleLabel() 이 조립
+  hero_goal:     {ko:'권장', en:'goal'},           // '권장 85%' / 'goal 85%'
+  hero_freq:     {ko:'공부 빈도', en:'Study days'},
+  hero_freq_win: {ko:'최근 14일', en:'14 days'},   // ⚠️ 영문을 길게 쓰면 휴대폰 원 안을 넘친다
   // ── Study Setup 화면 ──
   setup_title:    {ko:'학습 설정', en:'Study Setup'},
   setup_subtitle: {ko:'문제 수, 범위, 반복 횟수, 학습 모드를 선택 후 시작하세요.', en:'Choose question count, scope, repeats, and mode, then start.'},
@@ -4402,7 +4454,9 @@ var UI_TEXT = {
   // ── 대시보드 동적 ──
   dash_progress:  {ko:'진도',    en:'Progress'},
   dash_accuracy:  {ko:'정답률',  en:'Accuracy'},
-  dash_incl_rep:  {ko:' - 반복 풀이 포함', en:' - incl. repeats'},
+  // 히어로 정답률 원 아래 «둘째 줄»로 나간다. 앞의 구분자 ' - ' 를 떼었다 —
+  // 줄이 갈리면 「- 」가 줄머리에 남는다 (2026-08-21 사용자 지적).
+  dash_incl_rep:  {ko:'반복 풀이 포함', en:'incl. repeats'},
   dash_continue:  {ko:' 학습 계속하기', en:' — Continue'},
   dash_allparts:  {ko:'전체 Part · 클릭하여 학습 시작', en:'All Parts · tap to start'},
   dash_recent:    {ko:'최근 학습', en:'Recent'},
@@ -4939,7 +4993,9 @@ const PART_META = {
 function partLabel(pk){ var m = PART_META[pk]; if(!m) return pk; return (LANG === 'en') ? m.en : m.ko; }
 
 // 응시 권장 정답률 임계값 (Phase 2 design decision)
-const EXAM_READY_THRESHOLD = 90;
+// 🔴 2026-08-21 90 → 85 (사용자 결정). 히어로 정답률 원의 «권장 눈금»이 이 값을 그대로 쓰므로,
+//    여기를 바꾸면 눈금과 「응시 가능」 뱃지가 늘 같은 값을 가리킨다. 따로 두면 화면 안에서 말이 갈린다.
+const EXAM_READY_THRESHOLD = 85;
 // 응시 권장 최소 진도율 (2026-07-26) — 정답률만 높고 문제를 거의 안 푼 상태에서
 // '응시 가능'이 뜨던 버그 수정. 아무리 정답률이 높아도 진도 60% 미만이면 '응시 가능' 불가.
 const EXAM_READY_MIN_PROGRESS = 60;
@@ -4956,6 +5012,77 @@ function heroReadyStatus(accPct, tAttempts, progressPct){
   if(accPct >= 75 && prog >= HERO_ALMOST_MIN_PROGRESS)                       return { text: t('hero_almost'),   cls: ''        };
   if(accPct >= 50 || prog >= HERO_ALMOST_MIN_PROGRESS)                       return { text: t('hero_learning'), cls: 'neutral' };
   return { text: t('hero_basics'), cls: 'neutral' };
+}
+
+// ── 히어로 원그래프용 셈 (2026-08-21) ──────────────────────────────────────
+// 회차 = 문제은행을 몇 바퀴째 도는가. 문항마다 푼 횟수(times)가 이미 저장돼 있어
+// 새로 불러올 데이터가 없다.  1회차 = times>=1 인 문항 / 전체,  2회차 = times>=2 …
+const HERO_MAX_CYCLE = 9;
+function heroCycleStats(qs){
+  var total = qs.length;
+  if(!total) return { cycle:1, done:0, total:0, pct:0, prevDone:false };
+  // counts[k] = 「k+1 번 이상 푼」 문항 수
+  var counts = [];
+  for(var i=0;i<HERO_MAX_CYCLE+1;i++) counts.push(0);
+  qs.forEach(function(q){
+    var a = S.answered[q.id];
+    var n = (a && a.times) || 0;
+    if(n > HERO_MAX_CYCLE) n = HERO_MAX_CYCLE;
+    for(var k=0;k<n;k++) counts[k]++;
+  });
+  // 다음 회차로 넘기는 조건 = 앞 회차를 다 돌았고 «그다음 회차를 실제로 시작했을 때».
+  // 앞 회차 완주만으로 넘기면 「1회차 100%」를 한 번도 못 보고 지나간다.
+  var cycle = 1;
+  while(cycle < HERO_MAX_CYCLE && counts[cycle-1] >= total && counts[cycle] > 0) cycle++;
+  var done = counts[cycle-1];
+  return { cycle:cycle, done:done, total:total,
+           pct: Math.round(done / total * 100), prevDone: cycle > 1 };
+}
+function heroCycleLabel(n){ return (LANG === 'en') ? ('Cycle ' + n) : (n + '회차'); }
+function heroFreqSub(f){
+  return (LANG === 'en') ? (f.days + ' of ' + f.win + ' days')
+                         : (f.win + '일 중 ' + f.days + '일');
+}
+
+// 공부 빈도 = 최근 14일 가운데 «학습 세션을 끝낸 날»이 며칠인가.
+// ⚠️ Part 를 가리지 않는다 — Part 2 를 푼 날도 공부한 날이다(사용자 결정 2026-08-21).
+// ⚠️ 세션을 끝내야 셈에 들어간다. 풀다 중간에 나간 날과 모의고사는 안 센다.
+const STUDY_FREQ_WINDOW = 14;
+function studyFrequency(){
+  var start = new Date(); start.setHours(0,0,0,0);
+  start.setDate(start.getDate() - (STUDY_FREQ_WINDOW - 1));
+  var cutoff = start.getTime();
+  var seen = {};
+  (S.sessions || []).forEach(function(s){
+    if(!s.created_at) return;
+    var d = new Date(s.created_at);
+    var ms = d.getTime();
+    if(!isFinite(ms) || ms < cutoff) return;
+    seen[d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate()] = 1;
+  });
+  var n = Object.keys(seen).length;
+  if(n > STUDY_FREQ_WINDOW) n = STUDY_FREQ_WINDOW;
+  return { days:n, win:STUDY_FREQ_WINDOW, pct: Math.round(n / STUDY_FREQ_WINDOW * 100) };
+}
+
+// 링 한 칸을 그린다. under = 큰 숫자 «아래» 작은 글씨(회차·권장·창).
+//   target = 권장 눈금 위치(%) · back = 지난 회차를 뒤에 옅게 깔지 여부
+function heroRing(pct, color, under, lab, sub, target, back, aria){
+  var p = Math.max(0, Math.min(100, pct || 0));
+  return '<div class="hr-cell">' +
+    '<div class="hr-ring" role="img" aria-label="' + _escHtml(aria || (lab + ' ' + p + '%')) + '"' +
+      ' style="--dot:' + color + ';background:conic-gradient(' + color + ' 0 ' + p + '%,' +
+      'var(--ring-track) ' + p + '% 100%);">' +
+      (back ? '<span class="hr-back" style="background:' + color + ';"></span>' : '') +
+      (typeof target === 'number'
+        ? '<span class="hr-tgt" style="transform:rotate(' + (target * 3.6) + 'deg);"></span>' : '') +
+      '<div class="hr-ring-in">' +
+        '<span class="hr-n">' + p + '<i>%</i></span>' +
+        '<span class="hr-b">' + under + '</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="hr-lab">' + lab + '</div>' +
+    '<div class="hr-sub">' + sub + '</div></div>';
 }
 
 function renderDashboard(){
@@ -5956,6 +6083,10 @@ function renderDashHero(focusPart){
   });
   const accPct = tAttempts > 0 ? Math.round(tCorrect / tAttempts * 100) : 0;
 
+  // 원그래프 셋에 쓸 값 (2026-08-21)
+  const cyc  = heroCycleStats(qs);   // 회차 · 그 회차의 진도
+  const freq = studyFrequency();     // 최근 14일 중 공부한 날
+
   const info = PART_META[focusPart] || PART_META['Part 1'];
   // 「Part 1 — Individuals」를 두 줄로 나눈다 — 타일과 같은 모양 (2026-08-21)
   const _hBits  = partLabel(focusPart).split(' — ');
@@ -5978,26 +6109,34 @@ function renderDashHero(focusPart){
         '</div>' +
         '<span class="dash-hero-status ' + st.cls + '">' + st.text + '</span>' +
       '</div>' +
-      '<div class="dash-hero-metrics">' +
-        '<div>' +
-          '<div class="dash-metric-label">' + t('dash_progress') + '</div>' +
-          '<div class="dash-metric-value">' + progressPct + '<span class="pct">%</span></div>' +
-          '<div class="dash-metric-sub">' + done + ' / ' + uQuestions(totalQs) + '</div>' +
-          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + progressPct + '%;background:' + progressBarColor() + ';"></div></div>' +
+      '<div class="dash-hero-split">' +
+        '<div class="dash-hero-rings">' +
+          // ① 진도 — 원 안 아래에 회차
+          heroRing(cyc.pct, 'var(--progress-bar)', heroCycleLabel(cyc.cycle),
+                   t('dash_progress'), cyc.done + ' / ' + uQuestions(totalQs),
+                   null, cyc.prevDone,
+                   t('dash_progress') + ' ' + cyc.pct + '% · ' + heroCycleLabel(cyc.cycle)) +
+          // ② 정답률 — 원 안 아래에 권장, 링 위 그 자리에 눈금
+          heroRing(accPct, accuracyColor(accPct),
+                   t('hero_goal') + ' ' + EXAM_READY_THRESHOLD + '%',
+                   t('dash_accuracy'),
+                   tCorrect + ' / ' + uCorrect(tAttempts) +
+                     '<span class="hr-dim">' + t('dash_incl_rep') + '</span>',
+                   EXAM_READY_THRESHOLD, false,
+                   t('dash_accuracy') + ' ' + accPct + '%') +
+          // ③ 공부 빈도 — 최근 14일 중 며칠 (Part 를 가리지 않는다)
+          heroRing(freq.pct, 'var(--ring-freq)', t('hero_freq_win'),
+                   t('hero_freq'), heroFreqSub(freq),
+                   null, false,
+                   t('hero_freq') + ' ' + heroFreqSub(freq)) +
         '</div>' +
-        '<div>' +
-          '<div class="dash-metric-label">' + t('dash_accuracy') + '</div>' +
-          '<div class="dash-metric-value">' + accPct + '<span class="pct">%</span></div>' +
-          '<div class="dash-metric-sub">' + tCorrect + ' / ' + uCorrect(tAttempts) +
-            '<span style="font-size:11px;color:var(--text-muted);opacity:.75;">' + t('dash_incl_rep') + '</span>' +
-          '</div>' +
-          '<div class="dash-metric-bar"><div class="dash-metric-bar-fill" style="width:' + accPct + '%;background:' + accuracyColor(accPct) + ';"></div></div>' +
+        '<div class="dash-hero-act">' +
+          '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
+            '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>' +
+            (focusPart + t('dash_continue')) +
+          '</button>' +
         '</div>' +
       '</div>' +
-      '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
-        '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>' +
-        (focusPart + t('dash_continue')) +
-      '</button>' +
     '</div>';
 }
 
