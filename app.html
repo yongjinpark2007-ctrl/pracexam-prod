@@ -989,14 +989,20 @@ html, body {
 .ann-item-title{flex:1;font-size:13.5px;font-weight:600;color:var(--text-main);}
 .ann-tag{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;}
 .ann-dot{width:8px;height:8px;border-radius:50%;background:var(--danger-color);flex:0 0 auto;}
-.ann-body{color:var(--text-mid);font-size:12.5px;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+/* 접힌 공지 = «제목 한 줄»만. 본문은 눌러야 나온다 (2026-08-21 사용자 선택).
+   전에는 본문 첫 줄을 미리 보여 줬는데(-webkit-line-clamp:1) 공지 3건이 쌓이자
+   대시보드가 지저분해 보였다. */
+.ann-body{display:none;color:var(--text-mid);font-size:12.5px;line-height:1.6;margin-top:6px;}
 /* 공지 본문 안의 링크 — 눌리는 것이 «보여야» 한다 (2026-08-20).
-   ⚠️ 접힌 상태는 1줄만 보이므로(-webkit-line-clamp:1) 둘째 줄에 있는 링크는
-      공지를 «펼쳐야» 나온다. 링크는 공지 첫 줄에 두는 편이 낫다. */
+   ⚠️ 본문이 접혀 있으므로 링크는 공지를 «펼쳐야» 나온다. */
 .ann-body a{color:var(--navy);text-decoration:underline;text-underline-offset:2px;
   font-weight:600;word-break:break-all;}
 .ann-body a:hover{color:var(--accent);}
-.ann-item.open .ann-body{-webkit-line-clamp:unset;}
+.ann-item.open .ann-body{display:block;}
+/* 펼칠 수 있다는 표시 — 오른쪽 꺾쇠. 펼치면 아래로 돈다.
+   .ann-item-top svg 의 15px 규칙보다 «클래스가 하나 더» 많아야 이긴다. */
+.ann-item-top svg.ann-chev{width:14px;height:14px;stroke:var(--text-muted);stroke-width:2.2;transition:transform .15s;}
+.ann-item.open .ann-chev{transform:rotate(90deg);}
 .ann-date-inline{font-size:11px;color:var(--text-muted);white-space:nowrap;flex:0 0 auto;}
 .ann-date{font-size:11px;color:var(--text-muted);margin-top:7px;}
 .ann-empty{color:var(--text-muted);font-size:13px;text-align:center;padding:10px 0;}
@@ -4888,11 +4894,13 @@ function annMarkRead(id){
 function annMarkAll(){
   var s = annReadSet(); (_ANN||[]).forEach(function(a){ s.add(a.id); }); annSaveRead(s); paintAnnouncements();
 }
+var _ANN_OPEN = {};   // 펼쳐 둔 공지 id — 다시 그려도 살아남게 (2026-08-21)
 function annToggle(id, el){
-  el.classList.toggle('open');
-  if(el.classList.contains('open')) logAnnView(id);   // 펼칠 때만 서버에 열람 기록 (2026-07-31)
+  if(_ANN_OPEN[id]){ delete _ANN_OPEN[id]; }
+  else { _ANN_OPEN[id] = 1; logAnnView(id); }   // 펼칠 때만 서버에 열람 기록 (2026-07-31)
   var s = annReadSet();
-  if(!s.has(id)){ s.add(id); annSaveRead(s); paintAnnouncements(); }
+  if(!s.has(id)){ s.add(id); annSaveRead(s); }
+  paintAnnouncements();   // ⚠️ 항상 다시 그린다 — 펼침 상태는 _ANN_OPEN 이 들고 있다
 }
 
 // ── 공지 열람 기록 (2026-07-31) ──
@@ -4966,11 +4974,14 @@ function paintAnnouncements(){
     if(a.pinned) tag = '<span class="ann-tag" style="background:rgba(198,161,91,.16);color:#8a5e22;">'+ (en ? 'Pinned' : '고정') +'</span>';
     else if(a.category === 'content') tag = '<span class="ann-tag" style="background:var(--accent-tint);color:#b25a3a;">'+ (en ? 'New' : '신규') +'</span>';
     var icon = a.pinned ? _annPin() : _annIcon(a.category);
-    return '<div class="ann-item'+(a.pinned?' pin':'')+'" onclick="annToggle('+a.id+',this)">'+
+    var chev = body
+      ? '<svg class="ann-chev" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'
+      : '';
+    return '<div class="ann-item'+(a.pinned?' pin':'')+(_ANN_OPEN[a.id]?' open':'')+'" onclick="annToggle('+a.id+',this)">'+
       '<div class="ann-item-top">'+ icon +
         '<span class="ann-item-title">'+ _annEsc(title) +'</span>'+ tag +
         (dateTxt ? '<span class="ann-date-inline">'+ dateTxt +'</span>' : '')+
-        (isUnread ? '<span class="ann-dot"></span>' : '')+
+        (isUnread ? '<span class="ann-dot"></span>' : '')+ chev +
       '</div>'+
       (body ? '<div class="ann-body">'+ _annLinkify(body) +'</div>' : '')+
     '</div>';
