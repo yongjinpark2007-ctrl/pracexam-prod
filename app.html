@@ -9034,6 +9034,7 @@ if ('serviceWorker' in navigator) {
 .wr-sr-count{font-size:11px;font-weight:700;color:#4E5C66;padding:2px 10px 6px;}
 .wr-sr-pb{display:inline-block;font-size:9px;font-weight:800;color:#3E837A;border:1px solid rgba(62,131,122,.4);border-radius:5px;padding:0 5px;margin-right:6px;vertical-align:1px;}
 .wr-sr-dom{display:block;font-size:10.5px;color:#8a9598;margin-top:1px;}
+.wr-sr-in{display:inline-block;font-size:9px;font-weight:800;color:#8a6d3b;background:rgba(221,143,117,.18);border:1px solid rgba(221,143,117,.45);border-radius:5px;padding:0 5px;margin-left:6px;vertical-align:1px;}
 </style>
 <script>
 var WR={rows:[],order:[],cur:null};
@@ -9074,7 +9075,7 @@ function _wrBuildShell(rows, preferCode){
     +'<button class="wr-toc-toggle" id="wr-toc-toggle" onclick="_wrToggleToc()"><span>📚 '+(_wrLang()==='en'?'Index':'목차')+'</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>'
     +'<aside class="wr-toc" id="wr-toc">'
     +'<div class="wr-search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>'
-    +'<input id="wr-search" type="text" autocomplete="off" placeholder="'+(_wrLang()==='en'?'Search all parts…':'전체 파트 검색…')+'" oninput="_wrSearchInput()" onkeydown="_wrSearchKey(event)">'
+    +'<input id="wr-search" type="text" autocomplete="off" placeholder="'+(_wrLang()==='en'?'Search all parts and text…':'전체 파트·본문 검색…')+'" oninput="_wrSearchInput()" onkeydown="_wrSearchKey(event)">'
     +'<button class="clr" id="wr-search-clear" onclick="_wrSearchClear()" aria-label="clear">✕</button></div>'
     +'<div class="wr-parts">'+tabs+'</div><div id="wr-doms"></div></aside>'
     +'<main class="wr-sheet"><div class="wr-protected" id="wr-content"></div>'
@@ -9116,21 +9117,54 @@ function _wrSearchInput(){
   if(_wrNorm(q).trim().length<2){ _wrRenderDomains(WR.curPart); return; }
   _wrRenderSearch(q);
 }
+// 🆕 2026-08-21 — 본문까지 찾는다 (고객 지적: `UBIA` 를 넣으면 0건이었다).
+// 뜻은 C1068 치트시트 «본문»에 있는데 검색이 제목·도메인·코드만 훑었다. 약어·서식번호·조문번호는
+// 거의 언제나 본문에만 있으므로 구조적으로 못 찾았다.
+// 본문 찾기는 DB 함수 search_war_room 이 «서버에서» 하고 «어느 토픽인지»만 돌려준다 —
+// 본문 글자는 한 자도 내려오지 않으므로 유료 콘텐츠가 새지 않는다.
+// 🔴 함수가 아직 없거나 실패하면 예전처럼 «제목만» 찾는다(무해). 그래서 SQL 실행 전에 배포해도 된다.
+var _WR_BODY = Object.create(null);   // 정규화 질의 → {outline_code:1} · 본문에서 걸린 것
+var _WR_SEQ  = 0;                     // 늦게 온 응답이 새 질의를 덮지 않게
 function _wrRenderSearch(q){
-  var lang=_wrLang(), nq=_wrNorm(q).trim(), html='', total=0;
+  var nq=_wrNorm(q).trim();
+  _wrPaintSearch(nq);                                     // ① 제목으로 먼저 그린다(즉시)
+  if(Object.prototype.hasOwnProperty.call(_WR_BODY,nq)) return;   // 이미 받아 둔 질의
+  var seq=++_WR_SEQ;
+  _wrFetchBody(nq).then(function(codes){
+    if(seq!==_WR_SEQ) return;                             // 그 사이 더 친 글자가 있으면 버린다
+    _WR_BODY[nq]=codes;
+    if(!codes) return;
+    var inp=document.getElementById('wr-search');
+    if(inp && _wrNorm(inp.value).trim()===nq) _wrPaintSearch(nq);   // ② 본문 결과를 얹어 다시 그린다
+  });
+}
+function _wrFetchBody(nq){
+  try{
+    return sb.rpc('search_war_room',{p_q:nq}).then(function(res){
+      if(res.error||!res.data) return null;
+      var m=Object.create(null);
+      res.data.forEach(function(r){ if(r.in_body) m[r.outline_code]=1; });
+      return m;
+    }).catch(function(){ return null; });
+  }catch(e){ return Promise.resolve(null); }
+}
+function _wrPaintSearch(nq){
+  var lang=_wrLang(), body=_WR_BODY[nq]||null, html='', total=0;
   [1,2,3].forEach(function(p){
     var buck=(WR.byPart&&WR.byPart[p])||{};
     (WR_SKELETON[p]||[]).forEach(function(row){
       var key=row[0], ko=row[1];
       var domHit=_wrNorm(key).indexOf(nq)>=0 || _wrNorm(ko).indexOf(nq)>=0;
       (buck[key]||[]).forEach(function(r){
-        if(domHit || _wrNorm(r.title_en).indexOf(nq)>=0 || _wrNorm(r.title_ko).indexOf(nq)>=0 || _wrNorm(r.outline_code).indexOf(nq)>=0){
-          total++;
-          var lk=r.locked?'<span class="lk">🔒 </span>':'';
-          html+='<div class="wr-topic-link wr-sr" onclick="_wrGo('+p+',\''+r.outline_code+'\')">'+lk
-            +'<span><span class="wr-sr-pb">P'+p+'</span>'+_wrEsc(_wrT(r))
-            +'<span class="wr-sr-dom">'+_wrEsc(lang==='ko'?ko:key)+'</span></span></div>';
-        }
+        var titleHit=domHit || _wrNorm(r.title_en).indexOf(nq)>=0 || _wrNorm(r.title_ko).indexOf(nq)>=0 || _wrNorm(r.outline_code).indexOf(nq)>=0;
+        var bodyHit=!!(body && body[r.outline_code]);
+        if(!titleHit && !bodyHit) return;
+        total++;
+        var lk=r.locked?'<span class="lk">🔒 </span>':'';
+        var bd=(!titleHit&&bodyHit)?'<span class="wr-sr-in">'+(lang==='en'?'in text':'본문')+'</span>':'';
+        html+='<div class="wr-topic-link wr-sr" onclick="_wrGo('+p+',\''+r.outline_code+'\')">'+lk
+          +'<span><span class="wr-sr-pb">P'+p+'</span>'+_wrEsc(_wrT(r))+bd
+          +'<span class="wr-sr-dom">'+_wrEsc(lang==='ko'?ko:key)+'</span></span></div>';
       });
     });
   });
