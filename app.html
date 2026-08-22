@@ -2630,7 +2630,18 @@ function loadWarRoomUse(){
         });
         ok = true;
       }catch(e){
-        err = (e && (e.message || e.code)) || '알 수 없는 오류';
+        // 🔴 2026-08-21 — 처음엔 e.message 만 봤더니 «원인 미상» 만 찍혀 손을 못 댔다.
+        //    PostgREST 오류는 message 말고 code/details/hint 에 실체가 있는 때가 있다.
+        //    그래서 «있는 칸을 다 모으고», 그래도 비면 객체를 통째로 JSON 으로 남긴다.
+        try{
+          var bits = [];
+          ['message','code','details','hint','name'].forEach(function(k){
+            if(e && e[k]) bits.push(k + '=' + e[k]);
+          });
+          if(!bits.length && e){ try{ bits.push(JSON.stringify(e)); }catch(_){ bits.push(String(e)); } }
+          err = bits.join(' · ') || '오류 객체가 비어 있음(네트워크 차단일 수 있음)';
+        }catch(_){ err = String(e); }
+        try{ console.error('[WarRoom] admin_war_room_users 실패:', e); }catch(_){}
         _WR_USE_PROMISE = null;   // 실패는 캐시하지 않는다 → 다음에 다시 시도
       }
       _WR_USE = map; _WR_USE_OK = ok; _WR_USE_ERR = err;
