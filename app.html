@@ -1032,6 +1032,9 @@ html, body {
 .dash-hero-split{margin:1.1rem 0 .2rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
 .dash-hero-split .dash-hero-rings{flex:1;justify-content:space-around;width:100%;}
 .dash-hero-act{min-width:100%;display:flex;justify-content:center;}
+/* 히어로 오른쪽 칸의 문구 — PC 에서만 (2026-08-22 사용자 요청).
+   휴대폰에서는 버튼 위가 비어 있지 않고, 세로를 더 쓰면 아래 내용이 밀린다. */
+.hero-quote{display:none;}
 .dash-hero-cta{
   background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;
   border:none;border-radius:12px;padding:16px 24px;margin-top:0;width:100%;
@@ -1048,8 +1051,17 @@ html, body {
   /* 칸 너비를 붙박이로 — 아래 글씨 길이에 따라 칸이 늘면 Part 를 바꿀 때마다
      원이 옆으로 움직인다(2026-08-21 화면 확인). */
   .hr-cell{width:132px;}
-  .dash-hero-act{flex:1;min-width:200px;}
+  .dash-hero-act{flex:1;min-width:200px;flex-direction:column;gap:16px;}
   .dash-hero-cta{width:86%;}
+  .hero-quote{display:block;width:86%;text-align:center;}
+  /* 🔴 두 줄 자리를 붙박이로 — 문구 길이에 따라 카드 높이가 달라지면 로그인할 때마다
+     대시보드가 들썩인다(원·버튼 자리가 밀린다). */
+  .hq-text{font-size:15px;line-height:1.65;color:var(--text-mid);font-weight:600;
+    word-break:keep-all;overflow-wrap:normal;min-height:calc(15px * 1.65 * 3);
+    display:flex;align-items:center;justify-content:center;}
+  /* 인용 표시 = 금색 짧은 선. 따옴표 글리프는 작게 찍혀 티끌처럼 보였다 (2026-08-22). */
+  .hq-mark{display:block;width:26px;height:2px;margin:0 auto 10px;border-radius:2px;
+    background:var(--hero-gold);opacity:.5;}
   .hr-ring{width:112px;height:112px;}
   .hr-ring::before{inset:11px;}
   .hr-ring::after,.hr-end::before{width:11px;height:11px;margin-left:-5.5px;}
@@ -5273,6 +5285,39 @@ function studyFrequency(){
   return { days:n, win:STUDY_FREQ_WINDOW, pct: Math.round(n / STUDY_FREQ_WINDOW * 100) };
 }
 
+// ── 히어로 문구 (PC 전용, 2026-08-22) ──────────────────────────────
+//   문구는 사용자가 정해 준 것이다(2026-08-22). 마음대로 보태거나 빼지 말 것.
+//   🔴 «영문 전용» — 한국어로 옮기지 않는다(사용자 지시). 로그인 게이트와 같은 방침이다.
+//   🔴 유명인의 말을 갖다 붙이지 않는다. 짧은 명언은 출처가 어긋난 것이 많아,
+//      잘못 붙이면 그 자체가 결함이 된다.
+var HERO_QUOTES = [
+  'Practice Makes Passing.',
+  'Confidence is built one question at a time.',
+  "Don't practice until you get it right. Practice until you can't get it wrong.",
+  'Turn your mistakes into your highest scores.',
+  'Every question is a step closer to passing.',
+  'Own the exam before you take it.',
+  'Master the exam, one question at a time.'
+];
+// 앱을 새로 열 때마다 다음 문구로 넘어간다. 화면을 다시 그려도(언어 토글 등) 그 판에서는
+// 같은 문구를 지킨다 — 글이 깜빡깜빡 바뀌면 읽던 사람이 놓친다.
+var _HERO_QUOTE = null;
+function heroQuoteHtml(){
+  if(_HERO_QUOTE === null){
+    var i = 0;
+    try{
+      i = (parseInt(localStorage.getItem('ea_quote_i') || '-1', 10) + 1) % HERO_QUOTES.length;
+      if(!isFinite(i) || i < 0) i = 0;
+      localStorage.setItem('ea_quote_i', i);
+    }catch(e){ i = 0; }
+    _HERO_QUOTE = HERO_QUOTES[i];
+  }
+  // 🔴 언어를 보지 않는다 — 문구는 «영문 전용»이다 (2026-08-22 사용자 지시).
+  //    로그인 게이트와 같은 방침. 한국어로 옮기지 않는다.
+  return '<div class="hero-quote"><span class="hq-mark"></span>' +
+         '<div class="hq-text">' + _HERO_QUOTE + '</div></div>';
+}
+
 // 링 한 칸을 그린다. under = 큰 숫자 «아래» 작은 글씨(회차·권장·창).
 //   target = 권장 눈금 위치(%) · back = 지난 회차를 뒤에 옅게 깔지 여부
 function heroRing(pct, color, under, lab, sub, target, back, aria){
@@ -6345,6 +6390,7 @@ function renderDashHero(focusPart){
                    t('hero_freq') + ' ' + heroFreqSub(freq)) +
         '</div>' +
         '<div class="dash-hero-act">' +
+          heroQuoteHtml() +
           '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
             '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>' +
             t('dash_continue').replace('{p}', focusPart) +
