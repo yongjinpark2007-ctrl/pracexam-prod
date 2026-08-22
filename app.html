@@ -1231,8 +1231,14 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   /* 좁은 화면에서 브랜드-언어토글 붙음 방지 (2026-07-18): 브랜드는 줄어들 수 있게 하고
      제목은 말줄임, 우측(토글+햄버거)은 고정 — 어떤 폭에서도 최소 8px 간격 보장 */
   .header{padding:env(safe-area-inset-top) .8rem 0;gap:8px;}
-  .header-brand{flex-shrink:1;min-width:0;gap:8px;}
+  /* 로고 워드마크와 태그라인의 «밑선»을 맞춘다 (2026-08-22 사용자 지적).
+     실측 = 태그라인 밑선이 워드마크보다 1.33px 위 · 사이 간격 8.7px.
+     밑선은 1.3px 내리고, 간격은 8 → 13px 로 넓혀 오른쪽으로 옮긴다. */
+  .header-brand{flex-shrink:1;min-width:0;gap:13px;}
   .header-brand>div{min-width:0;}
+  /* 1.3px = 사용자 화면 캡처에서 «실측»한 차이(기기픽셀 4 ÷ 3배). 헤드리스 크롬으로는
+     글꼴이 달라 반 픽셀까지 못 맞추므로, 기기에서 잰 값을 쓴다. */
+  .header-title{transform:translateY(1.3px);}
   .header-title{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .header-right{gap:6px;flex-shrink:0;}
   .lang-seg button{padding:5px 8px;font-size:11px;}
@@ -5264,9 +5270,13 @@ function studyFrequency(){
 //   target = 권장 눈금 위치(%) · back = 지난 회차를 뒤에 옅게 깔지 여부
 function heroRing(pct, color, under, lab, sub, target, back, aria){
   var p = Math.max(0, Math.min(100, pct || 0));
+  // 12시 시작점 표시는 «호가 없을 때만» 켠다 (2026-08-22 사용자 지적).
+  //   ::after 는 부모 배경(conic-gradient) «위에» 그려지므로, 호가 있는데도 켜 두면
+  //   6px 동그라미가 9px 띠에 얹혀 왼쪽으로 비어져 나와 시작점에 턱이 진다.
+  var dot = (p < 1.5) ? color : 'transparent';
   return '<div class="hr-cell">' +
     '<div class="hr-ring" role="img" aria-label="' + _escHtml(aria || (lab + ' ' + p + '%')) + '"' +
-      ' style="--dot:' + color + ';background:conic-gradient(' + color + ' 0 ' + p + '%,' +
+      ' style="--dot:' + dot + ';background:conic-gradient(' + color + ' 0 ' + p + '%,' +
       'var(--ring-track) ' + p + '% 100%);">' +
       (back ? '<span class="hr-back" style="background:' + color + ';"></span>' : '') +
       (typeof target === 'number'
