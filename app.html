@@ -1046,22 +1046,31 @@ html, body {
 .dash-hero-cta svg{width:17px;height:17px;fill:currentColor;stroke:none;}
 
 @media(min-width:721px){
-  .dash-hero-split{gap:30px;}
+  /* 오른쪽 칸(문구·버튼)을 «위»에 붙인다 — 가운데 정렬이면 링보다 아래로 처져 보인다
+     (2026-08-22 사용자 지시 "좀 더 위로"). */
+  .dash-hero-split{gap:30px;align-items:flex-start;}
   .dash-hero-split .dash-hero-rings{flex:none;width:auto;gap:18px;justify-content:flex-start;}
   /* 칸 너비를 붙박이로 — 아래 글씨 길이에 따라 칸이 늘면 Part 를 바꿀 때마다
      원이 옆으로 움직인다(2026-08-21 화면 확인). */
   .hr-cell{width:132px;}
-  .dash-hero-act{flex:1;min-width:200px;flex-direction:column;gap:16px;}
+  .dash-hero-act{flex:1;min-width:200px;flex-direction:column;align-items:center;
+    justify-content:flex-start;gap:14px;padding-top:4px;}
   .dash-hero-cta{width:86%;}
   .hero-quote{display:block;width:86%;text-align:center;}
-  /* 🔴 두 줄 자리를 붙박이로 — 문구 길이에 따라 카드 높이가 달라지면 로그인할 때마다
-     대시보드가 들썩인다(원·버튼 자리가 밀린다). */
+  /* 🔴 «두 줄» 자리를 붙박이로 — 문구 길이에 따라 카드 높이가 달라지면 로그인할 때마다
+     대시보드가 들썩인다(원·버튼 자리가 밀린다).
+     줄바꿈을 «|» 로 손수 정하므로 어떤 문구도 두 줄을 넘지 않는다 — 세 줄로 잡아 두었더니
+     문구·버튼이 아래로 처져 보였다(2026-08-22 사용자 지시 "좀 더 위로"). */
   .hq-text{font-size:15px;line-height:1.65;color:var(--text-mid);font-weight:600;
-    word-break:keep-all;overflow-wrap:normal;min-height:calc(15px * 1.65 * 3);
-    display:flex;align-items:center;justify-content:center;}
-  /* 인용 표시 = 금색 짧은 선. 따옴표 글리프는 작게 찍혀 티끌처럼 보였다 (2026-08-22). */
-  .hq-mark{display:block;width:26px;height:2px;margin:0 auto 10px;border-radius:2px;
-    background:var(--hero-gold);opacity:.5;}
+    font-style:italic;letter-spacing:.005em;
+    word-break:keep-all;overflow-wrap:normal;min-height:calc(15px * 1.65 * 2);
+    display:flex;align-items:center;justify-content:center;
+    /* 줄 나눌 자리는 문구 안의 «|» 로 «손수» 정한다(HERO_QUOTES 참조).
+       balance 는 그래도 접히는 경우(글꼴·폭이 달라질 때)를 위한 뒷받침이다. */
+    text-wrap:balance;}
+  .hq-text > span{display:block;max-width:34ch;}
+  /* 문구 위의 금색 줄은 뺐다 (2026-08-22 사용자 지시 — 「이상하다」).
+     따옴표 글리프도 앞서 뺐다(작게 찍혀 티끌처럼 보였다). 이탤릭만으로 인용으로 읽힌다. */
   .hr-ring{width:112px;height:112px;}
   .hr-ring::before{inset:11px;}
   .hr-ring::after,.hr-end::before{width:11px;height:11px;margin-left:-5.5px;}
@@ -5292,12 +5301,17 @@ function studyFrequency(){
 //      잘못 붙이면 그 자체가 결함이 된다.
 var HERO_QUOTES = [
   'Practice Makes Passing.',
-  'Confidence is built one question at a time.',
-  "Don't practice until you get it right. Practice until you can't get it wrong.",
-  'Turn your mistakes into your highest scores.',
-  'Every question is a step closer to passing.',
+  'Confidence is built|one question at a time.',
+  "Don't practice until you get it right.|Practice until you can't get it wrong.",
+  'Turn your mistakes|into your highest scores.',
+  'Every question is|a step closer to passing.',
   'Own the exam before you take it.',
-  'Master the exam, one question at a time.'
+  'Master the exam,|one question at a time.',
+  // 여기부터는 가볍게 웃기는 것 (2026-08-22 사용자 제공)
+  "The IRS already knows the answers.|Now it's your turn.",
+  'May the tax code|be ever in your favor.',
+  'Reading the IRC cures insomnia.|Practicing passes the exam.',
+  '10 out of 10 EAs recommend|pressing this button.'
 ];
 // 앱을 새로 열 때마다 다음 문구로 넘어간다. 화면을 다시 그려도(언어 토글 등) 그 판에서는
 // 같은 문구를 지킨다 — 글이 깜빡깜빡 바뀌면 읽던 사람이 놓친다.
@@ -5314,8 +5328,10 @@ function heroQuoteHtml(){
   }
   // 🔴 언어를 보지 않는다 — 문구는 «영문 전용»이다 (2026-08-22 사용자 지시).
   //    로그인 게이트와 같은 방침. 한국어로 옮기지 않는다.
-  return '<div class="hero-quote"><span class="hq-mark"></span>' +
-         '<div class="hq-text">' + _HERO_QUOTE + '</div></div>';
+  return '<div class="hero-quote">' +
+         '<div class="hq-text"><span>' +
+           _HERO_QUOTE.split('|').join('<br>') +   // «|» 가 줄 나눌 자리 (뜻이 끊기지 않는 곳)
+         '</span></div></div>';
 }
 
 // 링 한 칸을 그린다. under = 큰 숫자 «아래» 작은 글씨(회차·권장·창).
