@@ -4583,7 +4583,9 @@ var UI_TEXT = {
   hero_cycle:    {ko:'회차', en:'Cycle'},          // 국문 'N회차' / 영문 'Cycle N' — heroCycleLabel() 이 조립
   // 원 안 셋은 첫 글자를 대문자로 맞춘다 — Cycle 1 / Goal 85% (2026-08-21 사용자 지적)
   hero_goal:     {ko:'권장', en:'Goal'},           // '권장 85%' / 'Goal 85%'
-  hero_freq:     {ko:'공부 빈도', en:'Study days'},
+  // 영문은 한 낱말 — 'Study Consistency' 는 113px 로 휴대폰 칸(93px)을 넘겨 두 줄이 되고,
+  // 그 칸만 아래 글씨가 밀려 세 원의 줄이 어긋난다 (2026-08-22 실측).
+  hero_freq:     {ko:'공부 빈도', en:'Consistency'},
   hero_freq_win: {ko:'최근 14일', en:'14 days'},   // ⚠️ 영문을 길게 쓰면 휴대폰 원 안을 넘친다
   // ── Study Setup 화면 ──
   setup_title:    {ko:'학습 설정', en:'Study Setup'},
@@ -4643,7 +4645,11 @@ var UI_TEXT = {
   // 히어로 정답률 원 아래 «둘째 줄»로 나간다. 앞의 구분자 ' - ' 를 떼었다 —
   // 줄이 갈리면 「- 」가 줄머리에 남는다 (2026-08-21 사용자 지적).
   dash_incl_rep:  {ko:'반복 풀이 포함', en:'incl. repeats'},
-  dash_continue:  {ko:' 학습 계속하기', en:' — Continue'},
+  // 히어로 CTA — 국문은 Part 가 앞, 영문은 뒤라 «붙이는 순서»가 다르다. {p} 자리에 Part 이름이 들어간다.
+  // 🔴 영문에 Resume 를 쓰지 않는다 — 이 버튼은 이어하기가 아니라 «학습 설정 화면»으로 간다.
+  //    진짜 이어하기(진행 중 세션 복귀)는 초록 배지의 Resume study / Resume review 다.
+  //    같은 낱말이 두 가지를 뜻하게 된다(2026-08-22 사용자와 함께 확인).
+  dash_continue:  {ko:'{p} 학습 계속하기', en:'Study {p}'},
   dash_allparts:  {ko:'전체 Part · 클릭하여 학습 시작', en:'All Parts · tap to start'},
   dash_recent:    {ko:'최근 학습', en:'Recent'},
   dash_recent_empty_t: {ko:'아직 세션 없음', en:'No sessions yet'},
@@ -6322,7 +6328,7 @@ function renderDashHero(focusPart){
         '<div class="dash-hero-act">' +
           '<button class="dash-hero-cta" onclick="dashStartFocusPart(\'' + focusPart + '\')">' +
             '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>' +
-            (focusPart + t('dash_continue')) +
+            t('dash_continue').replace('{p}', focusPart) +
           '</button>' +
         '</div>' +
       '</div>' +
