@@ -2605,32 +2605,44 @@ function _dirLang(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.la
 //   목적: 이상탐지 표에서 «누가 War Room 을 쓰고 누가 안 쓰는지»를 한눈에.
 //        그전에는 열람 기록 자체가 없어 물어볼 수조차 없었다(2026-08-21 신설).
 //   미배포/오류 시 빈 맵 → 칼럼에 '—' 만 뜨고 앱 손상 없음 (디렉터리와 같은 패턴)
+// 🔴 2026-08-22 고침 — 처음 판에 결함 둘이 있었다(실제로 「썼는데 0으로 보인다」가 났다):
+//   ① 실패해도 빈 맵을 «성공»처럼 써서, 조회가 깨진 것과 「한 번도 안 씀」이 똑같이 0 으로 보였다.
+//      → 성공 여부를 따로 들고(_WR_USE_OK), 실패면 «—» 와 안내를 보여 준다.
+//   ② 실패한 약속(promise)을 계속 캐시해, 함수를 고친 «뒤»에도 새로고침 전까지 0 이 그대로 남았다.
+//      → 실패하면 캐시를 비워 다음 그리기에서 다시 시도한다.
 var _WR_USE = null;
+var _WR_USE_OK = false;      // 조회가 «성공»했는가 (빈 결과와 실패를 가른다)
+var _WR_USE_ERR = '';        // 실패 사유 (화면에 한 줄로 알린다)
 var _WR_USE_PROMISE = null;
 function loadWarRoomUse(){
   if(!_WR_USE_PROMISE){
     _WR_USE_PROMISE = (async function(){
-      _WR_USE = {};
+      var map = {}, ok = false, err = '';
       try{
         var res = await sb.rpc('admin_war_room_users');
         if(res.error) throw res.error;
         (res.data || []).forEach(function(u){
-          _WR_USE[u.user_id] = {
+          map[u.user_id] = {
             topics: Number(u.topics_viewed) || 0,
             views:  Number(u.total_views)   || 0,
             last:   u.last_viewed_at || ''
           };
         });
-      }catch(e){ /* 미배포/오류 → 빈 맵 유지 */ }
-      return _WR_USE;
+        ok = true;
+      }catch(e){
+        err = (e && (e.message || e.code)) || '알 수 없는 오류';
+        _WR_USE_PROMISE = null;   // 실패는 캐시하지 않는다 → 다음에 다시 시도
+      }
+      _WR_USE = map; _WR_USE_OK = ok; _WR_USE_ERR = err;
+      return map;
     })();
   }
   return _WR_USE_PROMISE;
 }
 function _wrUse(uid){ return (_WR_USE && _WR_USE[uid]) || null; }
-// 표의 한 칸 — 안 쓴 사람은 붉게 0 으로 보여 눈에 걸리게 한다
+// 표의 한 칸 — 안 쓴 사람은 붉게 0. 조회 자체가 안 됐으면 «—»(0 과 구별)
 function _wrCell(uid){
-  if(!_WR_USE) return '<span style="color:var(--text-muted);">—</span>';
+  if(!_WR_USE_OK) return '<span style="color:var(--text-muted);" title="'+_anomEsc(_WR_USE_ERR||'아직 조회 전')+'">—</span>';
   var u = _wrUse(uid);
   if(!u || !u.views) return '<span style="color:#dc2626;font-weight:700;">0</span>';
   return '<span style="font-weight:700;color:#3E837A;">'+u.topics+'</span>'+
@@ -2763,7 +2775,8 @@ async function renderAnomaly(){
   _ANOM_ROWS = rows;
 
   var flagged = rows.filter(function(r){ return r._score >= 30; }).length;
-  if(summary) summary.textContent = '감시 대상 ' + rows.length + '명 · 주의 이상 ' + flagged + '명';
+  if(summary) summary.textContent = '감시 대상 ' + rows.length + '명 · 주의 이상 ' + flagged + '명'
+    + (_WR_USE_OK ? '' : ' · ⚠️ War Room 조회 실패(' + (_WR_USE_ERR || '원인 미상') + ') — 그 칸은 «—»로 둡니다');
 
   if(!rows.length){
     body.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">이 기간에 활동한 사용자가 없습니다.</div>';
