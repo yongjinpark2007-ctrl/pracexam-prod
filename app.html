@@ -2612,6 +2612,7 @@ function _dirLang(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.la
 //      → 실패하면 캐시를 비워 다음 그리기에서 다시 시도한다.
 var _WR_USE = null;
 var _WR_USE_OK = false;      // 조회가 «성공»했는가 (빈 결과와 실패를 가른다)
+var _WR_USE_DONE = false;    // 조회를 «부르기라도» 했는가 (안 부른 것과 실패를 가른다)
 var _WR_USE_ERR = '';        // 실패 사유 (화면에 한 줄로 알린다)
 var _WR_USE_PROMISE = null;
 function loadWarRoomUse(){
@@ -2644,7 +2645,7 @@ function loadWarRoomUse(){
         try{ console.error('[WarRoom] admin_war_room_users 실패:', e); }catch(_){}
         _WR_USE_PROMISE = null;   // 실패는 캐시하지 않는다 → 다음에 다시 시도
       }
-      _WR_USE = map; _WR_USE_OK = ok; _WR_USE_ERR = err;
+      _WR_USE = map; _WR_USE_OK = ok; _WR_USE_ERR = err; _WR_USE_DONE = true;
       return map;
     })();
   }
@@ -2653,7 +2654,7 @@ function loadWarRoomUse(){
 function _wrUse(uid){ return (_WR_USE && _WR_USE[uid]) || null; }
 // 표의 한 칸 — 안 쓴 사람은 붉게 0. 조회 자체가 안 됐으면 «—»(0 과 구별)
 function _wrCell(uid){
-  if(!_WR_USE_OK) return '<span style="color:var(--text-muted);" title="'+_anomEsc(_WR_USE_ERR||'아직 조회 전')+'">—</span>';
+  if(!_WR_USE_OK) return '<span style="color:var(--text-muted);" title="'+_anomEsc(_WR_USE_ERR||(_WR_USE_DONE?'오류 내용이 비어 있음':'아직 조회 전(loadWarRoomUse 를 부르지 않았습니다)'))+'">—</span>';
   var u = _wrUse(uid);
   if(!u || !u.views) return '<span style="color:#dc2626;font-weight:700;">0</span>';
   return '<span style="font-weight:700;color:#3E837A;">'+u.topics+'</span>'+
@@ -2703,7 +2704,7 @@ async function renderMockActivity(){
     body.innerHTML='<div style="padding:1.25rem;color:#dc2626;">조회 실패: '+_anomEsc(msg||'오류')+'</div>'; return;
   }
   await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
-  await loadWarRoomUse();     // War Room 칼럼용 (미배포 시 '—') · 2026-08-21
+  // (War Room 칸은 이 표에 «없다» — 부르던 것을 학습 이상탐지 쪽으로 옮겼다 · 2026-08-21)
   var rows=(res.data||[]).map(function(r){ var risk=computeMockRisk(r); r._score=risk.score; r._reasons=risk.reasons; return r; });
   rows.sort(function(a,b){ return b._score-a._score || (b.total_attempts||0)-(a.total_attempts||0); });
   var flagged=rows.filter(function(r){ return r._score>=30; }).length;
@@ -2776,6 +2777,11 @@ async function renderAnomaly(){
   }
 
   await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
+  // 🔴 2026-08-21 — 이 줄이 «빠져 있었다». War Room 칸(_wrCell)을 그리는 것은 이 화면인데
+  //    부르는 곳은 엉뚱하게 모의고사 모니터였다(그 표엔 그 칸이 없다). 그래서 호출이 아예 안 되어
+  //    _WR_USE_OK 가 처음 값 false 인 채로 「조회 실패(원인 미상)」이 찍혔다 — 서버 오류가 아니었다.
+  //    「모의고사 모니터를 먼저 열면 되고 아니면 안 되는」 오락가락도 이것 때문이다.
+  await loadWarRoomUse();     // War Room 칼럼용 (미배포 시 '—')
 
   var rows = (res.data || []).map(function(r){
     var risk = computeAnomalyRisk(r);
@@ -2787,7 +2793,9 @@ async function renderAnomaly(){
 
   var flagged = rows.filter(function(r){ return r._score >= 30; }).length;
   if(summary) summary.textContent = '감시 대상 ' + rows.length + '명 · 주의 이상 ' + flagged + '명'
-    + (_WR_USE_OK ? '' : ' · ⚠️ War Room 조회 실패(' + (_WR_USE_ERR || '원인 미상') + ') — 그 칸은 «—»로 둡니다');
+    + (_WR_USE_OK ? '' : (_WR_USE_DONE
+        ? ' · ⚠️ War Room 조회 실패(' + (_WR_USE_ERR || '오류 내용이 비어 있음') + ') — 그 칸은 «—»로 둡니다'
+        : ' · ⚠️ War Room 조회를 «부르지 않았습니다»(화면 코드 결함) — 그 칸은 «—»로 둡니다'));
 
   if(!rows.length){
     body.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">이 기간에 활동한 사용자가 없습니다.</div>';
