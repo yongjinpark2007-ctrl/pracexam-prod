@@ -1061,8 +1061,10 @@ html, body {
      대시보드가 들썩인다(원·버튼 자리가 밀린다).
      줄바꿈을 «|» 로 손수 정하므로 어떤 문구도 두 줄을 넘지 않는다 — 세 줄로 잡아 두었더니
      문구·버튼이 아래로 처져 보였다(2026-08-22 사용자 지시 "좀 더 위로"). */
-  .hq-text{font-size:15px;line-height:1.65;color:var(--text-mid);font-weight:600;
-    font-style:italic;letter-spacing:.005em;
+  /* 문구는 «거들뿐» — 링 숫자·버튼보다 앞에 나서면 안 된다. 그래서 흐린 색(--text-muted)에
+     굵기도 낮춘다 (2026-08-22 사용자 지시 「조금 연하게, 눈에 거슬리지 않게」). */
+  .hq-text{font-size:15px;line-height:1.65;color:var(--text-muted);font-weight:500;
+    font-style:italic;letter-spacing:.005em;opacity:.9;
     word-break:keep-all;overflow-wrap:normal;min-height:calc(15px * 1.65 * 2);
     display:flex;align-items:center;justify-content:center;
     /* 줄 나눌 자리는 문구 안의 «|» 로 «손수» 정한다(HERO_QUOTES 참조).
