@@ -4589,9 +4589,12 @@ var UI_TEXT = {
   hero_cycle:    {ko:'회차', en:'Cycle'},          // 국문 'N회차' / 영문 'Cycle N' — heroCycleLabel() 이 조립
   // 원 안 셋은 첫 글자를 대문자로 맞춘다 — Cycle 1 / Goal 85% (2026-08-21 사용자 지적)
   hero_goal:     {ko:'권장', en:'Goal'},           // '권장 85%' / 'Goal 85%'
-  // 영문은 한 낱말 — 'Study Consistency' 는 113px 로 휴대폰 칸(93px)을 넘겨 두 줄이 되고,
-  // 그 칸만 아래 글씨가 밀려 세 원의 줄이 어긋난다 (2026-08-22 실측).
-  hero_freq:     {ko:'공부 빈도', en:'Consistency'},
+  // 🔴 영문 라벨은 «휴대폰 칸(93px) 안에 한 줄»로 들어가야 한다 — 'Study Consistency' 는
+  //    113px 라 두 줄이 되고, 그 칸만 아래 글씨가 밀려 세 원의 줄이 어긋난다 (2026-08-22 실측).
+  // 그리고 «무엇의 %인지»가 보여야 한다 — 'Consistency' 는 성격·평가로 읽혀 79% 가 무엇의
+  //    79% 인지 알 수 없었다(사용자 지적 2026-08-22). 아랫줄 '11 of 14 days' 와 맞물리게 둔다.
+  //    'Study Days' 는 두 낱말이지만 짧아 한 줄에 들어간다(360px 에서 화면으로 확인).
+  hero_freq:     {ko:'공부 빈도', en:'Study Days'},
   hero_freq_win: {ko:'최근 14일', en:'14 days'},   // ⚠️ 영문을 길게 쓰면 휴대폰 원 안을 넘친다
   // ── Study Setup 화면 ──
   setup_title:    {ko:'학습 설정', en:'Study Setup'},
