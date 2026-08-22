@@ -859,6 +859,16 @@ function apVal(v){
   if (v && typeof v === 'object') return JSON.stringify(v, null, 1);
   return String(v == null ? '' : v);
 }
+function apFieldName(f){
+  const M = { text:'지문', options:'보기', correct:'정답키',
+              explanation:'해설 (국문)', explanation_en:'해설 (영문)',
+              examtip:'시험 팁 (국문)', examtip_en:'시험 팁 (영문)',
+              taxupdate2025:'세법개정 메모 (2025)', wrongreasons:'오답 사유',
+              title_ko:'제목 (국문)', title_en:'제목 (영문)',
+              body_ko:'본문 (국문)', body_en:'본문 (영문)' };
+  return M[f] || f || '변경';
+}
+
 /* 문항 원문 카드 — 지문·보기(정답 표시)·해설. 변경 여부와 무관하게 항상 보여준다.
    (2026-08-01 사용자 피드백: "문제도 함께 보여주어야 검토가 가능합니다") */
 function apContext(cx){
@@ -878,6 +888,7 @@ function apContext(cx){
     ${exp('해설 (영문) 펼치기', cx.explanation_en)}
     ${exp('시험 팁 (국문) 펼치기', cx.examtip)}
     ${exp('시험 팁 (영문) 펼치기', cx.examtip_en)}
+    ${exp('세법개정 메모 (2025) 펼치기', cx.taxupdate2025)}
   </div>`;
 }
 
@@ -915,6 +926,8 @@ function apBalance(v){
 }
 function apDiff(c){
   const hasBefore = Object.prototype.hasOwnProperty.call(c, 'before');
+  /* 칸 이름을 우리말로. 2026-08-22 — taxupdate2025 가 제안서에 담기게 되면서 붙였다.
+     그 전에는 DB 열 이름이 그대로 떠서 무슨 칸인지 알기 어려웠다. */
   /* c.html === true 면 값이 HTML 조각이다(치트시트). 보이는 모습 + 코드를 함께 보여준다.
      코드 보기에는 원본 그대로를 쓴다 — 무엇을 치환할지 확인해야 하므로 균형화하면 안 된다. */
   const cell = (v) => c.html
@@ -922,7 +935,7 @@ function apDiff(c){
        <details class="ap-code"><summary>HTML 코드 보기</summary><pre>${esc(v)}</pre></details>`
     : `<pre>${esc(apVal(v))}</pre>`;
   return `<div class="ap-diff">
-    <div class="ap-h">${esc(c.field || '변경')}</div>
+    <div class="ap-h">${esc(apFieldName(c.field))}</div>
     <div class="ap-cols">
       ${hasBefore ? `<div class="ap-col ap-before"><div class="ap-col-h">기존</div>
         ${cell(c.before)}</div>` : ''}
