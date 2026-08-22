@@ -6935,19 +6935,22 @@ function domainOfCode(code, partKey){
 }
 function domainOfQ(q){ return domainOfCode(q.outlineCode, q.part); }
 
-// 지금 고른 Part 안에서, 큰 주제별로 «지금 조건에 맞는» 문제가 몇 개인지 센다.
-//   조건 = 범위(subset)·반복(repeatFilter)·모드(review) 까지 반영해야 숫자가 거짓말을 안 한다
-//   → getPool() 을 주제 필터만 끄고 한 번 돌려서 그 결과를 센다.
-function topicCounts(partKey){
-  var keep = S.domains;
-  S.domains = [];                 // 주제 필터를 잠시 끄고
-  var pool = getPool();
-  S.domains = keep;
-  var map = {};
-  pool.forEach(function(q){
-    if(q.part !== partKey) return;
-    var d = domainOfQ(q);
-    if(!d) return;                // outline_code 없는 문제는 주제로 못 묶는다
+// 큰 주제별 «토픽(COP) 수» — 2026-08-22 사용자 지시로 바뀐 자리.
+//   전에는 «우리가 가진 연습 문제 수»를 찍었는데, 그것은 우리 문항 DB의 속을 너무 자세히
+//   드러낸다(주제마다 몇 개를 보유했는지가 그대로 보인다). 그래서 없앴다.
+//   지금 보여 주는 둘은 «시험범위 자체»의 크기라 우리 보유량과 무관하다:
+//     ① 토픽 수  = 그 주제에 속한 COP(outline_code) 개수 — cop_reference 기준
+//     ② 출제 수  = 실제 시험 85문항 중 그 주제의 채점 문항 수 — EXAM_DOMAINS 의 q
+//   🔵 cop_reference 를 못 불러왔을 때는 «토픽 0개»를 찍지 않고 그 조각을 아예 뺀다
+//      — 0 은 「없다」가 아니라 「못 셌다」이기 때문이다.
+var _PART_CODE_PREFIX = { 'Part 1':'C1', 'Part 2':'C2', 'Part 3':'C3' };
+function domainTopicCounts(partKey){
+  var map = {}, pref = _PART_CODE_PREFIX[partKey];
+  if(!pref || !S.copRef) return map;
+  Object.keys(S.copRef).forEach(function(code){
+    if(code.slice(0, 2) !== pref) return;      // 다른 Part 의 COP 는 세지 않는다
+    var d = domainOfCode(code, partKey);
+    if(!d) return;                             // 구간에 안 잡히는 코드는 주제로 못 묶는다
     map[d] = (map[d] || 0) + 1;
   });
   return map;
@@ -6969,22 +6972,24 @@ function renderTopicPicker(){
   // 주제 고르기는 «무료 체험도» 쓸 수 있다 (2026-08-21 사용자 결정).
   //   문제 수 5개·반복 잠금은 그대로이므로 무료로 새는 양은 늘지 않고,
   //   처음 온 사람이 원하는 주제를 골라 볼 수 있어 첫인상이 낫다.
-  var counts = topicCounts(partKey);
+  var tcounts = domainTopicCounts(partKey);
   var list = EXAM_DOMAINS[partKey] || [];
   var chosen = S.domains || [];
 
   var rows = list.map(function(d){
-    var n = counts[d.name] || 0;
+    var nt = tcounts[d.name] || 0;                 // 그 주제의 토픽(COP) 수
+    var meta = nt
+      ? (LANG === 'en' ? (nt + (nt === 1 ? ' topic' : ' topics') + ' · ' + d.q + ' ' + t('topic_onexam'))
+                       : ('토픽 ' + nt + '개 · ' + t('topic_onexam') + ' ' + d.q + '문제'))
+      : (LANG === 'en' ? (d.q + ' ' + t('topic_onexam'))
+                       : (t('topic_onexam') + ' ' + d.q + '문제'));
     var on = chosen.indexOf(d.name) >= 0;
     return '<button type="button" class="topic-row' + (on ? ' selected' : '') + '"' +
            ' onclick="toggleTopic(this, \'' + d.name.replace(/'/g, "\\'") + '\')">' +
       '<span class="topic-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>' +
       '<span class="topic-txt">' +
         '<span class="topic-name">' + d.name + '</span>' +
-        '<span class="topic-meta">' +
-          (LANG === 'en' ? (uQuestions(n) + ' · ' + d.q + ' ' + t('topic_onexam'))
-                         : ('연습 ' + uQuestions(n) + ' · ' + t('topic_onexam') + ' ' + d.q + '문제')) +
-        '</span>' +
+        '<span class="topic-meta">' + meta + '</span>' +
       '</span>' +
     '</button>';
   }).join('');
