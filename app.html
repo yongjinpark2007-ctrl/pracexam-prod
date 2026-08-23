@@ -4638,10 +4638,16 @@ var UI_TEXT = {
   // 🔴 영문 라벨은 «휴대폰 칸(93px) 안에 한 줄»로 들어가야 한다 — 'Study Consistency' 는
   //    113px 라 두 줄이 되고, 그 칸만 아래 글씨가 밀려 세 원의 줄이 어긋난다 (2026-08-22 실측).
   // 그리고 «무엇의 %인지»가 보여야 한다 — 'Consistency' 는 성격·평가로 읽혀 79% 가 무엇의
-  //    79% 인지 알 수 없었다(사용자 지적 2026-08-22). 아랫줄 '11 of 14 days' 와 맞물리게 둔다.
+  //    79% 인지 알 수 없었다(사용자 지적 2026-08-22). 아랫줄 '9 / 14 days' 와 맞물리게 둔다.
   //    'Study Days' 는 두 낱말이지만 짧아 한 줄에 들어간다(360px 에서 화면으로 확인).
   hero_freq:     {ko:'공부 빈도', en:'Study Days'},
-  hero_freq_win: {ko:'최근 14일', en:'14 days'},   // ⚠️ 영문을 길게 쓰면 휴대폰 원 안을 넘친다
+  // 🔴 2026-08-23 — 큰 숫자가 % 에서 «횟수» 로 바뀌었다(사용자 결정).
+  //    영문 이 줄을 '14 days' 로 두면 한 칸 안에서 days 가 「9 days / 14 days / STUDY DAYS」
+  //    로 세 번 나온다. 그래서 'Last 14' — 이웃 두 원('Cycle 1'·'Goal 85%')과도 같은 꼴이다.
+  hero_freq_win: {ko:'최근 14일', en:'Last 14'},   // ⚠️ 영문을 길게 쓰면 휴대폰 원 안을 넘친다
+  // 큰 숫자 뒤 단위 — 국문 '9일' · 영문 '9 days'.
+  //   🔴 영문 앞의 &nbsp; 를 빼지 말 것. .hr-n i 에 여백이 없어 '9days' 로 붙는다.
+  hero_freq_unit:{ko:'일', en:'&nbsp;days'},
   // ── Study Setup 화면 ──
   setup_title:    {ko:'학습 설정', en:'Study Setup'},
   setup_subtitle: {ko:'문제 수, 범위, 반복 횟수, 학습 모드를 선택 후 시작하세요.', en:'Choose question count, scope, repeats, and mode, then start.'},
@@ -4803,6 +4809,7 @@ var UI_TEXT = {
 function uQ(n){ return LANG === 'en' ? (n + ' Q') : (n + '문제'); }
 function uQuestions(n){ return LANG === 'en' ? (n + ' questions') : (n + '문제'); }
 function uCorrect(n){ return LANG === 'en' ? (n + ' correct') : (n + ' 정답'); }
+function uDays(n){ return LANG === 'en' ? (n + ' days') : (n + '일'); }
 function uAttempts(n){ return LANG === 'en' ? (n + ' attempts') : (n + '회 학습'); }
 function t(key){
   var o = UI_TEXT[key];
@@ -5306,6 +5313,8 @@ function heroCycleStats(qs){
            pct: Math.round(done / total * 100), prevDone: cycle > 1 };
 }
 function heroCycleLabel(n){ return (LANG === 'en') ? ('Cycle ' + n) : (n + '회차'); }
+// 🔵 2026-08-23 부터 «화면에는 안 나온다» — 읽어 주는 글(aria-label) 전용이다.
+//    화면의 큰 숫자는 freq.days, 아랫줄은 '9 / 14일' 꼴로 따로 적는다(③번 원 주석 참고).
 function heroFreqSub(f){
   return (LANG === 'en') ? (f.days + ' of ' + f.win + ' days')
                          : (f.win + '일 중 ' + f.days + '일');
@@ -5378,7 +5387,10 @@ function heroQuoteHtml(){
 
 // 링 한 칸을 그린다. under = 큰 숫자 «아래» 작은 글씨(회차·권장·창).
 //   target = 권장 눈금 위치(%) · back = 지난 회차를 뒤에 옅게 깔지 여부
-function heroRing(pct, color, under, lab, sub, target, back, aria){
+//   big = {n:9, u:'일'} 을 주면 큰 숫자를 «그 값»으로 적는다(공부 빈도 = 횟수).
+//     안 주면 채운 비율을 % 로 적는다(진도·정답률).
+//     🔵 링이 «채워지는 양»은 어느 쪽이든 늘 pct 다 — 그림은 비율, 글자는 횟수.
+function heroRing(pct, color, under, lab, sub, target, back, aria, big){
   var p = Math.max(0, Math.min(100, pct || 0));
   // 마개는 «늘» 켠다 — 크기를 띠 굵기와 맞췄으므로 턱이 지지 않는다(2026-08-22).
   //   끝 마개는 호를 p×3.6도 돌린 자리에 둔다. 0% 면 시작 마개와 겹치므로 그리지 않는다.
@@ -5394,7 +5406,7 @@ function heroRing(pct, color, under, lab, sub, target, back, aria){
       (typeof target === 'number'
         ? '<span class="hr-tgt" style="transform:rotate(' + (target * 3.6) + 'deg);"></span>' : '') +
       '<div class="hr-ring-in">' +
-        '<span class="hr-n">' + p + '<i>%</i></span>' +
+        '<span class="hr-n">' + (big ? big.n : p) + '<i>' + (big ? big.u : '%') + '</i></span>' +
         '<span class="hr-b">' + under + '</span>' +
       '</div>' +
     '</div>' +
@@ -6442,10 +6454,20 @@ function renderDashHero(focusPart){
                    EXAM_READY_THRESHOLD, false,
                    t('dash_accuracy') + ' ' + accPct + '%') +
           // ③ 공부 빈도 — 최근 14일 중 며칠 (Part 를 가리지 않는다)
+          //   🔴 큰 숫자는 % 가 아니라 «횟수» 다 (2026-08-23 사용자 결정).
+          //      이 원만 분모(14일)가 «목표»가 아니다 — 14일 중 14일을 채우는 것이 목표인
+          //      사람은 없다. 그런데 목표형 % 인 옆 두 원과 나란히 두면 64% 가 「덜 채웠다」로
+          //      읽힌다. 게다가 하루가 7.1%p 라 눈금이 14칸뿐인데 64·71·79 처럼 정밀한 척하는
+          //      숫자가 나왔다.
+          //   🔴 아랫줄은 «비우지 않는다» — 비우면 이 칸만 한 줄이 없어 셋의 짜임이 어긋난다
+          //      (사용자 지적 2026-08-23). 이웃 두 원과 «같은 꼴»인 분수로 적는다:
+          //      184 / 500문제 · 151 / 184 정답 · 9 / 14일.
+          //      heroFreqSub() 는 이제 «읽어 주는 글(aria)» 에만 쓴다.
           heroRing(freq.pct, 'var(--ring-freq)', t('hero_freq_win'),
-                   t('hero_freq'), heroFreqSub(freq),
+                   t('hero_freq'), freq.days + ' / ' + uDays(freq.win),
                    null, false,
-                   t('hero_freq') + ' ' + heroFreqSub(freq)) +
+                   t('hero_freq') + ' ' + heroFreqSub(freq),
+                   { n: freq.days, u: t('hero_freq_unit') }) +
         '</div>' +
         '<div class="dash-hero-act">' +
           heroQuoteHtml() +
