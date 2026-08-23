@@ -7208,16 +7208,24 @@ async function ensureAnswerData(q){
 // ══════════════════════════════════════════════════════
 var TPIQ_TIER_QUOTA = { 1:3, 2:2, 3:2, 4:1 };   // 라운드당 COP가 뽑는 문제 수
 
-function tpiqCopMeta(code){
+function tpiqCopMeta(code, partKey){
   var ref = (S.copRef && code) ? S.copRef[code] : null;
   var tier = (ref && ref.tier >= 1 && ref.tier <= 4) ? ref.tier : 3;      // 기본 T3
   var weight = (ref && typeof ref.weight === 'number') ? ref.weight : 0;  // 기본 0
-  var topic = (ref && ref.topic) ? ref.topic : null;                      // 주제 그룹
-  return { tier: tier, weight: weight, topic: topic };
+  var topic = (ref && ref.topic) ? ref.topic : null;                      // COP 고유 이름(표시용)
+  // 🔴 큰 주제(도메인) — 2026-08-23 신설.
+  //   전에는 topic 으로 «직전과 같은 주제인가»를 판정했는데, topic 에 들어오는 값이
+  //   cop_reference 의 COP «고유 이름»이라 서로 절대 같아지지 않았다
+  //   (Part1 133개 COP → 서로 다른 이름 133개 · 같아지는 쌍 0건). 그 규칙은 한 번도
+  //   참이 된 적이 없었고, 도메인 단위 분산은 아무도 하지 않고 있었다.
+  //   실제로 묶어야 하는 단위는 도메인이므로 domainOfCode() 를 쓴다
+  //   (cop_reference.domain 이 있으면 그것, 없으면 EXAM_DOMAINS 구간표 폴백).
+  var domain = code ? domainOfCode(code, partKey) : null;
+  return { tier: tier, weight: weight, topic: topic, domain: domain };
 }
 
 function buildTPIQQueue(pool, count){
-  if(!pool || !pool.length) return [];
+  if(!pool || !pool.length) return { queue: [], copCount: 0 };   // 2026-08-23: 전엔 [] 를 돌려줘 호출부의 .queue 가 undefined 였다
   // 1) COP(outline_code)별 그룹화
   var groups = {};   // code -> { code, tier, weight, quota, items:[], cursor:0 }
   for(var i=0;i<pool.length;i++){
@@ -7225,10 +7233,10 @@ function buildTPIQQueue(pool, count){
     var raw = (q.outlineCode || '').toString().trim();
     var code = raw || '_UNMAPPED';
     if(!groups[code]){
-      var meta = tpiqCopMeta(raw);   // _UNMAPPED는 빈 코드로 조회 → 기본값
+      var meta = tpiqCopMeta(raw, q.part);   // _UNMAPPED는 빈 코드로 조회 → 기본값
       groups[code] = {
         code: code, tier: meta.tier, weight: meta.weight,
-        topic: meta.topic,
+        topic: meta.topic, domain: meta.domain,
         quota: (TPIQ_TIER_QUOTA[meta.tier] || 2), items: [], cursor: 0
       };
     }
@@ -7291,18 +7299,20 @@ function buildTPIQQueue(pool, count){
     var remaining = codes.slice();
     var out = [];
     var lastNum = null;
-    var lastTopic = null;
+    var lastDom = null;
     while(remaining.length){
       var pick = 0;
       if(lastNum !== null){
         var lim = Math.min(ZIG_W, remaining.length);
-        var bestT = -1;   // 1=직전과 다른 topic(우선), 0=같은 topic
+        var bestT = -1;   // 1=직전과 다른 도메인(우선), 0=같은 도메인
         var bestD = -1;
         for(var z=0; z<lim; z++){
           var gz = groups[remaining[z]];
-          var diffT = (lastTopic && gz.topic && gz.topic === lastTopic) ? 0 : 1;
+          // 2026-08-23: topic(=COP 고유 이름) → domain(=큰 주제). topic 은 COP 마다
+          //   달라 이 조건이 늘 1 이었다(사문화). 도메인으로 바꿔 실제로 작동시킨다.
+          var diffT = (lastDom && gz.domain && gz.domain === lastDom) ? 0 : 1;
           var dist = Math.abs(tpiqCopNum(remaining[z]) - lastNum);
-          // 1순위: topic이 다른 후보 / 2순위: 코드 숫자 거리 최대
+          // 1순위: 도메인이 다른 후보 / 2순위: 코드 숫자 거리 최대
           if(diffT > bestT || (diffT === bestT && dist > bestD)){
             bestT = diffT; bestD = dist; pick = z;
           }
@@ -7311,7 +7321,7 @@ function buildTPIQQueue(pool, count){
       var chosen = remaining.splice(pick, 1)[0];
       out.push(chosen);
       lastNum = tpiqCopNum(chosen);
-      lastTopic = groups[chosen].topic || null;
+      lastDom = groups[chosen].domain || null;
     }
     codes = out;
   })();
@@ -7340,38 +7350,72 @@ function buildTPIQQueue(pool, count){
     consumed[cc0] = copTimes[cc0] || 0;
     consTot += consumed[cc0];
   }
+  // 4a-0) 🔴 도메인 상한 — 2026-08-23 신설.
+  //   전에는 배분이 도메인을 아예 안 봐서 한 세션이 통째로 한 도메인에 몰릴 수 있었다
+  //   (실측: 5문항 세션의 24%가 한 도메인에서 3개 이상, Part1 20문항은 100%).
+  //   상한 = ceil(문항수 × 그 도메인의 시험 비중) + 1.
+  //   «비중»은 그대로 지키면서 «전부 한 도메인» 같은 극단만 자른다.
+  //   도메인이 하나뿐이면(주제 고르기로 좁힌 경우 등) 상한을 걸지 않는다.
+  var domW = {}, domCap = {}, domDrawn = {}, sumDomW = 0;
+  for(var dw=0; dw<codes.length; dw++){
+    var gdw = groups[codes[dw]];
+    var dk = gdw.domain || '_NODOM';
+    domW[dk] = (domW[dk] || 0) + baseW[gdw.code];
+    sumDomW += baseW[gdw.code];
+  }
+  if(sumDomW <= 0) sumDomW = 1;
+  var domKeys = Object.keys(domW);
+  for(var dk2=0; dk2<domKeys.length; dk2++){
+    domCap[domKeys[dk2]] = (domKeys.length <= 1)
+      ? count
+      : Math.max(1, Math.ceil(count * domW[domKeys[dk2]] / sumDomW) + 1);
+  }
   var alloc = {};        // code -> [questionId,...]
   var allocOrder = [];   // 배정된 COP의 지그재그 순서 (방출 시작 순서)
   var totalAlloc = 0;
   while(totalAlloc < count){
-    // 남은 용량이 있는 COP만 후보로, effW = baseW * (1 + deficit)
-    var effW = {}, sumEff = 0, hasCap = false;
-    for(var ci=0; ci<codes.length; ci++){
-      var cc = codes[ci];
-      var g0 = groups[cc];
-      if(g0.cursor + drawn[cc] >= g0.items.length) continue;  // 용량 소진
-      hasCap = true;
-      var expc = (consTot > 0) ? (consTot * baseW[cc] / sumBaseW) : 0;
-      var def = (expc > 0) ? Math.max(0, (expc - consumed[cc]) / expc) : 0;
-      var ew = baseW[cc] * (1 + def);
-      effW[cc] = ew; sumEff += ew;
+    // 후보를 세 겹으로 좁혀 뽑는다. 좁힌 겹에 후보가 없으면 한 겹씩 «푼다» —
+    //   문제 재고가 모자랄 때 세션이 미달되지 않도록 하기 위함이다.
+    //     겹0 = 아직 안 뽑힌 COP + 도메인 상한 안   ← 평소엔 여기서 다 끝난다
+    //     겹1 = 도메인 상한만 (같은 COP 두 번 허용)
+    //     겹2 = 용량만 (상한도 푼다)
+    var pick = null;
+    for(var stage=0; stage<3 && pick === null; stage++){
+      var effW = {}, sumEff = 0;
+      for(var ci=0; ci<codes.length; ci++){
+        var cc = codes[ci];
+        var g0 = groups[cc];
+        if(g0.cursor + drawn[cc] >= g0.items.length) continue;   // 용량 소진
+        if(stage < 1 && drawn[cc] > 0) continue;                 // ① 한 세션에 같은 COP 두 번 금지
+        if(stage < 2){                                           // ② 도메인 상한
+          var dkc = g0.domain || '_NODOM';
+          if((domDrawn[dkc] || 0) >= domCap[dkc]) continue;
+        }
+        var expc = (consTot > 0) ? (consTot * baseW[cc] / sumBaseW) : 0;
+        var def = (expc > 0) ? Math.max(0, (expc - consumed[cc]) / expc) : 0;
+        var ew = baseW[cc] * (1 + def);
+        effW[cc] = ew; sumEff += ew;
+      }
+      if(sumEff <= 0) continue;   // 이 겹엔 후보가 없다 → 한 겹 푼다
+      // effW 비례 추출
+      var r = Math.random() * sumEff;
+      for(var pj=0; pj<codes.length; pj++){
+        var pc = codes[pj];
+        if(effW[pc] === undefined) continue;
+        r -= effW[pc];
+        if(r <= 0){ pick = pc; break; }
+      }
+      if(pick === null){  // 부동소수 잔차 방어: 이 겹의 마지막 후보
+        for(var pk=0; pk<codes.length; pk++){ if(effW[codes[pk]] !== undefined) pick = codes[pk]; }
+      }
     }
-    if(!hasCap || sumEff <= 0) break;   // 더 뽑을 문제 없음 → 미달 허용
-    // effW 비례 복원추출
-    var r = Math.random() * sumEff, pick = null;
-    for(var pj=0; pj<codes.length; pj++){
-      var pc = codes[pj];
-      if(effW[pc] === undefined) continue;
-      r -= effW[pc];
-      if(r <= 0){ pick = pc; break; }
-    }
-    if(pick === null){  // 부동소수 잔차 방어: 용량 있는 마지막 후보
-      for(var pk=0; pk<codes.length; pk++){ if(effW[codes[pk]] !== undefined) pick = codes[pk]; }
-    }
+    if(pick === null) break;   // 더 뽑을 문제 없음 → 미달 허용
     var gp = groups[pick];
     if(!alloc[pick]){ alloc[pick] = []; allocOrder.push(pick); }
     alloc[pick].push(gp.items[gp.cursor + drawn[pick]].id);
     drawn[pick]++; consumed[pick]++; consTot++; totalAlloc++;
+    var dkp = gp.domain || '_NODOM';
+    domDrawn[dkp] = (domDrawn[dkp] || 0) + 1;
   }
   // allocOrder를 지그재그(codes) 순서로 정렬 — 방출 라운드로빈이 인접 없이
   //   퍼지도록 시작 순서를 보존
@@ -7400,16 +7444,24 @@ function buildTPIQQueue(pool, count){
   }
   var queue = [];
   var lastC = null;
+  var lastDomE = null;   // 2026-08-23: 직전 문제의 «큰 주제»
   var rrPos = 0;
   while(queue.length < totalAlloc){
-    var picked = null;
-    // 1차: 라운드로빈 순서로, 직전 COP 제외 + 완주 가능성 통과 후보
+    var picked = null, pickedIx = -1, altC = null, altIx = -1;
+    // 1차: 라운드로빈 순서로, 직전 COP 제외 + 완주 가능성 통과 후보.
+    //   🔴 그중 «직전과 다른 도메인»을 먼저 고른다 (2026-08-23). 같은 도메인밖에
+    //   없으면 altC 로 물러선다 — 방출을 막지는 않으므로 세션 길이는 그대로다.
     for(var st=0; st<allocOrder.length; st++){
       var ix = (rrPos + st) % allocOrder.length;
       var cc2 = allocOrder[ix];
       if(!remCnt[cc2] || cc2 === lastC) continue;
-      if(tpiqFeasibleAfter(cc2)){ picked = cc2; rrPos = (ix + 1) % allocOrder.length; break; }
+      if(!tpiqFeasibleAfter(cc2)) continue;
+      var d2 = groups[cc2].domain || '_NODOM';
+      if(lastDomE === null || d2 !== lastDomE){ picked = cc2; pickedIx = ix; break; }
+      if(altC === null){ altC = cc2; altIx = ix; }
     }
+    if(picked === null && altC !== null){ picked = altC; pickedIx = altIx; }
+    if(picked !== null) rrPos = (pickedIx + 1) % allocOrder.length;
     // 2차(폴백): 직전 제외 최다 잔여 COP → 그것도 없으면 직전 COP(불가피)
     if(!picked){
       var bestN = -1;
@@ -7424,6 +7476,7 @@ function buildTPIQQueue(pool, count){
     queue.push(alloc[picked].shift());
     remCnt[picked]--;
     lastC = picked;
+    lastDomE = groups[picked].domain || '_NODOM';
   }
   return { queue: queue, copCount: codes.length };
 }
