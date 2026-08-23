@@ -4336,6 +4336,20 @@ async function loadFromCloud(){
       S.results = liveCloud.results || {correct:0, wrong:0, total:S.quizQueue.length};
       S.reviewMode = liveCloud.review_mode || false;
       S.sessionAnswers = liveCloud.session_answers || new Array(S.quizQueue.length).fill(null);
+      try{ localStorage.setItem(LIVE_SYNC_KEY, '1'); }catch(e){}
+    } else if(S.quizQueue && S.quizQueue.length > 0 && !_liveNotSynced()){
+      // 2026-08-22: 클라우드에 진행 중 세션이 «없는데» 로컬에만 남아 있는 경우.
+      // 이 로컬 세션은 클라우드에 올라가 있던 것이므로(LIVE_SYNC_KEY 가 '0' 이 아니다),
+      // 클라우드에서 사라졌다는 것은 «다른 기기에서 마쳤다»는 뜻이다 → 로컬도 비운다.
+      // (안 비우면 PC에서 「학습 재개」가 새로고침해도 계속 뜨고,
+      //  재개를 누르면 이미 끝난 세션이 클라우드로 되살아난다.)
+      console.log('[Live] 다른 기기에서 끝난 세션 — 로컬 진행 중 세션 정리 (' + S.quizQueue.length + '문항)');
+      S.quizQueue = []; S.quizIdx = 0;
+      S.results = {correct:0, wrong:0, total:0};
+      S.reviewMode = false;
+      S.sessionAnswers = [];
+      try{ localStorage.removeItem(LIVE_SYNC_KEY); }catch(e){}
+      save();
     }
 
     // 관리자: 본문/해설은 백그라운드로 채움 (필요 시 ensure*/prefetch* 가 완료 대기)
@@ -4912,10 +4926,25 @@ function save(){
 }
 
 // ── 진행 중 세션 → 클라우드 (debounced) ──
+// 이 기기의 진행 중 세션이 클라우드에 «올라갔는지» 표시 (2026-08-22).
+//   '0' = 바뀐 뒤 아직 못 올림(오프라인 등) · '1' = 올림 완료 · 없음 = 옛 판(올린 것으로 본다)
+// 부팅 때 클라우드가 비어 있으면 로컬 세션을 지우는데, '0' 일 때만 살려 둔다.
+// 기본을 «올린 것»으로 두어야 이 표시가 생기기 전부터 남아 있던 세션도 정리된다.
+const LIVE_SYNC_KEY = 'ea_live_synced';
+function _liveNotSynced(){
+  try{ return localStorage.getItem(LIVE_SYNC_KEY) === '0'; }catch(e){ return false; }
+}
 let _liveSaveTimer = null;
 function saveLiveSessionToCloud(){
   if(!SB_USER) return;
   clearTimeout(_liveSaveTimer);
+  // 올리기 «전»에 못 올린 상태로 표시한다 — 여기서 브라우저가 닫히거나 오프라인이면
+  // 이 표시가 남아, 다음 부팅 때 로컬 세션을 지우지 않는다.
+  try{
+    if(!S.adminQcMode && S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length){
+      localStorage.setItem(LIVE_SYNC_KEY, '0');
+    }
+  }catch(e){}
   _liveSaveTimer = setTimeout(async ()=>{
     try{
       if(!S.adminQcMode && S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length){
@@ -4929,8 +4958,10 @@ function saveLiveSessionToCloud(){
           session_answers: S.sessionAnswers || [],
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' });
+        try{ localStorage.setItem(LIVE_SYNC_KEY, '1'); }catch(e){}
       } else {
         await sb.from('live_session').delete().eq('user_id', SB_USER.id);
+        try{ localStorage.removeItem(LIVE_SYNC_KEY); }catch(e){}
       }
     }catch(e){ console.warn('live session sync failed:', e); }
   }, 1500);
