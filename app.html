@@ -4086,7 +4086,7 @@ async function fetchQuestionMetaRows(){
       // 관리자 raw 경로도 mock 제외 (2026-07-18): mock이 S.questions에 섞이면 연습(TPIQ) 큐 오염.
       // mock QC는 모의고사 화면에서. (questions_meta 뷰엔 pool 컬럼이 없어 관리자 분기에만 적용)
       var q = S.isAdminUser
-        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock').eq('exam','ea')
+        ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock').eq('exam','ea').eq('is_active', true)
         : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
       // EA만 로드 — RE 등 타시험 차단 (2026-07-22). 비관리자 경로는 questions_meta 뷰가 exam='ea'로 필터(Jay).
       return q.order('created_at', { ascending: true });
@@ -4188,6 +4188,7 @@ async function adminBackfillContent(){
         .select('*')
         .neq('pool','mock')   // 백필도 mock 제외 (2026-07-18) — S.questions와 정합 + 대역폭 절약
         .eq('exam','ea')      // EA만 백필 — RE 등 타시험 차단 (2026-07-22)
+        .eq('is_active', true)   // 내린 문항 제외 (2026-08-22) — 메타 로드와 같은 잣대
         .order('created_at', { ascending: true })
         .range(offset, offset + CLOUD_PAGE_SIZE - 1);
       if (error) throw error;
