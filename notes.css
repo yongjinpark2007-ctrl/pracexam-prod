@@ -1,0 +1,310 @@
+/* 🔴 손으로 고치지 말 것 — `node build_site.js` 가 index.html + notes_common.js 에서 만듭니다. */
+:root{/* Harbor 팔레트 (2026-06-19) — 354649 / 6C7A89 / A3C6C4 / E0E7E9 */
+  --page-bg:     #E0E7E9;
+  --card-bg:     #ffffff;
+  --white:       #ffffff;
+  --border-clr:  rgba(53,70,73,.12);
+  --border-strong: rgba(53,70,73,.22);
+  --text-main:   #232e30;
+  --text-mid:    #4b5759;
+  --text-muted:  #4E5C66;   /* 어둡게 조정 — 페일미스트 배경 위 WCAG AA(4.5:1) 충족 */
+  --navy:        #354649;
+  --navy-mid:    #4d6164;
+  --navy-light:  #d9ebe9;
+  --accent:      #6FA39E;   /* Seafoam — 앱 액센트와 통일 (2026-07-05) */
+  --accent-tint: #EDF4F3;   /* Seafoam tint — Tip 콜아웃 배경 */
+  --accent-border: #C9DEDB; /* Seafoam light — Tip 콜아웃 보더 */
+  --success-color:#16a34a;
+  --danger-color:#dc2626;
+  --flag-color:  #d97706;
+  --terracotta:  #DD8F75;   /* Terracotta — 포인트 전용: Exam Tip 콜아웃 */
+  --terracotta-tint:   #FBF1EC; /* Terracotta tint — Tip 콜아웃 배경 (원래 색) */
+  --terracotta-border: #EFD0C1; /* Terracotta light — Tip 콜아웃 보더 */
+  --terracotta-deep:   #b85f3f; /* Terracotta deep — Tip 라벨 텍스트 */
+  --muted-gold:    #C6A15B;  /* Gold — 앱 골드(#C6A15B)와 동일 */
+  --font-serif:  'Poppins', 'Pretendard Variable', -apple-system, sans-serif;
+  --font-display:'DM Serif Display', Georgia, serif;
+  --font-sans:   'Inter', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius:      14px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth;}
+body{font-family:var(--font-sans);
+  background:var(--page-bg);
+  color:var(--text-main);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  /* CJK(한국어) 어절 단위 줄바꿈 — 조사가 앞말과 함께 개행 */
+  word-break:keep-all;
+  overflow-wrap:break-word;}
+img,svg{display:block;}
+a{color:inherit;}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+.eyebrow{font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--navy-mid);}
+.nav{position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.85); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-clr);}
+.nav-inner{max-width:1120px; margin:0 auto; padding:14px 24px;
+  display:flex; align-items:center; justify-content:space-between; gap:20px;}
+.logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:19px; color:var(--navy); text-decoration:none; flex:0 0 auto;}
+.nav-right{display:flex; align-items:center; gap:20px; flex:0 1 auto; min-width:0;}
+.nav-menu{display:contents;}
+.nav-links{display:flex; align-items:center; gap:28px; font-size:14px; font-weight:600; color:var(--text-mid);}
+.nav-links a{text-decoration:none;}
+.nav-links a:hover{color:var(--navy);}
+.nav-actions{display:flex; align-items:center; gap:10px;}
+.nav-toggle{display:none; flex:0 0 auto; align-items:center; justify-content:center;
+  width:38px; height:38px; border-radius:9px; border:none; background:none; cursor:pointer;
+  -webkit-appearance:none; appearance:none; -webkit-tap-highlight-color:transparent;}
+.nav-toggle:hover{background:var(--navy-light);}
+.nav-toggle svg{width:22px; height:22px; stroke:var(--navy); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round;}
+.nav-toggle .icon-close{display:none;}
+.nav-toggle.open .icon-bars{display:none;}
+.nav-toggle.open .icon-close{display:block;}
+@media (max-width:860px){
+.nav-right{gap:10px;}
+.nav-toggle{display:flex;}
+.nav-menu{display:none; flex-direction:column; align-items:stretch; gap:0;
+    position:absolute; top:100%; left:0; right:0;
+    background:var(--white); border-bottom:1px solid var(--border-clr);
+    padding:4px 24px 20px; box-shadow:0 16px 30px -14px rgba(53,70,73,.25);
+    max-height:calc(100vh - 60px); overflow-y:auto;}
+.nav-menu.open{display:flex;}
+.nav-links{flex-direction:column; align-items:stretch; gap:0; width:100%;}
+.nav-links a{display:block; padding:13px 2px; border-bottom:1px solid var(--border-clr);}
+.nav-actions{flex-direction:column; align-items:stretch; gap:10px; width:100%; padding-top:14px;}
+.nav-actions .btn{width:100%; padding:13px 18px; font-size:14px;}
+}
+.btn{-webkit-appearance:none; -moz-appearance:none; appearance:none;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:9px; border:1.5px solid transparent; cursor:pointer;
+  font-family:var(--font-sans); font-weight:600; font-size:14px; line-height:1.2;
+  padding:9px 18px; text-decoration:none; transition:transform .12s, box-shadow .12s, background .15s;
+  white-space:nowrap; box-sizing:border-box; vertical-align:middle;
+  -webkit-tap-highlight-color:transparent;}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--navy); color:var(--white);}
+.btn-primary:hover{background:var(--navy-mid); box-shadow:0 6px 18px rgba(53,70,73,.25);}
+.btn-ghost{background:transparent; color:var(--navy); border-color:var(--border-strong);}
+.btn-ghost:hover{background:var(--navy-light); border-color:var(--navy-light);}
+.btn-accent{background:var(--accent); color:#fff; border-color:var(--accent);}
+.btn-accent:hover{background:#5D8F8A; border-color:#5D8F8A;}
+.btn-lg{padding:12px 24px; font-size:15px; border-radius:10px;}
+.btn-sm{padding:6px 12px; font-size:12px; border-radius:8px;}
+.lang-toggle{display:flex; border:1.5px solid var(--border-strong); border-radius:8px; overflow:hidden;
+  flex:0 0 auto;}
+.lang-toggle button{font-family:var(--font-sans); font-weight:700; font-size:12px; letter-spacing:.05em;
+  padding:6px 11px; border:none; background:var(--white); color:var(--text-muted); cursor:pointer;}
+.lang-toggle button.active{background:var(--navy); color:var(--white);}
+.btn.needs-agree{opacity:.55;}
+
+/* ═══ Exam Notes 전용 — index.html 토큰만 쓴다 ═══ */
+.na-wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.na-bar{border-bottom:1px solid var(--border-clr);background:var(--card-bg)}
+.na-bar .na-wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:13px;padding-bottom:13px}
+.na-back{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--navy-mid);text-decoration:none}
+.na-share{display:flex;gap:8px}
+.na-share span{font-size:11.5px;font-weight:700;color:var(--text-muted);border:1px solid var(--border-clr);
+  border-radius:999px;padding:5px 12px;background:var(--page-bg)}
+
+/* 본문은 «읽기 폭» 을 따로 둔다 — 그림·표만 넓게 나간다 */
+.na-col{max-width:720px;margin:0 auto}
+.na-head{padding:44px 0 0}
+.na-h1{font-family:var(--font-display);font-size:clamp(30px,4.4vw,45px);line-height:1.14;
+  color:var(--navy);letter-spacing:-.01em;margin:10px 0 14px}
+.na-dek{font-size:18px;line-height:1.6;color:var(--text-mid);margin:0 0 22px}
+.na-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--text-muted);
+  border-top:1px solid var(--border-clr);border-bottom:1px solid var(--border-clr);padding:13px 0;margin-bottom:34px}
+.na-meta b{color:var(--text-mid);font-weight:700}
+.na-dot{opacity:.45}
+
+figure.na-fig{margin:34px 0}
+figure.na-fig img{width:100%;height:auto;display:block;border-radius:var(--radius);border:1px solid var(--border-clr)}
+figure.na-fig figcaption{font-size:12.5px;line-height:1.55;color:var(--text-muted);margin-top:10px;
+  padding-left:12px;border-left:2px solid var(--accent-border)}
+.na-fig.wide{max-width:1000px;margin-left:auto;margin-right:auto}
+.na-fig.half{max-width:330px;float:right;margin:8px 0 20px 26px}
+/* 세로 4:5 카드 그림 — 어두운 바탕이라 테두리를 안 준다 */
+/* 카드 그림 넷은 원본이 모두 1080×1350 이다 — 보이는 폭도 반드시 같게 둔다.
+   560px 로 줄였더니 15위 카드만 글씨가 안 읽혀 그것만 넓혔는데,
+   크기가 들쭉날쭉해 보였다(2026-08-23 지적). 넷 다 700px 로 맞춘다. */
+.na-fig.card{max-width:700px;margin-left:auto;margin-right:auto}
+.na-fig.card img{border:0;border-radius:14px;box-shadow:0 3px 18px rgba(31,42,44,.16)}
+
+.na-col p{font-size:17px;line-height:1.78;color:var(--text-main);margin:0 0 20px}
+.na-col p.lead{font-size:19px;line-height:1.7;color:var(--text-mid)}
+.na-col h2{font-family:var(--font-serif);font-size:25px;line-height:1.32;color:var(--navy);
+  margin:42px 0 14px;letter-spacing:-.005em;clear:both}
+.na-col h3{font-family:var(--font-sans);font-weight:800;font-size:16.5px;color:var(--navy-mid);margin:28px 0 9px}
+.na-col ul{margin:0 0 20px;padding-left:22px}
+.na-col li{font-size:17px;line-height:1.7;color:var(--text-main);margin-bottom:9px}
+
+blockquote.na-quote{margin:30px 0;padding:4px 0 4px 24px;border-left:3px solid var(--muted-gold);clear:both}
+blockquote.na-quote p{font-family:var(--font-serif);font-size:22px;line-height:1.5;color:var(--navy);margin:0}
+
+/* 표 — 칸마다 좌우 여백을 넉넉히. 여백이 없으면 답답하다 (2026-08-23 지적).
+   글자가 테두리에 붙지 않도록 바깥은 카드로 감싼다. */
+.na-scroll{overflow-x:auto;clear:both;margin:12px 0 30px;background:var(--card-bg);
+  border:1px solid var(--border-clr);border-radius:var(--radius)}
+table.na-tbl{width:100%;border-collapse:collapse;font-size:15px}
+table.na-tbl th{text-align:left;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text-muted);border-bottom:1.5px solid var(--border-strong);padding:15px 20px 12px;
+  white-space:nowrap}
+table.na-tbl td{padding:15px 20px;border-bottom:1px solid var(--border-clr);
+  color:var(--text-main);line-height:1.55;vertical-align:middle}
+table.na-tbl tr:last-child td{border-bottom:0}
+table.na-tbl th:first-child,table.na-tbl td:first-child{padding-left:24px}
+table.na-tbl th:last-child,table.na-tbl td:last-child{padding-right:24px}
+table.na-tbl th.num,table.na-tbl td.num{text-align:right;white-space:nowrap}
+table.na-tbl td.num{font-variant-numeric:tabular-nums;color:var(--text-mid)}
+table.na-tbl td b{color:var(--navy)}
+table.na-tbl tr.hi td{background:var(--accent-tint)}
+
+/* 제품으로 잇는 상자 */
+.na-try{border:1.5px solid var(--accent-border);background:var(--accent-tint);border-radius:16px;
+  padding:20px 22px;margin:34px 0;clear:both}
+.na-try .eyebrow{color:#3f7671}
+.na-try h4{font-family:var(--font-serif);font-size:19px;color:var(--navy);margin:9px 0 8px}
+.na-try p{font-size:15.5px;line-height:1.65;color:var(--text-mid);margin:0 0 12px}
+.na-try p:last-child{margin-bottom:0}
+.na-try .path{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:13px;font-weight:700;
+  color:var(--navy-mid);background:var(--card-bg);border:1px solid var(--accent-border);
+  border-radius:999px;padding:7px 14px}
+.na-try .path i{font-style:normal;opacity:.5}
+
+/* 어떻게 만들었나 — 회색 상자 */
+.na-note{background:var(--navy-light);border-radius:var(--radius);padding:20px 22px;margin:34px 0;clear:both}
+.na-note h4{font-family:var(--font-sans);font-weight:800;font-size:14px;color:var(--navy);margin:0 0 9px;
+  letter-spacing:.02em}
+.na-note p{font-size:14.5px;line-height:1.7;color:var(--text-mid);margin:0 0 11px}
+.na-note p:last-child{margin-bottom:0}
+
+/* 출처 한 줄 — 상자로 만들지 않는다. 끝이 상자로 겹겹이 쌓이면 지저분해진다 (2026-08-23 지적) */
+.na-src{margin:38px 0 0;padding-top:16px;border-top:1px solid var(--border-clr);clear:both}
+.na-src p{font-size:13.5px;line-height:1.7;color:var(--text-muted);margin:0}
+.na-src b{color:var(--text-mid);font-weight:700}
+
+.na-tags{display:flex;gap:8px;flex-wrap:wrap;margin:38px 0 0;clear:both}
+.na-tags a{font-size:12px;font-weight:700;color:var(--navy-mid);background:var(--navy-light);
+  border-radius:999px;padding:6px 13px;text-decoration:none}
+
+.na-cta{margin:44px auto 0;max-width:1000px;background:var(--navy);border-radius:var(--radius);padding:28px;
+  display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.na-cta h3{font-family:var(--font-display);font-size:24px;color:#fff;margin:0 0 6px;letter-spacing:0}
+.na-cta p{margin:0;font-size:14px;color:#cfdcdd;max-width:46ch;line-height:1.55}
+.na-cta .btn{background:var(--muted-gold);border-color:var(--muted-gold);color:#2b2412}
+
+/* 🔴 「Part 2·Part 3 다음」 예고 갈래(.na-next)는 뺐다 — 그 문구는 «소셜용» 이라
+   사이트 글에는 안 맞는다고 반려됐다(2026-08-23). 다시 넣지 말 것. */
+
+.na-more{max-width:1000px;margin:52px auto 0}
+.na-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);margin-bottom:22px;flex-wrap:wrap}
+.na-sechead h2{font-family:var(--font-serif);font-size:20px;margin:0;color:var(--navy)}
+.na-sechead a{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none}
+.na-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.na-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;text-decoration:none}
+.na-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.na-cbody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+.na-ctitle{font-family:var(--font-serif);font-weight:700;font-size:15.5px;line-height:1.4;color:var(--text-main)}
+.na-cdek{font-size:13px;line-height:1.55;color:var(--text-mid);flex:1}
+.na-cdate{font-size:11.5px;color:var(--text-muted);font-weight:600}
+
+/* 목록 화면 「나」안 — build_list.js 에서 옮겨 왔다 (2026-08-23).
+   🔴 여기 두는 까닭 = notes.css 는 이 파일에서만 만들어진다. 저쪽에 남겨 두면
+   배포된 목록 화면이 «맨몸»으로 나온다. 실제로 그럴 뻔했고 검사가 잡았다. */
+/* ═══ Exam Notes 목록 «나»안 — 최신 하나 크게 + 나머지 줄 목록 ═══ */
+.nl-hero{padding:44px 0 8px}
+.nl-h1{font-family:var(--font-display);font-size:clamp(29px,4.2vw,42px);line-height:1.14;
+  color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px}
+.nl-lede{font-size:16.5px;line-height:1.62;color:var(--text-mid);max-width:58ch;margin:0}
+
+/* 최신 글 — 그림 왼쪽, 글 오른쪽. 글이 «하나뿐일 때도» 화면이 찬다. */
+.nl-lead{display:grid;grid-template-columns:296px 1fr;gap:30px;align-items:center;
+  background:var(--card-bg);border:1px solid var(--border-clr);border-radius:var(--radius);
+  padding:26px;margin:30px 0 0;text-decoration:none;
+  box-shadow:0 2px 14px rgba(53,70,73,.06)}
+.nl-lead img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;display:block;
+  box-shadow:0 3px 14px rgba(31,42,44,.18)}
+.nl-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:#3f7671;background:var(--accent-tint);
+  border:1px solid var(--accent-border);border-radius:999px;padding:4px 11px}
+.nl-leadtitle{font-family:var(--font-serif);font-weight:700;font-size:26px;line-height:1.3;
+  color:var(--navy);margin:14px 0 11px}
+.nl-leaddek{font-size:15.5px;line-height:1.68;color:var(--text-mid);margin:0 0 15px;max-width:52ch}
+.nl-when{font-size:12.5px;color:var(--text-muted);font-weight:600}
+.nl-when i{font-style:normal;opacity:.45;margin:0 7px}
+
+/* 그다음부터 — 한 줄에 하나씩. 2개든 20개든 «모양이 스스로 는다». */
+.nl-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  margin:46px 0 0;padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);flex-wrap:wrap}
+.nl-sechead h2{font-family:var(--font-serif);font-size:19px;margin:0;color:var(--navy)}
+.nl-count{font-size:12.5px;color:var(--text-muted);font-weight:600}
+.nl-row{display:grid;grid-template-columns:104px 1fr;gap:22px;align-items:center;
+  padding:22px 0;border-bottom:1px solid var(--border-clr);text-decoration:none}
+.nl-row:last-child{border-bottom:0}
+.nl-row img{width:104px;aspect-ratio:4/5;object-fit:cover;border-radius:9px;display:block}
+.nl-rowtitle{font-family:var(--font-serif);font-weight:700;font-size:17.5px;line-height:1.42;
+  color:var(--text-main);margin:7px 0 6px}
+.nl-rowdek{font-size:14.5px;line-height:1.6;color:var(--text-mid);margin:0 0 9px;max-width:62ch}
+
+/* 글이 하나뿐일 때 — 격자였다면 빈 칸 둘이 「아직 없음」을 광고한다. 여기서는 한 줄로 적는다. */
+.nl-solo{margin:34px 0 0;padding:18px 20px;border:1px dashed var(--border-strong);
+  border-radius:var(--radius);background:var(--card-bg);font-size:14.5px;line-height:1.65;
+  color:var(--text-mid)}
+.nl-solo b{color:var(--navy)}
+
+.nl-cta{margin:46px auto 0;background:var(--navy);border-radius:var(--radius);padding:28px;
+  display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.nl-cta h3{font-family:var(--font-display);font-size:24px;color:#fff;margin:0 0 6px;letter-spacing:0}
+.nl-cta p{margin:0;font-size:14px;color:#cfdcdd;max-width:46ch;line-height:1.55}
+.nl-cta .btn{background:var(--muted-gold);border-color:var(--muted-gold);color:#2b2412}
+
+@media(max-width:760px){
+  .nl-lead{grid-template-columns:1fr;gap:20px;padding:20px}
+  .nl-lead img{max-width:260px;margin:0 auto}
+  .nl-leadtitle{font-size:22px}
+  .nl-row{grid-template-columns:82px 1fr;gap:16px;padding:18px 0}
+  .nl-row img{width:82px}
+  .nl-rowtitle{font-size:16px}
+  .nl-rowdek{font-size:13.5px}
+  .nl-cta{padding:22px}
+}
+
+@media(max-width:900px){.na-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+@media(max-width:620px){
+  .na-wrap{padding:0 18px}
+  .na-head{padding-top:26px}
+  .na-fig.half{float:none;max-width:100%;margin:26px 0}
+  .na-col p,.na-col li{font-size:16.5px}
+  .na-col p.lead{font-size:17.5px}
+  .na-col h2{font-size:22px;margin-top:34px}
+  blockquote.na-quote p{font-size:19px}
+  .na-grid{grid-template-columns:1fr;gap:14px}
+  .na-cta{padding:22px}
+  .na-bar .na-wrap{padding-top:11px;padding-bottom:11px}
+  .na-share{display:none}
+  /* 찍어 보고 잡은 것 — 줄이 넘어가면 가운뎃점이 «다음 줄 첫 글자»로 떨어진다 */
+  .na-dot{display:none}
+  .na-meta{gap:5px 14px}
+}
+
+.lang-toggle a{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:.05em;padding:6px 11px;background:var(--white);color:var(--text-muted);text-decoration:none;display:inline-block}
+.lang-toggle a.active{background:var(--navy);color:var(--white)}
+
+.nav-menu{display:contents !important}
+.nav-toggle{display:none !important}
+@media(max-width:860px){
+  .nav-right{flex-wrap:wrap;gap:10px}
+  .nav-links{flex-direction:row !important;flex-wrap:wrap;align-items:center !important;
+    width:auto !important;order:3;flex-basis:100%;gap:14px !important;font-size:13px;
+    padding-top:9px;margin-top:2px;border-top:1px solid var(--border-clr)}
+  .nav-links a{display:inline !important;padding:0 !important;border-bottom:0 !important}
+  .nav-inner{flex-wrap:wrap;row-gap:6px}
+  .nav-actions{gap:7px;width:auto !important;flex:0 0 auto !important;margin-left:auto}
+  .nav-actions .btn{width:auto !important;flex:0 0 auto}
+  .nav-actions .btn{padding:7px 13px;font-size:12.5px;white-space:nowrap}
+  .lang-toggle{flex:0 0 auto}
+}

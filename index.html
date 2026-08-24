@@ -923,6 +923,7 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
       <a href="#features" onclick="closeNavMenu()"><span class="ko">기능</span><span class="en">Features</span></a>
       <a href="#samples" onclick="closeNavMenu()"><span class="ko">예제 문제</span><span class="en">Sample Questions</span></a>
       <a href="popquiz.html" onclick="closeNavMenu()" style="color:var(--accent); font-weight:700;"><span class="ko">Pop Quiz</span><span class="en">Pop Quiz</span></a>
+      <a href="/notes/" id="nav-notes" onclick="closeNavMenu()" style="color:var(--accent); font-weight:700;"><span class="ko">Exam Notes</span><span class="en">Exam Notes</span></a>
       <a href="#pricing" onclick="closeNavMenu()"><span class="ko">요금제</span><span class="en">Pricing</span></a>
     </nav>
     <div class="nav-actions">
@@ -1780,6 +1781,9 @@ function setLang(lang){
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
   try { localStorage.setItem('ea_lang', lang); } catch(e){}
   try { _refBuild(); } catch(e){}   // 유입 경로 상자도 함께 다시 그린다
+  // Exam Notes 는 언어마다 «주소»가 다르다(구글이 언어를 가리게 하려고) — 링크도 함께 바꾼다
+  try { var _n = document.getElementById('nav-notes');
+        if (_n) _n.href = (lang === 'ko') ? '/notes/ko/' : '/notes/'; } catch(e){}
 }
 
 // ── 유입 경로 선택 상자 (2026-08-07) ─────────────────────────────────
