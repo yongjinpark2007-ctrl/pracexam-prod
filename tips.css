@@ -332,8 +332,6 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
    통째로 밀린다(사용자 지적 2026-08-23). 헤드리스 촬영은 막대를 감춰 못 봤다. */
 html{scrollbar-gutter:stable}
 @supports not (scrollbar-gutter:stable){html{overflow-y:scroll}}
-.nav-menu{display:contents !important}
-.nav-toggle{display:none !important}
 /* 🔴 머리줄이 index·Pop Quiz(57px)보다 4px 높았다(사용자 지적 2026-08-23). 재서 확인했다.
    까닭 = index 는 <button>, 우리는 <a> 라 줄높이를 body(1.6)에서 물려받는다. */
 .nav-actions .btn{line-height:normal}
