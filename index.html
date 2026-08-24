@@ -913,7 +913,7 @@ html{scrollbar-gutter:stable;}
 @supports not (scrollbar-gutter:stable){ html{overflow-y:scroll;} }
 /* 🔴 머리줄 높이를 못 박는다 — 글꼴이 늦게 뜨면 대체 글꼴이 커서 한 번 출렁인다
    (사용자: "로고가 계속 움직임"). 로고도 가로 크기를 적어 두었다. */
-.nav-inner{height:57px; box-sizing:border-box;}
+@media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
 </style>
 </head>
 <body>

@@ -240,8 +240,12 @@ footer{flex-shrink:0; border-top:1px solid var(--border-clr); background:rgba(25
   padding:6px 11px; border:none; background:var(--white); color:var(--text-muted); cursor:pointer;}
 .lang-toggle button.active{background:var(--navy); color:var(--white);}
 .btn.needs-agree{opacity:.55;}
+@media(min-width:861px){
+.nav-inner{height:57px; box-sizing:border-box;}
+}
 /* Study Tips 와 같은 자리 — 좁을 때는 한 줄로 접는다(여기엔 햄버거 자바스크립트가 없다) */
 .nav-toggle{display:none !important;}
+@media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
 .nav-menu{display:contents !important;}
 @media(max-width:860px){
   .nav-inner{flex-wrap:wrap; row-gap:6px;}
@@ -251,7 +255,9 @@ footer{flex-shrink:0; border-top:1px solid var(--border-clr); background:rgba(25
     padding-top:9px; border-top:1px solid var(--border-clr);}
   .nav-links a{display:inline !important; padding:0 !important; border-bottom:0 !important;}
   .nav-actions{gap:7px; width:auto !important; margin-left:auto;}
-  .nav-actions .btn{white-space:nowrap;}
+  .nav-actions .btn{white-space:nowrap; width:auto !important; flex:0 0 auto;
+    padding:7px 13px; font-size:12.5px;}
+  .lang-toggle{flex:0 0 auto;}
 }
 /* ══ 머리줄 CSS 끝 ══ */
 /* 🔴 스크롤 막대 자리를 늘 잡아 둔다 — 긴 화면·짧은 화면을 오갈 때 가운데 정렬이
@@ -260,7 +266,7 @@ html{scrollbar-gutter:stable;}
 @supports not (scrollbar-gutter:stable){ html{overflow-y:scroll;} }
 /* 🔴 머리줄 높이를 못 박는다 — 글꼴이 늦게 뜨면 대체 글꼴이 커서 한 번 출렁인다
    (사용자: "로고가 계속 움직임"). 로고도 가로 크기를 적어 두었다. */
-.nav-inner{height:57px; box-sizing:border-box;}
+@media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
 </style>
 </head>
 <body>
