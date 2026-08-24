@@ -97,6 +97,9 @@ a{color:inherit;}
   padding:6px 11px; border:none; background:var(--white); color:var(--text-muted); cursor:pointer;}
 .lang-toggle button.active{background:var(--navy); color:var(--white);}
 .btn.needs-agree{opacity:.55;}
+html{scrollbar-gutter:stable;}
+@supports not (scrollbar-gutter:stable){ html{overflow-y:scroll;} }
+.nav-inner{height:57px; box-sizing:border-box;}
 
 /* ═══ Study Tips 전용 — index.html 토큰만 쓴다 ═══ */
 /* 🔴 국문 쪽 제목이 «명조»로 떨어진다 — DM Serif Display 에 한글 글자가 없어서다.
@@ -310,13 +313,17 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
 .lang-toggle a{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:.05em;padding:6px 11px;background:var(--white);color:var(--text-muted);line-height:normal;text-decoration:none;display:inline-block}
 .lang-toggle a.active{background:var(--navy);color:var(--white)}
 
+/* 🔴 스크롤 막대 자리를 늘 잡아 둔다 — 긴 화면·짧은 화면을 오갈 때 가운데 정렬이
+   통째로 밀린다(사용자 지적 2026-08-23). 헤드리스 촬영은 막대를 감춰 못 봤다. */
+html{scrollbar-gutter:stable}
+@supports not (scrollbar-gutter:stable){html{overflow-y:scroll}}
 .nav-menu{display:contents !important}
 .nav-toggle{display:none !important}
 /* 🔴 머리줄이 index·Pop Quiz(57px)보다 4px 높았다(사용자 지적 2026-08-23). 재서 확인했다.
    까닭 = index 는 <button>, 우리는 <a> 라 줄높이를 body(1.6)에서 물려받는다. */
 .nav-actions .btn{line-height:normal}
 /* 남은 1px 을 글꼴에 맡기지 않고 못 박는다 — index 는 14px 여백 + 29px 알맹이 = 57px 다. */
-.nav-inner{min-height:57px;box-sizing:border-box}
+.nav-inner{height:57px;box-sizing:border-box}
 @media(max-width:860px){
   .nav-right{flex-wrap:wrap;gap:10px}
   .nav-links{flex-direction:row !important;flex-wrap:wrap;align-items:center !important;
