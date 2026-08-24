@@ -316,11 +316,16 @@ html,body{
 .ap-diff{margin:12px 0}
 .ap-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:900px){.ap-cols{grid-template-columns:1fr}}
+/* ㉰ 2026-08-24 — 해설·팁처럼 긴 칸은 절반 너비에 넣으면 한 줄이 스무 자쯤에서 꺾여
+   읽을 수가 없다. 길면(또는 기존 칸이 없으면) 위아래로 편다. */
+.ap-cols.ap-stack{grid-template-columns:1fr}
 .ap-col{border:1px solid #dbe4e5;border-radius:10px;overflow:hidden;min-width:0}
 .ap-col-h{font-size:11px;font-weight:700;padding:6px 10px;border-bottom:1px solid #dbe4e5}
 .ap-before .ap-col-h{background:#fdf1f1;color:#9a4b4b}
 .ap-after  .ap-col-h{background:#eef7f4;color:#2f6b5c}
-.ap-col pre{margin:0;padding:10px;font-size:calc(13px * var(--fs));line-height:1.65;
+/* ㉯ 2026-08-24 — 13px 였다. 옛 글(.ap-qtext)이 15px 인데 «승인받을 새 글»이 더 작으면
+   숨기는 것처럼 보인다(사용자 지적). 두 글을 같은 크기로 맞춘다. */
+.ap-col pre{margin:0;padding:10px;font-size:calc(15px * var(--fs));line-height:1.65;
   white-space:pre-wrap;word-break:break-word;font-family:inherit;color:#20343a;overflow-x:auto}
 .ap-card textarea{min-height:220px;font-size:calc(14px * var(--fs));line-height:1.7}
 .ap-count{font-size:11px;color:#8a999c;text-align:right;margin-top:4px}
@@ -881,7 +886,7 @@ function apContext(cx){
     ? `<details class="ap-exp"><summary>${lbl}</summary><div class="ap-body">${esc(body)}</div></details>`
     : '';
   return `<div class="ap-q${cx.label ? ' ap-q-multi' : ''}">
-    <div class="ap-h">${esc(cx.label || '문항 원문')}${cx.is_active === false ? ' · 현재 비활성' : ''}</div>
+    <div class="ap-h">${esc(cx.label || '지금 라이브 모습 (고치기 전 문항 원문)')}${cx.is_active === false ? ' · 현재 비활성' : ''}</div>
     ${cx.text ? `<div class="ap-qtext">${esc(cx.text)}</div>` : ''}
     ${opts}
     ${exp('해설 (국문) 펼치기', cx.explanation)}
@@ -934,13 +939,18 @@ function apDiff(c){
     ? `<div class="ap-rendered">${apBalance(v)}</div>
        <details class="ap-code"><summary>HTML 코드 보기</summary><pre>${esc(v)}</pre></details>`
     : `<pre>${esc(apVal(v))}</pre>`;
+  /* 🔴 2026-08-24 — 카드 «안»에서도 새 글이 먼저다. 밖의 차례만 뒤집고 안을 그대로 두면
+     여전히 「제안」이 오른쪽·아래에 온다. 칸 이름도 무엇인지 말하도록 고쳤다. */
+  const long = c.html || !hasBefore
+            || apVal(c.after).length  > 160
+            || (hasBefore && apVal(c.before).length > 160);
   return `<div class="ap-diff">
     <div class="ap-h">${esc(apFieldName(c.field))}</div>
-    <div class="ap-cols">
-      ${hasBefore ? `<div class="ap-col ap-before"><div class="ap-col-h">기존</div>
-        ${cell(c.before)}</div>` : ''}
-      <div class="ap-col ap-after"><div class="ap-col-h">제안</div>
+    <div class="ap-cols${long ? ' ap-stack' : ''}">
+      <div class="ap-col ap-after"><div class="ap-col-h">✅ 반영하면 이렇게 됩니다 (제안)</div>
         ${cell(c.after)}</div>
+      ${hasBefore ? `<div class="ap-col ap-before"><div class="ap-col-h">지금 라이브 모습 (기존)</div>
+        ${cell(c.before)}</div>` : ''}
     </div>
     ${c.note   ? `<div class="ap-note">${esc(c.note)}</div>` : ''}
     ${c.reason ? `<div class="ap-reason">${esc(c.reason)}</div>` : ''}
@@ -1427,7 +1437,13 @@ function renderDetail(){
   let mainHtml;
 
   if (r.is_ap){
-    /* Claude 제안 — 기존/제안을 나란히 놓고 승인·피드백을 받는다 */
+    /* Claude 제안 — 승인·피드백을 받는다.
+       🔴 2026-08-24 사용자 지시 — 그리는 차례는 «새 글이 먼저»다.
+          "제일 위에 보여주는 문제는 옛날 원문이 아니라 «새롭게 변경될 문제»를 보여 주어야
+           보고 승인을 하지요? 승인해달라는 문제는 작은글씨로 밑에다가 넣으면 승인을
+           해달라는 의미인지, 숨기고자 하는 의미인지?"
+          ① 반영본(apDiff) → ② 제안 이유 → ③ 지금 라이브 모습(apContext).
+          이 차례를 되돌리지 말 것. 치트시트 쪽(apSheet)은 처음부터 이 차례였다. */
     const it = r.ap;
     const applied = it.status === 'applied';
     mainHtml = `
@@ -1442,11 +1458,11 @@ function renderDetail(){
       </div>
       <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:10px;">${esc(it.title || '')}</div>
       ${it.kind === 'sheet' ? apSheet(it.sheet) : ''}
-      ${apContext(it.context)}
-      ${(it.contexts || []).map(apContext).join('')}
+      ${(it.changes || []).map(apDiff).join('')}
       ${it.why ? `<div class="ap-why"><div class="ap-h">제안 이유</div>
         <div class="ap-body">${esc(it.why)}</div></div>` : ''}
-      ${(it.changes || []).map(apDiff).join('')}
+      ${apContext(it.context)}
+      ${(it.contexts || []).map(apContext).join('')}
       ${it.note ? `<div class="ap-why"><div class="ap-h">참고</div>
         <div class="ap-body">${esc(it.note)}</div></div>` : ''}
     </div>`;
