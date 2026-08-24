@@ -99,6 +99,17 @@ a{color:inherit;}
 .btn.needs-agree{opacity:.55;}
 
 /* ═══ Exam Notes 전용 — index.html 토큰만 쓴다 ═══ */
+/* 🔴 국문 쪽 제목이 «명조»로 떨어진다 — DM Serif Display 에 한글 글자가 없어서다.
+   깔끔한 고딕으로 바꾼다 (사용자 지시 2026-08-23). Noto Sans KR 은 한글 쪽만 내려받는다. */
+html[lang="ko"]{
+  --font-display:"Noto Sans KR","Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --font-serif:"Noto Sans KR","Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+html[lang="ko"] .na-h1,html[lang="ko"] .nl-h1{font-weight:800;letter-spacing:-.025em;line-height:1.28}
+html[lang="ko"] .na-col h2,html[lang="ko"] .nl-leadtitle,html[lang="ko"] .nl-rowtitle,
+html[lang="ko"] .na-cta h3,html[lang="ko"] blockquote.na-quote p{font-weight:700;letter-spacing:-.015em}
+html[lang="ko"] .na-col h2{line-height:1.42}
+
 .na-wrap{max-width:1100px;margin:0 auto;padding:0 24px}
 .na-bar{border-bottom:1px solid var(--border-clr);background:var(--card-bg)}
 .na-bar .na-wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:13px;padding-bottom:13px}
@@ -189,11 +200,14 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
 .na-tags a{font-size:12px;font-weight:700;color:var(--navy-mid);background:var(--navy-light);
   border-radius:999px;padding:6px 13px;text-decoration:none}
 
-.na-cta{margin:44px auto 0;max-width:1000px;background:var(--navy);border-radius:var(--radius);padding:28px;
+/* 🔴 폭이 위 카드(1052px)와 달라 1000px 로 좁았고, 남색이 화면에서 너무 튀었다
+   (사용자 지적 2026-08-23). 폭을 맞추고 색을 눅인다. */
+.na-cta{margin:44px 0 0;background:var(--navy-light);border:1px solid var(--accent-border);
+  border-radius:var(--radius);padding:26px 28px;
   display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.na-cta h3{font-family:var(--font-display);font-size:24px;color:#fff;margin:0 0 6px;letter-spacing:0}
-.na-cta p{margin:0;font-size:14px;color:#cfdcdd;max-width:46ch;line-height:1.55}
-.na-cta .btn{background:var(--muted-gold);border-color:var(--muted-gold);color:#2b2412}
+.na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--navy);margin:0 0 6px;letter-spacing:0}
+.na-cta p{margin:0;font-size:14.5px;color:var(--text-mid);max-width:48ch;line-height:1.62}
+.na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap}
 
 /* 🔴 「Part 2·Part 3 다음」 예고 갈래(.na-next)는 뺐다 — 그 문구는 «소셜용» 이라
    사이트 글에는 안 맞는다고 반려됐다(2026-08-23). 다시 넣지 말 것. */
