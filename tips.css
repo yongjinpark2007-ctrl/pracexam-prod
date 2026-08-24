@@ -1,4 +1,4 @@
-/* 🔴 손으로 고치지 말 것 — `node build_site.js` 가 index.html + notes_common.js 에서 만듭니다. */
+/* 🔴 손으로 고치지 말 것 — `node build_site.js` 가 만듭니다. */
 :root{/* Harbor 팔레트 (2026-06-19) — 354649 / 6C7A89 / A3C6C4 / E0E7E9 */
   --page-bg:     #E0E7E9;
   --card-bg:     #ffffff;
