@@ -328,24 +328,10 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
 .lang-toggle a{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:.05em;padding:6px 11px;background:var(--white);color:var(--text-muted);line-height:normal;text-decoration:none;display:inline-block}
 .lang-toggle a.active{background:var(--navy);color:var(--white)}
 
-/* 🔴 스크롤 막대 자리를 늘 잡아 둔다 — 긴 화면·짧은 화면을 오갈 때 가운데 정렬이
-   통째로 밀린다(사용자 지적 2026-08-23). 헤드리스 촬영은 막대를 감춰 못 봤다. */
+/* 스크롤 막대 자리 — 긴/짧은 화면을 오갈 때 가운데 정렬이 밀리는 것을 막는다 */
 html{scrollbar-gutter:stable}
 @supports not (scrollbar-gutter:stable){html{overflow-y:scroll}}
-/* 🔴 머리줄이 index·Pop Quiz(57px)보다 4px 높았다(사용자 지적 2026-08-23). 재서 확인했다.
-   까닭 = index 는 <button>, 우리는 <a> 라 줄높이를 body(1.6)에서 물려받는다. */
+/* index 는 <button>, 우리는 <a> — 줄높이를 body(1.6)에서 물려받지 않게 */
 .nav-actions .btn{line-height:normal}
-/* 남은 1px 을 글꼴에 맡기지 않고 못 박는다 — index 는 14px 여백 + 29px 알맹이 = 57px 다. */
+/* 넓은 화면에서만 높이를 못 박는다 — 좁은 화면은 index 의 햄버거 구조가 정한다 */
 @media(min-width:861px){.nav-inner{height:57px;box-sizing:border-box}}
-@media(max-width:860px){
-  .nav-right{flex-wrap:wrap;gap:10px}
-  .nav-links{flex-direction:row !important;flex-wrap:wrap;align-items:center !important;
-    width:auto !important;order:3;flex-basis:100%;gap:14px !important;font-size:13px;
-    padding-top:9px;margin-top:2px;border-top:1px solid var(--border-clr)}
-  .nav-links a{display:inline !important;padding:0 !important;border-bottom:0 !important}
-  .nav-inner{flex-wrap:wrap;row-gap:6px}
-  .nav-actions{gap:7px;width:auto !important;flex:0 0 auto !important;margin-left:auto}
-  .nav-actions .btn{width:auto !important;flex:0 0 auto}
-  .nav-actions .btn{padding:7px 13px;font-size:12.5px;white-space:nowrap}
-  .lang-toggle{flex:0 0 auto}
-}

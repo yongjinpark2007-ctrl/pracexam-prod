@@ -98,14 +98,6 @@ a{color:inherit;}
 .nav-links a{text-decoration:none;}
 .nav-links a:hover{color:var(--navy);}
 .nav-actions{display:flex; align-items:center; gap:10px;}
-@media(max-width:860px){
-  .nav-inner{flex-wrap:wrap; row-gap:6px;}
-  .nav-right{flex-wrap:wrap; gap:10px;}
-  .nav-links{order:3; flex-basis:100%; flex-wrap:wrap; gap:14px; font-size:13px;
-    padding-top:9px; border-top:1px solid var(--border-clr);}
-  .nav-actions{gap:7px; margin-left:auto;}
-  .nav-actions .btn{white-space:nowrap;}
-}
 .logo{display:flex; align-items:center; gap:10px; font-weight:700; font-size:19px; color:var(--navy); text-decoration:none; flex:0 0 auto;}
 .lang-toggle{display:flex; border:1.5px solid var(--border-strong); border-radius:8px; overflow:hidden; flex:0 0 auto;}
 .lang-toggle button{font-family:var(--font-sans); font-weight:700; font-size:12px; letter-spacing:.05em; padding:6px 11px; border:none; background:var(--white); color:var(--text-muted); cursor:pointer;}
@@ -243,20 +235,11 @@ footer{flex-shrink:0; border-top:1px solid var(--border-clr); background:rgba(25
 @media(min-width:861px){
 .nav-inner{height:57px; box-sizing:border-box;}
 }
-/* Study Tips 와 같은 자리 — 좁을 때는 한 줄로 접는다(여기엔 햄버거 자바스크립트가 없다) */
+/* 🔴 여기에 «모바일 규칙을 덧대지 말 것». index 의 햄버거 규칙(.nav-menu.open)이 위에 이미 있고,
+   덧댄 .nav-links{flex-direction:row !important} 가 그것을 덮어써 햄버거를 눌러도
+   데스크톱처럼 펼쳐졌다(2026-08-23 사고). 아래는 index 에 없는 것만 더한다. */
 @media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
-@media(max-width:860px){
-  .nav-inner{flex-wrap:wrap; row-gap:6px;}
-  .nav-right{flex-wrap:wrap; gap:10px;}
-  .nav-links{flex-direction:row !important; flex-wrap:wrap; align-items:center !important;
-    width:auto !important; order:3; flex-basis:100%; gap:14px !important; font-size:13px;
-    padding-top:9px; border-top:1px solid var(--border-clr);}
-  .nav-links a{display:inline !important; padding:0 !important; border-bottom:0 !important;}
-  .nav-actions{gap:7px; width:auto !important; margin-left:auto;}
-  .nav-actions .btn{white-space:nowrap; width:auto !important; flex:0 0 auto;
-    padding:7px 13px; font-size:12.5px;}
-  .lang-toggle{flex:0 0 auto;}
-}
+.nav-actions .btn{line-height:normal;}
 /* ══ 머리줄 CSS 끝 ══ */
 /* 🔴 스크롤 막대 자리를 늘 잡아 둔다 — 긴 화면·짧은 화면을 오갈 때 가운데 정렬이
    통째로 밀리는 것을 막는다 (2026-08-23 사용자 지적). */
@@ -291,14 +274,14 @@ html{scrollbar-gutter:stable;}
       </a>
       </div>
       </div>
-      <button class="nav-toggle" id="nav-toggle" onclick="toggleNavMenu()" aria-label="Menu" aria-expanded="false">
-      <svg class="icon-bars" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-      <svg class="icon-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
-    </button>
       <div class="lang-toggle">
         <button id="btn-ko" onclick="setLang('ko')">KO</button>
         <button id="btn-en" onclick="setLang('en')">EN</button>
       </div>
+      <button class="nav-toggle" id="nav-toggle" onclick="toggleNavMenu()" aria-label="Menu" aria-expanded="false">
+      <svg class="icon-bars" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg class="icon-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
+    </button>
     </div>
   </div>
 </header>
