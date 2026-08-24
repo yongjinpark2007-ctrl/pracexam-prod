@@ -202,10 +202,12 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
 
 /* 🔴 폭이 위 카드(1052px)와 달라 1000px 로 좁았고, 남색이 화면에서 너무 튀었다
    (사용자 지적 2026-08-23). 폭을 맞추고 색을 눅인다. */
-.na-cta{margin:44px 0 0;background:var(--navy-light);border:1px solid var(--accent-border);
+/* 🔴 연한 민트는 페이지 바탕(--page-bg)과 너무 비슷해 상자가 안 보였다(사용자 지적 2026-08-23).
+   Exam Tip 콜아웃과 «같은 색»을 쓴다 — 앱에서 이미 「눈에 띄되 안 튀는」 자리로 쓰는 색이다. */
+.na-cta{margin:44px 0 0;background:var(--terracotta-tint);border:1px solid var(--terracotta-border);
   border-radius:var(--radius);padding:26px 28px;
   display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--navy);margin:0 0 6px;letter-spacing:0}
+.na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--terracotta-deep);margin:0 0 6px;letter-spacing:0}
 .na-cta p{margin:0;font-size:14.5px;color:var(--text-mid);max-width:48ch;line-height:1.62}
 .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap}
 
