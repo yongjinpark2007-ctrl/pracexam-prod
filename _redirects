@@ -1,3 +1,6 @@
 # 2026-08-06  Daily -> Pop Quiz 개명. 페이스북·카톡에 이미 뿌려진 옛 링크를 살린다.
 /daily        /popquiz  301
 /daily.html   /popquiz  301
+# 2026-08-23  Exam Notes -> Study Tips 개명. 같은 날 sitemap 에 넣었던 옛 주소를 넘겨 준다.
+/notes/*      /tips/:splat   301
+/notes.css    /tips.css      301

@@ -98,7 +98,7 @@ a{color:inherit;}
 .lang-toggle button.active{background:var(--navy); color:var(--white);}
 .btn.needs-agree{opacity:.55;}
 
-/* ═══ Exam Notes 전용 — index.html 토큰만 쓴다 ═══ */
+/* ═══ Study Tips 전용 — index.html 토큰만 쓴다 ═══ */
 /* 🔴 국문 쪽 제목이 «명조»로 떨어진다 — DM Serif Display 에 한글 글자가 없어서다.
    깔끔한 고딕으로 바꾼다 (사용자 지시 2026-08-23). Noto Sans KR 은 한글 쪽만 내려받는다. */
 html[lang="ko"]{
@@ -229,7 +229,7 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
 /* 목록 화면 「나」안 — build_list.js 에서 옮겨 왔다 (2026-08-23).
    🔴 여기 두는 까닭 = notes.css 는 이 파일에서만 만들어진다. 저쪽에 남겨 두면
    배포된 목록 화면이 «맨몸»으로 나온다. 실제로 그럴 뻔했고 검사가 잡았다. */
-/* ═══ Exam Notes 목록 «나»안 — 최신 하나 크게 + 나머지 줄 목록 ═══ */
+/* ═══ Study Tips 목록 «나»안 — 최신 하나 크게 + 나머지 줄 목록 ═══ */
 .nl-hero{padding:44px 0 8px}
 .nl-h1{font-family:var(--font-display);font-size:clamp(29px,4.2vw,42px);line-height:1.14;
   color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px}
