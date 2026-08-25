@@ -315,7 +315,8 @@ html, body {
 @media(hover:hover){.sts-go-btn:hover{background:var(--sel-bg,#d9ebe9);border-color:var(--sel-border,#6FA39E);}}
 .sts-go-btn.lock{color:var(--text-muted);border-color:var(--border-clr);background:transparent;}
 @media(max-width:640px){ .sts-go-btn{font-size:11.5px;padding:4px 9px;} }
-.sts-sess-link{font-size:13px;color:var(--text-muted);margin-top:-.5rem;}
+.sts-sess-link{font-size:13px;color:var(--text-muted);}
+.sts-section-sub{font-size:13px;color:var(--text-muted);line-height:1.5;margin:-.5rem 0 .85rem;}
 .sts-sess-link a{color:var(--teal);font-weight:700;text-decoration:none;cursor:pointer;}
 .sts-bar-row.dim{opacity:.35;}
 @media(max-width:640px){ .sts-part-seg{display:flex;} .sts-part-seg button{flex:1;padding:9px 0;font-size:12.5px;} }
@@ -1926,6 +1927,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div style="margin-bottom:1.25rem;">
     <div class="section-title" data-i18n="sts_title">Statistics</div>
     <div style="font-size:13px;color:var(--text-muted);" data-i18n="sts_subtitle">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
+    <div class="sts-sess-link" id="sts-sess-link" style="margin-top:4px;"></div>
   </div>
 
   <!-- Part 선택 — 요약·추세·토픽 표가 함께 걸러진다 (2026-08-25) -->
@@ -1961,6 +1963,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <!-- 토픽별 분포표 -->
   <div class="sts-section">
     <div class="sts-section-title" data-i18n="sts_topics_title">토픽별 정답률 (3회 이상 시도)</div>
+    <div class="sts-section-sub" id="sts-topics-hint"></div>
     <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;padding:0 .5rem;">
       <table class="sts-topic-table" id="sts-topics">
         <thead><tr>
@@ -1969,11 +1972,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
         <tbody id="sts-topics-body"><tr><td colspan="4" class="sts-empty" data-i18n="sts_loading">로딩 중…</td></tr></tbody>
       </table>
     </div>
-    <div class="sts-sess-link" style="margin-top:.75rem;" id="sts-topics-hint"></div>
   </div>
-
-  <!-- 세션 기록은 2026-08-25 에 뺐다 — 복습 → 최근 세션 탭과 같은 목록이고 거기서는 다시 볼 수 있다 -->
-  <div class="sts-sess-link" id="sts-sess-link"></div>
+  <!-- 세션 기록은 2026-08-25 에 뺐다 — 복습 → 최근 세션 탭과 같은 목록이고 거기서는 다시 볼 수 있다. 안내는 제목 밑으로(사용자: 표 밑은 아무도 안 본다) -->
 </div>
 
 <!-- ═══ UPLOAD ═══ -->
