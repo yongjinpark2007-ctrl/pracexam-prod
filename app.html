@@ -304,8 +304,17 @@ html, body {
 .sts-topic-table tr.sts-group td{background:rgba(53,70,73,.05);color:var(--text-mid);font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 8px;}
 .sts-topic-table tr.sts-row{cursor:pointer;}
 @media(hover:hover){.sts-topic-table tr.sts-row:hover td{background:var(--sel-bg,#d9ebe9);}}
-.sts-go{display:inline-block;font-size:11px;font-weight:700;color:var(--teal);margin-left:8px;white-space:nowrap;opacity:.8;}
-.sts-go.lock{color:var(--text-muted);}
+.sts-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:.85rem;}
+.sts-section-head .sts-section-title{margin-bottom:0;}
+.sts-mini-seg{display:inline-flex;border:1px solid var(--border-clr);border-radius:8px;overflow:hidden;background:var(--card-bg);flex:none;}
+.sts-mini-seg button{font-family:inherit;font-size:11.5px;font-weight:700;padding:4px 10px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;}
+.sts-mini-seg button+button{border-left:1px solid var(--border-clr);}
+.sts-mini-seg button.active{background:var(--teal);color:#fff;}
+.sts-act{text-align:right;width:1%;white-space:nowrap;}
+.sts-go-btn{font-family:inherit;font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;border:1px solid rgba(53,70,73,.25);background:var(--card-bg);color:var(--teal);cursor:pointer;white-space:nowrap;-webkit-appearance:none;appearance:none;}
+@media(hover:hover){.sts-go-btn:hover{background:var(--sel-bg,#d9ebe9);border-color:var(--sel-border,#6FA39E);}}
+.sts-go-btn.lock{color:var(--text-muted);border-color:var(--border-clr);background:transparent;}
+@media(max-width:640px){ .sts-go-btn{font-size:11.5px;padding:4px 9px;} }
 .sts-sess-link{font-size:13px;color:var(--text-muted);margin-top:-.5rem;}
 .sts-sess-link a{color:var(--teal);font-weight:700;text-decoration:none;cursor:pointer;}
 .sts-bar-row.dim{opacity:.35;}
@@ -1921,8 +1930,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
   <!-- Part 선택 — 요약·추세·토픽 표가 함께 걸러진다 (2026-08-25) -->
   <div class="sts-part-seg" id="sts-part-seg">
-    <button class="active" data-p="all" onclick="stsSetPart('all')" data-i18n="sts_part_all">전체</button>
-    <button data-p="Part 1" onclick="stsSetPart('Part 1')">Part 1</button>
+    <button data-p="all" onclick="stsSetPart('all')" data-i18n="sts_part_all">전체</button>
+    <button class="active" data-p="Part 1" onclick="stsSetPart('Part 1')">Part 1</button>
     <button data-p="Part 2" onclick="stsSetPart('Part 2')">Part 2</button>
     <button data-p="Part 3" onclick="stsSetPart('Part 3')">Part 3</button>
   </div>
@@ -1932,7 +1941,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
   <!-- 점수 추세 라인차트 -->
   <div class="sts-section">
-    <div class="sts-section-title" data-i18n="sts_trend_title">점수 추세 (최근 20세션)</div>
+    <div class="sts-section-head">
+      <div class="sts-section-title" id="sts-trend-title" data-i18n="sts_trend_title">점수 추세 (최근 20세션)</div>
+      <div class="sts-mini-seg" id="sts-trend-seg">
+        <button class="active" data-n="20" onclick="stsSetTrendN(20)">20</button><button data-n="50" onclick="stsSetTrendN(50)">50</button><button data-n="100" onclick="stsSetTrendN(100)">100</button><button data-n="0" onclick="stsSetTrendN(0)" data-i18n="sts_trend_all">전체</button>
+      </div>
+    </div>
     <div class="sts-chart-wrap" id="sts-trend-wrap">
       <div class="sts-empty" data-i18n="sts_loading_data">세션 데이터 로딩 중…</div>
     </div>
@@ -1950,9 +1964,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;padding:0 .5rem;">
       <table class="sts-topic-table" id="sts-topics">
         <thead><tr>
-          <th data-i18n="sts_th_topic">토픽</th><th style="text-align:right;" data-i18n="sts_th_attempts">시도</th><th style="text-align:right;" data-i18n="sts_th_acc">정답률</th>
+          <th data-i18n="sts_th_topic">토픽</th><th style="text-align:right;" data-i18n="sts_th_attempts">시도</th><th style="text-align:right;" data-i18n="sts_th_acc">정답률</th><th></th>
         </tr></thead>
-        <tbody id="sts-topics-body"><tr><td colspan="3" class="sts-empty" data-i18n="sts_loading">로딩 중…</td></tr></tbody>
+        <tbody id="sts-topics-body"><tr><td colspan="4" class="sts-empty" data-i18n="sts_loading">로딩 중…</td></tr></tbody>
       </table>
     </div>
     <div class="sts-sess-link" style="margin-top:.75rem;" id="sts-topics-hint"></div>
@@ -4788,11 +4802,14 @@ var UI_TEXT = {
   sts_title:      {ko:'통계',    en:'Statistics'},
   sts_subtitle:   {ko:'학습 추세 · Part별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy by part · topic analysis'},
   sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
+  sts_trend_n:    {ko:'점수 추세 (최근 {n}세션)', en:'Score Trend (last {n} sessions)'},
+  sts_trend_alln: {ko:'점수 추세 (전체 {n}세션)', en:'Score Trend (all {n} sessions)'},
+  sts_trend_all:  {ko:'전체', en:'All'},
   sts_parts_title:{ko:'Part별 누적 정답률', en:'Cumulative Accuracy by Part'},
   sts_topics_title:{ko:'토픽별 정답률 (3회 이상 시도)', en:'Accuracy by Topic (3+ attempts)'},
   sts_sessions_title:{ko:'세션 기록', en:'Session History'},
   sts_part_all:   {ko:'전체',    en:'All'},
-  sts_topic_go:   {ko:'풀기 →',  en:'Practice →'},
+  sts_topic_go:   {ko:'풀기',  en:'Practice'},
   sts_topic_pro:  {ko:'Pro 전용', en:'Pro only'},
   sts_topics_hint:{ko:'토픽을 누르면 그 토픽만 골라 집중 학습을 시작합니다.', en:'Tap a topic to start a focused session on it.'},
   sts_topics_hint_trial:{ko:'토픽별 집중 학습은 Pro 회원 전용입니다.', en:'Focused topic sessions are for Pro members.'},
@@ -8518,12 +8535,19 @@ function showResults(){
 // PHASE 4: STATISTICS
 // ══════════════════════════════════════════════════════
 // ── Part 선택 (2026-08-25) — 요약·추세·토픽 표가 함께 걸러진다 ──
-var STS_PART = 'all';
+// 기본 = 대시보드에서 «지금 집중 학습 중»인 Part, 없으면 Part 1 (사용자: 전체는 정보량이 너무 많다 · 2026-08-25)
+var STS_PART = (function(){ try{ var p = localStorage.getItem('ea_focus_part'); if(/^Part [123]$/.test(p||'')) return p; }catch(e){} return 'Part 1'; })();
 function stsSetPart(p){
   STS_PART = p || 'all';
-  document.querySelectorAll('#sts-part-seg button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-p') === STS_PART); });
   renderStatistics();
 }
+function stsSyncSeg(){
+  document.querySelectorAll('#sts-part-seg button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-p') === STS_PART); });
+  document.querySelectorAll('#sts-trend-seg button').forEach(function(b){ b.classList.toggle('active', Number(b.getAttribute('data-n')) === STS_TREND_N); });
+}
+// 추세 그래프 범위 — 최근 20·50·100 또는 전체(0). 휠 확대는 폰·패드에 휠이 없고 페이지 스크롤과 부딪혀 단추로 (사용자 요청 2026-08-25)
+var STS_TREND_N = 20;
+function stsSetTrendN(n){ STS_TREND_N = Number(n) || 0; stsSyncSeg(); renderStsTrend(); }
 // 세션이 어느 Part 인가 — 저장된 part 가 있으면 그것, 없으면 question_ids 로 판정(문항 코드 C1/C2/C3).
 // 여러 Part 가 섞인 세션은 'All' (「전체」에서만 보인다).
 function stsSessionPart(s){
@@ -8547,6 +8571,7 @@ function stsSessions(){
 }
 
 function renderStatistics(){
+  stsSyncSeg();
   renderStsSummary();
   renderStsTrend();
   renderStsParts();
@@ -8582,10 +8607,13 @@ function renderStsTrend(){
   var wrap = document.getElementById('sts-trend-wrap');
   if(!wrap) return;
   var sessions = stsSessions();
-  // 최신순 정렬 후 최근 20개, 차트는 오래된 것부터
-  var sorted = sessions.slice().sort(function(a,b){
+  // 최신순 정렬 후 최근 N개(0=전체), 차트는 오래된 것부터
+  var _all = sessions.slice().sort(function(a,b){
     return new Date(b.created_at||0) - new Date(a.created_at||0);
-  }).slice(0,20).reverse();
+  });
+  var sorted = (STS_TREND_N > 0 ? _all.slice(0, STS_TREND_N) : _all).reverse();
+  var _tt = document.getElementById('sts-trend-title');
+  if(_tt) _tt.textContent = (STS_TREND_N > 0 ? t('sts_trend_n').replace('{n}', Math.min(STS_TREND_N, _all.length)) : t('sts_trend_alln').replace('{n}', _all.length));
 
   if(sorted.length < 2){
     wrap.innerHTML = '<div class="sts-empty">' + t(STS_PART === 'all' ? 'sts_trend_empty' : 'sts_part_empty') + '</div>';
@@ -8617,21 +8645,26 @@ function renderStsTrend(){
            '<text x="'+(PL-4)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="rgba(0,0,0,.35)">'+v+'</text>';
   }).join('');
 
-  // X축 날짜 라벨 (최대 5개)
-  var xStep = Math.max(1, Math.floor(sorted.length/5));
-  var xLabelsSvg = sorted.filter(function(_,i){ return i%xStep===0 || i===sorted.length-1; }).map(function(s,_,arr){
-    var i = sorted.indexOf(s);
+  // X축 날짜 라벨 (최대 6개 · 같은 날짜는 한 번만)
+  var xStep = Math.max(1, Math.ceil(sorted.length/6));
+  var _lastLbl = '';
+  var xLabelsSvg = sorted.map(function(s,i){
+    if(!(i%xStep===0 || i===sorted.length-1)) return '';
     var lbl = '';
     if(s.created_at){ var d=new Date(s.created_at); lbl=(d.getMonth()+1)+'/'+(d.getDate()); }
     else if(s.date){ lbl=s.date.slice(0,5); }
+    if(lbl === _lastLbl) return '';
+    _lastLbl = lbl;
     return '<text x="'+xPos(i)+'" y="'+(H-4)+'" text-anchor="middle" font-size="10" fill="rgba(0,0,0,.35)">'+lbl+'</text>';
   }).join('');
 
-  // 데이터 포인트 (최신 점 강조)
+  // 데이터 포인트 (최신 점 강조 · 점이 많으면 작게, 60개 넘으면 마지막 점만)
+  var _r = sorted.length > 40 ? 2 : 3;
   var dotsSvg = sorted.map(function(s,i){
     var isLast = i===sorted.length-1;
+    if(sorted.length > 60 && !isLast) return '';
     var col = (s.pct||0)>=80?'#16a34a':(s.pct||0)>=60?'#d97706':'#dc2626';
-    return '<circle cx="'+xPos(i)+'" cy="'+yPos(s.pct||0)+'" r="'+(isLast?4:3)+'" fill="'+col+'" stroke="#fff" stroke-width="1.5"/>';
+    return '<circle cx="'+xPos(i)+'" cy="'+yPos(s.pct||0)+'" r="'+(isLast?4:_r)+'" fill="'+col+'" stroke="#fff" stroke-width="1.5"/>';
   }).join('');
 
   wrap.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">' +
@@ -8707,21 +8740,23 @@ function renderStsTopics(){
   if(hint) hint.textContent = t(trial ? 'sts_topics_hint_trial' : 'sts_topics_hint');
 
   if(!rows.length){
-    tbody.innerHTML = '<tr><td colspan="3" class="sts-empty">' + t('sts_topics_empty') + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="sts-empty">' + t('sts_topics_empty') + '</td></tr>';
     return;
   }
   // 줄 하나 — 누르면 그 토픽 집중 학습 (체험 고객은 Pro 안내)
   function rowHtml(r){
     var color = r.pct>=80?'var(--success-color)':r.pct>=60?'var(--flag-color)':'var(--danger-color)';
     var barW = Math.round(r.pct * 0.6); // max 60px
-    var go = trial ? '<span class="sts-go lock">🔒 ' + t('sts_topic_pro') + '</span>' : '<span class="sts-go">' + t('sts_topic_go') + '</span>';
+    // 풀기 버튼은 제목 옆이 아니라 맨 오른쪽 열 (사용자: 제목 옆에 붙으면 정렬이 제각각·지저분 · 2026-08-25)
+    var go = trial ? '<button class="sts-go-btn lock" type="button">🔒 ' + t('sts_topic_pro') + '</button>' : '<button class="sts-go-btn" type="button">' + t('sts_topic_go') + '</button>';
     return '<tr class="sts-row" onclick="stsTopicGo(\'' + _copEsc(r.code) + '\')">' +
-      '<td>'+r.topic+go+'</td>' +
+      '<td>'+r.topic+'</td>' +
       '<td style="text-align:right;color:var(--text-muted);">'+r.times+'</td>' +
       '<td style="text-align:right;">' +
         '<span class="sts-topic-pct" style="color:'+color+';">'+r.pct+'%</span>' +
         '<span class="sts-topic-bar" style="width:'+barW+'px;background:'+color+';"></span>' +
       '</td>' +
+      '<td class="sts-act">'+go+'</td>' +
     '</tr>';
   }
   if(STS_PART !== 'all'){ tbody.innerHTML = rows.map(rowHtml).join(''); return; }
@@ -8731,7 +8766,7 @@ function renderStsTopics(){
     var grp = rows.filter(function(r){ return r.part === p; });
     if(!grp.length) return;
     var lab = (typeof partLabel === 'function') ? partLabel(p) : p;
-    html += '<tr class="sts-group"><td colspan="3">' + lab + ' · ' + grp.length + '</td></tr>' + grp.map(rowHtml).join('');
+    html += '<tr class="sts-group"><td colspan="4">' + lab + ' · ' + grp.length + '</td></tr>' + grp.map(rowHtml).join('');
   });
   tbody.innerHTML = html;
 }
