@@ -296,6 +296,20 @@ html, body {
 .sts-sess-meta{color:var(--text-muted);flex:1;}
 .sts-sess-pct{font-weight:700;width:40px;text-align:right;}
 .sts-empty{text-align:center;padding:2rem;color:var(--text-muted);font-size:14px;}
+/* 통계 — Part 선택 단추 · 토픽 표 Part 묶음 · 줄 클릭 (2026-08-25) */
+.sts-part-seg{display:inline-flex;border:1px solid var(--border-clr);border-radius:10px;overflow:hidden;background:var(--card-bg);margin-bottom:1.25rem;}
+.sts-part-seg button{font-family:inherit;font-size:13px;font-weight:700;padding:8px 16px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;}
+.sts-part-seg button+button{border-left:1px solid var(--border-clr);}
+.sts-part-seg button.active{background:var(--teal);color:#fff;}
+.sts-topic-table tr.sts-group td{background:rgba(53,70,73,.05);color:var(--text-mid);font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 8px;}
+.sts-topic-table tr.sts-row{cursor:pointer;}
+@media(hover:hover){.sts-topic-table tr.sts-row:hover td{background:var(--sel-bg,#d9ebe9);}}
+.sts-go{display:inline-block;font-size:11px;font-weight:700;color:var(--teal);margin-left:8px;white-space:nowrap;opacity:.8;}
+.sts-go.lock{color:var(--text-muted);}
+.sts-sess-link{font-size:13px;color:var(--text-muted);margin-top:-.5rem;}
+.sts-sess-link a{color:var(--teal);font-weight:700;text-decoration:none;cursor:pointer;}
+.sts-bar-row.dim{opacity:.35;}
+@media(max-width:640px){ .sts-part-seg{display:flex;} .sts-part-seg button{flex:1;padding:9px 0;font-size:12.5px;} }
 
 /* GRID */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.5rem;}
@@ -1905,6 +1919,14 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div style="font-size:13px;color:var(--text-muted);" data-i18n="sts_subtitle">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
   </div>
 
+  <!-- Part 선택 — 요약·추세·토픽 표가 함께 걸러진다 (2026-08-25) -->
+  <div class="sts-part-seg" id="sts-part-seg">
+    <button class="active" data-p="all" onclick="stsSetPart('all')" data-i18n="sts_part_all">전체</button>
+    <button data-p="Part 1" onclick="stsSetPart('Part 1')">Part 1</button>
+    <button data-p="Part 2" onclick="stsSetPart('Part 2')">Part 2</button>
+    <button data-p="Part 3" onclick="stsSetPart('Part 3')">Part 3</button>
+  </div>
+
   <!-- 요약 카드 4개 -->
   <div class="sts-summary-grid" id="sts-summary"></div>
 
@@ -1924,24 +1946,20 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
   <!-- 토픽별 분포표 -->
   <div class="sts-section">
-    <div class="sts-section-title" data-i18n="sts_topics_title">주제별 정답률 (3회 이상 시도)</div>
+    <div class="sts-section-title" data-i18n="sts_topics_title">토픽별 정답률 (3회 이상 시도)</div>
     <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;padding:0 .5rem;">
       <table class="sts-topic-table" id="sts-topics">
         <thead><tr>
-          <th data-i18n="sts_th_topic">토픽</th><th>Part</th><th style="text-align:right;" data-i18n="sts_th_attempts">시도</th><th style="text-align:right;" data-i18n="sts_th_acc">정답률</th>
+          <th data-i18n="sts_th_topic">토픽</th><th style="text-align:right;" data-i18n="sts_th_attempts">시도</th><th style="text-align:right;" data-i18n="sts_th_acc">정답률</th>
         </tr></thead>
-        <tbody id="sts-topics-body"><tr><td colspan="4" class="sts-empty" data-i18n="sts_loading">로딩 중…</td></tr></tbody>
+        <tbody id="sts-topics-body"><tr><td colspan="3" class="sts-empty" data-i18n="sts_loading">로딩 중…</td></tr></tbody>
       </table>
     </div>
+    <div class="sts-sess-link" style="margin-top:.75rem;" id="sts-topics-hint"></div>
   </div>
 
-  <!-- 전체 세션 목록 -->
-  <div class="sts-section">
-    <div class="sts-section-title"><span data-i18n="sts_sessions_title">세션 기록</span> <span id="sts-sess-count" style="font-weight:400;text-transform:none;letter-spacing:0;"></span></div>
-    <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;padding:.5rem 1rem;" id="sts-sessions">
-      <div class="sts-empty" data-i18n="sts_loading">로딩 중…</div>
-    </div>
-  </div>
+  <!-- 세션 기록은 2026-08-25 에 뺐다 — 복습 → 최근 세션 탭과 같은 목록이고 거기서는 다시 볼 수 있다 -->
+  <div class="sts-sess-link" id="sts-sess-link"></div>
 </div>
 
 <!-- ═══ UPLOAD ═══ -->
@@ -4771,8 +4789,15 @@ var UI_TEXT = {
   sts_subtitle:   {ko:'학습 추세 · Part별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy by part · topic analysis'},
   sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
   sts_parts_title:{ko:'Part별 누적 정답률', en:'Cumulative Accuracy by Part'},
-  sts_topics_title:{ko:'주제별 정답률 (3회 이상 시도)', en:'Accuracy by Topic (3+ attempts)'},
+  sts_topics_title:{ko:'토픽별 정답률 (3회 이상 시도)', en:'Accuracy by Topic (3+ attempts)'},
   sts_sessions_title:{ko:'세션 기록', en:'Session History'},
+  sts_part_all:   {ko:'전체',    en:'All'},
+  sts_topic_go:   {ko:'풀기 →',  en:'Practice →'},
+  sts_topic_pro:  {ko:'Pro 전용', en:'Pro only'},
+  sts_topics_hint:{ko:'토픽을 누르면 그 토픽만 골라 집중 학습을 시작합니다.', en:'Tap a topic to start a focused session on it.'},
+  sts_topics_hint_trial:{ko:'토픽별 집중 학습은 Pro 회원 전용입니다.', en:'Focused topic sessions are for Pro members.'},
+  sts_sess_link:  {ko:'세션별로 다시 보려면 <a onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">복습 → 최근 세션</a>', en:'To revisit a session, open <a onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">Review → Recent Sessions</a>'},
+  sts_part_empty: {ko:'이 Part 의 세션이 아직 없습니다.', en:'No sessions for this part yet.'},
   sts_th_topic:   {ko:'토픽',    en:'Topic'},
   sts_th_attempts:{ko:'시도',    en:'Attempts'},
   sts_th_acc:     {ko:'정답률',  en:'Accuracy'},
@@ -8492,23 +8517,50 @@ function showResults(){
 // ══════════════════════════════════════════════════════
 // PHASE 4: STATISTICS
 // ══════════════════════════════════════════════════════
-const STS_SESS_PAGE = 20;
-let stsSessionsShown = STS_SESS_PAGE;
+// ── Part 선택 (2026-08-25) — 요약·추세·토픽 표가 함께 걸러진다 ──
+var STS_PART = 'all';
+function stsSetPart(p){
+  STS_PART = p || 'all';
+  document.querySelectorAll('#sts-part-seg button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-p') === STS_PART); });
+  renderStatistics();
+}
+// 세션이 어느 Part 인가 — 저장된 part 가 있으면 그것, 없으면 question_ids 로 판정(문항 코드 C1/C2/C3).
+// 여러 Part 가 섞인 세션은 'All' (「전체」에서만 보인다).
+function stsSessionPart(s){
+  if(s.part && /^Part [123]$/.test(s.part)) return s.part;
+  var ids = s.question_ids || s.ids || [];
+  if(!ids.length) return 'All';
+  var seen = {};
+  ids.forEach(function(id){
+    var q = (typeof _findQ === 'function') ? _findQ(id) : null;
+    var p = q && q.part;
+    if(!p){ var m = /^(?:MOCK-EA-P|C)([123])/.exec(String(id)); if(m) p = 'Part ' + m[1]; }
+    if(p) seen[p] = 1;
+  });
+  var ks = Object.keys(seen);
+  return ks.length === 1 ? ks[0] : 'All';
+}
+function stsSessions(){
+  var arr = S.sessions.filter(function(s){ return s.count > 0; });
+  if(STS_PART === 'all') return arr;
+  return arr.filter(function(s){ return stsSessionPart(s) === STS_PART; });
+}
+
 function renderStatistics(){
-  stsSessionsShown = STS_SESS_PAGE;
   renderStsSummary();
   renderStsTrend();
   renderStsParts();
   renderStsTopics();
-  renderStsSessions();
+  var lk = document.getElementById('sts-sess-link'); if(lk) lk.innerHTML = t('sts_sess_link');
 }
 
 function renderStsSummary(){
   var el = document.getElementById('sts-summary');
   if(!el) return;
-  var totalSessions = S.sessions.length;
-  var totalAnswered = S.sessions.reduce(function(a,s){ return a + (s.count||0); }, 0);
-  var allPcts = S.sessions.filter(function(s){ return s.count > 0; }).map(function(s){ return s.pct||0; });
+  var sess = stsSessions();
+  var totalSessions = sess.length;
+  var totalAnswered = sess.reduce(function(a,s){ return a + (s.count||0); }, 0);
+  var allPcts = sess.map(function(s){ return s.pct||0; });
   var avgPct = allPcts.length ? Math.round(allPcts.reduce(function(a,v){ return a+v; },0) / allPcts.length) : 0;
   var bestPct = allPcts.length ? Math.max.apply(null, allPcts) : 0;
   var flagCount = S.flagged.size;
@@ -8529,14 +8581,14 @@ function renderStsSummary(){
 function renderStsTrend(){
   var wrap = document.getElementById('sts-trend-wrap');
   if(!wrap) return;
-  var sessions = S.sessions.filter(function(s){ return s.count > 0; });
+  var sessions = stsSessions();
   // 최신순 정렬 후 최근 20개, 차트는 오래된 것부터
   var sorted = sessions.slice().sort(function(a,b){
     return new Date(b.created_at||0) - new Date(a.created_at||0);
   }).slice(0,20).reverse();
 
   if(sorted.length < 2){
-    wrap.innerHTML = '<div class="sts-empty">' + t('sts_trend_empty') + '</div>';
+    wrap.innerHTML = '<div class="sts-empty">' + t(STS_PART === 'all' ? 'sts_trend_empty' : 'sts_part_empty') + '</div>';
     return;
   }
 
@@ -8617,7 +8669,8 @@ function renderStsParts(){
     return;
   }
   el.innerHTML = rows.map(function(r){
-    return '<div class="sts-bar-row">' +
+    var dim = (STS_PART !== 'all' && r.part !== STS_PART) ? ' dim' : '';
+    return '<div class="sts-bar-row'+dim+'">' +
       '<div class="sts-bar-label">'+r.part+'</div>' +
       '<div class="sts-bar-track"><div class="sts-bar-fill" style="width:'+r.pct+'%;background:'+r.color+';"></div></div>' +
       '<div class="sts-bar-pct">'+r.pct+'%</div>' +
@@ -8643,72 +8696,56 @@ function renderStsTopics(){
     map[code].times += a.times;
     map[code].correct += (a.correct||0);
   });
-  var rows = Object.values(map)
+  var rows = Object.keys(map).map(function(code){ var r = map[code]; r.code = code; return r; })
     .filter(function(r){ return r.times >= 3; })
+    .filter(function(r){ return STS_PART === 'all' || r.part === STS_PART; })
     .map(function(r){ r.pct = Math.round(r.correct/r.times*100); return r; })
     .sort(function(a,b){ return a.pct - b.pct; }); // 정답률 낮은 순 (약점 우선)
 
+  var hint = document.getElementById('sts-topics-hint');
+  var trial = (typeof isTrialLimited === 'function') && isTrialLimited();
+  if(hint) hint.textContent = t(trial ? 'sts_topics_hint_trial' : 'sts_topics_hint');
+
   if(!rows.length){
-    tbody.innerHTML = '<tr><td colspan="4" class="sts-empty">' + t('sts_topics_empty') + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3" class="sts-empty">' + t('sts_topics_empty') + '</td></tr>';
     return;
   }
-  tbody.innerHTML = rows.map(function(r){
+  // 줄 하나 — 누르면 그 토픽 집중 학습 (체험 고객은 Pro 안내)
+  function rowHtml(r){
     var color = r.pct>=80?'var(--success-color)':r.pct>=60?'var(--flag-color)':'var(--danger-color)';
     var barW = Math.round(r.pct * 0.6); // max 60px
-    return '<tr>' +
-      '<td>'+r.topic+'</td>' +
-      '<td style="color:var(--text-muted);">'+r.part+'</td>' +
+    var go = trial ? '<span class="sts-go lock">🔒 ' + t('sts_topic_pro') + '</span>' : '<span class="sts-go">' + t('sts_topic_go') + '</span>';
+    return '<tr class="sts-row" onclick="stsTopicGo(\'' + _copEsc(r.code) + '\')">' +
+      '<td>'+r.topic+go+'</td>' +
       '<td style="text-align:right;color:var(--text-muted);">'+r.times+'</td>' +
       '<td style="text-align:right;">' +
         '<span class="sts-topic-pct" style="color:'+color+';">'+r.pct+'%</span>' +
         '<span class="sts-topic-bar" style="width:'+barW+'px;background:'+color+';"></span>' +
       '</td>' +
     '</tr>';
-  }).join('');
+  }
+  if(STS_PART !== 'all'){ tbody.innerHTML = rows.map(rowHtml).join(''); return; }
+  // 「전체」 = Part 1·2·3 세 묶음 (사용자: Part 별로 보여 주는 것이 효과적)
+  var html = '';
+  ['Part 1','Part 2','Part 3'].forEach(function(p){
+    var grp = rows.filter(function(r){ return r.part === p; });
+    if(!grp.length) return;
+    var lab = (typeof partLabel === 'function') ? partLabel(p) : p;
+    html += '<tr class="sts-group"><td colspan="3">' + lab + ' · ' + grp.length + '</td></tr>' + grp.map(rowHtml).join('');
+  });
+  tbody.innerHTML = html;
 }
 
-function renderStsSessions(){
-  var el = document.getElementById('sts-sessions');
-  var cnt = document.getElementById('sts-sess-count');
-  if(!el) return;
-  var sessions = S.sessions.filter(function(s){ return s.count > 0; }).slice().sort(function(a,b){
-    return new Date(b.created_at||0) - new Date(a.created_at||0);
-  });
-  if(cnt) cnt.textContent = '(' + sessions.length + ')';
-  if(!sessions.length){
-    el.innerHTML = '<div class="sts-empty">' + t('sts_sessions_empty') + '</div>';
+// 토픽 줄 클릭 — 유료만. 체험은 Pro 안내 (사용자 결정 2026-08-25)
+function stsTopicGo(code){
+  if((typeof isTrialLimited === 'function') && isTrialLimited()){
+    if(typeof showPricingModal === 'function') showPricingModal();
     return;
   }
-  var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
-  var shown = sessions.slice(0, stsSessionsShown);
-  var html = shown.map(function(s){
-    var label = s.date || '';
-    if(s.created_at){
-      var d = new Date(s.created_at);
-      label = d.toLocaleDateString(_loc,{month:'short',day:'numeric'}) + ' ' +
-              d.toLocaleTimeString(_loc,{hour:'2-digit',minute:'2-digit',hour12:false});
-    }
-    var color = (s.pct||0)>=80?'var(--success-color)':(s.pct||0)>=60?'var(--flag-color)':'var(--danger-color)';
-    return '<div class="sts-sess-row">' +
-      '<span class="sts-sess-date">'+label+'</span>' +
-      '<span class="sts-sess-meta">'+(s.part||'All')+' · '+uQ(s.count)+'</span>' +
-      '<span class="sts-sess-pct" style="color:'+color+';">'+(s.pct||0)+'%</span>' +
-    '</div>';
-  }).join('');
-  if(sessions.length > shown.length){
-    html += '<div style="text-align:center;padding-top:12px;">' +
-      '<button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="loadMoreStsSessions()">' +
-        t('sts_more') + ' (' + shown.length + ' / ' + sessions.length + ')' +
-      '</button>' +
-    '</div>';
-  }
-  el.innerHTML = html;
+  if(typeof startCopSession === 'function') startCopSession(code);
 }
 
-function loadMoreStsSessions(){
-  stsSessionsShown += STS_SESS_PAGE;
-  renderStsSessions();
-}
+// (renderStsSessions · loadMoreStsSessions 는 2026-08-25 에 뺐다 — 세션 기록은 복습 → 최근 세션)
 
 function switchReviewTab(tab){
   var isFlagged = tab === 'flagged';
