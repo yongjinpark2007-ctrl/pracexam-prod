@@ -2322,7 +2322,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-cell{height:36px;border:1px solid var(--border-clr);border-radius:7px;font-size:13.5px;font-weight:700;color:var(--text-muted);background:var(--card-bg);cursor:pointer;position:relative;font-family:inherit;font-variant-numeric:tabular-nums;padding:0;}
   .mk-cell.done{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-text);}
   .mk-cell.cur{border:2px solid var(--teal);color:var(--teal);}
-  .mk-cell.lock{opacity:.35;cursor:not-allowed;text-decoration:line-through;}
   .mk-timer.paused{color:var(--teal);border-color:var(--teal);background:var(--teal-dim);}
   .mk-cell.flag::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--flag-color);}
   .mk-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--text-mid);margin-top:10px;}
@@ -2361,15 +2360,17 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-weak-q.un{color:var(--text-muted);}
   @media(hover:hover){ .mk-weak-q:hover{border-color:var(--danger-color);background:#fef2f2;} }
   /* War Room 으로 — 약점 카드 · 해설 모달 공용 (학습 화면 Topic 배지와 같은 언어) */
+  /* War Room 단추 — 해설 화면의 War Room 상자와 같은 모양(청회색 채움·15px 번개) · 카드 안에서 가운데 정렬 (사용자 2026-08-25) */
   .mk-weak-wr,.mk-wr-link{
-    display:inline-flex;align-items:center;gap:6px;margin-top:10px;
-    border:1px solid var(--accent-border);background:var(--accent-tint);border-radius:9px;
-    padding:7px 11px;font:inherit;font-size:12.5px;font-weight:700;color:#a4552f;cursor:pointer;
-    max-width:100%;text-align:left;line-height:1.35;
+    display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;width:100%;box-sizing:border-box;
+    border:1px solid rgba(53,70,73,.18);background:var(--teal-dim);border-radius:10px;
+    padding:10px 12px;font:inherit;font-size:13px;font-weight:500;color:var(--teal);cursor:pointer;
+    max-width:100%;text-align:center;line-height:1.35;
   }
-  .mk-weak-wr svg,.mk-wr-link svg{width:13px;height:13px;flex:none;fill:currentColor;stroke:none;}
-  @media(hover:hover){ .mk-weak-wr:hover,.mk-wr-link:hover{border-color:var(--accent);} }
-  .mk-wr-link{font-size:13.5px;padding:9px 13px;}
+  .mk-weak-wr b,.mk-wr-link b{font-weight:700;}
+  .mk-weak-wr svg,.mk-wr-link svg{width:15px;height:15px;flex:none;fill:currentColor;stroke:none;}
+  @media(hover:hover){ .mk-weak-wr:hover,.mk-wr-link:hover{background:#d9ebe9;} }
+  .mk-wr-link{display:inline-flex;width:auto;font-size:13.5px;padding:9px 14px;}
   .mk-sect{font-size:14px;font-weight:800;color:var(--text-main);margin:22px 0 10px;}
   /* 토픽 정답률: 토픽명 넓게, 바는 짧게 (2026-07-17 피드백 6) */
   .mk-dom{display:grid;grid-template-columns:minmax(170px,2.3fr) 1fr 52px;gap:10px;align-items:center;font-size:13px;color:var(--text-mid);padding:5px 0;}
@@ -2442,6 +2443,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <span class="mk-timer" id="mock-timer">3:30:00</span>
       <span class="mk-progtext" id="mock-progtext">Question 1 of 100</span>
       <span class="sp"></span>
+      <button class="btn-ghost" id="mock-pause-btn" style="padding:8px 12px;font-size:13px;white-space:nowrap;" onclick="mockPauseClick()" title="시계가 멈춥니다 · 시험당 2회">⏸ 휴식 2/2</button>
       <button class="btn-ghost" style="padding:8px 14px;font-size:13px;" onclick="mockOpenReview()" data-i18n="mock_review_btn">검토·제출</button>
     </div>
     <div class="mk-prog-track"><div class="mk-prog-fill" id="mock-prog-fill"></div></div>
@@ -9023,11 +9025,10 @@ function mockLsKey(){ return MOCK_LS_BASE + '_' + ((typeof SB_USER!=='undefined'
 var MOCK_PARTMETA = { 1:{l:'Individuals'}, 2:{l:'Businesses'}, 3:{l:'Representation'} };
 var Mock = { attemptId:null, part:null, ids:[], qmap:{}, answers:{}, flags:{},
              curIdx:0, startedAt:null, timerInt:null, result:null, selPart:1,
-             // PSI 예정 휴식 (2026-08-25): pausedMs = 지금까지 멈춘 시간 합 · breakStart = 휴식 중이면 시작 시각 ·
-             // breaksUsed = 쓴 휴식 수(최대 2) · lockedUpTo = 마친 구간의 문항 수(0·34·67) — 그 앞으로는 못 돌아간다
-             pausedMs:0, breakStart:null, breaksUsed:0, lockedUpTo:0 };
-var MOCK_BREAK_SEC = 10*60;                 // 예정 휴식 10분 (PSI 안내서 20쪽)
-var MOCK_SECTION_ENDS = [34, 67];           // 구간 1 = 1~34 · 구간 2 = 35~67 · 구간 3 = 68~100
+             // 휴식 (2026-08-25): pausedMs = 지금까지 멈춘 시간 합 · breakStart = 휴식 중이면 시작 시각 · breaksUsed = 쓴 휴식 수
+             // 사용자 결정: «연습이니까 언제든 누를 수 있게», 대신 시험장 기준으로 횟수 2회·각 10분(PSI 안내서 20쪽). 구간 잠금은 하지 않는다.
+             pausedMs:0, breakStart:null, breaksUsed:0 };
+var MOCK_BREAK_MAX = 2;                     // 휴식 횟수 (PSI 예정 휴식 2회와 같음)
 
 function mL(ko,en){ return (LANG==='en') ? en : ko; }
 function mockIsAdmin(){ return (typeof SB_USER!=='undefined' && SB_USER && typeof ADMIN_UID!=='undefined' && SB_USER.id===ADMIN_UID); }
@@ -9038,7 +9039,7 @@ function mockFmt(sec){ if(sec<0)sec=0; var h=Math.floor(sec/3600),m=Math.floor(s
 function mockRemainingOf(o){
   if(!o || !o.startedAt) return MOCK_DURATION_SEC;
   var now = Date.now();
-  var breakNow = o.breakStart ? Math.min(now - o.breakStart, MOCK_BREAK_SEC*1000) : 0;   // 10분을 넘긴 휴식은 10분까지만 멈춤(PSI: 시계 재개)
+  var breakNow = o.breakStart ? (now - o.breakStart) : 0;   // 휴식은 「계속하기」를 누를 때까지 멈춘다 (연습용 — 사용자 결정 2026-08-25)
   var elapsed = now - o.startedAt - (o.pausedMs||0) - breakNow;
   return Math.max(0, MOCK_DURATION_SEC - Math.floor(elapsed/1000));
 }
@@ -9049,7 +9050,7 @@ function mockPersist(){
   try{ localStorage.setItem(mockLsKey(), JSON.stringify({
     attemptId:Mock.attemptId, part:Mock.part, ids:Mock.ids,
     answers:Mock.answers, flags:Mock.flags, startedAt:Mock.startedAt, curIdx:Mock.curIdx,
-    pausedMs:Mock.pausedMs||0, breakStart:Mock.breakStart||null, breaksUsed:Mock.breaksUsed||0, lockedUpTo:Mock.lockedUpTo||0
+    pausedMs:Mock.pausedMs||0, breakStart:Mock.breakStart||null, breaksUsed:Mock.breaksUsed||0
   })); }catch(e){}
 }
 function mockLoadLS(){ try{ var r=localStorage.getItem(mockLsKey()); return r?JSON.parse(r):null; }catch(e){ return null; } }
@@ -9215,7 +9216,7 @@ async function _mockStartGo(){
     if(!row||!row.question_ids||!row.question_ids.length) throw new Error('EMPTY');
     Mock.attemptId=row.attempt_id; Mock.part=part; Mock.ids=row.question_ids;
     Mock.qmap={}; Mock.answers={}; Mock.flags={}; Mock.curIdx=0; Mock.startedAt=Date.now(); Mock.result=null; Mock._practiceAck=false;
-    Mock.pausedMs=0; Mock.breakStart=null; Mock.breaksUsed=0; Mock.lockedUpTo=0;
+    Mock.pausedMs=0; Mock.breakStart=null; Mock.breaksUsed=0;
     mockPersist();
     var ok=await mockLoadPayloads(Mock.ids);
     if(!ok){ showToast(mL('문항 로드 실패 — 다시 시도해주세요','Failed to load questions — please retry')); return; }
@@ -9259,8 +9260,8 @@ function mockRenderQuestion(idx){
     '<button class="mk-flagbtn'+(flagged?' on':'')+'" onclick="mockToggleFlag()">⚑ '+mL('검토 표시','Mark for review')+'</button></div>'+
     '<div class="mk-qtext">'+mockEsc(q.text||mL('불러오는 중…','Loading…'))+'</div>'+
     '<div class="mk-opts">'+optHtml+'</div>'+
-    '<div class="mk-actions"><button class="btn-ghost" onclick="mockPrev()"'+((idx===0||mockLocked(idx-1))?' disabled style="opacity:.4;"':'')+'>← '+mL('이전','Prev')+'</button>'+
-    '<span class="sp"></span><button class="btn-ghost" onclick="mockNext()">'+(idx===99?mL('검토·제출','Review & submit'):(MOCK_SECTION_ENDS.indexOf(idx+1)>=0&&(Mock.lockedUpTo||0)<idx+1?mL('구간 마침 →','Finish section →'):mL('다음','Next')+' →'))+'</button></div></div>';
+    '<div class="mk-actions"><button class="btn-ghost" onclick="mockPrev()"'+(idx===0?' disabled style="opacity:.4;"':'')+'>← '+mL('이전','Prev')+'</button>'+
+    '<span class="sp"></span><button class="btn-ghost" onclick="mockNext()">'+(idx===99?mL('검토·제출','Review & submit'):mL('다음','Next')+' →')+'</button></div></div>';
   mockUpdateProgress();
 }
 function mockEsc(s){ s=(s==null?'':''+s); return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -9270,74 +9271,52 @@ function mockSelect(i){ var id=Mock.ids[Mock.curIdx]; Mock.answers[id]=i; mockPe
 function mockToggleFlag(){ var id=Mock.ids[Mock.curIdx]; Mock.flags[id]=!Mock.flags[id]; mockPersist();
   var b=document.querySelector('#mock-q-wrap .mk-flagbtn'); if(b) b.classList.toggle('on', !!Mock.flags[id]);
   mockUpdateProgress(); }
-function mockLocked(idx){ return idx < (Mock.lockedUpTo||0); }
-function mockPrev(){ if(Mock.curIdx>0){ if(mockLocked(Mock.curIdx-1)){ showToast(mL('마친 구간으로는 돌아갈 수 없습니다 (실제 시험과 같음)','You cannot return to a completed section (same as the real exam)')); return; } mockRenderQuestion(Mock.curIdx-1); } }
-function mockNext(){
-  // 34번·67번의 「다음」 = 구간 마침 — PSI 와 같이 확인을 받고 휴식을 권한다
-  var end = MOCK_SECTION_ENDS.indexOf(Mock.curIdx+1) >= 0 && (Mock.lockedUpTo||0) < Mock.curIdx+1;
-  if(end){ mockSectionEnd(Mock.curIdx+1); return; }
-  if(Mock.curIdx<99) mockRenderQuestion(Mock.curIdx+1); else mockOpenReview(); }
-function mockGoto(idx){ if(mockLocked(idx)){ showToast(mL('마친 구간의 문항입니다 — 돌아갈 수 없습니다','This question is in a completed section')); return; } mockBackToQ(); mockRenderQuestion(idx); }
+function mockPrev(){ if(Mock.curIdx>0) mockRenderQuestion(Mock.curIdx-1); }
+function mockNext(){ if(Mock.curIdx<99) mockRenderQuestion(Mock.curIdx+1); else mockOpenReview(); }
+function mockGoto(idx){ mockBackToQ(); mockRenderQuestion(idx); }
 
-// ── PSI 예정 휴식 (2026-08-25) ──
-function mockSectionNo(idx){ return idx < 34 ? 1 : (idx < 67 ? 2 : 3); }
-function mockSectionEnd(upTo){
-  var secNo = MOCK_SECTION_ENDS.indexOf(upTo) + 1;
-  var from = secNo === 1 ? 0 : MOCK_SECTION_ENDS[secNo-2];
-  var un = 0; for(var i=from;i<upTo;i++){ if(Mock.answers[Mock.ids[i]]===undefined) un++; }
-  var canBreak = (Mock.breaksUsed||0) < 2;
-  var en = (LANG==='en');
-  document.getElementById('modal-content').innerHTML =
-    '<div style="text-align:left;padding:.25rem 0;">' +
-      '<div style="font-size:18px;font-weight:800;margin-bottom:8px;">' + (en ? ('Finish Section ' + secNo + ' (Q' + (from+1) + '–' + upTo + ')?') : ('구간 ' + secNo + ' (' + (from+1) + '–' + upTo + '번) 을 마칠까요?')) + '</div>' +
-      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:12px;">' +
-        (en ? ('Same as the real exam: once you confirm, you <b>cannot return</b> to questions ' + (from+1) + '–' + upTo + '. ' + (un ? ('<b style="color:var(--danger-color);">' + un + ' unanswered</b> in this section.') : 'All answered.'))
-            : ('실제 시험과 같이, 마치면 <b>' + (from+1) + '–' + upTo + '번으로 돌아갈 수 없습니다</b>. ' + (un ? ('이 구간에 <b style="color:var(--danger-color);">미응답 ' + un + '문항</b>이 있습니다.') : '모두 응답했습니다.'))) +
-      '</div>' +
-      (canBreak
-        ? '<div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">' + (en ? ('A scheduled <b>10-minute break</b> is offered here (clock stops). Breaks left: ' + (2-(Mock.breaksUsed||0)) + ' of 2. If you are not back in 10 minutes, the clock restarts.') : ('여기서 <b>10분 예정 휴식</b>을 쓸 수 있습니다(시계 멈춤). 남은 휴식 ' + (2-(Mock.breaksUsed||0)) + '/2. 10분 안에 돌아오지 않으면 시계가 다시 갑니다.')) + '</div>'
-        : '') +
-      (canBreak ? '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="_mockCloseSection(' + upTo + ',true)">' + (en ? 'Finish section & take 10-min break' : '구간 마치고 10분 휴식') + '</button>' : '') +
-      '<button class="btn-ghost" style="width:100%;margin-bottom:8px;" onclick="_mockCloseSection(' + upTo + ',false)">' + (en ? 'Finish section & continue' : '구간 마치고 휴식 없이 계속') + '</button>' +
-      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + (en ? 'Not yet — keep reviewing this section' : '아직 — 이 구간 더 검토') + '</button>' +
-    '</div>';
-  document.getElementById('modal-bg').classList.add('open');
-}
-function _mockCloseSection(upTo, takeBreak){
-  closeModal();
-  Mock.lockedUpTo = upTo; mockPersist();
-  if(takeBreak && (Mock.breaksUsed||0) < 2) mockStartBreak();
-  else mockRenderQuestion(upTo);
+// ── 휴식 버튼 (2026-08-25) — 언제든 누를 수 있고, 최대 2회 · 각 10분 · 시계 멈춤 (횟수·길이는 PSI 예정 휴식 기준) ──
+function mockBreaksLeft(){ return Math.max(0, MOCK_BREAK_MAX - (Mock.breaksUsed||0)); }
+function mockPauseClick(){
+  if(Mock.breakStart) return;
+  if(!mockBreaksLeft()){ showToast(mL('휴식 ' + MOCK_BREAK_MAX + '회를 모두 썼습니다 (시험장 기준)','You have used all ' + MOCK_BREAK_MAX + ' breaks (same as the real exam)')); return; }
+  mockStartBreak();
 }
 function mockStartBreak(){
   Mock.breakStart = Date.now(); Mock.breaksUsed = (Mock.breaksUsed||0) + 1; mockPersist();
-  mockRenderBreak(); mockTickTimer();
+  mockRenderBreak(); mockTickTimer(); mockRenderPauseBtn();
 }
 function mockRenderBreak(){
-  var left = Math.max(0, MOCK_BREAK_SEC - Math.floor((Date.now()-Mock.breakStart)/1000));
+  var gone = Math.floor((Date.now()-Mock.breakStart)/1000);
   var en = (LANG==='en');
   document.getElementById('modal-content').innerHTML =
     '<div style="text-align:center;padding:.5rem 0;">' +
       '<div style="font-size:36px;margin-bottom:.5rem;">☕</div>' +
-      '<div style="font-size:18px;font-weight:800;margin-bottom:6px;">' + (en ? 'Scheduled break' : '예정 휴식') + '</div>' +
-      '<div id="mock-break-left" style="font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal);margin:6px 0;">' + mockFmt(left).replace(/^0:/, '') + '</div>' +
-      '<div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">' + (en ? 'The exam clock is stopped. When this reaches 0:00 the exam resumes automatically.' : '시험 시계가 멈춰 있습니다. 0:00 이 되면 자동으로 다시 시작합니다.') + '</div>' +
+      '<div style="font-size:18px;font-weight:800;margin-bottom:6px;">' + (en ? 'Break' : '휴식') + ' <span style="font-size:13px;font-weight:600;color:var(--text-muted);">' + (Mock.breaksUsed||0) + '/' + MOCK_BREAK_MAX + '</span></div>' +
+      '<div id="mock-break-left" style="font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal);margin:6px 0;">' + mockFmt(gone).replace(/^0:/, '') + '</div>' +
+      '<div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">' + (en ? 'The exam clock is stopped until you resume. Breaks are limited to ' + MOCK_BREAK_MAX + ' per exam (same as the test center).' : '「계속하기」를 누를 때까지 시험 시계가 멈춰 있습니다. 휴식은 시험당 ' + MOCK_BREAK_MAX + '회까지입니다(시험장 기준).') + '</div>' +
       '<button class="btn-navy" style="width:100%;" onclick="mockEndBreak()">' + (en ? 'Resume now' : '지금 계속하기') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
 }
 function mockEndBreak(){
   if(!Mock.breakStart) return;
-  var used = Math.min(Date.now()-Mock.breakStart, MOCK_BREAK_SEC*1000);
-  Mock.pausedMs = (Mock.pausedMs||0) + used; Mock.breakStart = null; mockPersist();
+  Mock.pausedMs = (Mock.pausedMs||0) + (Date.now()-Mock.breakStart); Mock.breakStart = null; mockPersist();
   closeModal();
-  mockRenderQuestion(Mock.lockedUpTo||Mock.curIdx);
-  mockTickTimer();
+  mockTickTimer(); mockRenderPauseBtn();
+}
+// 시험 바의 휴식 버튼 — 남은 횟수를 보여 주고, 다 쓰면 흐리게
+function mockRenderPauseBtn(){
+  var b = document.getElementById('mock-pause-btn'); if(!b) return;
+  var left = mockBreaksLeft();
+  b.textContent = '⏸ ' + mL('휴식','Break') + ' ' + left + '/' + MOCK_BREAK_MAX;
+  b.disabled = !left || !!Mock.breakStart; b.style.opacity = (!left || Mock.breakStart) ? '.45' : '';
 }
 function mockUpdateProgress(){
   var ans=Object.keys(Mock.answers).length, fl=Object.values(Mock.flags).filter(Boolean).length;
   var pt=document.getElementById('mock-progtext');
-  if(pt) pt.innerHTML='Question <b>'+(Mock.curIdx+1)+'</b> of 100 · '+mL('구간','Section')+' '+mockSectionNo(Mock.curIdx)+'/3 · '+mL('응답','answered')+' '+ans+' · '+mL('플래그','flagged')+' '+fl;
+  if(pt) pt.innerHTML='Question <b>'+(Mock.curIdx+1)+'</b> of 100 · '+mL('응답','answered')+' '+ans+' · '+mL('플래그','flagged')+' '+fl;
+  mockRenderPauseBtn();
   var pf=document.getElementById('mock-prog-fill'); if(pf) pf.style.width=(ans)+'%';
 }
 
@@ -9357,8 +9336,7 @@ function mockRenderNavGrid(){
   var g=document.getElementById('mock-navgrid'); var h='';
   for(var i=0;i<100;i++){
     var id=Mock.ids[i]; var done=(Mock.answers[id]!==undefined); var fl=!!Mock.flags[id]; var cur=(i===Mock.curIdx);
-    var lk=mockLocked(i);
-    h += '<button class="mk-cell'+(done?' done':'')+(fl?' flag':'')+(cur?' cur':'')+(lk?' lock':'')+'" '+(lk?'disabled title="'+mL('마친 구간','Completed section')+'"':'onclick="mockGoto('+i+')"')+'>'+(i+1)+'</button>';
+    h += '<button class="mk-cell'+(done?' done':'')+(fl?' flag':'')+(cur?' cur':'')+'" onclick="mockGoto('+i+')">'+(i+1)+'</button>';
   }
   g.innerHTML=h;
   var ans=Object.keys(Mock.answers).length, fl=Object.values(Mock.flags).filter(Boolean).length;
@@ -9378,11 +9356,9 @@ function mockStartTimer(){
 function mockTickTimer(){
   var rem=mockRemaining(); var el=document.getElementById('mock-timer');
   if(Mock.breakStart){
-    var bl = MOCK_BREAK_SEC - Math.floor((Date.now()-Mock.breakStart)/1000);
     // 휴식 중에 ×·바깥 클릭으로 모달을 닫아도 시계는 멈춘 채다 — 화면이 없으면 다시 띄운다
-    var mbg = document.getElementById('modal-bg'); if(mbg && !mbg.classList.contains('open') && bl > 0) mockRenderBreak();
-    var bEl = document.getElementById('mock-break-left'); if(bEl) bEl.textContent = mockFmt(Math.max(0,bl)).replace(/^0:/, '');
-    if(bl <= 0){ mockEndBreak(); showToast(mL('휴식 10분이 끝나 시험을 다시 시작합니다','Break over — the exam resumes')); return; }
+    var mbg = document.getElementById('modal-bg'); if(mbg && !mbg.classList.contains('open')) mockRenderBreak();
+    var bEl = document.getElementById('mock-break-left'); if(bEl) bEl.textContent = mockFmt(Math.floor((Date.now()-Mock.breakStart)/1000)).replace(/^0:/, '');
   }
   if(el){ el.textContent=mockFmt(rem); el.classList.toggle('low', rem<1800); el.classList.toggle('paused', !!Mock.breakStart); }
   if(rem<=0){ clearInterval(Mock.timerInt); Mock.timerInt=null;
@@ -9482,7 +9458,7 @@ function renderMockResult(r){
       (t.code && t.code!=='—'
         ? '<button class="mk-weak-wr" onclick="mockGoWarRoom(\''+t.code+'\')">'+
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
-          mL('War Room 에서 보기','Open in War Room')+'</button>' : '')+
+          '<span><b>War Room</b> · '+mL('이 주제 보기','Open topic')+'</span><span style="opacity:.7;">↗</span></button>' : '')+
       '</div>';
   }).join('');
 
@@ -9511,7 +9487,7 @@ function renderMockResult(r){
     '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span>'+
     (flagN?'<span class="mk-kpi flag"><b>'+flagN+'</b>⚑ '+mL('검토 표시','Marked')+'</span>':'')+
     '</div></div></div>'+
-    (weakHtml?'<div class="mk-sect">'+mL('약점 Top 3','Weakest 3')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
+    (weakHtml?'<div class="mk-sect">'+mL('약점 토픽 Top 3','Weak Topic Top 3')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
     (domHtml?'<div class="mk-sect">'+mL('토픽별 정답률','Accuracy by topic')+'</div><div>'+domHtml+'</div>':'')+
     '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('각 문제를 클릭하셔서 해설을 확인하세요.','Click each question to see its explanation.')+'</span></div>'+
     '<div class="mk-qlist">'+rows+'</div>'+
@@ -9611,7 +9587,7 @@ async function mockReviewItem(qid){
       ? ('<button class="mk-wr-link" onclick="mockGoWarRoom(\''+_woc+'\', window._mkWrQ)" '+
          'title="'+mL('War Room에서 이 주제 자세히 보기','Open this topic in War Room')+'">'+
          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
-         'War Room · '+mockEsc(_wtn)+' <span style="opacity:.7;">↗</span></button>')
+         '<span><b>War Room</b> · '+mockEsc(_wtn)+'</span><span style="opacity:.7;">↗</span></button>')
       : '';
     document.getElementById('modal-content').innerHTML =
       '<div id="mk-review-box" style="text-align:left;">'+hdr+
@@ -9633,9 +9609,7 @@ async function mockResume(){
   var live=mockLoadLS(); if(!live||!live.attemptId){ showToast(mL('진행 중인 모의고사가 없습니다','No mock in progress')); renderMockHub(); return; }
   Mock.attemptId=live.attemptId; Mock.part=live.part; Mock.ids=live.ids;
   Mock.answers=live.answers||{}; Mock.flags=live.flags||{}; Mock.startedAt=live.startedAt; Mock.curIdx=live.curIdx||0; Mock.qmap={}; Mock.result=null;
-  Mock.pausedMs=live.pausedMs||0; Mock.breakStart=live.breakStart||null; Mock.breaksUsed=live.breaksUsed||0; Mock.lockedUpTo=live.lockedUpTo||0;
-  // 휴식 중에 닫았다가 돌아온 경우 — 10분이 지났으면 휴식을 닫고(멈춘 시간은 10분까지만) 시계를 재개
-  if(Mock.breakStart && Date.now()-Mock.breakStart >= MOCK_BREAK_SEC*1000){ Mock.pausedMs += MOCK_BREAK_SEC*1000; Mock.breakStart=null; mockPersist(); }
+  Mock.pausedMs=live.pausedMs||0; Mock.breakStart=live.breakStart||null; Mock.breaksUsed=live.breaksUsed||0;
   if(mockRemaining()<=0){ showToast(mL('시간이 종료되어 자동 제출합니다','Time expired — submitting')); await mockSubmit(); return; }
   showToast(mL('불러오는 중…','Loading…'));
   var ok=await mockLoadPayloads(Mock.ids);
