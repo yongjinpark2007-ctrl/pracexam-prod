@@ -918,34 +918,6 @@ html, body {
 .rev-sess-date{font-size:15px;font-weight:600;color:var(--text-main);}
 .rev-sess-meta{font-size:13px;color:var(--text-muted);margin-top:2px;}
 
-/* UPLOAD */
-.upload-zone{
-  border:1px dashed var(--border-hover);
-  border-radius:16px;padding:2.5rem 1.5rem;text-align:center;
-  cursor:pointer;transition:all .2s;margin-bottom:1.5rem;
-  background:rgba(53,70,73,.03);
-}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:rgba(53,70,73,.06);}
-.upload-item{
-  background:var(--card-bg);border:1px solid var(--border-clr);
-  border-radius:12px;padding:14px 16px;
-  display:flex;align-items:center;gap:12px;
-  margin-bottom:8px;transition:all .15s;
-}
-.upload-item:hover{border-color:var(--border-hover);}
-.upload-badge{font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;background:rgba(74,222,128,.08);color:#4abdf8;white-space:nowrap;}
-.upload-item-actions{display:flex;gap:6px;flex-shrink:0;}
-.upload-action-btn{
-  background:rgba(0,0,0,.03);border:1px solid var(--border-clr);
-  border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;
-  cursor:pointer;font-family:inherit;transition:all .15s;
-  display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:var(--text-muted);
-}
-.upload-action-btn.replace{color:var(--teal);border-color:rgba(53,70,73,.2);}
-.upload-action-btn.replace:hover{background:rgba(53,70,73,.08);border-color:rgba(53,70,73,.4);}
-.upload-action-btn.delete{color:#f43f5e;border-color:rgba(244,63,94,.2);}
-.upload-action-btn.delete:hover{background:rgba(244,63,94,.06);border-color:rgba(244,63,94,.4);}
-.upload-item.confirm-delete{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.04);}
 .delete-confirm-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#f43f5e;font-weight:600;flex-shrink:0;}
 .delete-confirm-row button{background:none;border:1px solid currentColor;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
 .delete-confirm-row .confirm-yes{color:#f43f5e;}
@@ -1552,7 +1524,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
       <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
-      <button class="nav-btn" id="nav-upload" onclick="showScreen('upload');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="nav_upload">Upload</span></button>
       <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
       <button class="nav-btn" id="nav-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
     </div>
@@ -1574,7 +1545,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <button class="mobile-nav-item" id="mob-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
   <button class="mobile-nav-item" id="mob-review" onclick="showScreen('bookmarks');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="mob_review">Review</span></button>
   <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
-  <button class="mobile-nav-item" id="mob-upload" onclick="showScreen('upload');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span data-i18n="mob_upload">Upload</span></button>
   <button class="mobile-nav-item" id="mob-settings" onclick="showScreen('settings');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
   <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
 </div>
@@ -1990,39 +1960,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     </div>
   </div>
   <!-- 세션 기록은 2026-08-25 에 뺐다 — 복습 → 최근 세션 탭과 같은 목록이고 거기서는 다시 볼 수 있다. 안내는 제목 밑으로(사용자: 표 밑은 아무도 안 본다) -->
-</div>
-
-<!-- ═══ UPLOAD ═══ -->
-<div id="screen-upload" class="screen">
-  <div style="margin-bottom:1.5rem;">
-    <div class="section-title">문제은행 업로드</div>
-    <div style="font-size:15px;color:var(--text-muted);">CSV 파일로 문제를 추가하세요. 아래 형식을 그대로 사용하시면 됩니다.</div>
-  </div>
-
-  <div style="background:rgba(0,100,196,.08);border:1.5px solid rgba(0,100,196,.25);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;">
-    <div class="exp-label" style="margin-bottom:10px;">CSV 파일 형식 (이 헤더를 그대로 사용하세요)</div>
-    <div style="font-size:13px;color:var(--text-mid);margin-bottom:10px;line-height:1.7;">첫 줄은 반드시 아래 헤더여야 합니다. 각 셀의 내용에 쉼표가 포함될 경우 큰따옴표로 감싸주세요.</div>
-    <div style="background:#eef2f2;border:1px solid rgba(53,70,73,.15);border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12px;color:#354649;line-height:2;overflow-x:auto;white-space:pre;-webkit-mask-image:linear-gradient(to right,black 80%,transparent 100%);mask-image:linear-gradient(to right,black 80%,transparent 100%);">question_id,text,options_a,options_b,options_c,options_d,correct,explanation,wrongreasons,taxupdate2025,examtip,part,topic,outline_code,difficulty
-"Q001","Which filing status...","Single","MFJ","Head of Household","QSS","C","HOH applies when...","A: wrong because... B: wrong because...","2025 변경: 표준공제 $22,500으로 인상","EA Exam Tip...","Part 1","Filing Status","",""
-"ab001","The taxpayer's 2024...","$9,000 LT loss","$10,000 ST loss","$4,000 ST loss","$4,000 LT loss","C","2024년에 단기 자본손실...","","","","Part 1","Capital Loss Carryover","C1001","3"</div>
-    <div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:5px;letter-spacing:.03em;">← 좌우 스크롤하여 전체 컬럼 확인 →</div>
-    <div style="font-size:13px;color:var(--text-mid);margin-top:10px;"><strong>correct</strong>: A/B/C/D 또는 0/1/2/3 · <strong>question_id</strong>: 문제번호 (예: Q001) · <strong>part</strong>: "Part 1/2/3" · <strong>outline_code</strong>: COP 기반 문제용(예: C1001), 일반 문제는 빈 값 · <strong>difficulty</strong>: 1~5 정수 (선택)</div>
-  </div>
-
-  <div class="upload-zone" id="upload-zone"
-    onclick="document.getElementById('file-input').click()"
-    ondragover="event.preventDefault();this.classList.add('drag')"
-    ondragleave="this.classList.remove('drag')"
-    ondrop="handleDrop(event)">
-    <div style="font-size:36px;margin-bottom:.75rem;">📂</div>
-    <div style="font-size:17px;font-weight:600;margin-bottom:6px;color:var(--text-main);">CSV 파일을 여기에 드롭하거나 클릭하여 선택</div>
-    <div style="font-size:14px;color:var(--text-muted);">.csv 파일만 지원 · 업로드 즉시 추가됩니다</div>
-  </div>
-  <input type="file" id="file-input" multiple accept=".csv" onchange="handleFileSelect(this.files)" style="display:none;"/>
-  <input type="file" id="replace-input" accept=".csv" onchange="handleReplaceFile(this.files)" style="display:none;"/>
-
-  <div class="exp-label" style="margin-bottom:10px;">업로드된 파일</div>
-  <div id="upload-list"></div>
 </div>
 
 <!-- ═══ SETTINGS ═══ -->
@@ -2607,12 +2544,6 @@ function navSvg(name, cls){
 
 function applyAdminVisibility(){
   var isAdmin = SB_USER && SB_USER.id === ADMIN_UID;
-
-  // ── Upload 메뉴: Admin 전용 ── (ID 기반 — nav 버튼 삽입에도 안전)
-  var upBtn = document.getElementById('nav-upload');
-  if(upBtn) upBtn.style.display = isAdmin ? '' : 'none';
-  var mobUpload = document.getElementById('mob-upload');
-  if(mobUpload) mobUpload.style.display = isAdmin ? '' : 'none';
 
   // ── Settings(Admin) vs 내 계정(일반 유저) ──
   var setBtn = document.getElementById('nav-settings');
@@ -4439,13 +4370,13 @@ async function loadFromCloud(){
     // 관리자: 본문/해설은 백그라운드로 채움 (필요 시 ensure*/prefetch* 가 완료 대기)
     if(S.isAdminUser){ ADMIN_BACKFILL = adminBackfillContent(); }
 
-    renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
+    renderDashboard(); renderBookmarks(); updateAvailCount();
     updateResumeBadge();
     showToast(`✅ ${S.questions.length}개 문제 로드 완료`);
   } catch(e){
     showToast('⚠️ 클라우드 로드 실패: ' + e.message);
     if(S.questions.length === 0) S.questions = JSON.parse(JSON.stringify(DEMO));
-    renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
+    renderDashboard(); renderBookmarks(); updateAvailCount();
   }
 }
 
@@ -4472,57 +4403,6 @@ async function saveSessionToCloud(count, correct, pct, questionIds){
   }).select().single();
   if(error){ console.warn('session save:', error); return null; }
   return data;
-}
-
-async function uploadQuestionsToCloud(questions){
-  if(!SB_USER){ showToast('⚠️ 로그인 필요'); return 0; }
-  // 중복 제거 — question_id 우선 (DB UNIQUE 제약과 일치), 없으면 id (defensive fallback)
-  const uniqueQuestions = Array.from(
-    new Map(questions.map(q => [q.question_id || q.id, q])).values()
-  );
-  // ⚠️ 2026-06-30 수정: 신규 스키마는 'Part 1' 문자열이 아니라 int2(1/2/3) 사용.
-  // 별도 'id' 컬럼 없음(question_id가 PK) — 컬럼명도 소문자/언더스코어 없음으로 통일.
-  function partToInt(partStr){
-    var m = { 'Part 1':1, 'Part 2':2, 'Part 3':3 };
-    return m[partStr] || 1;
-  }
-  const rows = uniqueQuestions.map(q => ({
-    question_id:     q.question_id || null,
-    source:          q.source,
-    text:            q.text,
-    options:         q.options,
-    correct:         q.correct,
-    explanation:     q.explanation || null,
-    wrongreasons:    q.wrongReasons || null,
-    taxupdate2025:   q.taxUpdate2025 || null,
-    examtip:         q.examTip || null,
-    part:            partToInt(q.part || 'Part 1'),
-    topic:           q.topic || 'General',
-    outline_code:    q.outlineCode || null,
-    difficulty:      (q.difficulty != null && q.difficulty !== '') ? q.difficulty : null,
-  }));
-  // ※ 2026-06-02 content_outline FK 제거로 사전 검증 블록 불필요 (handoff §9 ⑤ 참조)
-
-  let uploaded = 0;
-  const errors = [];
-  const BATCH_SIZE = 50;  // 100→50 으로 축소: 실패 시 격리 및 손실 최소화
-  for(let i = 0; i < rows.length; i += BATCH_SIZE){
-    const batch = rows.slice(i, i + BATCH_SIZE);
-    const { error } = await sb.from('questions').upsert(batch, { onConflict: 'question_id' });
-    if(error){
-      errors.push({ rangeStart: i, rangeEnd: i + batch.length - 1, msg: error.message });
-      console.error('Upload batch rows ' + i + '-' + (i + batch.length - 1) + ' failed:', error, batch);
-      continue;  // break 안 함 — 다음 배치 계속 시도
-    }
-    uploaded += batch.length;
-  }
-  if(errors.length > 0){
-    const first = errors[0];
-    showToast(errors.length === 1
-      ? '❌ 행 ' + first.rangeStart + '-' + first.rangeEnd + ' 업로드 실패: ' + first.msg
-      : '❌ ' + errors.length + '개 배치 실패 (첫 실패: 행 ' + first.rangeStart + '-' + first.rangeEnd + ' — ' + first.msg + ')');
-  }
-  return uploaded;
 }
 
 // 선택적 업데이트 지원
@@ -4643,7 +4523,6 @@ var UI_TEXT = {
   mock_banner_resume:{ko:'이어하기', en:'Resume'},
   nav_review:    {ko:'복습',     en:'Review'},
   nav_statistics:{ko:'통계',     en:'Statistics'},
-  nav_upload:    {ko:'업로드',   en:'Upload'},
   mob_dashboard: {ko:'대시보드', en:'Dashboard'},
   // 앱 푸터 (2026-08-18) — 로그인 «후» 화면에는 푸터가 아예 없다는 지적을 받아 추가했다.
   //   (.app-footer CSS 는 예전부터 있었는데 정작 <footer> 요소가 빠져 있었다)
@@ -4655,7 +4534,6 @@ var UI_TEXT = {
   mob_study:     {ko:'학습',     en:'Study'},
   mob_review:    {ko:'복습',     en:'Review'},
   mob_statistics:{ko:'통계',     en:'Statistics'},
-  mob_upload:    {ko:'업로드',   en:'Upload'},
   mob_settings:  {ko:'설정',     en:'Settings'},
   nav_account:   {ko:'내 계정',  en:'My Account'},
   nav_settings:  {ko:'설정',     en:'Settings'},
@@ -5004,7 +4882,7 @@ function init(){
       if(obj.repeatFilter) S.repeatFilter = obj.repeatFilter;
     }
   }catch(e){}
-  renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
+  renderDashboard(); renderBookmarks(); updateAvailCount();
   updateResumeBadge();
   applyLang();
 }
@@ -5227,7 +5105,7 @@ function resetData(){
   S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={};
   S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.adminQcMode=false; S.retryFlaggedMode=false;
   if(SB_USER){ sb.from('live_session').delete().eq('user_id', SB_USER.id); }
-  renderDashboard(); renderBookmarks(); renderUploadList(); updateAvailCount();
+  renderDashboard(); renderBookmarks(); updateAvailCount();
   updateResumeBadge();
   showToast('All data reset');
 }
@@ -5241,9 +5119,9 @@ function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,upload:6,settings:7,anomaly:8};
+  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,settings:6,anomaly:7};  // Upload 메뉴 삭제(2026-08-25) — 인덱스 한 칸 당김
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
-  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',upload:'mob-upload',settings:'mob-settings',anomaly:'mob-anomaly'};
+  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',settings:'mob-settings',anomaly:'mob-anomaly'};
   document.querySelectorAll('.mobile-nav-item').forEach(b=>b.classList.remove('active'));
   if(mobMap[name]) { const el=document.getElementById(mobMap[name]); if(el) el.classList.add('active'); }
   // 모의고사 하위 화면(exam/result/history)도 모의고사 메뉴를 활성 표시
@@ -9096,291 +8974,8 @@ window.addEventListener('resize', function(){
   if(h && getComputedStyle(h).display === 'none') closeDrawer();
 });
 
-// ══════════════════════════════════════════════════════
-// UPLOAD & CSV PARSING (그대로 유지)
-// ══════════════════════════════════════════════════════
-function renderUploadList(){
-  const src=[...new Set(S.questions.map(q=>q.source).filter(s=>s&&s!=='demo'))];
-  const el=document.getElementById('upload-list');
-  if(src.length===0){
-    el.innerHTML='<div style="font-size:15px;color:var(--text-muted);padding:10px 0;">데모 문제 10개가 기본으로 포함되어 있습니다. CSV 파일을 업로드하여 문제를 추가하세요.</div>';
-    return;
-  }
-  el.innerHTML=src.map(s=>{
-    const cnt=S.questions.filter(q=>q.source===s).length;
-    const safeId=encodeURIComponent(s);
-    return`<div class="upload-item" id="upload-item-${safeId}">
-      <div style="width:38px;height:38px;border-radius:8px;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".85"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:15px;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s}</div>
-        <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">${cnt}개 문제</div>
-      </div>
-      <span class="upload-badge">${cnt}개</span>
-      <div class="upload-item-actions">
-        <button class="upload-action-btn replace" onclick="triggerReplace('${s}')" title="이 파일을 새 CSV로 교체">교체</button>
-        <button class="upload-action-btn delete" onclick="confirmDelete('${s}')" title="이 파일의 문제 삭제">삭제</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function handleFileSelect(files){
-  [...files].forEach(f=>{
-    if(!f.name.endsWith('.csv')){
-      showToast('⚠️ CSV 파일만 지원됩니다: '+f.name);
-      return;
-    }
-    processCSVFile(f);
-  });
-}
-
-function handleDrop(e){
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.remove('drag');
-  handleFileSelect(e.dataTransfer.files);
-}
-
 let _deleteTarget = null;
-function confirmDelete(sourceName){
-  if(_deleteTarget && _deleteTarget !== sourceName) cancelDelete();
-  _deleteTarget = sourceName;
-  const safeId  = encodeURIComponent(sourceName);
-  const item    = document.getElementById('upload-item-'+safeId);
-  if(!item) return;
-  item.classList.add('confirm-delete');
-  const actions = item.querySelector('.upload-item-actions');
-  actions.innerHTML=`
-    <div class="delete-confirm-row">
-      <span>정말 삭제?</span>
-      <button class="confirm-yes" onclick="executeDelete('${sourceName}')">삭제</button>
-      <button class="confirm-no"  onclick="cancelDelete()">취소</button>
-    </div>`;
-}
-function cancelDelete(){
-  if(!_deleteTarget) return;
-  _deleteTarget = null;
-  renderUploadList();
-}
-function executeDelete(sourceName){
-  const before = S.questions.length;
-  S.questions = S.questions.filter(q => q.source !== sourceName);
-  const ids = new Set(S.questions.map(q=>q.id));
-  for(const k in S.answered){ if(!ids.has(k)) delete S.answered[k]; }
-  S.flagged.forEach(id=>{ if(!ids.has(id)) S.flagged.delete(id); });
-  save();
-  const removed = before - S.questions.length;
-  _deleteTarget = null;
-  renderUploadList(); renderDashboard(); updateAvailCount();
-  showToast(`🗑 ${removed}개 문제 삭제됨 (${sourceName})`);
-  if(SB_USER){
-    sb.from('questions').delete().eq('source', sourceName).then(({error})=>{
-      if(error) showToast('⚠️ 클라우드 삭제 오류: '+error.message);
-      else showToast(`☁️ 클라우드에서도 "${sourceName}" 삭제 완료`);
-    });
-  }
-}
-
 let _replaceTarget = null;
-function triggerReplace(sourceName){
-  _replaceTarget = sourceName;
-  const inp = document.getElementById('replace-input');
-  inp.value = '';
-  inp.click();
-}
-function handleReplaceFile(files){
-  if(!files || !files.length || !_replaceTarget) return;
-  const file = files[0];
-  if(!file.name.endsWith('.csv')){
-    showToast('⚠️ CSV 파일만 지원됩니다');
-    _replaceTarget = null;
-    return;
-  }
-  const target = _replaceTarget;
-  _replaceTarget = null;
-  showToast('📂 교체 중: '+file.name);
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try{
-      const newQs = parseCSV(ev.target.result, target);
-      if(!newQs.length){ showToast('❌ 문제를 찾을 수 없습니다. CSV 형식 확인하세요.'); return; }
-      S.questions = S.questions.filter(q => q.source !== target);
-      const newIds = new Set(newQs.map(q => q.id));
-      S.questions = S.questions.filter(q => !newIds.has(q.id));
-      newQs.forEach(q=>{ q.source = target; S.questions.push(q); });
-      const allIds = new Set(S.questions.map(q=>q.id));
-      for(const k in S.answered){ if(!allIds.has(k)) delete S.answered[k]; }
-      S.flagged.forEach(id=>{ if(!allIds.has(id)) S.flagged.delete(id); });
-      save(); renderUploadList(); renderDashboard(); updateAvailCount();
-      showToast(`✅ ${newQs.length}개 문제로 교체됨 (${target})`);
-      (async()=>{
-        if(SB_USER){
-          await sb.from('questions').delete().eq('source', target);
-          const n = await uploadQuestionsToCloud(newQs);
-          if(n > 0) showToast(`☁️ ${n}개 문제 클라우드 교체 완료`);
-        }
-      })();
-    }catch(err){
-      showToast('❌ 오류: '+err.message);
-    }
-  };
-  reader.onerror = () => showToast('❌ 파일 읽기 실패');
-  reader.readAsText(file, 'utf-8');
-}
-
-function processCSVFile(file){
-  showToast('📂 읽는 중: '+file.name);
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{
-      const qsRaw=parseCSV(ev.target.result, file.name);
-      if(!qsRaw.length){ showToast('❌ 문제를 찾을 수 없습니다. CSV 형식을 확인하세요.'); return; }
-      // CSV 내 중복 제거 — question_id 우선 (DB UNIQUE 제약과 일치), 없으면 id (last-wins)
-      const qs = Array.from(new Map(qsRaw.map(q => [q.question_id || q.id, q])).values());
-      const dupeCount = qsRaw.length - qs.length;
-      if(dupeCount > 0){
-        showToast('⚠️ CSV 내 중복 ID '+dupeCount+'개 발견 — 마지막 항목만 사용 ('+qs.length+'개 처리)');
-      }
-      const sourceName = file.name;
-      const isReplace  = S.questions.some(q => q.source === sourceName);
-      if(isReplace){
-        S.questions = S.questions.filter(q => q.source !== sourceName);
-        showToast(`🔄 기존 "${sourceName}" 교체 중…`);
-      }
-      const newIds = new Set(qs.map(q => q.id));
-      S.questions = S.questions.filter(q => !newIds.has(q.id));
-      qs.forEach(q => S.questions.push(q));
-      const allIds = new Set(S.questions.map(q => q.id));
-      for(const k in S.answered){ if(!allIds.has(k)) delete S.answered[k]; }
-      S.flagged.forEach(id=>{ if(!allIds.has(id)) S.flagged.delete(id); });
-      save(); renderUploadList(); renderDashboard(); updateAvailCount();
-      showToast(isReplace
-        ? `✅ "${sourceName}" 교체 완료 (${qs.length}개)`
-        : `✅ ${qs.length}개 문제 추가됨 (총 ${S.questions.length}개)`);
-      (async()=>{
-        if(SB_USER){
-          let deleteFallback = false;
-          if(isReplace){
-            const { error: delErr } = await sb.from('questions').delete().eq('source', sourceName);
-            if(delErr){
-              deleteFallback = true;
-              showToast('⚠️ 기존 데이터 삭제 실패 (학습 기록 FK 보호): upsert 모드로 진행');
-              console.warn('Cloud delete failed (likely FK RESTRICT from user_progress):', delErr);
-            }
-          }
-          const n = await uploadQuestionsToCloud(qs);
-          if(n > 0){
-            showToast(deleteFallback
-              ? '☁️ ' + n + '/' + qs.length + '개 업데이트·추가 완료 (기존 행 보존)'
-              : '☁️ ' + n + '/' + qs.length + '개 문제 클라우드 저장 완료');
-          }
-          if(n < qs.length){
-            showToast('❌ ' + (qs.length - n) + '개 문제 업로드 실패 — 콘솔(F12) 확인 필요');
-          }
-        }
-      })();
-    }catch(err){
-      showToast('❌ 오류: '+err.message);
-    }
-  };
-  reader.onerror=()=>showToast('❌ 파일 읽기 실패');
-  reader.readAsText(file,'utf-8');
-}
-
-function parseCSV(text, sourceName){
-  text = text.replace(/^\uFEFF/, '');
-  const rows=splitCSVRows(text);
-  if(rows.length<2){ throw new Error('헤더 포함 최소 2줄 이상이어야 합니다'); }
-  const header=rows[0].map(h=>h.trim().toLowerCase());
-  const col=name=>header.indexOf(name);
-  const isFormatA = col('text')!==-1;
-  const isFormatB = col('question')!==-1;
-  if(!isFormatA && !isFormatB) throw new Error('헤더에 "text" 또는 "question" 컬럼이 필요합니다');
-  const qs=[];
-  for(let i=1;i<rows.length;i++){
-    const row=rows[i];
-    if(row.length<2 || !row[0].trim()) continue;
-    let text, optA, optB, optC, optD, correct, explanation, part, topic;
-    if(isFormatA){
-      text        = cell(row, col('text'));
-      optA        = cell(row, col('options_a'));
-      optB        = cell(row, col('options_b'));
-      optC        = cell(row, col('options_c'));
-      optD        = cell(row, col('options_d'));
-      const corRaw= cell(row, col('correct')).trim();
-      correct     = isNaN(corRaw) ? 'ABCD'.indexOf(corRaw.toUpperCase()) : parseInt(corRaw);
-      explanation = cell(row, col('explanation'));
-      part        = cell(row, col('part')) || 'Part 1';
-      topic       = cell(row, col('topic')) || 'General';
-    } else {
-      text        = cell(row, col('question'));
-      optA        = cell(row, col('a'));
-      optB        = cell(row, col('b'));
-      optC        = cell(row, col('c'));
-      optD        = cell(row, col('d'));
-      const corRaw= cell(row, col('correct')).trim();
-      correct     = isNaN(corRaw) ? 'ABCD'.indexOf(corRaw.toUpperCase()) : parseInt(corRaw);
-      explanation = cell(row, col('explanation'));
-      part        = cell(row, col('part')) || 'Part 1';
-      topic       = cell(row, col('topic')) || 'General';
-    }
-    const qid         = cell(row, col('question_id'));
-    const wrongReasons= cell(row, col('wrong_reasons'));
-    const taxUpdate   = cell(row, col('tax_update_2025'));
-    const examTip     = cell(row, col('exam_tip'));
-    const outlineCode = cell(row, col('outline_code'));
-    const diffRaw     = cell(row, col('difficulty'));
-    let   difficulty  = null;
-    if(diffRaw && !isNaN(diffRaw)){
-      const d = parseInt(diffRaw, 10);
-      if(d >= 1 && d <= 5) difficulty = d;
-    }
-    if(!text || !optA) continue;
-    if(correct<0||correct>3) correct=0;
-    const options=[optA,optB,optC,optD].filter(Boolean);
-    if(options.length<2) continue;
-    qs.push({
-      id: qid || ('csv'+Date.now()+Math.random().toString(36).slice(2,7)),
-      question_id: qid,
-      source: sourceName,
-      text, options, correct, explanation,
-      part, topic,
-      wrongReasons: wrongReasons,
-      taxUpdate2025: taxUpdate,
-      examTip: examTip,
-      outlineCode: outlineCode || null,
-      difficulty: difficulty
-    });
-  }
-  return qs;
-}
-
-function splitCSVRows(text){
-  const rows=[];
-  let row=[], cur='', inQ=false;
-  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(ch==='"'){
-      if(inQ && text[i+1]==='"'){ cur+='"'; i++; }
-      else inQ=!inQ;
-    } else if(ch===',' && !inQ){
-      row.push(cur); cur='';
-    } else if(ch==='\n' && !inQ){
-      row.push(cur); cur='';
-      if(row.some(c=>c.trim())) rows.push(row);
-      row=[];
-    } else {
-      cur+=ch;
-    }
-  }
-  if(cur||row.length) { row.push(cur); if(row.some(c=>c.trim())) rows.push(row); }
-  return rows;
-}
-
-function cell(row, idx){
-  return (idx>=0 && idx<row.length) ? row[idx].trim() : '';
-}
-
 // EN 토스트 번역 레이어 — 개별 호출부 수정 없이 패턴 매칭으로 영어 변환
 var TOAST_EN = [
   [/^학습 재개 버튼이 숨겨졌습니다\..*$/, 'Resume button hidden. It reappears on the Dashboard.'],
