@@ -2437,6 +2437,11 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     .mk-exam-bar>button{padding:6px 9px;font-size:12px;}
     .mk-pause-word{display:none;}
   }
+  /* 641~760px(작은 태블릿·폰 가로): 시험 바 1행이 빠듯해 「검토·제출」이 떨어진다 → 버튼만 작게 */
+  @media(min-width:641px) and (max-width:760px){
+    .mk-exam-bar>button{padding:7px 10px;font-size:12.5px;}
+    .mk-pause-word{display:none;}
+  }
 </style>
 
 <div id="screen-mock" class="screen"><div id="mock-hub" style="max-width:760px;margin:0 auto;"></div></div>
