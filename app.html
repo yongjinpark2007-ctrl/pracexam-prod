@@ -9991,8 +9991,12 @@ if ('serviceWorker' in navigator) {
 .wr-body .ex p{font-size:13.5px;line-height:1.72;margin:0 0 6px;color:#4b5759;}
 .wr-body .ex .ans b{color:#1f5b54;}
 .wr-gate{text-align:center;padding:40px 20px;}
-/* 무료 회원 미리보기 — 앞부분만 보여 주고 아래를 흰색으로 서서히 덮는다 (2026-08-08) */
-.wr-peek{position:relative;}
+/* 무료 회원 미리보기 — 앞부분만 보여 주고 아래를 흰색으로 서서히 덮는다 (2026-08-08)
+   🔴 높이를 붙박이로 둔다(2026-08-24 사용자 지적 "체험 고객에게 보여 주는 공간이 제각각") — 서버는 본문의 50% 를 주는데
+   토픽 길이가 11배 차이라(183~2,121자) 어떤 토픽은 한 화면을 넘겨 보이고 어떤 토픽은 몇 줄뿐이었다.
+   넘치는 부분은 감추고 잠금 카드가 늘 같은 자리에 온다. 무료 공개 토픽(39개)은 이 클래스가 안 붙어 전문 그대로. */
+.wr-peek{position:relative;max-height:380px;overflow:hidden;}
+@media(max-width:640px){ .wr-peek{max-height:300px;} }
 .wr-peek::after{content:'';position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#fff 88%);pointer-events:none;}
 .wr-gate.peeked{padding:6px 20px 34px;}
 .wr-gate .card{background:#354649;color:#fff;border-radius:14px;padding:24px 22px;max-width:420px;margin:0 auto;}
