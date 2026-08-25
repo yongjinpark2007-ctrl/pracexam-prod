@@ -2432,6 +2432,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     .mk-exam-bar .sp{order:2;}
     .mk-exam-bar>button{order:3;flex:none;}
     .mk-exam-bar .mk-progtext{order:4;flex-basis:100%;width:100%;font-size:12.5px;}
+    /* 휴식 버튼이 생기며 1행이 넘쳐 「검토·제출」이 2행으로 떨어졌다(아이폰 · 2026-08-25) → 버튼을 작게, 휴식은 「⏸ 2/2」만 */
+    .mk-exam-bar .mk-timer{font-size:14px;padding:4px 8px;}
+    .mk-exam-bar>button{padding:6px 9px;font-size:12px;}
+    .mk-pause-word{display:none;}
   }
 </style>
 
@@ -2443,7 +2447,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <span class="mk-timer" id="mock-timer">3:30:00</span>
       <span class="mk-progtext" id="mock-progtext">Question 1 of 100</span>
       <span class="sp"></span>
-      <button class="btn-ghost" id="mock-pause-btn" style="padding:8px 12px;font-size:13px;white-space:nowrap;" onclick="mockPauseClick()" title="시계가 멈춥니다 · 시험당 2회">⏸ 휴식 2/2</button>
+      <button class="btn-ghost" id="mock-pause-btn" style="padding:8px 12px;font-size:13px;white-space:nowrap;" onclick="mockPauseClick()" title="시계가 멈춥니다 · 시험당 2회">⏸ <span class="mk-pause-word">휴식</span> 2/2</button>
       <button class="btn-ghost" style="padding:8px 14px;font-size:13px;" onclick="mockOpenReview()" data-i18n="mock_review_btn">검토·제출</button>
     </div>
     <div class="mk-prog-track"><div class="mk-prog-fill" id="mock-prog-fill"></div></div>
@@ -9309,7 +9313,7 @@ function mockEndBreak(){
 function mockRenderPauseBtn(){
   var b = document.getElementById('mock-pause-btn'); if(!b) return;
   var left = mockBreaksLeft();
-  b.textContent = '⏸ ' + mL('휴식','Break') + ' ' + left + '/' + MOCK_BREAK_MAX;
+  b.innerHTML = '⏸ <span class="mk-pause-word">' + mL('휴식','Break') + '</span> ' + left + '/' + MOCK_BREAK_MAX;   // 폰에서는 낱말을 숨겨 「⏸ 2/2」
   b.disabled = !left || !!Mock.breakStart; b.style.opacity = (!left || Mock.breakStart) ? '.45' : '';
 }
 function mockUpdateProgress(){
