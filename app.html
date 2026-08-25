@@ -8004,10 +8004,16 @@ async function showExplanation(q, isOk, timeout){
           '<button class="btn-ghost" style="flex:1;" onclick="exitRetryFlagged()">' + (LANG === 'en' ? 'Back to Review' : 'Review로 돌아가기') + '</button>' +
         '</div>';
     } else {
+      // 마지막 문제는 가운데 이동 버튼(renderQuizNavButtons)과 «같은 문구» — 한쪽만 Finish 면 헷갈린다 (사용자 2026-08-25).
+      // 마지막일 때 data-i18n 을 떼는 까닭 = 언어를 바꾸면 i18n 이 「다음 문제」로 되돌려 버림.
+      const _isLastQ = (S.quizIdx + 1) >= S.quizQueue.length;
+      const _nextLbl = !_isLastQ ? t('quiz_next_q')
+                     : S.reviewMode ? ((LANG === 'en') ? 'Done ✓' : '복습 완료 ✓')
+                     : 'Finish ✓';
       btnArea.innerHTML =
         '<div class="fb-row">' +
           feedbackBtnHtml() +
-          '<button class="btn-navy" data-i18n="quiz_next_q" onclick="nextQuestion()">' + t('quiz_next_q') + '</button>' +
+          '<button class="btn-navy"' + (_isLastQ ? '' : ' data-i18n="quiz_next_q"') + ' onclick="nextQuestion()">' + _nextLbl + '</button>' +
         '</div>';
     }
   }
