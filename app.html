@@ -9279,7 +9279,7 @@ function mockGoto(idx){ mockBackToQ(); mockRenderQuestion(idx); }
 function mockBreaksLeft(){ return Math.max(0, MOCK_BREAK_MAX - (Mock.breaksUsed||0)); }
 function mockPauseClick(){
   if(Mock.breakStart) return;
-  if(!mockBreaksLeft()){ showToast(mL('휴식 ' + MOCK_BREAK_MAX + '회를 모두 썼습니다 (시험장 기준)','You have used all ' + MOCK_BREAK_MAX + ' breaks (same as the real exam)')); return; }
+  if(!mockBreaksLeft()){ showToast(mL('휴식 ' + MOCK_BREAK_MAX + '회를 모두 썼습니다','You have used all ' + MOCK_BREAK_MAX + ' breaks')); return; }
   mockStartBreak();
 }
 function mockStartBreak(){
@@ -9294,7 +9294,7 @@ function mockRenderBreak(){
       '<div style="font-size:36px;margin-bottom:.5rem;">☕</div>' +
       '<div style="font-size:18px;font-weight:800;margin-bottom:6px;">' + (en ? 'Break' : '휴식') + ' <span style="font-size:13px;font-weight:600;color:var(--text-muted);">' + (Mock.breaksUsed||0) + '/' + MOCK_BREAK_MAX + '</span></div>' +
       '<div id="mock-break-left" style="font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal);margin:6px 0;">' + mockFmt(gone).replace(/^0:/, '') + '</div>' +
-      '<div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">' + (en ? 'The exam clock is stopped until you resume. Breaks are limited to ' + MOCK_BREAK_MAX + ' per exam (same as the test center).' : '「계속하기」를 누를 때까지 시험 시계가 멈춰 있습니다. 휴식은 시험당 ' + MOCK_BREAK_MAX + '회까지입니다(시험장 기준).') + '</div>' +
+      '<div style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">' + (en ? 'The exam clock is stopped until you resume. Breaks are limited to ' + MOCK_BREAK_MAX + ' per exam.' : '「계속하기」를 누를 때까지 시험 시계가 멈춰 있습니다. 휴식은 시험당 ' + MOCK_BREAK_MAX + '회까지입니다.') + '</div>' +
       '<button class="btn-navy" style="width:100%;" onclick="mockEndBreak()">' + (en ? 'Resume now' : '지금 계속하기') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
