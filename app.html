@@ -905,6 +905,11 @@ html, body {
   transition:border-color .2s;
 }
 .rev-sess-row:hover{border-color:var(--border-hover);}
+/* 복습 — 통계와 같은 묶음 머리줄·클릭 카드 (2026-08-25) */
+.rev-group{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);background:rgba(53,70,73,.05);border-radius:8px;padding:7px 10px;margin:0 0 8px;}
+.rev-card{cursor:pointer;}
+@media(hover:hover){.rev-card:hover{border-color:var(--sel-border,#6FA39E)!important;}}
+.rev-miss{font-weight:700;}
 .rev-sess-info{flex:1;}
 .rev-sess-date{font-size:15px;font-weight:600;color:var(--text-main);}
 .rev-sess-meta{font-size:13px;color:var(--text-muted);margin-top:2px;}
@@ -1903,6 +1908,13 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div style="margin-bottom:1rem;">
     <div class="section-title" data-i18n="review_title">Review</div>
   </div>
+  <!-- Part 선택 — 통계 화면과 같은 부품 · 두 탭에 함께 걸린다 (2026-08-25) -->
+  <div class="sts-part-seg" id="rev-part-seg">
+    <button data-p="all" onclick="revSetPart('all')" data-i18n="sts_part_all">전체</button>
+    <button class="active" data-p="Part 1" onclick="revSetPart('Part 1')">Part 1</button>
+    <button data-p="Part 2" onclick="revSetPart('Part 2')">Part 2</button>
+    <button data-p="Part 3" onclick="revSetPart('Part 3')">Part 3</button>
+  </div>
   <!-- Tab bar -->
   <div class="review-tab-bar">
     <button class="review-tab active" id="rev-tab-flagged" onclick="switchReviewTab('flagged')">
@@ -1914,6 +1926,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   </div>
   <!-- Flagged panel -->
   <div id="rev-panel-flagged">
+    <div class="sts-section-sub" id="rev-flag-sub"></div>
     <div id="bookmarks-list"></div>
   </div>
   <!-- Recent Sessions panel -->
@@ -4796,6 +4809,10 @@ var UI_TEXT = {
   bm_set:         {ko:'세트', en:'Set'},
   bm_misses:      {ko:'오답 이력', en:'Prev. misses'},
   bm_reviewable:  {ko:'복습 가능', en:'Reviewable'},
+  bm_summary:     {ko:'플래그 {a}문항 · 풀 수 있는 {b}문항 · 세트당 {n}문항', en:'{a} flagged · {b} reviewable · {n} per set'},
+  bm_part_empty:  {ko:'이 Part 에는 플래그한 문항이 없습니다.', en:'No flagged questions in this part.'},
+  rev_more:       {ko:'더 보기', en:'Show more'},
+  rev_part_empty: {ko:'이 Part 의 세션이 아직 없습니다.', en:'No sessions for this part yet.'},
   rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   // ── Statistics ──
@@ -8788,6 +8805,15 @@ function stsTopicGo(code){
 
 // (renderStsSessions · loadMoreStsSessions 는 2026-08-25 에 뺐다 — 세션 기록은 복습 → 최근 세션)
 
+// ── 복습 Part 선택 (2026-08-25) — 통계와 같은 규칙: 집중 학습 Part → Part 1 ──
+var REV_PART = (function(){ try{ var p = localStorage.getItem('ea_focus_part'); if(/^Part [123]$/.test(p||'')) return p; }catch(e){} return 'Part 1'; })();
+var REV_SESS_SHOWN = 20;
+function revSetPart(p){ REV_PART = p || 'all'; REV_SESS_SHOWN = 20; renderBookmarks(); }
+function revSyncSeg(){
+  document.querySelectorAll('#rev-part-seg button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-p') === REV_PART); });
+}
+function revMoreSessions(){ REV_SESS_SHOWN += 20; renderReviewSessions(); }
+
 function switchReviewTab(tab){
   var isFlagged = tab === 'flagged';
   document.getElementById('rev-tab-flagged').classList.toggle('active', isFlagged);
@@ -8823,11 +8849,14 @@ function flaggedSubmittableByPart(){
 async function renderBookmarks(){
   var el = document.getElementById('bookmarks-list');
   var badge = document.getElementById('rev-badge-flagged');
-  var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id); });
+  var sub = document.getElementById('rev-flag-sub');
+  revSyncSeg();
+  var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id) && (REV_PART === 'all' || q.part === REV_PART); });
   if(badge) badge.textContent = allFlagged.length;
 
   if(!allFlagged.length){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">' + t('bm_empty_t') + '</div><div class="empty-sub">' + t('bm_empty_s') + '</div></div>';
+    if(sub) sub.textContent = '';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">⚑</div><div class="empty-title">' + t(REV_PART === 'all' ? 'bm_empty_t' : 'bm_part_empty') + '</div><div class="empty-sub">' + t('bm_empty_s') + '</div></div>';
     renderReviewSessions();
     return;
   }
@@ -8835,22 +8864,14 @@ async function renderBookmarks(){
   var groups = flaggedSubmittableByPart();
   var partKeys = [];
   var submittableTotal = 0;
-  for(var k in groups){ if(groups.hasOwnProperty(k)){ partKeys.push(k); submittableTotal += groups[k].length; } }
+  for(var k in groups){ if(groups.hasOwnProperty(k) && (REV_PART === 'all' || k === REV_PART)){ partKeys.push(k); submittableTotal += groups[k].length; } }
   partKeys.sort();  // 'Part 1' < 'Part 2' < 'Part 3'
   var pendingCount = allFlagged.length - submittableTotal;
 
   var html = '';
 
-  // 요약 바
-  html += '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;' +
-            'padding:10px 12px;margin-bottom:14px;border-radius:10px;' +
-            'background:var(--teal-dim);border:1px solid var(--border-clr);">' +
-            '<span style="font-weight:700;color:var(--teal);">⚑ ' + allFlagged.length + '</span>' +
-            '<span style="font-size:12.5px;color:var(--text-mid);">' +
-              t('bm_reviewable') + ' ' + submittableTotal +
-              ' · ' + t('bm_set') + ' ' + FLAG_BATCH_SIZE + (LANG==='en'?'/set':'개 단위') +
-            '</span>' +
-          '</div>';
+  // 요약 — 고객 말로 제목 밑 한 줄 (옛 「⚑ 154 · Reviewable 153 · Set 20/set」 칩은 개발자 말투였다)
+  if(sub) sub.textContent = t('bm_summary').replace('{a}', allFlagged.length).replace('{b}', submittableTotal).replace('{n}', FLAG_BATCH_SIZE);
 
   if(!submittableTotal){
     html += '<div class="empty" style="padding:1.5rem 1rem;">' +
@@ -8867,10 +8888,8 @@ async function renderBookmarks(){
       var nBatches = Math.ceil(qs.length / FLAG_BATCH_SIZE);
 
       html += '<div style="margin-bottom:18px;">';
-      html +=   '<div style="display:flex;align-items:baseline;gap:8px;margin:0 2px 8px;">' +
-                  '<span style="font-size:15px;font-weight:700;color:var(--text-dark,#222);">' + part + '</span>' +
-                  '<span style="font-size:12px;color:var(--text-muted);">' + uQ(qs.length) + '</span>' +
-                '</div>';
+      // 묶음 머리줄 — 통계 표의 묶음(PART 1 — 개인세 · 93)과 같은 모양
+      html +=   '<div class="rev-group">' + ((typeof partLabel === 'function') ? partLabel(part) : part) + ' · ' + uQ(qs.length) + '</div>';
 
       for(var bi=0; bi<nBatches; bi++){
         var start = bi * FLAG_BATCH_SIZE;
@@ -8883,20 +8902,22 @@ async function renderBookmarks(){
         }
         var rangeLbl = (start + 1) + '–' + end;
 
-        html += '<div style="display:flex;align-items:center;gap:12px;' +
+        // 지난 오답 수에 색 — 어느 세트부터 풀지 한눈에 (10+ 빨강 · 5+ 주황)
+        var missCol = wrongSum >= 10 ? 'var(--danger-color)' : wrongSum >= 5 ? 'var(--flag-color)' : 'var(--text-muted)';
+        var goCall = 'retryFlaggedBatch(\'' + part + '\',' + bi + ')';
+        html += '<div class="rev-card" style="display:flex;align-items:center;gap:12px;' +
                   'padding:12px 14px;margin-bottom:8px;border-radius:10px;' +
-                  'background:var(--card-bg,#fff);border:1px solid var(--border-clr);">' +
+                  'background:var(--card-bg,#fff);border:1px solid var(--border-clr);" onclick="' + goCall + '">' +
                   '<div style="flex:1;min-width:0;">' +
                     '<div style="font-size:14px;font-weight:600;color:var(--text-dark,#222);">' +
                       t('bm_set') + ' ' + (bi + 1) +
                       '<span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:7px;">' + rangeLbl + '</span>' +
                     '</div>' +
                     '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">' +
-                      uQ(slice.length) + ' · ' + t('bm_misses') + ' ' + wrongSum +
+                      uQ(slice.length) + ' · ' + t('bm_misses') + ' <span class="rev-miss" style="color:' + missCol + ';">' + wrongSum + '</span>' +
                     '</div>' +
                   '</div>' +
-                  '<button class="btn-navy" style="padding:8px 16px;font-size:13px;white-space:nowrap;" ' +
-                    'onclick="retryFlaggedBatch(\'' + part + '\',' + bi + ')">' + t('bm_retry') + '</button>' +
+                  '<button class="sts-go-btn" type="button" onclick="event.stopPropagation();' + goCall + '">' + t('bm_retry') + '</button>' +
                 '</div>';
       }
       html += '</div>';
@@ -8937,18 +8958,19 @@ function renderReviewSessions(){
 
   // 완료된 세션 전부 표시. question_ids가 있는 세션만 개별 복습 가능
   // (구버전 세션은 문제 ID가 저장되지 않아 목록엔 보이되 복습 버튼은 비활성)
-  var sessions = S.sessions.filter(function(s){ return (s.count || 0) > 0; });
+  var sessions = S.sessions.filter(function(s){ return (s.count || 0) > 0 && (REV_PART === 'all' || stsSessionPart(s) === REV_PART); });
   if(badge) badge.textContent = sessions.length;
 
   if(!sessions.length){
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">' + t('rev_sess_empty_t') + '</div><div class="empty-sub">' + t('rev_sess_empty_s') + '</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">' + t(REV_PART === 'all' ? 'rev_sess_empty_t' : 'rev_part_empty') + '</div><div class="empty-sub">' + t('rev_sess_empty_s') + '</div></div>';
     return;
   }
 
   var ordered = sessions.slice().sort(function(a,b){ return new Date(b.created_at||0) - new Date(a.created_at||0); });
 
   var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
-  el.innerHTML = ordered.slice(0, 20).map(function(s){
+  var shown = ordered.slice(0, REV_SESS_SHOWN);
+  el.innerHTML = shown.map(function(s){
     var realIdx = S.sessions.indexOf(s);
     var label = s.date || '';
     if(s.created_at){
@@ -8957,12 +8979,13 @@ function renderReviewSessions(){
               d.toLocaleTimeString(_loc, {hour:'2-digit', minute:'2-digit', hour12:false});
     }
     var scoreColor = s.pct >= 80 ? 'var(--success-color)' : s.pct >= 60 ? 'var(--flag-color)' : 'var(--danger-color)';
-    var partLbl = s.part ? ' · ' + s.part : '';
+    var _sp = stsSessionPart(s);   // question_ids 로 Part 판정 (통계와 같은 함수) · 섞이면 'All'
+    var partLbl = (_sp && _sp !== 'All') ? ' · ' + _sp : (s.part ? ' · ' + s.part : '');
     var hasIds = s.question_ids && s.question_ids.length > 0;
     var actionHtml = hasIds
-      ? '<button class="btn-navy" style="padding:7px 14px;font-size:13px;white-space:nowrap;" onclick="reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>'
+      ? '<button class="sts-go-btn" type="button" onclick="event.stopPropagation();reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>'
       : '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;opacity:.75;" title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않았습니다') + '">' + (LANG === 'en' ? 'History only' : '기록만 · 복습 불가') + '</span>';
-    return '<div class="rev-sess-row">' +
+    return '<div class="rev-sess-row' + (hasIds ? ' rev-card' : '') + '"' + (hasIds ? ' onclick="reviewSession(' + realIdx + ')"' : '') + '>' +
       '<div class="rev-sess-info">' +
         '<div class="rev-sess-date">' + label + '</div>' +
         '<div class="rev-sess-meta">' + uQ(s.count) + partLbl + '</div>' +
@@ -8970,7 +8993,9 @@ function renderReviewSessions(){
       '<div style="font-size:18px;font-weight:700;color:' + scoreColor + ';margin-right:8px;">' + s.pct + '%</div>' +
       actionHtml +
     '</div>';
-  }).join('');
+  }).join('') + (ordered.length > shown.length
+    ? '<div style="text-align:center;padding-top:10px;"><button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="revMoreSessions()">' + t('rev_more') + ' (' + shown.length + ' / ' + ordered.length + ')</button></div>'
+    : '');
 }
 
 async function retryFlagged(id){
