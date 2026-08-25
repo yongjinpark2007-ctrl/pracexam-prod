@@ -8589,16 +8589,18 @@ function renderStsSummary(){
   var allPcts = sess.map(function(s){ return s.pct||0; });
   var avgPct = allPcts.length ? Math.round(allPcts.reduce(function(a,v){ return a+v; },0) / allPcts.length) : 0;
   // 최고 점수는 뜻이 약해(2문항 세션도 100%) 진도율로 — 대시보드와 같은 셈(푼 문항 / 전체 문항) (사용자 2026-08-25)
+  // 회차(Cycle)까지 — 히어로 원과 같은 셈(heroCycleStats): 1회차를 다 돌고 2회차를 시작하면 2회차 진도 (사용자 2026-08-25)
   var _qs = S.questions.filter(function(q){ return STS_PART === 'all' || q.part === STS_PART; });
-  var _done = _qs.filter(function(q){ return S.answered[q.id]; }).length;
-  var progPct = _qs.length ? Math.round(_done / _qs.length * 100) : 0;
+  var _cs = heroCycleStats(_qs);
+  var progPct = _cs.pct;
+  var progLbl = t('sts_progress') + ' · ' + heroCycleLabel(_cs.cycle);
   var flagCount = S.flagged.size;
 
   el.innerHTML = [
     {val: totalSessions, lbl: t('sts_total_sessions')},
     {val: totalAnswered, lbl: t('sts_total_answered')},
     {val: avgPct + '%', lbl: t('sts_avg')},
-    {val: progPct + '%', lbl: t('sts_progress')},
+    {val: progPct + '%', lbl: progLbl},
   ].map(function(c){
     return '<div class="sts-card">' +
       '<div class="sts-card-val">' + c.val + '</div>' +
