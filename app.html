@@ -775,6 +775,24 @@ html, body {
 .result-banner{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;margin-bottom:1rem;font-size:16px;font-weight:600;}
 .result-banner.ok{background:rgba(74,222,128,.1);color:var(--success-color);border:1px solid rgba(74,222,128,.25);}
 .result-banner.fail{background:rgba(244,63,94,.08);color:var(--danger-color);border:1px solid rgba(244,63,94,.2);}
+/* ── 해설 머리 구역: 정답 판정 + War Room 을 같은 크기·같은 모양으로, 데스크톱은 1:2 나란히 (2026-08-24 사용자 결정 B2·C2)
+   두 상자 폭은 카드 폭에만 묶여 정답·오답·시간종료 어느 판정에서도 크기가 안 바뀐다. War Room 은 한 줄 말줄임(사용자 요청). ── */
+.exp-head{display:flex;flex-direction:column;gap:8px;margin-bottom:1.1rem;}
+.exp-head .result-banner{margin-bottom:0;padding:11px 14px;border-radius:10px;font-size:15px;font-weight:700;line-height:1.45;}
+.exp-head .result-banner:empty{display:none;}
+.exp-head #exp-topic-badge{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;min-width:0;padding:11px 14px;border-radius:10px;font-size:15px;font-weight:500;line-height:1.45;overflow:hidden;}
+.exp-head #exp-topic-badge b{font-weight:700;}
+.exp-head #exp-topic-badge .wr-bolt{width:15px;height:15px;flex:none;margin-right:0;}
+.exp-head #exp-topic-badge .wr-txt{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.exp-head #exp-topic-badge .wr-arrow{flex:none;opacity:.7;font-weight:600;}
+/* C2 — War Room 상자는 Harbor 선택색(청회색). 판정 상자의 초록/빨강 옆에 테라코타가 나란히 오면 정신없다(사용자 2026-08-24) */
+.exp-head #exp-topic-badge.exp-topic-link{background:var(--teal-dim);border-color:rgba(53,70,73,.18);color:var(--teal);}
+.exp-head #exp-topic-badge.exp-topic-link:hover{background:#d9ebe9;color:var(--teal);}
+@media(min-width:641px){
+  .exp-head{flex-direction:row;align-items:stretch;}
+  .exp-head .result-banner{flex:0 0 32%;min-width:0;}
+  .exp-head #exp-topic-badge{flex:1 1 0;width:auto;}
+}
 .exp-section{margin-bottom:1rem;}
 /* white-space:pre-wrap — 해설 원문의 줄바꿈을 살린다. 없으면 계산 단계가 한 줄로 붙어 숫자가 뒤엉킨다
    (2026-08-08 사용자 지적). 모의고사 복습 모달(mockReview)이 쓰는 방식과 동일하게 맞췄다. */
@@ -1331,7 +1349,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .tip-body{font-size:19px;line-height:1.85;overflow-wrap:anywhere;}
   .explanation-card .exp-label{font-size:19px;}
   .tip-label{font-size:19px;}
-  .result-banner{font-size:14px;padding:9px 14px;}
   .exp-section{margin-bottom:.7rem;}
   .update-box,.tip-box{margin:8px 0;padding:10px 13px;}
 
@@ -1767,11 +1784,11 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   </div>
 
   <div class="explanation-card" id="explanation-card">
-    <div class="result-banner" id="result-banner"></div>
-    <div id="correction-box"></div>
-    <div style="margin-bottom:1rem;">
+    <div class="exp-head">
+      <div class="result-banner" id="result-banner"></div>
       <span class="q-badge-gray" id="exp-topic-badge">Topic</span>
     </div>
+    <div id="correction-box"></div>
 
     <div class="exp-section">
       <div class="exp-label" data-i18n="exp_explanation">Explanation</div>
@@ -7965,7 +7982,7 @@ async function showExplanation(q, isOk, timeout){
     const _oc = ((q.outlineCode || '') + '').trim();
     if(_oc){
       // COP 매핑 문제: 배지 클릭 → War Room 해당 토픽 (2026-07-30)
-      topicBadge.innerHTML = '<svg class="wr-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' + 'War Room · ' + _escHtml(_tn) + ' <span style="opacity:.7;">↗</span>';
+      topicBadge.innerHTML = '<svg class="wr-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' + '<span class="wr-txt"><b>War Room</b> · ' + _escHtml(_tn) + '</span><span class="wr-arrow">↗</span>';
       topicBadge.classList.add('exp-topic-link');
       topicBadge.title = (LANG === 'en') ? 'Open this topic in War Room' : 'War Room에서 이 주제 자세히 보기';
       topicBadge.onclick = function(){ openWarRoomTopic(_oc, q); };
@@ -7981,12 +7998,12 @@ async function showExplanation(q, isOk, timeout){
     banner.className = 'result-banner'; banner.textContent = '';
   } else if(timeout){
     banner.className='result-banner fail';
-    banner.textContent = (LANG === 'en') ? '⏱ Time\'s up! See the correct answer below' : '⏱ 시간 종료! 아래에서 정답을 확인하세요';
+    banner.textContent = (LANG === 'en') ? '⏱ Time\'s up' : '⏱ 시간 종료';
   } else {
     banner.className='result-banner '+(isOk?'ok':'fail');
     banner.textContent = (LANG === 'en')
-      ? (isOk ? '✓ Correct! Well done.' : '✗ Incorrect — review the explanation below')
-      : (isOk ? '✓ 정답입니다!' : '✗ 오답 — 아래 해설을 확인하세요');
+      ? (isOk ? '✓ Correct!' : '✗ Incorrect')
+      : (isOk ? '✓ 정답입니다!' : '✗ 오답입니다');
   }
 
   const expText = pickLang(q.explanation, q.explanationEn);
