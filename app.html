@@ -788,10 +788,10 @@ html, body {
 /* C2 — War Room 상자는 Harbor 선택색(청회색). 판정 상자의 초록/빨강 옆에 테라코타가 나란히 오면 정신없다(사용자 2026-08-24) */
 .exp-head #exp-topic-badge.exp-topic-link{background:var(--teal-dim);border-color:rgba(53,70,73,.18);color:var(--teal);}
 .exp-head #exp-topic-badge.exp-topic-link:hover{background:#d9ebe9;color:var(--teal);}
-/* War Room 상자 테두리 펄스 글로우 — 10초에 한 바퀴, 밝은 청회색(#4D6164 = 진도 막대 색), 최대한 옅게 (사용자 결정 2026-08-24 · 실화면 보고 추가 결정) */
+/* War Room 상자 테두리 펄스 글로우 — 12초에 한 바퀴, 밝은 청회색(#4D6164 = 진도 막대 색), 테두리 40%·글로우 10% (사용자가 실화면 보고 「너무 튄다」→ 2026-08-24 2차 조정) */
 @keyframes wrPulse{0%,100%{border-color:rgba(53,70,73,.18);box-shadow:0 0 0 0 rgba(77,97,100,0);}
-  50%{border-color:rgba(77,97,100,.55);box-shadow:0 0 0 2px rgba(77,97,100,.10),0 0 12px 2px rgba(77,97,100,.20);}}
-.exp-head #exp-topic-badge.exp-topic-link{animation:wrPulse 10s ease-in-out infinite;}
+  50%{border-color:rgba(77,97,100,.40);box-shadow:0 0 0 2px rgba(77,97,100,.05),0 0 12px 2px rgba(77,97,100,.10);}}
+.exp-head #exp-topic-badge.exp-topic-link{animation:wrPulse 12s ease-in-out infinite;}
 @media(prefers-reduced-motion:reduce){.exp-head #exp-topic-badge.exp-topic-link{animation:none;}}
 @media(min-width:641px){
   .exp-head{flex-direction:row;align-items:stretch;}
