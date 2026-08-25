@@ -900,10 +900,10 @@ html, body {
 #rev-part-seg button{font-size:12.5px;padding:7px 14px;}
 @media(max-width:640px){ .review-tab{font-size:14px;padding:10px 6px;} }
 
-/* REVIEW SESSION ROWS */
+/* REVIEW SESSION ROWS — 플래그 세트 카드와 같은 글자·여백·모서리 (사용자: 두 섹션이 따로 논다 · 2026-08-25) */
 .rev-sess-row{
   background:var(--card-bg);border:1px solid var(--border-clr);
-  border-radius:14px;padding:13px 14px;margin-bottom:8px;
+  border-radius:10px;padding:12px 14px;margin-bottom:8px;
   display:flex;align-items:center;gap:12px;
   box-shadow:var(--card-shadow);
   transition:border-color .2s;
@@ -914,9 +914,10 @@ html, body {
 .rev-card{cursor:pointer;}
 @media(hover:hover){.rev-card:hover{border-color:var(--sel-border,#6FA39E)!important;}}
 .rev-miss{font-weight:700;}
-.rev-sess-info{flex:1;}
-.rev-sess-date{font-size:15px;font-weight:600;color:var(--text-main);}
-.rev-sess-meta{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.rev-sess-info{flex:1;min-width:0;}
+.rev-sess-date{font-size:14px;font-weight:600;color:var(--text-main);}
+.rev-sess-meta{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.rev-sess-pct{font-size:15px;font-weight:700;margin-right:8px;}
 
 .delete-confirm-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#f43f5e;font-weight:600;flex-shrink:0;}
 .delete-confirm-row button{background:none;border:1px solid currentColor;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
@@ -1903,8 +1904,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     <div class="sts-section-sub" id="rev-flag-sub"></div>
     <div id="bookmarks-list"></div>
   </div>
-  <!-- Recent Sessions panel -->
+  <!-- Recent Sessions panel — 플래그 탭과 같은 구조(안내문 + 묶음 머리줄 + 카드) (2026-08-25) -->
   <div id="rev-panel-sessions" style="display:none;">
+    <div class="sts-section-sub" id="rev-sess-sub"></div>
     <div id="review-sessions-list"></div>
   </div>
 </div>
@@ -4706,6 +4708,8 @@ var UI_TEXT = {
   bm_summary:     {ko:'플래그 {a}문항 · 풀 수 있는 {b}문항 · 세트당 {n}문항', en:'{a} flagged · {b} reviewable · {n} per set'},
   bm_part_empty:  {ko:'이 Part 에는 플래그한 문항이 없습니다.', en:'No flagged questions in this part.'},
   rev_more:       {ko:'더 보기', en:'Show more'},
+  rev_sess_summary:{ko:'세션 {a}개 · 다시 풀 수 있는 {b}개', en:'{a} sessions · {b} reviewable'},
+  rev_sess_earlier:{ko:'이전 기록', en:'Earlier'},
   rev_part_empty: {ko:'이 Part 의 세션이 아직 없습니다.', en:'No sessions for this part yet.'},
   rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
@@ -8846,6 +8850,7 @@ function retryFlaggedBatch(part, batchIdx){
 function renderReviewSessions(){
   var el = document.getElementById('review-sessions-list');
   var badge = document.getElementById('rev-badge-sessions');
+  var sub = document.getElementById('rev-sess-sub');
   if(!el) return;
 
   // 완료된 세션 전부 표시. question_ids가 있는 세션만 개별 복습 가능
@@ -8854,15 +8859,38 @@ function renderReviewSessions(){
   if(badge) badge.textContent = sessions.length;
 
   if(!sessions.length){
+    if(sub) sub.textContent = '';
     el.innerHTML = '<div class="empty"><div class="empty-icon">📖</div><div class="empty-title">' + t(REV_PART === 'all' ? 'rev_sess_empty_t' : 'rev_part_empty') + '</div><div class="empty-sub">' + t('rev_sess_empty_s') + '</div></div>';
     return;
   }
 
   var ordered = sessions.slice().sort(function(a,b){ return new Date(b.created_at||0) - new Date(a.created_at||0); });
 
+  // 안내문 — 플래그 탭의 「플래그 N문항 · 풀 수 있는 M문항」과 같은 자리·같은 모양
+  var reviewable = ordered.filter(function(s){ return s.question_ids && s.question_ids.length > 0; }).length;
+  if(sub) sub.textContent = t('rev_sess_summary').replace('{a}', ordered.length).replace('{b}', reviewable);
+
+  // 달별 묶음 수 — 머리줄에 「2026년 8월 · 세션 N개」로 쓴다 (플래그 탭의 Part 묶음 머리줄과 같은 부품)
   var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
+  function _mKey(s){ if(!s.created_at) return 'earlier'; var d = new Date(s.created_at); return d.getFullYear() + '-' + d.getMonth(); }
+  function _mLbl(s){
+    if(!s.created_at) return t('rev_sess_earlier');
+    var d = new Date(s.created_at);
+    return (LANG === 'en') ? d.toLocaleDateString('en-US', {month:'short', year:'numeric'}) : (d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월');
+  }
+  var monthCount = {};
+  for(var mi = 0; mi < ordered.length; mi++){ var mk = _mKey(ordered[mi]); monthCount[mk] = (monthCount[mk] || 0) + 1; }
+
   var shown = ordered.slice(0, REV_SESS_SHOWN);
-  el.innerHTML = shown.map(function(s){
+  var html = '';
+  var lastKey = null;
+  for(var i = 0; i < shown.length; i++){
+    var s = shown[i];
+    var key = _mKey(s);
+    if(key !== lastKey){
+      lastKey = key;
+      html += '<div class="rev-group">' + _mLbl(s) + ' · ' + (LANG === 'en' ? monthCount[key] + (monthCount[key] === 1 ? ' session' : ' sessions') : '세션 ' + monthCount[key] + '개') + '</div>';
+    }
     var realIdx = S.sessions.indexOf(s);
     var label = s.date || '';
     if(s.created_at){
@@ -8877,15 +8905,16 @@ function renderReviewSessions(){
     var actionHtml = hasIds
       ? '<button class="sts-go-btn" type="button" onclick="event.stopPropagation();reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>'
       : '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;opacity:.75;" title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않았습니다') + '">' + (LANG === 'en' ? 'History only' : '기록만 · 복습 불가') + '</span>';
-    return '<div class="rev-sess-row' + (hasIds ? ' rev-card' : '') + '"' + (hasIds ? ' onclick="reviewSession(' + realIdx + ')"' : '') + '>' +
+    html += '<div class="rev-sess-row' + (hasIds ? ' rev-card' : '') + '"' + (hasIds ? ' onclick="reviewSession(' + realIdx + ')"' : '') + '>' +
       '<div class="rev-sess-info">' +
         '<div class="rev-sess-date">' + label + '</div>' +
         '<div class="rev-sess-meta">' + uQ(s.count) + partLbl + '</div>' +
       '</div>' +
-      '<div style="font-size:18px;font-weight:700;color:' + scoreColor + ';margin-right:8px;">' + s.pct + '%</div>' +
+      '<div class="rev-sess-pct" style="color:' + scoreColor + ';">' + s.pct + '%</div>' +
       actionHtml +
     '</div>';
-  }).join('') + (ordered.length > shown.length
+  }
+  el.innerHTML = html + (ordered.length > shown.length
     ? '<div style="text-align:center;padding-top:10px;"><button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="revMoreSessions()">' + t('rev_more') + ' (' + shown.length + ' / ' + ordered.length + ')</button></div>'
     : '');
 }
