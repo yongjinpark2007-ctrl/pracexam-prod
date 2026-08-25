@@ -1940,7 +1940,6 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <div style="margin-bottom:1.25rem;">
     <div class="section-title" data-i18n="sts_title">Statistics</div>
     <div style="font-size:13px;color:var(--text-muted);" data-i18n="sts_subtitle">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
-    <div class="sts-sess-link" id="sts-sess-link" style="margin-top:4px;"></div>
   </div>
 
   <!-- Part 선택 — 요약·추세·토픽 표가 함께 걸러진다 (2026-08-25) -->
@@ -4830,7 +4829,6 @@ var UI_TEXT = {
   sts_topic_pro:  {ko:'Pro 전용', en:'Pro only'},
   sts_topics_hint:{ko:'토픽을 누르면 그 토픽만 골라 집중 학습을 시작합니다.', en:'Tap a topic to start a focused session on it.'},
   sts_topics_hint_trial:{ko:'토픽별 집중 학습은 Pro 회원 전용입니다.', en:'Focused topic sessions are for Pro members.'},
-  sts_sess_link:  {ko:'세션별로 다시 보려면 <a onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">복습 → 최근 세션</a>', en:'To revisit a session, open <a onclick="showScreen(\'bookmarks\');switchReviewTab(\'sessions\')">Review → Recent Sessions</a>'},
   sts_part_empty: {ko:'이 Part 의 세션이 아직 없습니다.', en:'No sessions for this part yet.'},
   sts_th_topic:   {ko:'토픽',    en:'Topic'},
   sts_th_attempts:{ko:'시도',    en:'Attempts'},
@@ -8594,7 +8592,6 @@ function renderStatistics(){
   renderStsTrend();
   renderStsParts();
   renderStsTopics();
-  var lk = document.getElementById('sts-sess-link'); if(lk) lk.innerHTML = t('sts_sess_link');
 }
 
 function renderStsSummary(){
