@@ -881,7 +881,8 @@ html, body {
 .bm-stats .bm-ng{color:var(--danger-color);font-weight:600;}
 
 /* REVIEW TABS */
-/* 복습 탭 — 흰 상자 안 두 칸, 고른 쪽 청회색 채움 (사용자: 밑줄 탭은 흰 카드에 묻힌다 · 2026-08-25). Part 선택은 그 밑에 작게 */
+/* 복습 탭 — 흰 상자 안 두 칸, 고른 쪽 청회색 채움 (사용자: 밑줄 탭은 흰 카드에 묻힌다 · 2026-08-25). Part 선택은 그 밑에 작게.
+   타일 격자는 2026-08-25 에 시도했다가 «시각적으로 문제 있음»으로 취소 — 목록(막대)으로 유지 */
 .review-tab-bar{display:flex;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;padding:4px;gap:4px;margin-bottom:1rem;box-shadow:var(--card-shadow);}
 .review-tab{
   flex:1;padding:11px 8px;text-align:center;font-size:15px;font-weight:700;
@@ -897,33 +898,24 @@ html, body {
 .review-tab.active .review-tab-badge{background:rgba(255,255,255,.22);color:#fff;}
 #rev-part-seg{margin-bottom:1rem;}
 #rev-part-seg button{font-size:12.5px;padding:7px 14px;}
-/* 타일 격자 — 세트·세션 카드 (폰 2열 · 아이패드 3열 · 데스크톱 4~5열). 막대로 쌓으면 스크롤이 길다(사용자) */
-.rev-set-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:18px;}
-.rev-set-grid > .rev-group{grid-column:1/-1;margin:0;}
-.rev-tile{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:12px 12px 10px;border-radius:10px;background:var(--card-bg,#fff);border:1px solid var(--border-clr);}
-.rev-tile .sts-go-btn{width:100%;text-align:center;}
-#review-sessions-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
-#review-sessions-list > .rev-more{grid-column:1/-1;text-align:center;padding-top:6px;}
-.rev-sess-pct{font-size:22px;font-weight:700;}
-@media(max-width:640px){ .rev-set-grid,#review-sessions-list{grid-template-columns:repeat(2,1fr);gap:8px;} .review-tab{font-size:14px;padding:10px 6px;} }
+@media(max-width:640px){ .review-tab{font-size:14px;padding:10px 6px;} }
 
 /* REVIEW SESSION ROWS */
 .rev-sess-row{
   background:var(--card-bg);border:1px solid var(--border-clr);
-  border-radius:10px;padding:12px 12px 10px;margin-bottom:0;
-  display:flex;flex-direction:column;align-items:stretch;gap:6px;
+  border-radius:14px;padding:13px 14px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:var(--card-shadow);
   transition:border-color .2s;
 }
 .rev-sess-row:hover{border-color:var(--border-hover);}
-.rev-sess-row .rev-sess-info{flex:none;}
-.rev-sess-row .sts-go-btn{width:100%;text-align:center;}
 /* 복습 — 통계와 같은 묶음 머리줄·클릭 카드 (2026-08-25) */
 .rev-group{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-mid);background:rgba(53,70,73,.05);border-radius:8px;padding:7px 10px;margin:0 0 8px;}
 .rev-card{cursor:pointer;}
 @media(hover:hover){.rev-card:hover{border-color:var(--sel-border,#6FA39E)!important;}}
 .rev-miss{font-weight:700;}
 .rev-sess-info{flex:1;}
-.rev-sess-date{font-size:14px;font-weight:700;color:var(--text-main);}
+.rev-sess-date{font-size:15px;font-weight:600;color:var(--text-main);}
 .rev-sess-meta{font-size:13px;color:var(--text-muted);margin-top:2px;}
 
 /* UPLOAD */
@@ -8896,7 +8888,7 @@ async function renderBookmarks(){
       var qs = groups[part];
       var nBatches = Math.ceil(qs.length / FLAG_BATCH_SIZE);
 
-      html += '<div class="rev-set-grid">';
+      html += '<div style="margin-bottom:18px;">';
       // 묶음 머리줄 — 통계 표의 묶음(PART 1 — 개인세 · 93)과 같은 모양
       html +=   '<div class="rev-group">' + ((typeof partLabel === 'function') ? partLabel(part) : part) + ' · ' + uQ(qs.length) + '</div>';
 
@@ -8914,7 +8906,9 @@ async function renderBookmarks(){
         // 지난 오답 수에 색 — 어느 세트부터 풀지 한눈에 (10+ 빨강 · 5+ 주황)
         var missCol = wrongSum >= 10 ? 'var(--danger-color)' : wrongSum >= 5 ? 'var(--flag-color)' : 'var(--text-muted)';
         var goCall = 'retryFlaggedBatch(\'' + part + '\',' + bi + ')';
-        html += '<div class="rev-card rev-tile" onclick="' + goCall + '">' +
+        html += '<div class="rev-card" style="display:flex;align-items:center;gap:12px;' +
+                  'padding:12px 14px;margin-bottom:8px;border-radius:10px;' +
+                  'background:var(--card-bg,#fff);border:1px solid var(--border-clr);" onclick="' + goCall + '">' +
                   '<div style="flex:1;min-width:0;">' +
                     '<div style="font-size:14px;font-weight:600;color:var(--text-dark,#222);">' +
                       t('bm_set') + ' ' + (bi + 1) +
@@ -8997,11 +8991,11 @@ function renderReviewSessions(){
         '<div class="rev-sess-date">' + label + '</div>' +
         '<div class="rev-sess-meta">' + uQ(s.count) + partLbl + '</div>' +
       '</div>' +
-      '<div class="rev-sess-pct" style="color:' + scoreColor + ';">' + s.pct + '%</div>' +
+      '<div style="font-size:18px;font-weight:700;color:' + scoreColor + ';margin-right:8px;">' + s.pct + '%</div>' +
       actionHtml +
     '</div>';
   }).join('') + (ordered.length > shown.length
-    ? '<div class="rev-more"><button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="revMoreSessions()">' + t('rev_more') + ' (' + shown.length + ' / ' + ordered.length + ')</button></div>'
+    ? '<div style="text-align:center;padding-top:10px;"><button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="revMoreSessions()">' + t('rev_more') + ' (' + shown.length + ' / ' + ordered.length + ')</button></div>'
     : '');
 }
 
