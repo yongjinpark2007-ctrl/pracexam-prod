@@ -4792,7 +4792,7 @@ var UI_TEXT = {
   bm_empty_t:     {ko:'플래그된 문제 없음', en:'No flagged questions'},
   bm_empty_s:     {ko:'학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다', en:'Flag tough questions with ⚑ during study to review them here'},
   bm_load_fail:   {ko:'(본문 로드 실패 — 다시 열어주세요)', en:'(Failed to load — please reopen)'},
-  bm_retry:       {ko:'다시 풀기 →', en:'Solve Again →'},
+  bm_retry:       {ko:'풀기 →', en:'Practice →'},   /* 통계 화면 「풀기/Practice」와 통일 (사용자 2026-08-25) */
   bm_set:         {ko:'세트', en:'Set'},
   bm_misses:      {ko:'오답 이력', en:'Prev. misses'},
   bm_reviewable:  {ko:'복습 가능', en:'Reviewable'},
@@ -6835,7 +6835,7 @@ function renderDashRecent2(){
     var rowCls = clickable ? 'dash-recent-row' : 'dash-recent-row no-review';
     var rowAttr = clickable
       ? ' onclick="reviewSession(' + realIdx + ')" role="button" tabindex="0"' +
-        ' title="' + (LANG === 'en' ? 'Solve this session again' : '이 세션 다시 풀기') + '"'
+        ' title="' + (LANG === 'en' ? 'Practice this session again' : '이 세션 다시 풀기') + '"'
       : ' title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않아 복습할 수 없습니다') + '"';
     var histHint = clickable
       ? ''
@@ -7757,7 +7757,7 @@ async function loadQuestion(){
   document.getElementById('q-session-label').textContent = S.adminQcMode
     ? 'ADMIN QC · 문제 검토'
     : (S.reviewMode
-      ? ((LANG === 'en') ? 'REVIEW · Solve Again' : 'REVIEW · 다시 풀기')
+      ? ((LANG === 'en') ? 'REVIEW · Practice' : 'REVIEW · 풀기')
       : (S.mode.toUpperCase()+' SESSION · 2026 EA EXAM'));
   document.getElementById('q-part').textContent=q.part;
   document.getElementById('q-text').textContent=q.text;
