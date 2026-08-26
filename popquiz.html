@@ -164,12 +164,16 @@ main{flex:1 0 auto; width:100%; max-width:820px; margin:0 auto; padding:40px 24p
   .q-exp-head .q-banner{flex:0 0 32%; min-width:0;}
   .q-exp-head .q-wr-badge{flex:1 1 0; width:auto;}
 }
-/* 로그인 안내 토스트 */
-.pq-toast{position:fixed; bottom:1.5rem; left:50%; transform:translate(-50%,80px); opacity:0;
-  background:var(--white); border:1px solid var(--border-strong); border-radius:12px; padding:12px 18px;
-  font-size:13.5px; font-weight:500; color:var(--text-main); box-shadow:0 2px 12px rgba(0,0,0,.12);
-  transition:all .3s; z-index:300; max-width:calc(100vw - 32px); text-align:center;}
-.pq-toast.show{transform:translate(-50%,0); opacity:1;}
+/* 로그인 안내 팝업 — 토스트는 3초 만에 사라져 가입까지 못 이끈다 (사용자 지시 2026-08-25) */
+.pq-modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:300; padding:1rem;}
+.pq-modal-bg.open{display:flex;}
+.pq-modal{background:var(--white); border:1px solid var(--border-clr); border-radius:16px; padding:1.6rem 1.5rem; width:100%; max-width:400px; box-shadow:0 4px 24px rgba(0,0,0,.15); text-align:center; animation:fade .2s ease;}
+.pq-modal .pm-icon{font-size:26px; margin-bottom:10px;}
+.pq-modal .pm-title{font-weight:700; font-size:16.5px; color:var(--text-main); margin-bottom:6px;}
+.pq-modal .pm-sub{font-size:14px; color:var(--text-mid); margin-bottom:18px; line-height:1.6;}
+.pq-modal .pm-btns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+.pq-modal .pm-btns .btn{flex:1 1 0; min-width:120px;}
+.pq-modal .pm-later{margin-top:12px; background:none; border:none; font-family:var(--font-sans); font-size:12.5px; color:var(--text-muted); cursor:pointer; text-decoration:underline;}
 .q-exp-label{font-size:11px; color:var(--navy); letter-spacing:.1em; margin-bottom:8px; font-weight:700; text-transform:uppercase;}
 .q-exp-body{font-size:15.5px; line-height:1.8; color:var(--text-mid); margin-bottom:1rem; white-space:pre-line;}
 .q-tip{background:var(--terracotta-tint); border-left:3px solid var(--terracotta); border-radius:0 8px 8px 0; padding:12px 14px;}
@@ -380,7 +384,19 @@ html{scrollbar-gutter:stable;}
   </div>
 </main>
 
-<div class="pq-toast" id="pq-toast"></div>
+<!-- War Room 로그인 안내 팝업 — 「무료 가입이면 다 본다」는 오해를 만들지 말 것 (사용자 정정 2026-08-25) -->
+<div class="pq-modal-bg" id="pq-login-bg" onclick="if(event.target===this) pqCloseLogin()">
+  <div class="pq-modal" role="dialog" aria-modal="true">
+    <div class="pm-icon">🔒</div>
+    <div class="pm-title"><span class="ko">War Room은 로그인 후 볼 수 있어요</span><span class="en">War Room is available after you log in</span></div>
+    <div class="pm-sub"><span class="ko">아직 계정이 없다면 무료로 가입해 시작해 보세요.</span><span class="en">Don&rsquo;t have an account yet? Signing up is free.</span></div>
+    <div class="pm-btns">
+      <a href="app.html" class="btn btn-ghost"><span class="ko">로그인</span><span class="en">Log in</span></a>
+      <a href="index.html?signup=1" class="btn btn-primary"><span class="ko">무료 가입</span><span class="en">Sign up free</span></a>
+    </div>
+    <button type="button" class="pm-later" onclick="pqCloseLogin()"><span class="ko">나중에 할게요</span><span class="en">Maybe later</span></button>
+  </div>
+</div>
 
 <!-- ═══ FOOTER ═══ -->
 <footer>
@@ -461,20 +477,15 @@ function renderQuestion(q){
   show('state-question');
 }
 
-// War Room 상자 클릭 — 공개 페이지라 열람 대신 로그인 안내 (사용자 지시 2026-08-25)
-var _pqToastTimer = null;
+// War Room 상자 클릭 — 공개 페이지라 열람 대신 로그인·가입 팝업 (사용자 지시 2026-08-25)
 function wrLoginNotice(){
-  var isKo = (document.getElementById('html-root').className === 'lang-ko');
-  var el = document.getElementById('pq-toast');
-  if(!el) return;
-  // 「무료 가입으로 열람」이라 쓰지 말 것 — War Room 은 무료 계정에 전부 공개되지 않는다 (사용자 정정 2026-08-25)
-  el.textContent = isKo
-    ? '🔒 War Room은 로그인 후 볼 수 있어요.'
-    : '🔒 Log in to view War Room.';
-  el.classList.add('show');
-  clearTimeout(_pqToastTimer);
-  _pqToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3200);
+  var bg = document.getElementById('pq-login-bg');
+  if(bg) bg.classList.add('open');
   try{ gtag('event', 'popquiz_warroom_click'); }catch(e){}
+}
+function pqCloseLogin(){
+  var bg = document.getElementById('pq-login-bg');
+  if(bg) bg.classList.remove('open');
 }
 
 function onAnswer(chosen, correctIdx){
