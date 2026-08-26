@@ -467,9 +467,10 @@ function wrLoginNotice(){
   var isKo = (document.getElementById('html-root').className === 'lang-ko');
   var el = document.getElementById('pq-toast');
   if(!el) return;
+  // 「무료 가입으로 열람」이라 쓰지 말 것 — War Room 은 무료 계정에 전부 공개되지 않는다 (사용자 정정 2026-08-25)
   el.textContent = isKo
-    ? '🔒 War Room은 로그인 후 이용할 수 있어요 — 무료 가입으로 열람해 보세요.'
-    : '🔒 War Room requires a free account — sign up to explore this topic.';
+    ? '🔒 War Room은 로그인 후 볼 수 있어요.'
+    : '🔒 Log in to view War Room.';
   el.classList.add('show');
   clearTimeout(_pqToastTimer);
   _pqToastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3200);
