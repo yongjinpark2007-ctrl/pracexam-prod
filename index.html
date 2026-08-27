@@ -556,9 +556,9 @@ section{padding:88px 0;}
   border-radius:20px; overflow:hidden;
   box-shadow:0 24px 50px -20px rgba(0,0,0,.5);
 }
-/* 2:1 = 파일 비율 그대로 — 21:9 로 눌렀더니 책상·손이 잘렸다(사용자 2026-08-27) */
-.killer-photo img{display:block; width:100%; height:auto; aspect-ratio:2/1; object-fit:cover; object-position:center 30%;}
-@media (max-width:600px){ .killer-photo img{aspect-ratio:3/2;} }
+/* 🔴 크롭 금지(사용자 2026-08-27) — 사진을 원본 프레임 «통째로» 보여 준다. 책상·손이 잘리면 안 된다.
+   파일도 원본 전체(2752×1536 → 860/1720w)라 aspect-ratio·object-fit 을 걸지 않는다. */
+.killer-photo img{display:block; width:100%; height:auto;}
 .killer-encourage{
   margin-top:16px; font-size:13.5px; color:rgba(255,255,255,.45);
   font-style:italic;
@@ -1290,9 +1290,9 @@ html{scrollbar-gutter:stable;}
     <!-- 킬러 사진 — 어두운 배경 «안», 가운데 860px (2026-08-27 사용자 정정) -->
     <figure class="killer-photo">
       <img src="killer-focus.webp"
-           srcset="killer-focus.webp 1072w, killer-focus-2x.webp 2144w"
+           srcset="killer-focus.webp 860w, killer-focus-2x.webp 1720w"
            sizes="(max-width:900px) 96vw, 860px"
-           width="1072" height="536" alt="" loading="lazy">
+           width="860" height="480" alt="" loading="lazy">
     </figure>
   </div>
 </section>
