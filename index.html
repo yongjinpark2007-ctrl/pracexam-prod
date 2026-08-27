@@ -954,7 +954,13 @@ html{scrollbar-gutter:stable;}
     <!-- 히어로 사진: 절대위치, 오른쪽 배치 — 예제 문제 카드는 아래 #samples 섹션이 대신한다 (2026-08-27 · PDF 3쪽 안).
          첫 화면의 가장 큰 그림(LCP)이라 lazy 금지 · fetchpriority=high. 원본 = new landing design\ -->
     <div class="hero-demo" aria-hidden="true">
-      <img class="hero-photo" src="hero-study.webp"
+      <!-- 한국어 화면 = 한국인 사진 / 영어 화면 = 기존 사진 (사용자 2026-08-27). .lang-ko/.lang-en 이 서로를 숨긴다.
+           두 사진 모두 원본 프레임 통째(크롭 0) — KO 는 1.79:1 라 EN(3:2)보다 조금 낮게 나온다(의도). -->
+      <img class="hero-photo ko" src="hero-study-ko.webp"
+           srcset="hero-study-ko.webp 816w, hero-study-ko-2x.webp 1632w"
+           sizes="(max-width:900px) 92vw, 60vw"
+           width="816" height="455" alt="" fetchpriority="high">
+      <img class="hero-photo en" src="hero-study.webp"
            srcset="hero-study.webp 816w, hero-study-2x.webp 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="" fetchpriority="high">
