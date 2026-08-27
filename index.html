@@ -279,9 +279,10 @@ section{padding:88px 0;}
   background:linear-gradient(135deg,#ffffff 0%,#ffffff 55%,#EDF4F3 100%);
   position:relative; overflow:hidden;
 }
-.hero-wrap{position:relative; min-height:680px; display:flex; align-items:center;}
+/* min-height — 데모 카드(길었음) 시절 680/720. 사진은 낮아서 600 이면 넉넉하다 (2026-08-27) */
+.hero-wrap{position:relative; min-height:600px; display:flex; align-items:center;}
 @media (max-width:1100px){
-  .hero-wrap{min-height:720px;}
+  .hero-wrap{min-height:560px;}
 }
 @media (max-width:900px){
   .hero-wrap{flex-direction:column; align-items:stretch; min-height:0;}
@@ -304,80 +305,32 @@ section{padding:88px 0;}
   max-width:520px;
 }
 
-/* hero demo card — 기기 목업 대신 실제 예제 문제 카드 노출 (2026-07-05)
-   스크롤 없이 "이 제품이 무엇을 주는지"(실전 문제 + 한·영 병렬 해설)를 바로 보여줌 */
+/* hero photo — 예제 문제 카드 대신 공부하는 사람 사진 (2026-08-27 사용자 결정 · PDF 3쪽 안)
+   예제 문제는 아래 #samples 섹션이 그대로 보여 주므로 잃는 것 없음. 시안 = new landing design\ */
 .hero-demo{
   position:absolute;
   right:0; top:50%;
   transform:translateY(-50%);
-  width:min(470px, 44vw);
+  width:min(500px, 44vw);
   z-index:1;
 }
-.hero-demo-card{
-  background:var(--white); border:1px solid var(--border-clr); border-radius:16px;
-  padding:20px 20px 16px;
+.hero-photo{
+  display:block; width:100%; height:auto;
+  border-radius:20px;
   box-shadow:0 26px 50px -18px rgba(53,70,73,.30), 0 6px 14px rgba(53,70,73,.08);
 }
-.hero-demo-badge{
-  display:inline-flex; align-items:center; height:24px; padding:0 9px;
-  background:rgba(53,70,73,.1); color:var(--navy); border:1px solid var(--border-clr);
-  border-radius:6px; font-size:11px; font-weight:700; letter-spacing:.03em;
-  margin-bottom:10px;
-}
-.hero-demo-q{
-  font-size:13.5px; line-height:1.6; font-weight:500; color:var(--text-main);
-  margin-bottom:12px;
-}
-.hero-demo-opts{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
-.hero-demo-opt{
-  display:flex; align-items:center; gap:7px; padding:8px 10px;
-  border:1px solid var(--border-clr); border-radius:9px;
-  font-size:13px; color:var(--text-mid); background:var(--white);
-}
-.hero-demo-opt .dot{font-weight:700; color:var(--text-muted); font-size:12px;}
-.hero-demo-opt.correct{
-  background:rgba(74,222,128,.09); border-color:rgba(22,163,74,.35);
-  color:var(--text-main); font-weight:600;
-}
-.hero-demo-opt.correct .dot{color:var(--success-color);}
-.hero-demo-opt.correct .tick{margin-left:auto; width:15px; height:15px; stroke:var(--success-color); fill:none; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto;}
-.hero-demo-exp{border-top:1px dashed var(--border-strong); padding-top:11px;}
-/* 해설 — 보는 사람의 «한 언어만» 나온다 (2026-08-13 사용자 지시).
-   예전에는 KO·EN 두 덩어리를 뱃지와 함께 나란히 띄웠는데, 실제 앱은 고른 언어 하나만
-   보여 준다. 첫 화면이 제품과 달라 보이면 안 되므로 .ko/.en 토글로 바꿨다.
-   (언어 뱃지 .tag 도 함께 없앴다 — 한 언어만 나오면 알려 줄 것이 없다.) */
-.hero-demo-lang{display:block; font-size:12.5px; line-height:1.6; color:var(--text-mid);}
-.hero-demo-lang p{margin:0;}
-.hero-demo-lang p + p{margin-top:7px;}
-/* Exam Tip — 본문 예제(.sample-exp .tip)와 동일한 테라코타 콜아웃 (원래 색 유지, 포인트 컬러) */
-.hero-demo-tip{
-  background:var(--terracotta-tint); border-left:3px solid var(--terracotta);
-  border-radius:0 8px 8px 0; padding:10px 12px; margin-top:11px;
-}
-.hero-demo-tip .tip-label{
-  display:block; font-size:10px; font-weight:700; color:var(--terracotta-deep);
-  letter-spacing:.08em; text-transform:uppercase; margin-bottom:3px;
-}
-.hero-demo-tip .tip-body{display:block; font-size:12.5px; line-height:1.6; color:var(--text-mid);}
-.hero-demo-tip .tip-body > span{display:block; line-height:inherit;} /* 인라인 스팬 행간 오차 제거 — 해설과 동일 간격 */
-.hero-demo-more{
-  display:inline-flex; align-items:center; gap:5px; margin-top:12px;
-  font-size:13px; font-weight:700; color:#43706B; text-decoration:none;
-}
-.hero-demo-more:hover{text-decoration:underline;}
 @media (max-width:1100px){
   .hero-left{ max-width:460px; }
-  .hero-demo{ width:min(420px, 42vw); }
+  .hero-demo{ width:min(440px, 42vw); }
 }
 @media (max-width:1000px){
-  .hero-demo{ width:min(400px, 43vw); }
-  .hero-demo-opts{ grid-template-columns:1fr; }
+  .hero-demo{ width:min(420px, 43vw); }
 }
 @media (max-width:900px){
   .hero-left{ max-width:100%; }
   .hero-demo{
     position:relative; right:auto; top:auto;
-    transform:none; width:100%; max-width:520px;
+    transform:none; width:100%; max-width:480px;
     margin:36px auto 0;
   }
 }
@@ -571,35 +524,25 @@ section{padding:88px 0;}
   border-radius:6px; padding:3px 10px; font-size:11px;
   font-weight:700; letter-spacing:.08em; text-transform:uppercase;
 }
-.killer-cta{
-  text-align:center; margin-top:44px;
+/* 킬러 사진 띠 — 모래주머니 콜아웃을 사진 + 한 줄 캡션으로 최소화 (2026-08-27 사용자 결정 · PDF 5쪽 안).
+   killer-section 이 overflow:hidden 이라 안에서 밖으로 못 걸친다 → 두 섹션 «사이»에 띠를 두고
+   배경을 위 55% 어두운색 / 아래 45% 밝은색으로 갈라, 사진이 경계에 걸친 것처럼 보이게 한다. */
+.killer-section{padding-bottom:56px;}   /* 원래 88px — 사진 띠가 바로 이어지므로 줄임 */
+.killer-photo-band{
+  /* 사진만 들어 있는 띠 — 위 절반 어두운색·아래 절반 밝은색이라 사진이 경계 한가운데 걸친다.
+     캡션은 이 띠 «밖»(밝은 배경)에 둔다 — %로 가르면 폰에서 캡션이 어두운 쪽에 걸려 안 읽힌다(실측). */
+  background:linear-gradient(to bottom, var(--navy) 0%, var(--navy) 50%, var(--card-bg) 50%, var(--card-bg) 100%);
 }
-.killer-cta p{
-  font-size:15px; line-height:1.7; color:rgba(255,255,255,.6);
-  max-width:540px; margin:0 auto 20px;
+.killer-photo{
+  margin:0; border-radius:20px; overflow:hidden;
+  box-shadow:0 30px 60px -22px rgba(20,30,32,.5);
 }
-.killer-sandbag{
-  display:flex; align-items:flex-start; gap:14px;
-  background:rgba(198,161,91,.06); border:1.5px solid var(--muted-gold);
-  border-radius:var(--radius); padding:20px 24px; margin-top:32px;
-  text-align:left; max-width:620px; margin-left:auto; margin-right:auto;
-  box-shadow:0 0 18px rgba(198,161,91,.12);
-}
-.killer-sandbag-icon{
-  flex:0 0 auto; width:38px; height:38px; border-radius:50%;
-  background:rgba(111,163,158,.18); display:flex; align-items:center;
-  justify-content:center; margin-top:2px;
-}
-.killer-sandbag-icon svg{
-  width:20px; height:20px; stroke:var(--accent); fill:none;
-  stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round;
-}
-.killer-sandbag-text strong{
-  display:block; color:var(--white); font-size:14px;
-  font-weight:700; margin-bottom:4px;
-}
-.killer-sandbag-text span{
-  font-size:13.5px; line-height:1.65; color:rgba(255,255,255,.55);
+.killer-photo img{display:block; width:100%; height:auto; aspect-ratio:2/1; object-fit:cover; object-position:center 30%;}
+@media (max-width:600px){ .killer-photo img{aspect-ratio:4/3;} }
+.killer-photo-capwrap{background:var(--card-bg);}
+.killer-photo-cap{
+  text-align:center; font-size:13px; color:var(--text-muted);
+  padding:14px 24px 26px; line-height:1.6; margin:0;
 }
 .killer-encourage{
   margin-top:16px; font-size:13.5px; color:rgba(255,255,255,.45);
@@ -989,43 +932,13 @@ html{scrollbar-gutter:stable;}
       </div>
     </div>
 
-    <!-- 예제 문제 카드: 절대위치, 오른쪽 배치 — 실제 SAMPLE_QUESTIONS[0]과 동일 문항 (2026-07-05) -->
-    <div class="hero-demo" aria-label="예제 문제 미리보기">
-      <div class="hero-demo-card">
-        <span class="hero-demo-badge"><span class="ko">PART 1 · 신고 요건</span><span class="en">PART 1 · FILING REQUIREMENT</span></span>
-        <p class="hero-demo-q">At the end of 2025, Charles (66) and Brenda (62) Miller plan to file a joint return. What is the minimum gross income threshold at which they must file a 2025 federal return?</p>
-        <div class="hero-demo-opts">
-          <div class="hero-demo-opt"><span class="dot">A</span>$31,500</div>
-          <div class="hero-demo-opt correct"><span class="dot">B</span>$33,100<svg class="tick" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
-          <div class="hero-demo-opt"><span class="dot">C</span>$37,500</div>
-          <div class="hero-demo-opt"><span class="dot">D</span>$39,100</div>
-        </div>
-        <div class="hero-demo-exp">
-          <!-- 해설 = 보는 언어 하나만. 한글 화면엔 국문만, 영문 화면엔 영문만 나온다.
-               문구는 아래 SAMPLE_QUESTIONS[0] 의 실제 해설을 줄인 것이라 말이 갈리지 않는다.
-               용어는 용어사전(PRACEXAM_TERMS_KO-EN.md §3-D) 표준 — 시니어 특별 공제 /
-               enhanced deduction for seniors. ⚠️ 예전 표기 'Senior Bonus·고령자 추가 공제' 는
-               «추가 표준공제»와 헷갈리게 만드는 말이라 쓰지 않는다(이 문항이 노리는 함정 그 자체). -->
-          <div class="hero-demo-lang ko">
-            <p>정답은 B입니다. 신고 의무 기준(filing threshold)은 기본 표준공제액에 연령(65세 이상)·시각장애에 따른 추가 표준공제액을 합산해 정합니다(Pub. 501). 2025년 부부공동신고(MFJ)의 기본 표준공제액은 $31,500이고, 부부 중 찰스가 65세 이상이므로 1인당 추가 표준공제액 $1,600을 합산해 $33,100이 됩니다.</p>
-            <p>보기 A는 찰스의 추가 표준공제액을 누락한 값입니다. 보기 C와 D는 시니어 특별 공제 $6,000을 신고 의무 기준에 잘못 합산한 값으로, 이 공제는 세액을 계산할 때만 차감하며 신고 의무 기준에는 포함하지 않습니다.</p>
-          </div>
-          <div class="hero-demo-lang en">
-            <p>Correct answer: B. The filing threshold is the basic standard deduction plus the additional standard deduction for age (65+) or blindness (Pub. 501). For 2025, married filing jointly has a basic standard deduction of $31,500; because Charles is 65 or older, one additional standard deduction of $1,600 is added — $31,500 + $1,600 = $33,100.</p>
-            <p>Choice A leaves out Charles's additional standard deduction. Choices C and D add the $6,000 enhanced deduction for seniors to the threshold: that deduction reduces the tax you compute, but it is never counted toward the gross-income filing threshold.</p>
-          </div>
-          <div class="hero-demo-tip">
-            <span class="tip-label"><span class="ko">Exam Tip</span><span class="en">Exam Tip</span></span>
-            <span class="tip-body">
-              <span class="ko">가장 큰 함정은 어떤 공제를 합산하느냐입니다. 신고 의무 기준에 합산하는 것은 기본 표준공제액과 추가 표준공제액(65세 이상·시각장애 1인당 부부공동신고 $1,600, 단독·세대주 $2,000)뿐입니다. 2025년에 새로 도입된 시니어 특별 공제($6,000)와 팁·오버타임 공제는 납부 세액을 줄여 주지만 신고 의무 기준에는 포함하지 않습니다. 명칭이 비슷해 이 둘을 혼동하게 만드는 것이 시험의 단골 함정입니다.</span>
-              <span class="en">The trap is which deductions count. Only the basic standard deduction and the additional standard deduction for age or blindness ($1,600 per person filing jointly; $2,000 single or head of household) enter the filing threshold. The 2025 enhanced deduction for seniors ($6,000) and the tip and overtime deductions reduce the tax you owe, but never enter the threshold — the exam leans on that mix-up.</span>
-            </span>
-          </div>
-        </div>
-        <a class="hero-demo-more" href="#samples">
-          <span class="ko">다른 문제도 직접 풀어보기 →</span><span class="en">Try more sample questions →</span>
-        </a>
-      </div>
+    <!-- 히어로 사진: 절대위치, 오른쪽 배치 — 예제 문제 카드는 아래 #samples 섹션이 대신한다 (2026-08-27 · PDF 3쪽 안).
+         첫 화면의 가장 큰 그림(LCP)이라 lazy 금지 · fetchpriority=high. 원본 = new landing design\ -->
+    <div class="hero-demo" aria-hidden="true">
+      <img class="hero-photo" src="hero-study.webp"
+           srcset="hero-study.webp 720w, hero-study-2x.webp 1440w"
+           sizes="(max-width:900px) 92vw, 44vw"
+           width="720" height="480" alt="" fetchpriority="high">
     </div>
 
   </div>
@@ -1359,21 +1272,26 @@ html{scrollbar-gutter:stable;}
       </div>
     </div>
 
-    <div class="killer-cta">
-      <div class="killer-sandbag">
-        <div class="killer-sandbag-icon">
-          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        </div>
-        <div class="killer-sandbag-text">
-          <strong><span class="ko">모래주머니 훈련 효과</span><span class="en">The Sandbag Effect</span></strong>
-          <span><span class="ko">고난이도 수준 킬러 문항으로 하드 트레이닝을 거친 수험생들은 실제 시험장에서 마주하는 문제들이 상대적으로 평이하고 쉽게 느껴지는 '모래주머니 훈련 효과'를 확실히 경험하게 됩니다.</span>
-          <span class="en">Candidates who train hard on these killer questions consistently report that actual exam problems feel comparatively straightforward and intuitive — the classic "sandbag effect" of heavy training before the real race.</span></span>
-        </div>
-      </div>
-
-    </div>
   </div>
 </section>
+
+<!-- 킬러 사진 띠 — 공부하는 사람 사진 + 모래주머니 한 줄 캡션 (2026-08-27 · PDF 5쪽 안) -->
+<div class="killer-photo-band">
+  <div class="wrap">
+    <figure class="killer-photo">
+      <img src="killer-focus.webp"
+           srcset="killer-focus.webp 1072w, killer-focus-2x.webp 2144w"
+           sizes="(max-width:1120px) 96vw, 1072px"
+           width="1072" height="536" alt="" loading="lazy">
+    </figure>
+  </div>
+</div>
+<div class="killer-photo-capwrap">
+  <p class="killer-photo-cap">
+    <span class="ko">'모래주머니 훈련 효과' — 고난도 문항으로 훈련하면 실제 시험이 상대적으로 평이하게 느껴집니다.</span>
+    <span class="en">The "sandbag effect" — train on harder questions, and the real exam feels comparatively straightforward.</span>
+  </p>
+</div>
 
 <!-- ═══ SAMPLE QUESTIONS ═══ -->
 <section id="samples" class="samples">
