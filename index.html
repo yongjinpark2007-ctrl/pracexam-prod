@@ -325,8 +325,10 @@ section{padding:88px 0;}
 @media (min-width:901px){
   .hero-demo{
     /* right:0 = 콘텐츠 폭(wrap) 오른쪽 앵커 (화면 끝까지 밀면 인물이 쳐박힌다 — 사용자 2026-08-27). */
-    right:0;
-    width:min(816px, 60vw);   /* 680·50vw 에서 +20% (사용자 2026-08-27: 세로 20% 확대 — 비율 유지라 가로도 함께) */
+    /* 오른쪽으로 이동(사용자 2026-08-27) — 왼쪽 그라데이션 시작이 「How to install」 글줄에 걸리는 지점.
+       max(...) = 화면 밖으로는 안 나가게 상한(사진이 잘리면 안 됨) */
+    right:max(-104px, calc((min(100vw, 1120px) - 100vw) / 2));
+    width:min(816px, 60vw);   /* 680·50vw 에서 +20% (사용자: 세로 20% 확대 — 비율 유지라 가로도 함께) */
   }
   .hero-photo{
     /* 🔴 원본 그대로 — 자르거나 확대하지 않는다(사용자 2026-08-27 «원본에서 새로 시작»). 왼쪽만 배경으로 페이드. */
@@ -544,7 +546,7 @@ section{padding:88px 0;}
    사용자 정정 2026-08-27: ①사진은 «어두운 배경 안»에 온전히 들어간다(경계 걸침 취소)
    ②그리드 전체 폭은 너무 크다 → 가운데 860px ③모래주머니 캡션 삭제. */
 .killer-photo{
-  max-width:860px; margin:44px auto 0;
+  max-width:690px; margin:44px auto 0;   /* 860 → 690 = 20% 축소 (사용자 2026-08-27) */
   border-radius:20px; overflow:hidden;
   box-shadow:0 24px 50px -20px rgba(0,0,0,.5);
 }
