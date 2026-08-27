@@ -955,11 +955,12 @@ html{scrollbar-gutter:stable;}
          첫 화면의 가장 큰 그림(LCP)이라 lazy 금지 · fetchpriority=high. 원본 = new landing design\ -->
     <div class="hero-demo" aria-hidden="true">
       <!-- 한국어 화면 = 한국인 사진 / 영어 화면 = 기존 사진 (사용자 2026-08-27). .lang-ko/.lang-en 이 서로를 숨긴다.
-           두 사진 모두 원본 프레임 통째(크롭 0) — KO 는 1.79:1 라 EN(3:2)보다 조금 낮게 나온다(의도). -->
+           두 사진 모두 3:2 로 같은 높이 — 언어 토글 때 높이가 출렁이면 안 된다(사용자).
+           KO 원본은 1.79:1 이라 «왼쪽 빈 창가 448px 만» 잘라 3:2 로 맞춤(인물·손·책상·세로 무손실). -->
       <img class="hero-photo ko" src="hero-study-ko.webp"
            srcset="hero-study-ko.webp 816w, hero-study-ko-2x.webp 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
-           width="816" height="455" alt="" fetchpriority="high">
+           width="816" height="544" alt="" fetchpriority="high">
       <img class="hero-photo en" src="hero-study.webp"
            srcset="hero-study.webp 816w, hero-study-2x.webp 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
