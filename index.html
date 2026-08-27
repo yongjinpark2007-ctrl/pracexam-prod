@@ -324,20 +324,28 @@ section{padding:88px 0;}
    왼쪽 34% 페이드에 닿지 않는다(얼굴이 중요 — 사용자). 폰·아이패드 세로는 아래 900 블록의 카드 그대로. */
 @media (min-width:901px){
   .hero-demo{
-    /* right:0 = 콘텐츠 폭(wrap) 오른쪽 — 화면 끝까지 밀었더니 인물이 오른쪽에 쳐박혔다(사용자 2026-08-27).
-       사진도 왼쪽 빈 교실을 잘라 4:3 로 다시 만듦 — 글과 인물 사이 빈 공간이 너무 많다(사용자) → 내용(노트북)이 글 옆에서 바로 시작 */
+    /* right:0 = 콘텐츠 폭(wrap) 오른쪽 앵커 (화면 끝까지 밀면 인물이 쳐박힌다 — 사용자 2026-08-27).
+       🔴 폭은 «사진 왼쪽 끝이 글 오른쪽 끝(≈580px)을 넘지 않게» 잡는다 — 사진이 글 밑으로 들어가면
+       글자가 사진과 중첩되어 안 읽힌다(사용자). 사진은 왼쪽 빈 교실을 잘라낸 4:3 라 이 폭에도 인물이 크다. */
     right:0;
-    width:min(760px, 54vw);
+    width:min(620px, 47vw);
   }
   .hero-photo{
     border-radius:20px; box-shadow:none;
-    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 20%);
-    mask-image:linear-gradient(to right, transparent 0, #000 20%);
+    /* 세로를 더 크게(사용자) — 상자를 1:1 로 세우고 좌우를 인물 중심으로 자른다(78% = 노트북 가장자리까지 살림) */
+    aspect-ratio:1/1; height:auto; object-fit:cover; object-position:78% center;
+    /* 얕은 페이드 = 왼쪽 가장자리만 배경에 녹인다 (깊으면 글↔사진 사이가 비고, 사진이 글 밑까지 오면 중첩) */
+    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 15%);
+    mask-image:linear-gradient(to right, transparent 0, #000 15%);
   }
 }
-/* 901~1150px(아이패드 가로 등): 큰 폭은 글 밑까지 파고든다(실측) → 한 단계 좁게 + 가장자리 여백 */
+/* 901~1150px(아이패드 가로 등): 화면이 좁아 글 옆 공간이 작다 → 사진 더 좁게 + 페이드 깊게 + 가장자리 여백 */
 @media (min-width:901px) and (max-width:1150px){
-  .hero-demo{ width:min(620px, 52vw); right:24px; }
+  .hero-demo{ width:min(560px, 50vw); right:24px; }
+  .hero-photo{
+    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 25%);
+    mask-image:linear-gradient(to right, transparent 0, #000 25%);
+  }
 }
 @media (max-width:1100px){
   .hero-left{ max-width:460px; }
