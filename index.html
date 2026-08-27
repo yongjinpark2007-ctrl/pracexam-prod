@@ -326,7 +326,7 @@ section{padding:88px 0;}
   .hero-demo{
     /* right:0 = 콘텐츠 폭(wrap) 오른쪽 앵커 (화면 끝까지 밀면 인물이 쳐박힌다 — 사용자 2026-08-27). */
     right:0;
-    width:min(680px, 50vw);
+    width:min(816px, 60vw);   /* 680·50vw 에서 +20% (사용자 2026-08-27: 세로 20% 확대 — 비율 유지라 가로도 함께) */
   }
   .hero-photo{
     /* 🔴 원본 그대로 — 자르거나 확대하지 않는다(사용자 2026-08-27 «원본에서 새로 시작»). 왼쪽만 배경으로 페이드. */
@@ -337,7 +337,7 @@ section{padding:88px 0;}
 }
 /* 901~1150px(아이패드 가로 등): 화면이 좁아 글 옆 공간이 작다 → 사진 좁게 + 가장자리 여백 */
 @media (min-width:901px) and (max-width:1150px){
-  .hero-demo{ width:min(540px, 48vw); right:24px; }
+  .hero-demo{ width:min(650px, 57vw); right:24px; }
 }
 @media (max-width:1100px){
   .hero-left{ max-width:460px; }
@@ -943,9 +943,9 @@ html{scrollbar-gutter:stable;}
          첫 화면의 가장 큰 그림(LCP)이라 lazy 금지 · fetchpriority=high. 원본 = new landing design\ -->
     <div class="hero-demo" aria-hidden="true">
       <img class="hero-photo" src="hero-study.webp"
-           srcset="hero-study.webp 700w, hero-study-2x.webp 1400w"
-           sizes="(max-width:900px) 92vw, 50vw"
-           width="700" height="467" alt="" fetchpriority="high">
+           srcset="hero-study.webp 816w, hero-study-2x.webp 1632w"
+           sizes="(max-width:900px) 92vw, 60vw"
+           width="816" height="544" alt="" fetchpriority="high">
     </div>
 
   </div>
