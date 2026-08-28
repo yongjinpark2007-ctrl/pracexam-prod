@@ -954,9 +954,11 @@ html{scrollbar-gutter:stable;}
     <!-- 히어로 사진: 절대위치, 오른쪽 배치 — 예제 문제 카드는 아래 #samples 섹션이 대신한다 (2026-08-27 · PDF 3쪽 안).
          첫 화면의 가장 큰 그림(LCP)이라 lazy 금지 · fetchpriority=high. 원본 = new landing design\ -->
     <div class="hero-demo" aria-hidden="true">
-      <!-- 한국어 화면 = 한국인 사진 / 영어 화면 = 기존 사진 (사용자 2026-08-27). .lang-ko/.lang-en 이 서로를 숨긴다.
+      <!-- 한국어 화면 = 한국인 사진 / 영어 화면 = Eng_White_Woman (사용자 2026-08-27 교체). .lang-ko/.lang-en 이 서로를 숨긴다.
            두 사진 모두 3:2 로 같은 높이 — 언어 토글 때 높이가 출렁이면 안 된다(사용자).
-           KO 원본은 1.79:1 이라 «왼쪽 빈 창가 448px 만» 잘라 3:2 로 맞춤(인물·손·책상·세로 무손실). -->
+           KO·EN 원본 모두 2752x1536(1.79:1)이라 «왼쪽 빈 창가 448px 만» 잘라 3:2 로 맞춤
+           (인물·손·책상·노트북·세로 무손실 · 얼굴은 가로 60% 지점이라 왼쪽 페이드에 안 닿는다).
+           두 파일 다 816x544 / 1632x1088 로 «치수가 같다» — 토글해도 높이가 안 출렁인다. -->
       <img class="hero-photo ko" src="hero-study-ko.webp"
            srcset="hero-study-ko.webp 816w, hero-study-ko-2x.webp 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
