@@ -2667,6 +2667,39 @@ function loadAdminUserDir(){
 function _dirName(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.name) || ''; }
 function _dirLang(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.language) || ''; }
 
+// ── 관리자: 사는 곳(나라·우편번호) (2026-08-28) ──
+//   RPC: admin_user_locations() (SECURITY DEFINER · 관리자 대조 + REVOKE · 읽기 전용)
+//   값은 profiles.country/postal_code — 결제 웹훅이 Paddle 주소에서 받아 채운다.
+//   🔴 «결제한 적이 있는 사람»만 있다. 체험 회원은 비어 있고 «—» 로 뜬다 —
+//      가입 때는 나라를 묻지 않기 때문이다(세금 때문에 결제할 때 비로소 받는다).
+//   미배포/오류 시 빈 맵 → 칸에 «—» 만 뜨고 앱 손상 없음 (디렉터리와 같은 패턴)
+var _ADMIN_LOC = null;          // { user_id: {country, postal} }
+var _ADMIN_LOC_PROMISE = null;  // 표 둘이 동시에 불러도 한 번만 조회
+function loadAdminUserLoc(){
+  if(!_ADMIN_LOC_PROMISE){
+    _ADMIN_LOC_PROMISE = (async function(){
+      _ADMIN_LOC = {};
+      try{
+        var res = await sb.rpc('admin_user_locations');
+        if(res.error) throw res.error;
+        (res.data || []).forEach(function(u){
+          _ADMIN_LOC[u.user_id] = { country: u.country || '', postal: u.postal_code || '' };
+        });
+      }catch(e){ /* 미배포/오류 → 빈 맵 유지 */ }
+      return _ADMIN_LOC;
+    })();
+  }
+  return _ADMIN_LOC_PROMISE;
+}
+// 「US 78628」처럼 나라 뒤에 우편번호를 붙인다. 미국은 우편번호가 곧 주(州)라
+// 세율이 갈리는 자리이므로 함께 보이는 편이 쓸모 있다(TX 8.25% · NJ 6.625% · SC 0%).
+function _dirLoc(uid){
+  var u = _ADMIN_LOC && _ADMIN_LOC[uid];
+  if(!u || !u.country) return '';
+  if(u.postal) return u.country + ' ' + u.postal;
+  return u.country;
+}
+
 // ── 관리자: War Room 이용 요약 (2026-08-21) ──
 //   RPC: admin_war_room_users() → 사람별 {본 치트시트 수, 열람 횟수, 마지막}
 //   목적: 이상탐지 표에서 «누가 War Room 을 쓰고 누가 안 쓰는지»를 한눈에.
@@ -2771,15 +2804,16 @@ async function renderMockActivity(){
     body.innerHTML='<div style="padding:1.25rem;color:#dc2626;">조회 실패: '+_anomEsc(msg||'오류')+'</div>'; return;
   }
   await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
+  await loadAdminUserLoc();   // 나라 칼럼용 (미배포 시 '—')
   // (War Room 칸은 이 표에 «없다» — 부르던 것을 학습 이상탐지 쪽으로 옮겼다 · 2026-08-21)
   var rows=(res.data||[]).map(function(r){ var risk=computeMockRisk(r); r._score=risk.score; r._reasons=risk.reasons; return r; });
   rows.sort(function(a,b){ return b._score-a._score || (b.total_attempts||0)-(a.total_attempts||0); });
   var flagged=rows.filter(function(r){ return r._score>=30; }).length;
   if(sum) sum.textContent='모의고사 응시자 '+rows.length+'명 · 주의 이상 '+flagged+'명';
   if(!rows.length){ body.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--text-muted);">이 기간에 모의고사 응시가 없습니다.</div>'; return; }
-  var html='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:780px;">'+
+  var html='<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:850px;">'+
     '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
-    '<th style="padding:8px 10px;">위험도</th><th style="padding:8px 10px;">사용자</th><th style="padding:8px 10px;">이름</th><th style="padding:8px 10px;">언어</th><th style="padding:8px 10px;">상태</th>'+
+    '<th style="padding:8px 10px;">위험도</th><th style="padding:8px 10px;">사용자</th><th style="padding:8px 10px;">이름</th><th style="padding:8px 10px;">언어</th><th style="padding:8px 10px;">나라</th><th style="padding:8px 10px;">상태</th>'+
     '<th style="padding:8px 10px;text-align:right;">응시<br>(기간)</th><th style="padding:8px 10px;text-align:right;">응시<br>(누적)</th>'+
     '<th style="padding:8px 10px;text-align:right;">빠른<br>채점</th><th style="padding:8px 10px;text-align:right;">최단<br>(분)</th>'+
     '<th style="padding:8px 10px;text-align:right;">연습<br>문항수</th><th style="padding:8px 10px;">신호</th></tr></thead><tbody>';
@@ -2792,6 +2826,7 @@ async function renderMockActivity(){
       '<td style="padding:8px 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(r.email||r.user_id)+'</td>'+
       '<td style="padding:8px 10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(_dirName(r.user_id)||'—')+'</td>'+
       '<td style="padding:8px 10px;white-space:nowrap;">'+_anomEsc(_dirLang(r.user_id)||'—')+'</td>'+
+      '<td style="padding:8px 10px;white-space:nowrap;">'+_anomEsc(_dirLoc(r.user_id)||'—')+'</td>'+
       '<td style="padding:8px 10px;">'+(r.is_paid?'유료':'체험')+'</td>'+
       '<td style="padding:8px 10px;text-align:right;">'+(r.started_win||0)+'</td>'+
       '<td style="padding:8px 10px;text-align:right;">'+(r.total_attempts||0)+'</td>'+
@@ -2844,6 +2879,7 @@ async function renderAnomaly(){
   }
 
   await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
+  await loadAdminUserLoc();   // 나라 칼럼용 (미배포 시 '—')
   // 🔴 2026-08-21 — 이 줄이 «빠져 있었다». War Room 칸(_wrCell)을 그리는 것은 이 화면인데
   //    부르는 곳은 엉뚱하게 모의고사 모니터였다(그 표엔 그 칸이 없다). 그래서 호출이 아예 안 되어
   //    _WR_USE_OK 가 처음 값 false 인 채로 「조회 실패(원인 미상)」이 찍혔다 — 서버 오류가 아니었다.
@@ -2871,12 +2907,13 @@ async function renderAnomaly(){
 
   var html = ''+
     '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">'+
-    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:800px;">'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:870px;">'+
     '<thead><tr style="text-align:left;color:var(--text-muted);border-bottom:1.5px solid var(--border-clr);font-size:12px;">'+
       '<th style="padding:8px 10px;">위험도</th>'+
       '<th style="padding:8px 10px;">사용자</th>'+
       '<th style="padding:8px 10px;">이름</th>'+
       '<th style="padding:8px 10px;">언어</th>'+
+      '<th style="padding:8px 10px;">나라</th>'+
       '<th style="padding:8px 10px;">상태</th>'+
       '<th style="padding:8px 10px;text-align:right;">30분</th>'+
       '<th style="padding:8px 10px;text-align:right;">문제수<br>(기간내)</th>'+
@@ -2896,6 +2933,7 @@ async function renderAnomaly(){
         '<td style="padding:8px 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(r.email||r.user_id)+'</td>'+
         '<td style="padding:8px 10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+_anomEsc(_dirName(r.user_id)||'—')+'</td>'+
         '<td style="padding:8px 10px;white-space:nowrap;">'+_anomEsc(_dirLang(r.user_id)||'—')+'</td>'+
+        '<td style="padding:8px 10px;white-space:nowrap;">'+_anomEsc(_dirLoc(r.user_id)||'—')+'</td>'+
         '<td style="padding:8px 10px;white-space:nowrap;">'+stateTxt+'</td>'+
         '<td style="padding:8px 10px;text-align:right;">'+(r.q_30m||0)+'</td>'+
         '<td style="padding:8px 10px;text-align:right;">'+(r.q_24h||0)+'</td>'+
@@ -2932,7 +2970,8 @@ function showAnomalyDetail(i){
       '<div style="font-size:13px;color:var(--text-muted);margin-bottom:2px;">이상 탐지 상세</div>'+
       '<div style="font-size:16px;font-weight:700;word-break:break-all;margin-bottom:2px;">'+_anomEsc(r.email||r.user_id)+'</div>'+
       '<div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">'+
-        _anomEsc(_dirName(r.user_id)||'이름 없음')+' · 언어 '+_anomEsc(_dirLang(r.user_id)||'—')+' · '+
+        _anomEsc(_dirName(r.user_id)||'이름 없음')+' · 언어 '+_anomEsc(_dirLang(r.user_id)||'—')+
+        ' · 나라 '+_anomEsc(_dirLoc(r.user_id)||'—')+' · '+
         (r.is_paid?'유료':'체험')+' · 가입 '+joined+' · 위험도 <span style="color:'+t.color+';font-weight:700;">'+r._score+' ('+t.label+')</span></div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">'+
         metric('30분', (r.q_30m||0)+'개')+

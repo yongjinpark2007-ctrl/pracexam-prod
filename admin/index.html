@@ -328,6 +328,7 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
           <th style="width:34px;"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
           <th class="sortable" data-sort="email">고객</th>
           <th class="sortable" data-sort="status">상태</th>
+          <th class="sortable" data-sort="country">나라</th>
           <th>플랜</th>
           <th class="sortable" data-sort="until">이용 만료</th>
           <th class="sortable" data-sort="signed">가입</th>
@@ -709,17 +710,42 @@ async function resolvePayFail(id){
   await loadPayFails();
 }
 
+/* ── 사는 곳(나라·우편번호) ─────────────────────────────────────────────
+   RPC: admin_user_locations() — profiles.country/postal_code 를 돌려준다.
+   값은 결제 웹훅이 Paddle 주소에서 받아 채운다(세금 때문에 Paddle 이 반드시 안다).
+   🔴 «결제한 적이 있는 사람»만 있다 — 가입 때는 나라를 묻지 않으므로 체험 회원은 비어 있다.
+   admin_list_customers 를 고치지 «않고» 따로 부른다 — 그 함수를 통째로 갈아치우면
+   남이 더해 둔 것이 조용히 사라지기 때문이다. 미배포/오류면 빈 맵 → 칸에 «—» 만 뜬다. */
+var LOC = {};              // { user_id: {country, postal} }
+async function loadLocations(){
+  LOC = {};
+  var r = await sb.rpc('admin_user_locations');
+  if(r.error){ console.warn('admin_user_locations', r.error); return; }
+  (r.data || []).forEach(function(u){
+    LOC[u.user_id] = { country: u.country || '', postal: u.postal_code || '' };
+  });
+}
+/* 「US 78628」처럼 붙여 보여 준다 — 미국은 우편번호가 곧 주(州)라 세율이 갈린다
+   (실측 2026-08-28: TX 8.25% · NJ 6.625% · SC 0% · KR 부가세 10%). */
+function locOf(r){
+  var u = LOC[r.user_id];
+  if(!u || !u.country) return '';
+  if(u.postal) return u.country + ' ' + u.postal;
+  return u.country;
+}
+
 async function loadAll(){
   if(SAMPLE) return;
-  $('tb').innerHTML = '<tr><td colspan="10" class="empty">불러오는 중…</td></tr>';
+  $('tb').innerHTML = '<tr><td colspan="11" class="empty">불러오는 중…</td></tr>';
   var r = await sb.rpc('admin_list_customers', { p_limit: 2000, p_offset: 0 });
   if(r.error){
-    $('tb').innerHTML = '<tr><td colspan="10" class="empty" style="color:var(--danger-color);">' +
+    $('tb').innerHTML = '<tr><td colspan="11" class="empty" style="color:var(--danger-color);">' +
       esc(rpcErr(r.error)) + '</td></tr>';
     return;
   }
   ROWS = r.data || [];
   OPEN = null;
+  await loadLocations();   // 나라 칸 (미배포/오류면 «—»)
   $('hdr-count').innerHTML = '<b>' + ROWS.length + '</b>명';
   render();
   loadPayFails();   // 결제 실패 칸 (2026-08-20) — 실패가 없으면 스스로 숨는다
@@ -769,7 +795,7 @@ function matches(r, q){
   if(!q) return true;
   var hay = (String(r.email||'') + ' ' + String(r.first_name||'') + ' ' +
              String(r.last_name||'') + ' ' + String(r.plan_code||'') + ' ' +
-             String(r.comp_program||'')).toLowerCase();
+             String(r.comp_program||'') + ' ' + locOf(r)).toLowerCase();
   return hay.indexOf(q) >= 0;
 }
 /* ── 확인 메일이 실제로 나갔는지 ────────────────────────────────────────
@@ -807,6 +833,14 @@ function visibleRows(){
     var x, y;
     if(k === 'email'){
       x = String(a.email||'').toLowerCase(); y = String(b.email||'').toLowerCase();
+      return x < y ? -dir : (x > y ? dir : 0);
+    }
+    if(k === 'country'){
+      // 나라가 «없는» 사람(체험 회원 등)은 언제나 아래로 — 위쪽은 실제 고객만 모이게 한다.
+      x = locOf(a); y = locOf(b);
+      if(!x && !y) return 0;
+      if(!x) return 1;
+      if(!y) return -1;
       return x < y ? -dir : (x > y ? dir : 0);
     }
     if(k === 'status'){
@@ -888,6 +922,7 @@ function render(){
           '</div></td>' +
         '<td class="nowrap"><span class="badge ' + st + '">' + STATUS_LABEL[st] + '</span>' +
           (r.sub_canceled ? ' <span class="badge flagb">해지예약</span>' : '') + '</td>' +
+        '<td class="nowrap">' + esc(locOf(r) || '—') + '</td>' +
         '<td class="nowrap">' + (r.plan_code ? '<code>' + esc(r.plan_code) + '</code>' : '—') +
           (r.comp_program ? '<div class="sub2">' + esc(r.comp_program) + '</div>' : '') + '</td>' +
         '<td class="nowrap">' + short(un) + ' ' + ddayTag(un) + '</td>' +
@@ -904,13 +939,13 @@ function render(){
       '</tr>';
 
     if(OPEN === r.user_id){
-      line += '<tr class="detail"><td colspan="10"><div class="detail-in" id="det-' +
+      line += '<tr class="detail"><td colspan="11"><div class="detail-in" id="det-' +
               esc(r.user_id) + '">불러오는 중…</div></td></tr>';
     }
     return line;
   }).join('');
 
-  $('tb').innerHTML = html || '<tr><td colspan="10" class="empty">해당하는 고객이 없습니다.</td></tr>';
+  $('tb').innerHTML = html || '<tr><td colspan="11" class="empty">해당하는 고객이 없습니다.</td></tr>';
 
   if(OPEN) renderDetail(OPEN);
   renderBulk();
