@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
 
-<!-- ===== Google Ads 전환추적 (gtag) — 2026-07 ===== -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18345651711"></script>
+<!-- ===== 유입 출처 갈무리 (UTM·gclid) — «우리 것» ===== 
+     2026-08-29: Google Ads 태그(gtag)를 걷어냈다 — 광고 종료(사용자 지시).
+     그래서 이제 제3자 광고 쿠키를 심지 않는다 = privacy.html §4 의 약속과 다시 맞는다.
+     🔴 아래 pe_attrib 는 남긴다 — Google 것이 아니라 우리 localStorage 에 담아
+        우리 서버로 보내는 자체 기록이다(가입 때 refAttrib 으로 쓴다).
+     ↩ 광고를 다시 켜면 태그와 «동의 받는 장치» 를 함께 넣는다. -->
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'AW-18345651711');
   (function(){ try{ var p=new URLSearchParams(location.search),keep={};
     ['gclid','utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){ if(p.get(k)) keep[k]=p.get(k); });
     if(Object.keys(keep).length){ keep._ts=Date.now(); localStorage.setItem('pe_attrib', JSON.stringify(keep)); }
   }catch(e){} })();
 </script>
-<!-- ===== /전환추적 ===== -->
+<!-- ===== /유입 출처 갈무리 ===== -->
 
 <!-- ===== PWA Meta Tags ===== -->
 <link rel="manifest" href="manifest.json">
