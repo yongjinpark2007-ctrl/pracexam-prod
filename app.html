@@ -4365,6 +4365,7 @@ async function loadFromCloud(){
       S.mode = liveCloud.mode || 'normal';
       S.results = liveCloud.results || {correct:0, wrong:0, total:S.quizQueue.length};
       S.reviewMode = liveCloud.review_mode || false;
+      S.reviewFrom = liveCloud.review_from || null;   // RPC 미포함 → null (돌아갈 탭은 _reviewBackTab 이 짐작)
       S.sessionAnswers = liveCloud.session_answers || new Array(S.quizQueue.length).fill(null);
       try{ localStorage.setItem(LIVE_SYNC_KEY, '1'); }catch(e){}
     } else if(S.quizQueue && S.quizQueue.length > 0 && !_liveNotSynced()){
@@ -4450,6 +4451,9 @@ const S = {
   adminQcMode: false,   // 관리자 QC 검토 모드 (로컬 채점 · 기록/한도 무관 · 종료 시 관리자 화면 복귀)
   retryFlaggedMode: false,
   returnTo: null,
+  // 복습(다시 풀기)을 «어디서» 시작했나 — 'sessions'(최근 세션) · 'flagged'(플래그 문제).
+  //   복습을 마치면 그 탭으로 돌아간다 (2026-08-28 사용자 지적: 세션 복습인데 Flagged 로 갔다).
+  reviewFrom: null,
   repeatFilter: 'all',
   domains: [],          // 고른 큰 주제 이름들 (빈 배열 = 전체). Part 를 바꾸면 비운다.
   copRef: {},           // TPIQ: outline_code -> { tier, weight } (cop_reference에서 로드)
@@ -4894,6 +4898,7 @@ function init(){
         S.mode = obj.live.mode || 'normal';
         S.results = obj.live.results || {correct:0, wrong:0, total:S.quizQueue.length};
         S.reviewMode = obj.live.reviewMode || false;
+        S.reviewFrom = obj.live.reviewFrom || null;
         S.sessionAnswers = obj.live.sessionAnswers || new Array(S.quizQueue.length).fill(null);
       }
       if(obj.repeatFilter) S.repeatFilter = obj.repeatFilter;
@@ -4913,6 +4918,7 @@ function save(){
       mode: S.mode,
       results: S.results,
       reviewMode: S.reviewMode || false,
+      reviewFrom: S.reviewFrom || null,
       sessionAnswers: S.sessionAnswers || []
     } : null;
     localStorage.setItem('ea_prep_v3',JSON.stringify({
@@ -5105,6 +5111,7 @@ function clearLiveQuiz(){
   S.adminQcMode = false;
   S.retryFlaggedMode = false;
   S.returnTo = null;
+  S.reviewFrom = null;
   // QC 개별조회로 임시 주입된 문항(_qcOnly, 예: MOCK-*) 제거 — 연습/통계 오염 방지 (2026-07-18)
   S.questions = S.questions.filter(function(q){ return !q._qcOnly; });
   save();
@@ -5120,7 +5127,7 @@ function exportData(){
 function resetData(){
   localStorage.removeItem('ea_prep_v3');
   S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={};
-  S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.adminQcMode=false; S.retryFlaggedMode=false;
+  S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.adminQcMode=false; S.retryFlaggedMode=false; S.reviewFrom=null;
   if(SB_USER){ sb.from('live_session').delete().eq('user_id', SB_USER.id); }
   renderDashboard(); renderBookmarks(); updateAvailCount();
   updateResumeBadge();
@@ -7637,6 +7644,7 @@ async function _reviewSessionGo(s, validIds){
   S.adminQcMode = false;        // 2026-08-08: QC 검토 잔류 방지 (startQuiz 주석 참조)
   S.retryFlaggedMode = false;
   S.returnTo = 'bookmarks';   // Score 후 Review 탭으로 복귀
+  S.reviewFrom = 'sessions';  // 복습을 마치면 「최근 세션」 탭으로
   S.mode = 'normal';
   S.sessionAnswers = new Array(validIds.length).fill(null);
   S.results = {correct:0, wrong:0, total:validIds.length};
@@ -7645,8 +7653,8 @@ async function _reviewSessionGo(s, validIds){
   loadQuestion();
   var label = s.date || (LANG === 'en' ? 'Previous' : '이전');
   showToast(LANG === 'en'
-    ? ('Solving session from ' + label + ' again (' + validIds.length + ' Q · answers shown after submit)')
-    : (label + ' 세션 다시 풀기 (' + validIds.length + '문제 · 정답은 제출 후 공개)'));
+    ? ('Solving session from ' + label + ' again (' + validIds.length + ' Q)')
+    : (label + ' 세션 다시 풀기 (' + validIds.length + '문제)'));
 }
 
 function curQ(){const id=S.quizQueue[S.quizIdx];return id?S.questions.find(q=>q.id===id):null;}
@@ -8215,6 +8223,7 @@ function gotoQuestion(idx){
         showToast(LANG === 'en' ? '✅ Review complete' : '✅ 복습 완료');
       }
       showScreen('bookmarks');
+      switchReviewTab(_reviewBackTab());   // 시작한 탭으로 (2026-08-28)
     } else {
       finishSession();
     }
@@ -8716,6 +8725,14 @@ function revSyncSeg(){
 }
 function revMoreSessions(){ REV_SESS_SHOWN += 20; renderReviewSessions(); }
 
+// 복습을 마쳤을 때 돌아갈 Review 탭 — 시작한 자리를 기억해 두었다가 그리로 보낸다.
+//   기억이 없으면(다른 기기에서 이어받은 세션 등) 큐가 «전부 플래그»일 때만 Flagged 로 본다.
+function _reviewBackTab(){
+  if(S.reviewFrom === 'sessions' || S.reviewFrom === 'flagged') return S.reviewFrom;
+  var q = S.quizQueue || [];
+  var allFlagged = q.length > 0 && q.every(function(id){ return S.flagged.has(id); });
+  return allFlagged ? 'flagged' : 'sessions';
+}
 function switchReviewTab(tab){
   var isFlagged = tab === 'flagged';
   document.getElementById('rev-tab-flagged').classList.toggle('active', isFlagged);
@@ -8962,6 +8979,7 @@ async function _retryFlaggedGo(ids){
   S.adminQcMode = false;        // 2026-08-08: QC 검토 잔류 방지 (startQuiz 주석 참조)
   S.retryFlaggedMode = false;
   S.returnTo = 'bookmarks';
+  S.reviewFrom = 'flagged';   // 복습을 마치면 「플래그 문제」 탭으로
   S.mode = 'normal';
   S.sessionAnswers = new Array(ids.length).fill(null);
   S.results = {correct:0, wrong:0, total:ids.length};
@@ -8969,8 +8987,8 @@ async function _retryFlaggedGo(ids){
   showScreen('quiz');
   loadQuestion();
   showToast(LANG === 'en'
-    ? ('Solving flagged questions again (' + ids.length + ' Q · answers shown after submit)')
-    : ('플래그 문제 다시 풀기 (' + ids.length + '문제 · 정답은 제출 후 공개)'));
+    ? ('Solving flagged questions again (' + ids.length + ' Q)')
+    : ('플래그 문제 다시 풀기 (' + ids.length + '문제)'));
 }
 
 function openModal(id){ /* 미사용 — retryFlagged로 대체됨 */ }
