@@ -357,6 +357,46 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
 .ap-paste{padding:16px}
 .ap-paste textarea{width:100%;min-height:340px;font:inherit;font-size:13px;line-height:1.6;
   padding:12px;border:1px solid #cfdadb;border-radius:10px;resize:vertical}
+/* ── ✏️ 직접 수정 (2026-08-30) ─────────────────────────────────────────────
+   사장님이 오타·표현을 손수 고쳐 그 자리에서 라이브에 올리는 칸.
+   판정 카드(.verdict-card)와 헷갈리지 않도록 «따뜻한 색»으로 갈라 둔다. */
+.ed-card{background:#fff;border:2px solid #C9A227;border-radius:12px;
+  padding:16px 18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.ed-h{font-size:calc(14px * var(--fs));color:#6b5a12;background:#FDF6DC;
+  border-radius:8px;padding:9px 12px;margin-bottom:14px;line-height:1.6}
+.ed-f{display:block;margin-bottom:13px}
+.ed-l{display:block;font-size:calc(12.5px * var(--fs));font-weight:700;
+  color:#5a6b6e;margin-bottom:5px}
+.ed-in{width:100%;box-sizing:border-box;font-family:inherit;
+  font-size:calc(15px * var(--fs));line-height:1.65;color:#1d2b2e;
+  border:1px solid #cfd8da;border-radius:8px;padding:9px 11px;background:#fff;
+  resize:vertical}
+.ed-in:focus{outline:none;border-color:#C9A227;box-shadow:0 0 0 3px rgba(201,162,39,.15)}
+.ed-opt{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px}
+.ed-key{display:flex;align-items:center;gap:5px;padding-top:9px;
+  font-weight:800;color:#3d5a5e;cursor:pointer;white-space:nowrap}
+.ed-key input{cursor:pointer}
+.ed-optin{flex:1}
+.ed-warn{margin:4px 0 12px}
+.ed-w{background:#FFF4E5;border-left:3px solid #E8A33D;border-radius:6px;
+  padding:8px 11px;margin-top:6px;font-size:calc(13px * var(--fs));
+  color:#7a5310;line-height:1.6}
+.ed-ok{font-size:calc(13px * var(--fs));color:#2f6b52}
+.ed-none{font-size:calc(13px * var(--fs));color:#a8b3b6}
+.ed-foot{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.ed-open{border-color:#C9A227;color:#6b5a12}
+/* 수정 이력 모달 — 승인 이력(.aph-*) 상자를 그대로 빌려 쓴다 */
+.edh-row{border-bottom:1px solid #edf1f2;padding:11px 2px}
+.edh-top{font-size:calc(13px * var(--fs));color:#5a6b6e;margin-bottom:5px}
+.edh-id{font-weight:800;color:#1d2b2e}
+.edh-field{display:inline-block;background:#eef3f4;border-radius:5px;
+  padding:1px 7px;margin-left:6px;font-size:calc(12px * var(--fs))}
+.edh-b,.edh-a{font-size:calc(13px * var(--fs));line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;border-radius:6px;padding:7px 9px;margin-top:4px}
+.edh-b{background:#fbecec;color:#7a2f2f}
+.edh-a{background:#e9f5ee;color:#1f5a3d}
+.ed-toast{margin-top:8px;font-size:calc(13px * var(--fs))}
+
 </style>
 </head>
 <body>
@@ -432,6 +472,10 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
           <button class="btn" id="apSetDir" title="'claude proposal' 폴더를 한 번만 지정해 두면 다음부터는 자동으로 그 폴더에 저장됩니다">저장 폴더</button>
           <input type="file" id="apFile" accept=".json,application/json" style="display:none">
         </div>
+        <!-- ✏️ 직접 수정 이력 (2026-08-30) -->
+        <div class="filter-row">
+          <button class="btn" id="edHistBtn" title="review_app 에서 손으로 고친 기록을 봅니다. Claude 도 같은 기록을 읽습니다">✏️ 수정 이력</button>
+        </div>
         <div class="filter-row ap-dir" id="apDirInfo" style="display:none"></div>
         <div class="filter-row ap-info" id="apInfo" style="display:none"></div>
       </div>
@@ -460,7 +504,15 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
        · 모든 문항 조회에 .eq('exam', S.exam).eq('pool', S.pool) 강제
          (크로스체크 문서의 최우선 미결 ①"앱 exam/pool 필터 부재"를 여기선 처음부터 적용)
        · Harbor 디자인 토큰 동일
-   ▸ questions 테이블은 **읽기만** 합니다. 판정은 review_verdicts 에만 씁니다.
+   ▸ 표에 쓰는 곳은 셋뿐입니다.
+       · review_verdicts        — 판정(합격/보류/탈락)
+       · admin_save_question()  — ✏️ 직접 수정 (2026-08-30 신설 · RPC)
+       · admin_save_sheet()     — ✏️ 직접 수정 (치트시트 · RPC)
+     🔴 문항·치트시트를 «표에 바로» 고치지 않고 RPC 를 거칩니다. 이 화면은 공개
+        주소이고 anon 열쇠가 박혀 있어서, 표에 쓰기 정책을 열면 그 열쇠를 가진
+        누구나 시도할 수 있게 됩니다. 함수 안에서 관리자인지 확인하고, 고칠 수
+        있는 칸을 흰 목록으로 묶고, anon 에게서 실행 권한을 걷어냅니다(REVOKE).
+        SQL = supabase\sql\manual_edits.sql
    =========================================================================== */
 
 const SUPABASE_URL  = 'https://ufrhvodruulpgnmudzwh.supabase.co';
@@ -508,7 +560,9 @@ const S = {
   lang: 'ko',         // 해설 표시 언어
   dirty: false,
   proposal: null,     // 승인 대기 모드에서 읽어들인 제안 묶음 {batch, created, items:[...]}
-  proposalBig: false  // 제안이 커서 브라우저에 담아두지 못했다(새로고침 시 다시 열어야 함)
+  proposalBig: false, // 제안이 커서 브라우저에 담아두지 못했다(새로고침 시 다시 열어야 함)
+  editing: false,     // ✏️ 직접 수정 칸이 열려 있는가
+  edDirty: false      // 고쳐 놓고 아직 저장 안 한 것이 있는가
 };
 
 /* 문항 풀. study/mock 은 questions.pool 값과 1:1 대응.
@@ -1422,6 +1476,8 @@ function renderStrip(){
 /* ── 상세 ────────────────────────────────────────────────────────────────── */
 async function selectQuestion(id){
   if (id !== S.currentId && !await confirmDiscard()) return;
+  /* 🔴 수정 칸은 문항마다 새로 연다 — 열어 둔 채 옮기면 «앞 문항의 글»이 남는다 */
+  if (id !== S.currentId){ S.editing = false; S.edDirty = false; }
   S.currentId = id;
   document.getElementById('main').classList.add('detail-open');
   renderList();
@@ -1482,6 +1538,7 @@ function renderDetail(){
           <button data-lang="ko" class="${S.lang === 'ko' ? 'active' : ''}">KO</button>
           <button data-lang="en" class="${S.lang === 'en' ? 'active' : ''}">EN</button>
         </span>
+        ${edBtn()}
         <button class="btn back-btn" id="btnBack" style="padding:7px 13px;">← 목록</button>
       </div>
       <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:4px;">${esc(title)}</div>
@@ -1502,7 +1559,9 @@ function renderDetail(){
         ${r.difficulty ? `<span class="q-badge q-badge-gray">${esc(r.difficulty)}</span>` : ''}
         ${r.is_active === false ? '<span class="q-badge q-badge-gray">비활성</span>' : ''}
         ${r.state_qid ? '<span class="q-badge" style="background:rgba(111,163,158,.18);border-color:#A3C6C4;">NA · CA/TX/NJ/NY 공통</span>' : ''}
-        <button class="btn back-btn" id="btnBack" style="margin-left:auto;padding:7px 13px;">← 목록</button>
+        <span style="margin-left:auto"></span>
+        ${edBtn()}
+        <button class="btn back-btn" id="btnBack" style="padding:7px 13px;">← 목록</button>
       </div>
       <div class="question-text">${esc(r.text || '')}</div>
       <div class="options-list">
@@ -1542,7 +1601,7 @@ function renderDetail(){
     const fx = b && b.feedback ? b.feedback[r.question_id] : null;
     staleNote = !!(fx && fx.feedback && b.exportedAt && fx.at && fx.at <= b.exportedAt);
   }
-  $('detail').innerHTML = mainHtml + `
+  $('detail').innerHTML = mainHtml + edForm(r) + `
     <div class="verdict-card${ap ? ' ap-card' : ''}">
       <div class="verdict-btns">
         <button class="vbtn pass   ${v.verdict === 'pass'   ? 'on' : ''}" data-v="pass">${vlab('pass')}<span class="k">1</span></button>
@@ -1572,6 +1631,30 @@ function renderDetail(){
         <br>판정 버튼을 누르면 메모와 함께 바로 저장되고 다음 문항으로 넘어갑니다.
       </div>
     </div>`;
+
+  // ✏️ 직접 수정 — 열고 닫기·저장·경고
+  const edb = $('btnEdit');
+  if (edb) edb.addEventListener('click', () => {
+    if (S.editing && S.edDirty &&
+        !confirm('고쳐 놓고 저장하지 않은 것이 있습니다. 버리고 닫을까요?')) return;
+    S.editing = !S.editing;
+    S.edDirty = false;
+    renderDetail();
+    const card = $('edCard');
+    if (card) card.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+  if (S.editing && $('edCard')){
+    $('edCancel').addEventListener('click', () => {
+      if (S.edDirty && !confirm('고쳐 놓고 저장하지 않은 것이 있습니다. 버릴까요?')) return;
+      S.editing = false; S.edDirty = false; renderDetail();
+    });
+    $('edSaveBtn').addEventListener('click', edSave);
+    $('edCard').querySelectorAll('.ed-in, input[name="edCorrect"]').forEach(el => {
+      el.addEventListener('input',  () => edWarnCheck(r));
+      el.addEventListener('change', () => edWarnCheck(r));
+    });
+    edWarnCheck(r);
+  }
 
   // 이벤트 바인딩
   const back = $('btnBack');
@@ -1611,6 +1694,240 @@ function renderDetail(){
   });
   grow();
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ✏️ 직접 수정 — 사장님이 손수 고쳐 그 자리에서 라이브에 올린다
+   2026-08-30 사장님 지시:
+     "일부 오타나 내가 수정할 수 있는 것은 review_app에서 내가 직접 수정하고
+      업데이트 하는 기능을 만들어 주세요. 업데이트 되면 그 내용은 로그에 남아서
+      나중에 Claude code가 작업할때 매뉴얼 수정이 된 부분이라는 것을 공유할 수
+      있도록 해주세요"
+
+   ▸ 저장은 RPC 로만 간다 — 표에 직접 쓰지 않는다(위 머리 주석 참조).
+   ▸ 고친 칸마다 manual_edits 에 한 줄이 남고, Claude 는 `py manual_edits.py` 로
+     그것을 읽는다. 창을 열 때 px_start.py 가 「손으로 고쳐진 자리」를 보여 준다.
+   🔴 아래 칸 목록은 SQL 함수 안의 «흰 목록»과 같아야 한다. 한쪽만 늘리면
+      화면에는 칸이 생기는데 저장에서 FIELD_NOT_EDITABLE 로 떨어진다.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* [칸이름, 라벨, 꼴, 줄수] */
+const ED_Q_TEXT = [
+  ['explanation',    '해설 (국문)',   10],
+  ['examtip',        '시험 팁 (국문)', 5],
+  ['explanation_en', '해설 (영문)',   10],
+  ['examtip_en',     '시험 팁 (영문)', 5]
+];
+const ED_W_FIELDS = [
+  ['title_ko', '제목 (국문)',        'line',  0],
+  ['title_en', '제목 (영문)',        'line',  0],
+  ['body_ko',  '본문 (국문 · HTML)', 'area', 18],
+  ['body_en',  '본문 (영문 · HTML)', 'area', 18]
+];
+
+/* 승인 대기 모드는 «파일»을 보는 자리라 고칠 표가 없다 */
+const edCanEdit = () => !isAp() && !!S.currentId;
+
+function edBtn(){
+  if (!edCanEdit()) return '';
+  return '<button class="btn ed-open" id="btnEdit">' +
+         (S.editing ? '✕ 수정 닫기' : '✏️ 직접 수정') + '</button>';
+}
+
+function edArea(f, label, val, rows){
+  return '<label class="ed-f"><span class="ed-l">' + esc(label) + '</span>' +
+    '<textarea class="ed-in" id="ed_' + f + '" data-f="' + f + '" rows="' + rows + '">' +
+    esc(val || '') + '</textarea></label>';
+}
+function edLine(f, label, val){
+  return '<label class="ed-f"><span class="ed-l">' + esc(label) + '</span>' +
+    '<input class="ed-in" id="ed_' + f + '" data-f="' + f + '" value="' + esc(val || '') + '"></label>';
+}
+
+function edForm(r){
+  if (!S.editing) return '';
+  const L = ['A','B','C','D','E','F'];
+  let body;
+
+  if (r.is_wr){
+    body = ED_W_FIELDS.map(x => x[2] === 'area'
+      ? edArea(x[0], x[1], r[x[0]], x[3])
+      : edLine(x[0], x[1], r[x[0]])).join('');
+  } else {
+    const opts = Array.isArray(r.options) ? r.options : [];
+    body = edArea('text', '지문', r.text, 6)
+      + '<div class="ed-f"><span class="ed-l">보기 · 왼쪽 동그라미가 «정답»입니다</span><div id="edOpts">'
+      + opts.map((o, i) =>
+          '<div class="ed-opt"><label class="ed-key">' +
+          '<input type="radio" name="edCorrect" value="' + i + '"' + (i === r.correct ? ' checked' : '') + '>' +
+          '<span>' + (L[i] || (i + 1)) + '</span></label>' +
+          '<textarea class="ed-in ed-optin" data-oi="' + i + '" rows="2">' + esc(o) + '</textarea></div>').join('')
+      + '</div></div>'
+      + edLine('topic', '토픽(이름표)', r.topic)
+      + ED_Q_TEXT.map(x => edArea(x[0], x[1], r[x[0]], x[2])).join('');
+  }
+
+  return '<div class="ed-card" id="edCard">' +
+    '<div class="ed-h">고치고 <b>저장</b>을 누르면 <b>라이브에 바로 반영</b>됩니다. ' +
+    '승인 절차를 거치지 않으니 오타·표현처럼 <b>확실한 것</b>만 손보십시오.<br>' +
+    '고친 칸은 <b>수정 이력</b>에 남아 다음에 Claude 가 그대로 읽습니다.</div>' +
+    body +
+    '<label class="ed-f"><span class="ed-l">메모 — 왜 고쳤는지 (안 적으셔도 됩니다)</span>' +
+    '<input class="ed-in" id="ed_note" placeholder="예: 오타 · 금액 오기 · 표현 다듬음"></label>' +
+    '<div class="ed-warn" id="edWarn"></div>' +
+    '<div class="ed-foot">' +
+    '<button class="btn" id="edCancel">취소</button>' +
+    '<button class="btn primary" id="edSaveBtn">Supabase 에 저장</button>' +
+    '<span class="save-state" id="edState"></span></div></div>';
+}
+
+/* 칸에 적힌 것을 그대로 걷는다 */
+function edCollect(r){
+  const out = {};
+  const card = $('edCard');
+  if (!card) return out;
+  card.querySelectorAll('[data-f]').forEach(el => { out[el.dataset.f] = el.value; });
+  if (!r.is_wr){
+    const ta = card.querySelectorAll('.ed-optin');
+    if (ta.length) out.options = Array.prototype.map.call(ta, t => t.value);
+    const rd = card.querySelector('input[name="edCorrect"]:checked');
+    if (rd) out.correct = Number(rd.value);
+  }
+  return out;
+}
+
+/* «진짜 바뀐 것»만 남긴다 — 안 바꾼 칸까지 보내면 이력이 헛것으로 찬다 */
+function edDiff(r, all){
+  const f = {};
+  const norm = (v) => Array.isArray(v) ? JSON.stringify(v) : String(v == null ? '' : v);
+  Object.keys(all).forEach(k => { if (norm(all[k]) !== norm(r[k])) f[k] = all[k]; });
+  return f;
+}
+
+/* 저장 «전»에 눈에 띄게 알린다 — 막지는 않는다 */
+function edWarnCheck(r){
+  const box = $('edWarn');
+  if (!box) return;
+  const ch = edDiff(r, edCollect(r));
+  const keys = Object.keys(ch);
+  S.edDirty = keys.length > 0;
+  const msgs = [];
+
+  /* 세미콜론 전면 금지 (2026-08-27 사장님 지시) */
+  const semi = keys.filter(k => {
+    const v = ch[k];
+    return (Array.isArray(v) ? v.join(' ') : String(v || '')).indexOf(';') >= 0;
+  });
+  if (semi.length) msgs.push('세미콜론(;) 이 들어 있습니다 — 집 규칙은 전면 금지입니다. ' +
+    '쉼표나 - 로 바꿔 주십시오. (' + semi.join(', ') + ')');
+
+  /* 한쪽 언어만 고치면 국문·영문이 어긋난다 — 실제로 여러 번 났다 */
+  const KO = ['explanation','examtip','title_ko','body_ko'];
+  const EN = ['explanation_en','examtip_en','title_en','body_en'];
+  const hasKo = KO.some(k => keys.indexOf(k) >= 0);
+  const hasEn = EN.some(k => keys.indexOf(k) >= 0);
+  if (hasKo && !hasEn) msgs.push('국문만 고치셨습니다 — 같은 자리의 영문도 보십시오.');
+  if (hasEn && !hasKo) msgs.push('영문만 고치셨습니다 — 같은 자리의 국문도 보십시오.');
+
+  /* 정답키를 옮기면 해설의 「정답은 X입니다」가 옛 답을 가리킨다 */
+  if (keys.indexOf('correct') >= 0) msgs.push('정답키를 옮기셨습니다 — 해설 첫 줄의 ' +
+    '「정답은 X입니다 / The correct answer is X」도 함께 고치셔야 합니다.');
+
+  box.innerHTML =
+    (keys.length
+      ? '<div class="ed-ok">바뀐 칸 <b>' + keys.length + '</b>개 — ' + esc(keys.join(', ')) + '</div>'
+      : '<div class="ed-none">아직 바뀐 것이 없습니다.</div>') +
+    msgs.map(m => '<div class="ed-w">⚠️ ' + esc(m) + '</div>').join('');
+}
+
+function edState(text, cls){
+  const el = $('edState');
+  if (el){ el.textContent = text; el.className = 'save-state ' + (cls || ''); }
+}
+
+/* 저장이 막혔을 때 «무엇을 하면 되는지»까지 적는다 */
+function edErrMsg(err){
+  const m = (err && (err.message || err.hint)) || '알 수 없는 오류';
+  if (/NOT_AUTHORIZED/.test(m))
+    return '권한이 없습니다 — 관리자 계정으로 로그인하셨는지 보십시오.';
+  if (/FIELD_NOT_EDITABLE/.test(m))
+    return '이 칸은 고칠 수 없게 막아 둔 칸입니다: ' + m;
+  if (/NOT_FOUND/.test(m))
+    return '그 번호를 표에서 찾지 못했습니다: ' + m;
+  if (err && (err.code === 'PGRST202' || /Could not find the function/i.test(m)))
+    return 'DB 함수가 아직 없습니다 — supabase\\sql\\manual_edits.sql 을 SQL Editor 에서 한 번 실행하십시오.';
+  return '저장하지 못했습니다: ' + m;
+}
+
+async function edSave(){
+  const r = S.rows.find(x => x.question_id === S.currentId);
+  if (!r) return;
+  const ch = edDiff(r, edCollect(r));
+  const keys = Object.keys(ch);
+  if (!keys.length){ edState('바뀐 것이 없습니다.', ''); return; }
+
+  const noteEl = $('ed_note');
+  const note = noteEl && noteEl.value.trim() ? noteEl.value.trim() : null;
+
+  edState('저장 중…', '');
+  const fn   = r.is_wr ? 'admin_save_sheet' : 'admin_save_question';
+  const args = r.is_wr
+    ? { p_outline_code: r.question_id, p_fields: ch, p_note: note }
+    : { p_question_id:  r.question_id, p_fields: ch, p_note: note };
+
+  const { data, error } = await sb.rpc(fn, args);
+  if (error){ edState(edErrMsg(error), 'err'); return; }
+
+  /* 화면의 자료도 함께 고쳐 둔다 — 다시 불러올 것 없이 그 자리에서 맞는다 */
+  keys.forEach(k => { r[k] = ch[k]; });
+  if (r.is_wr) r.text = r.title_en || r.title_ko || '';
+
+  const n = (data && typeof data.changed === 'number') ? data.changed : keys.length;
+  S.editing  = false;
+  S.edDirty  = false;
+  renderList();
+  renderDetail();
+  setSaveState('✅ ' + n + '개 칸을 저장했습니다 · 라이브에 반영되었습니다', 'ok');
+}
+
+/* ── 수정 이력 ─────────────────────────────────────────────────────────────
+   Claude 가 `py manual_edits.py` 로 읽는 것과 «같은 표»를 봅니다. */
+async function edShowHist(){
+  const back = document.createElement('div');
+  back.className = 'aph-back';
+  back.innerHTML = '<div class="aph-box"><div class="aph-h"><b>✏️ 수정 이력</b>' +
+    '<button class="btn" id="edhClose">닫기</button></div>' +
+    '<div class="aph-body" id="edhBody">불러오는 중…</div></div>';
+  document.body.appendChild(back);
+  const close = () => back.remove();
+  back.querySelector('#edhClose').addEventListener('click', close);
+  back.addEventListener('click', (e) => { if (e.target === back) close(); });
+
+  const { data, error } = await sb.rpc('admin_manual_edits', { p_limit: 200 });
+  const body = back.querySelector('#edhBody');
+  if (error){
+    body.innerHTML = '<div class="aph-empty">' + esc(edErrMsg(error)) + '</div>';
+    return;
+  }
+  const rows = data || [];
+  if (!rows.length){
+    body.innerHTML = '<div class="aph-empty">아직 손으로 고치신 것이 없습니다.</div>';
+    return;
+  }
+  const cut = (t) => { const s = String(t == null ? '' : t); return s.length > 400 ? s.slice(0, 400) + ' …' : s; };
+  body.innerHTML =
+    '<div class="aph-hint">여기 기록은 <b>Supabase 에 남습니다</b> — 이 브라우저만의 것이 아닙니다.<br>' +
+    'Claude 는 창을 열 때 이것을 읽고 「사장님이 손으로 고치신 자리」로 압니다.</div>' +
+    rows.map(m =>
+      '<div class="edh-row"><div class="edh-top">' +
+      '<span class="edh-id">' + esc(m.target_id) + '</span>' +
+      '<span class="edh-field">' + esc(m.field) + '</span> · ' +
+      esc(apWhen(m.edited_at)) + (m.note ? ' · ' + esc(m.note) : '') +
+      '</div>' +
+      '<div class="edh-b">' + esc(cut(m.before_val)) + '</div>' +
+      '<div class="edh-a">' + esc(cut(m.after_val)) + '</div></div>').join('');
+}
+$('edHistBtn').addEventListener('click', edShowHist);
+
 
 /* 승인 대기 저장 — 판정 없이 피드백만 적어두는 것도 허용한다 */
 function saveApproval(r, verdict, advance){
@@ -1743,6 +2060,10 @@ async function step(delta){
 
 /** 저장 안 한 메모가 있으면 확인 */
 async function confirmDiscard(){
+  if (S.edDirty){
+    if (!confirm('✏️ 직접 수정 칸에 저장하지 않은 것이 있습니다. 버리고 이동할까요?')) return false;
+    S.edDirty = false;
+  }
   if (!S.dirty) return true;
   const ok = confirm('저장하지 않은 메모가 있습니다. 버리고 이동할까요?');
   if (ok) S.dirty = false;
@@ -1766,7 +2087,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('beforeunload', (e) => {
-  if (S.dirty){ e.preventDefault(); e.returnValue = ''; }
+  if (S.dirty || S.edDirty){ e.preventDefault(); e.returnValue = ''; }
 });
 
 applyFontScale();   // 로그인 화면부터 배율 적용
