@@ -397,6 +397,103 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
 .edh-a{background:#e9f5ee;color:#1f5a3d}
 .ed-toast{margin-top:8px;font-size:calc(13px * var(--fs))}
 
+/* ══ 🖥 실제 앱과 «같은» War Room 화면 (2026-08-30 사장님 지적) ══════════════
+   > "review_app에서 보는 War Room은 실제 pracexam.com War Room에서 보는 화면과
+   >  다릅니다."
+   👉 아래는 **`app.html` 9849~9905행을 값 그대로** 옮긴 것이다.
+   🔴 **여기 숫자를 «고치지 말 것».** 고치는 만큼 실제 화면과 어긋나고, 그러면
+      미리보기가 거짓말을 한다. app.html 의 `.wr-body` 가 바뀌면 여기도 함께 옮긴다.
+   🔴 실제와 «일부러» 다르게 둔 것 딱 둘 —
+      ① `user-select` : 실제 화면은 복사를 막지만(.wr-protected) 여기는 검토용이라 연다
+         (2026-07-31 부터의 규칙 — 드래그·복사 자유).
+      ② `--fs`(글자 크기 버튼)를 **안 건다**. 실물 크기여야 미리보기가 맞다.
+   폭 790px = 실제 앱의 `.wr-wrap`(1040) − TOC(230) − 간격(20). 줄바꿈까지 같아진다. */
+.wr-real{max-width:790px;}
+.wr-real .wr-sheet{position:relative;background:#fff;border:1px solid rgba(53,70,73,.12);
+  border-radius:16px;box-shadow:0 1px 6px rgba(0,0,0,.06);min-height:420px;
+  display:flex;flex-direction:column;min-width:0;}
+.wr-real .wr-protected{flex:1;padding:20px 26px 26px;min-width:0;
+  -webkit-user-select:text;user-select:text;}   /* ← 실제와 다른 곳 ① */
+.wr-real .wr-title{font-family:'Poppins',sans-serif;font-size:21px;font-weight:800;
+  color:#232e30;margin-bottom:14px;letter-spacing:-.01em;}
+.wr-real .wr-body{min-width:0;font-size:14.5px;color:#4b5759;
+  word-break:normal;overflow-wrap:normal;line-height:1.75;}
+.wr-real .wr-body h3{font-family:'Poppins',sans-serif;font-size:15.5px;font-weight:700;
+  color:#354649;margin:20px 0 9px;padding-bottom:6px;border-bottom:1px solid rgba(53,70,73,.12);}
+.wr-real .wr-body h3:first-child{margin-top:2px;}
+.wr-real .wr-body p{font-size:14.5px;line-height:1.75;color:#4b5759;margin-bottom:11px;}
+.wr-real .wr-body ul{margin:0 0 12px 20px;}
+.wr-real .wr-body li{font-size:14.5px;line-height:1.7;color:#4b5759;margin-bottom:5px;}
+.wr-real .wr-body strong{color:#232e30;}
+.wr-real .wr-body p,.wr-real .wr-body li{word-break:keep-all;overflow-wrap:break-word;}
+.wr-real .wr-tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px;max-width:100%;}
+.wr-real .wr-tblwrap>table{margin:0;}
+.wr-real .wr-body table{width:100%;border-collapse:collapse;margin:4px 0 14px;font-size:13.5px;}
+.wr-real .wr-body th,.wr-real .wr-body td{border:1px solid rgba(53,70,73,.12);padding:8px 11px;
+  text-align:left;vertical-align:top;word-break:keep-all;overflow-wrap:normal;}
+.wr-real .wr-body th{background:#EDF4F3;color:#354649;font-weight:700;font-size:12px;}
+.wr-real .wr-body td{color:#4b5759;}
+.wr-real .wr-body .tip{background:#FBF1EC;border-left:3px solid #DD8F75;border-radius:0 8px 8px 0;
+  padding:11px 14px;margin:8px 0 15px;}
+.wr-real .wr-body .tip-label{font-size:10.5px;font-weight:700;color:#b85f3f;letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:5px;}
+.wr-real .wr-body .tip p{font-size:13.5px;line-height:1.7;margin:0;color:#4b5759;}
+.wr-real .wr-body .ex{background:#D3E9E4;border:1px solid #9CC8C1;border-left:4px solid #3E837A;
+  border-radius:0 8px 8px 0;padding:12px 15px;margin:10px 0 16px;}
+.wr-real .wr-body .ex-label{display:inline-block;font-size:10.5px;font-weight:700;color:#fff;
+  background:#3E837A;border-radius:5px;padding:2px 8px;margin-bottom:8px;text-transform:uppercase;}
+.wr-real .wr-body .ex p{font-size:13.5px;line-height:1.72;margin:0 0 6px;color:#4b5759;}
+.wr-real .wr-body .ex .ans b{color:#1f5b54;}
+.wr-note{font-size:calc(12.5px * var(--fs));color:#5b6b6e;background:#eef3f4;border-radius:8px;
+  padding:8px 12px;margin-bottom:10px;line-height:1.6}
+/* 미리보기 상자 — 실물 폭(790)이 들어가야 하므로 이력 모달보다 넓게 */
+.aph-box.wide{max-width:900px}
+.edp-warn{background:#FFF4E5;border-left:3px solid #E8A33D;border-radius:6px;padding:9px 12px;
+  margin-bottom:8px;font-size:13px;color:#7a5310;line-height:1.6}
+.edp-bad{background:#fbecec;border-left:3px solid #c0504d;color:#7a2f2f}
+.edp-ok{background:#e9f5ee;border-left:3px solid #3E837A;border-radius:6px;padding:9px 12px;
+  margin-bottom:8px;font-size:13px;color:#1f5a3d}
+.edp-foot{display:flex;gap:9px;align-items:center;padding:12px 18px;border-top:1px solid #e6edee}
+.ed-prev{margin-top:8px;border:1px dashed #cfd8da;border-radius:10px;padding:12px;background:#f7fafa}
+.ed-prev-h{font-size:calc(12px * var(--fs));font-weight:700;color:#5a6b6e;margin-bottom:8px}
+
+/* ══ 🖥 실제 앱과 «같은» 문항 화면 (2026-08-30 사장님 지시) ══════════════════
+   > "연습문제, Mock도 미리보기 만들어 주세요"
+   👉 `app.html` 의 `.question-card`·`.option-btn`·`.explanation-card` 값을 그대로 옮겼다.
+   🔴 숫자를 고치지 말 것 — 고치는 만큼 실제 화면과 어긋나 미리보기가 거짓말을 한다.
+   🔴 `--fs`(글자 크기 버튼)를 «안 건다». 실물 크기여야 미리보기가 맞다.
+   폭 852px = 실제 앱 `.screen`(900) − 좌우 여백(1.5rem×2). 줄바꿈까지 같아진다.
+   🔑 문항은 «평문»이다(활성 5,324건 전수 HTML 0건). 꼴을 만드는 것은 줄바꿈 하나뿐이라
+      `white-space:pre-wrap` 이 이 미리보기의 핵심이다. */
+.q-real{max-width:852px;color:#4b5759}
+.q-real .qr-card{background:#fff;border:1px solid rgba(53,70,73,.14);border-radius:16px;
+  padding:1.5rem 1.5rem 0;margin-bottom:1rem;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+.q-real .qr-text{font-size:19px;line-height:1.75;color:#232e30;font-weight:500;
+  white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+.q-real .qr-opts{margin:1.25rem -1.5rem 0}
+.q-real .qr-opt{border-bottom:1px solid rgba(53,70,73,.14);padding:16px 1.5rem;
+  display:flex;align-items:baseline;gap:12px;text-align:left;position:relative}
+.q-real .qr-opt:last-child{border-bottom:none;padding-bottom:1.5rem}
+.q-real .qr-opt::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.q-real .qr-l{font-size:16.5px;font-weight:600;color:#6C7A89;flex-shrink:0;min-width:22px}
+.q-real .qr-t{font-size:16.5px;line-height:1.7;color:#4b5759;white-space:pre-wrap}
+/* 정답 보기 = 고객이 답을 낸 «뒤» 보는 모습 */
+.q-real .qr-opt.ok{background:rgba(74,222,128,.07)}
+.q-real .qr-opt.ok::before{background:#16a34a}
+.q-real .qr-opt.ok .qr-l{color:#16a34a;font-weight:700}
+.q-real .qr-opt.ok .qr-t{color:#232e30}
+.q-real .qr-exp{background:#fff;border:1px solid rgba(53,70,73,.14);border-radius:14px;
+  padding:1.25rem;margin-top:1rem;box-shadow:0 1px 4px rgba(53,70,73,.08)}
+.q-real .qr-lab{font-size:17px;color:#354649;font-weight:700;margin-bottom:8px;line-height:1.4}
+.q-real .qr-body{font-size:17px;line-height:1.85;color:#4b5759;letter-spacing:-.01em;
+  word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap}
+.q-real .qr-tip{background:#FBF1EC;border-left:3px solid #DD8F75;border-radius:0 8px 8px 0;
+  padding:12px 14px;margin:10px 0}
+.q-real .qr-tipl{font-size:17px;font-weight:700;color:#b85f3f;letter-spacing:-.01em;
+  margin-bottom:8px;line-height:1.4}
+.q-real .qr-tipb{font-size:17px;line-height:1.8;color:#4b5759;
+  word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap}
+
 </style>
 </head>
 <body>
@@ -1523,7 +1620,11 @@ function renderDetail(){
         <div class="ap-body">${esc(it.note)}</div></div>` : ''}
     </div>`;
   } else if (r.is_wr){
-    /* War Room 치트시트 — 본문 HTML을 그대로 렌더 (드래그·복사 자유) */
+    /* War Room 치트시트 — 🖥 **실제 pracexam.com 화면과 같은 꼴**로 그린다.
+       🔴 2026-08-30 사장님 지적 = "review_app에서 보는 War Room은 실제 화면과 다릅니다."
+          까닭 = 여기 CSS 가 «따로» 있었다(15.5px·teal 제목·표 테두리가 달랐다).
+          이제 `wrRealHtml()` 이 app.html 의 겉모습을 그대로 쓴다.
+          드래그·복사는 검토용이라 그대로 열어 둔다(실제 화면은 막는다). */
     const title = S.lang === 'en' ? (r.title_en || r.title_ko || '') : (r.title_ko || r.title_en || '');
     const body  = S.lang === 'en' ? (r.body_en || '') : (r.body_ko || '');
     mainHtml = `
@@ -1541,9 +1642,10 @@ function renderDetail(){
         ${edBtn()}
         <button class="btn back-btn" id="btnBack" style="padding:7px 13px;">← 목록</button>
       </div>
-      <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:4px;">${esc(title)}</div>
-      <div class="wr-body">${body || '<span style="color:#a8b3b6">(본문 없음)</span>'}</div>
-    </div>`;
+    </div>
+    <div class="wr-note">🖥 아래는 <b>실제 pracexam.com War Room 과 같은 화면</b>입니다 —
+      글꼴·크기·표·상자를 앱에서 값 그대로 옮겼습니다. (글자 크기 버튼은 여기에 안 걸립니다.)</div>
+    ${wrRealHtml(title, body)}`;
   } else {
     const opts = Array.isArray(r.options) ? r.options : [];
     const letters = ['A','B','C','D','E','F'];
@@ -1649,12 +1751,18 @@ function renderDetail(){
       S.editing = false; S.edDirty = false; renderDetail();
     });
     $('edSaveBtn').addEventListener('click', edSave);
+    const pv = $('edPrevBtn');
+    if (pv) pv.addEventListener('click', () => (r.is_wr ? edShowPreview : qShowPreview)(r, 'check'));
     $('edCard').querySelectorAll('.ed-in, input[name="edCorrect"]').forEach(el => {
       el.addEventListener('input',  () => edWarnCheck(r));
       el.addEventListener('change', () => edWarnCheck(r));
     });
     edWarnCheck(r);
   }
+
+  /* 🔴 실제 화면과 같아지려면 «표 감싸기»까지 해야 한다(app.html _wrPostProcess).
+     이것을 빼면 넓은 표가 카드 밖으로 삐져나온다 — 실제 화면에서는 안 그런다. */
+  wrPost($('detail'));
 
   // 이벤트 바인딩
   const back = $('btnBack');
@@ -1771,12 +1879,17 @@ function edForm(r){
     '승인 절차를 거치지 않으니 오타·표현처럼 <b>확실한 것</b>만 손보십시오.<br>' +
     '고친 칸은 <b>수정 이력</b>에 남아 다음에 Claude 가 그대로 읽습니다.</div>' +
     body +
+    '<div class="ed-h" style="background:#EDF4F3;color:#2b4a4e">' +
+      '🖥 <b>저장하기 전에 미리보기가 한 번 뜹니다.</b> 실제 고객 화면과 같은 꼴로 보여 드리고, ' +
+      (r.is_wr ? 'HTML 태그가 어긋났는지도' : '문단이 붙어 있는지·세미콜론이 남았는지도') +
+      ' 함께 알려 드립니다. 보시고 <b>[이대로 저장]</b> 을 누르셔야 올라갑니다.</div>' +
     '<label class="ed-f"><span class="ed-l">메모 — 왜 고쳤는지 (안 적으셔도 됩니다)</span>' +
     '<input class="ed-in" id="ed_note" placeholder="예: 오타 · 금액 오기 · 표현 다듬음"></label>' +
     '<div class="ed-warn" id="edWarn"></div>' +
     '<div class="ed-foot">' +
     '<button class="btn" id="edCancel">취소</button>' +
-    '<button class="btn primary" id="edSaveBtn">Supabase 에 저장</button>' +
+    '<button class="btn" id="edPrevBtn">👁 미리보기</button>' +
+    '<button class="btn primary" id="edSaveBtn">미리보기 → 저장</button>' +
     '<span class="save-state" id="edState"></span></div></div>';
 }
 
@@ -1858,12 +1971,25 @@ function edErrMsg(err){
   return '저장하지 못했습니다: ' + m;
 }
 
+/* 🔴 2026-08-30 사장님 지시 — «미리보기를 보고 확인한 뒤» 저장한다.
+      "저장 전에 미리 보기를 보고 확인을 하고 저장하는 것이 필요합니다."
+      "연습문제, Mock도 미리보기 만들어 주세요"
+   치트시트와 문항은 «보는 것»이 다르다 —
+     치트시트  HTML 이라 태그 하나가 어긋나면 고객 화면이 무너진다  → 태그 짝을 센다
+     문항      평문이라 태그 위험이 없다(전수 0건)                 → 줄바꿈·문단을 본다
+   그래서 미리보기도 둘로 갈라 두었다. 하나로 합치지 말 것. */
 async function edSave(){
   const r = S.rows.find(x => x.question_id === S.currentId);
   if (!r) return;
+  if (!Object.keys(edDiff(r, edCollect(r))).length){ edState('바뀐 것이 없습니다.', ''); return; }
+  const show = r.is_wr ? edShowPreview : qShowPreview;
+  show(r, 'save', (close) => edDoSave(r, close));
+}
+
+async function edDoSave(r, close){
   const ch = edDiff(r, edCollect(r));
   const keys = Object.keys(ch);
-  if (!keys.length){ edState('바뀐 것이 없습니다.', ''); return; }
+  if (!keys.length){ edState('바뀐 것이 없습니다.', ''); if (close) close(); return; }
 
   const noteEl = $('ed_note');
   const note = noteEl && noteEl.value.trim() ? noteEl.value.trim() : null;
@@ -1875,7 +2001,14 @@ async function edSave(){
     : { p_question_id:  r.question_id, p_fields: ch, p_note: note };
 
   const { data, error } = await sb.rpc(fn, args);
-  if (error){ edState(edErrMsg(error), 'err'); return; }
+  if (error){
+    edState(edErrMsg(error), 'err');
+    /* 🔴 미리보기 창을 «닫지 않는다» — 닫으면 오류 글이 뒤에 가려 안 보인다 */
+    const st = $('edpState');
+    if (st){ st.textContent = edErrMsg(error); st.className = 'save-state err'; }
+    return;
+  }
+  if (close) close();
 
   /* 화면의 자료도 함께 고쳐 둔다 — 다시 불러올 것 없이 그 자리에서 맞는다 */
   keys.forEach(k => { r[k] = ch[k]; });
@@ -1928,6 +2061,267 @@ async function edShowHist(){
 }
 $('edHistBtn').addEventListener('click', edShowHist);
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   🖥 실제 앱과 «같은» War Room 렌더 (2026-08-30 사장님 지적)
+   실제 화면(`app.html` wrShow)이 하는 일은 셋이다. 셋을 다 해야 같아진다 —
+     ① _wrNbspJoin  「Form §1031」처럼 붙는 자리의 공백을 줄바꿈 안 되는 공백으로
+     ② <div class="wr-body"> 안에 넣는다
+     ③ _wrPostProcess  표를 .wr-tblwrap 으로 감싼다(넓은 표가 가로 스크롤된다)
+   하나라도 빠뜨리면 «비슷한데 다른» 화면이 된다.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* app.html `_wrNbspJoin` 과 같은 것 — 조문 표기가 줄 끝에서 갈라지지 않게 한다 */
+function wrNbsp(html){
+  return String(html == null ? '' : html).replace(
+    /\b(Treas\. Reg\.|Rev\. Proc\.|IRC|Form|Pub\.|Reg\.|Letter|Notice|Schedule|Circular|Title) (?=§|\d|CP)/g,
+    function(_m, p1){ return p1 + '\u00a0'; });
+}
+
+/* app.html `_wrSafeHtml` 과 같은 것 — 실제 화면이 지우는 것을 여기서도 지운다.
+   🔴 미리보기에서 이것을 안 하면 «실제로는 안 나올 것»이 나와 보인다. */
+function wrSafe(html){
+  try{
+    var doc = new DOMParser().parseFromString('<div id="wrp">' + String(html || '') + '</div>', 'text/html');
+    var box = doc.getElementById('wrp');
+    if (!box) return '';
+    box.querySelectorAll('script,style,iframe,object,embed,link').forEach(function(n){ n.remove(); });
+    return box.innerHTML;
+  }catch(e){ return ''; }
+}
+
+/* app.html `_wrPostProcess` 와 같은 것 — 표를 가로 스크롤 상자에 넣는다 */
+function wrPost(root){
+  if (!root) return;
+  root.querySelectorAll('.wr-real .wr-body table').forEach(function(t){
+    if (t.parentElement && t.parentElement.classList.contains('wr-tblwrap')) return;
+    var w = document.createElement('div');
+    w.className = 'wr-tblwrap';
+    t.parentNode.insertBefore(w, t);
+    w.appendChild(t);
+  });
+}
+
+/* 실제 앱과 같은 겉모습 한 벌 */
+function wrRealHtml(title, body){
+  return '<div class="wr-real"><div class="wr-sheet"><div class="wr-protected">' +
+    '<div class="wr-title">' + esc(title || '') + '</div>' +
+    '<div class="wr-body">' + (body ? wrNbsp(wrSafe(body))
+      : '<span style="color:#a8b3b6">(본문 없음)</span>') + '</div>' +
+    '</div></div></div>';
+}
+
+/* ── HTML 이 성한지 본다 — 막지 않고 «알린다» ───────────────────────────────
+   🔴 사장님 지적의 뒷부분 = "HTML로 되어 있어 수정을 하다가 오류가 나올수 있는데".
+      브라우저는 깨진 태그를 «조용히 고쳐서» 그려 준다. 그래서 화면만 보면 멀쩡한데
+      실제로는 태그가 어긋나 있는 일이 생긴다. 세 가지를 세어 알린다. */
+var ED_PAIR = ('div p h1 h2 h3 h4 h5 h6 ul ol li table thead tbody tfoot tr th td ' +
+  'strong b em i span mark small sub sup a code pre blockquote caption section article').split(' ');
+
+function edHtmlCheck(html){
+  var h = String(html || ''), out = [];
+
+  /* ① 실제 화면이 «지워 버리는» 태그 */
+  var killed = [];
+  ['script','style','iframe','object','embed','link'].forEach(function(t){
+    if (new RegExp('<' + t + '\\b', 'i').test(h)) killed.push(t);
+  });
+  /* 🔴 경고글은 innerHTML 로 들어간다 — 태그 이름을 «날것»으로 넣으면 그 경고가
+     스스로 태그가 되어 뒷글을 삼킨다(2026-08-30 실측으로 잡았다). 반드시 &lt; 로. */
+  if (killed.length) out.push(['bad',
+    '&lt;' + killed.join('&gt;, &lt;') + '&gt; 는 실제 화면에서 «지워집니다» — 미리보기에도 안 나옵니다.']);
+
+  /* ② 여는 태그와 닫는 태그의 «수»가 다른 것 */
+  var un = [];
+  ED_PAIR.forEach(function(t){
+    var o = (h.match(new RegExp('<' + t + '(?=[\\s>/])', 'gi')) || []).length;
+    var c = (h.match(new RegExp('</' + t + '(?=[\\s>])', 'gi')) || []).length;
+    if (o !== c) un.push('&lt;' + t + '&gt; 여는 것 ' + o + ' · 닫는 것 ' + c);
+  });
+  if (un.length) out.push(['bad',
+    '태그 짝이 안 맞습니다 — ' + un.join(' / ') +
+    '. 브라우저가 «알아서 고쳐» 그리므로 미리보기는 멀쩡해 보일 수 있습니다.']);
+
+  /* ③ 글자로 쓴 부등호 — 화면은 멀쩡한데 도구들이 뒷문장을 통째로 삼킨다
+       (2026-08-04 에 실제로 겪었다 · 원시 `<` 다섯 곳) */
+  if (/<(?=[\s\d])/.test(h)) out.push(['warn',
+    '태그가 아닌 «&lt;» 가 있습니다(뒤에 공백이나 숫자). 화면은 멀쩡하지만 검사 도구들이 ' +
+    '뒷문장을 통째로 삼킵니다. &lt; 로 적어 주십시오.']);
+
+  return out;
+}
+
+/* ── 저장 전 미리보기 ──────────────────────────────────────────────────────
+   mode 'check' = 보기만 · mode 'save' = 보고 나서 「이대로 저장」 */
+function edShowPreview(r, mode, onOk){
+  var lang = S.lang === 'en' ? 'en' : 'ko';
+  var all  = edCollect(r);
+  var pick = function(k, fallback){ return (k in all) ? all[k] : (r[fallback] || ''); };
+
+  function draw(){
+    var t = lang === 'en' ? pick('title_en','title_en') : pick('title_ko','title_ko');
+    var b = lang === 'en' ? pick('body_en','body_en')   : pick('body_ko','body_ko');
+    if (!t) t = lang === 'en' ? (pick('title_ko','title_ko')) : (pick('title_en','title_en'));
+    var warn = edHtmlCheck(b);
+    var box  = back.querySelector('#edpBody');
+    box.innerHTML =
+      '<div class="aph-hint">🖥 <b>실제 pracexam.com War Room 과 같은 화면</b>입니다 — ' +
+      '글꼴·크기·표·상자를 앱에서 값 그대로 옮겼습니다. 여기서 이상하면 고객 화면에서도 이상합니다.<br>' +
+      '(글자 크기 버튼은 여기에 안 걸립니다 — 실물 크기여야 미리보기가 맞습니다.)</div>' +
+      (warn.length
+        ? warn.map(function(w){ return '<div class="edp-warn' +
+            (w[0] === 'bad' ? ' edp-bad' : '') + '">⚠️ ' + w[1] + '</div>'; }).join('')
+        : '<div class="edp-ok">✅ HTML 에 눈에 띄는 어긋남이 없습니다.</div>') +
+      wrRealHtml(t, b);
+    wrPost(box);
+    back.querySelectorAll('#edpLang button').forEach(function(x){
+      x.classList.toggle('active', x.dataset.lang === lang);
+    });
+  }
+
+  var back = document.createElement('div');
+  back.className = 'aph-back';
+  back.innerHTML =
+    '<div class="aph-box wide"><div class="aph-h"><b>👁 미리보기 — 실제 화면</b>' +
+    '<span class="lang-toggle" id="edpLang" style="margin-left:12px">' +
+    '<button data-lang="ko">KO</button><button data-lang="en">EN</button></span>' +
+    '<button class="btn" id="edpClose">닫기</button></div>' +
+    '<div class="aph-body" id="edpBody"></div>' +
+    (mode === 'save'
+      ? '<div class="edp-foot"><button class="btn" id="edpBack">← 더 고치겠습니다</button>' +
+        '<button class="btn primary" id="edpOk">이대로 저장</button>' +
+        '<span class="save-state" id="edpState"></span></div>'
+      : '') +
+    '</div>';
+  document.body.appendChild(back);
+
+  var close = function(){ back.remove(); };
+  back.querySelector('#edpClose').addEventListener('click', close);
+  back.addEventListener('click', function(e){ if (e.target === back) close(); });
+  back.querySelectorAll('#edpLang button').forEach(function(x){
+    x.addEventListener('click', function(){ lang = x.dataset.lang; draw(); });
+  });
+  if (mode === 'save'){
+    back.querySelector('#edpBack').addEventListener('click', close);
+    back.querySelector('#edpOk').addEventListener('click', function(){
+      back.querySelector('#edpState').textContent = '저장 중…';
+      onOk(close);
+    });
+  }
+  draw();
+}
+
+/* ── 🖥 실제 앱과 «같은» 문항 화면 ─────────────────────────────────────────
+   🔑 사장님 물음 — *"연습문제는 html 코드가 안보이는데 War Room 과 환경이 다른 건가요?"*
+      **다릅니다.** 활성 EA 5,324건 «전수»에 HTML 태그가 **0건**입니다. 문항은 평문이고,
+      꼴을 만드는 것은 «줄바꿈» 하나뿐입니다(해설에 줄바꿈이 있는 것 4,256건).
+      실제 앱도 `esc()` 로 글자 그대로 그리고 `white-space:pre-wrap` 으로 줄바꿈만 살립니다.
+      그래서 문항에는 「태그가 깨질」 위험이 없고, 미리보기의 값은 **문단이 제대로 나뉘는가**입니다.
+   🔴 그러니 여기서 `esc()` 를 «빼지 말 것». 빼면 실제 화면과 달라질 뿐 아니라,
+      고객 글에 든 `<` 가 태그로 읽혀 화면이 무너진다. */
+function qRealHtml(o){
+  const L = ['A','B','C','D','E','F'];
+  const opts = Array.isArray(o.options) ? o.options : [];
+  const expl = o.lang === 'en' ? o.explanation_en : o.explanation;
+  const tip  = o.lang === 'en' ? o.examtip_en     : o.examtip;
+  const none = (w) => '<span style="color:#a8b3b6">(' + w + ' 없음)</span>';
+  return '<div class="q-real">' +
+    '<div class="qr-card"><div class="qr-text">' + esc(o.text || '') + '</div>' +
+    '<div class="qr-opts">' + opts.map((t, i) =>
+      '<div class="qr-opt' + (i === o.correct ? ' ok' : '') + '">' +
+      '<span class="qr-l">' + (L[i] || (i + 1)) + '</span>' +
+      '<span class="qr-t">' + esc(t) + '</span></div>').join('') +
+    '</div></div>' +
+    '<div class="qr-exp"><div class="qr-lab">해설</div>' +
+    '<div class="qr-body">' + (expl ? esc(expl) : none(o.lang === 'en' ? '영문 해설' : '국문 해설')) + '</div>' +
+    (tip ? '<div class="qr-tip"><div class="qr-tipl">시험 팁</div>' +
+           '<div class="qr-tipb">' + esc(tip) + '</div></div>' : '') +
+    '</div></div>';
+}
+
+/* 문항 글이 «문단으로 나뉘어» 있는지 본다 — 막지 않고 알린다.
+   🔴 2026-08-27 사장님 지시 = *"해설에 문장 줄 바꿈 적용. 다 붙어 있어서 보기어렵습니다."*
+      라이브 Part 1 실측 = 해설 줄바꿈 중앙값 8 · 빈 줄 중앙값 3.
+      한 덩어리인 것은 10.8% 뿐이다. 그래서 «한 덩어리»를 신호로 본다. */
+function qTextCheck(f){
+  const out = [];
+  [['explanation','국문 해설'], ['explanation_en','영문 해설']].forEach(([k, lab]) => {
+    const v = String(f[k] == null ? '' : f[k]);
+    if (!v) return;
+    if (v.length > 220 && v.indexOf('\n') < 0)
+      out.push(['warn', lab + '이 <b>한 덩어리</b>입니다(' + v.length + '자 · 줄바꿈 0). ' +
+        '집 표준은 「정답은 A입니다」 → 빈 줄 → 규칙 → 빈 줄 → 적용 → 빈 줄 → ' +
+        '「다른 보기가 틀린 이유:」 입니다.']);
+  });
+  ['text','explanation','examtip','explanation_en','examtip_en'].forEach(k => {
+    if (k in f && String(f[k] || '').indexOf(';') >= 0)
+      out.push(['warn', '<b>' + k + '</b> 에 세미콜론(;) 이 있습니다 — 집 규칙은 전면 금지입니다.']);
+  });
+  if ('options' in f && (f.options || []).some(t => String(t || '').indexOf(';') >= 0))
+    out.push(['warn', '<b>보기</b>에 세미콜론(;) 이 있습니다 — 집 규칙은 전면 금지입니다.']);
+  return out;
+}
+
+/* 문항 미리보기 — 치트시트와 같은 상자를 쓰되 KO/EN 을 함께 본다 */
+function qShowPreview(r, mode, onOk){
+  let lang = S.lang === 'en' ? 'en' : 'ko';
+  const all = edCollect(r);
+  const val = (k) => (k in all) ? all[k] : r[k];
+
+  function draw(){
+    const f = {
+      text: val('text'), options: val('options'), correct: val('correct'),
+      explanation: val('explanation'), examtip: val('examtip'),
+      explanation_en: val('explanation_en'), examtip_en: val('examtip_en'), lang
+    };
+    const warn = qTextCheck(edDiff(r, all));
+    const box = back.querySelector('#edpBody');
+    box.innerHTML =
+      '<div class="aph-hint">🖥 <b>실제 pracexam.com 문항 화면과 같은 모습</b>입니다 — ' +
+      '고객이 <b>답을 낸 뒤</b> 보는 화면(정답 보기에 초록 줄)입니다.<br>' +
+      '🔑 문항은 <b>평문</b>이라 태그가 깨질 일이 없습니다(활성 5,324건 전수 HTML 0건). ' +
+      '여기서 볼 것은 <b>줄바꿈과 문단</b>입니다.<br>' +
+      '(글자 크기 버튼은 여기에 안 걸립니다 — 실물 크기여야 미리보기가 맞습니다.)</div>' +
+      (warn.length
+        ? warn.map(w => '<div class="edp-warn">⚠️ ' + w[1] + '</div>').join('')
+        : '<div class="edp-ok">✅ 눈에 띄는 어긋남이 없습니다.</div>') +
+      qRealHtml(f);
+    back.querySelectorAll('#edpLang button').forEach(x => {
+      x.classList.toggle('active', x.dataset.lang === lang);
+    });
+  }
+
+  const back = document.createElement('div');
+  back.className = 'aph-back';
+  back.innerHTML =
+    '<div class="aph-box wide"><div class="aph-h"><b>👁 미리보기 — 실제 화면</b>' +
+    '<span class="lang-toggle" id="edpLang" style="margin-left:12px">' +
+    '<button data-lang="ko">KO</button><button data-lang="en">EN</button></span>' +
+    '<button class="btn" id="edpClose">닫기</button></div>' +
+    '<div class="aph-body" id="edpBody"></div>' +
+    (mode === 'save'
+      ? '<div class="edp-foot"><button class="btn" id="edpBack">← 더 고치겠습니다</button>' +
+        '<button class="btn primary" id="edpOk">이대로 저장</button>' +
+        '<span class="save-state" id="edpState"></span></div>'
+      : '') +
+    '</div>';
+  document.body.appendChild(back);
+
+  const close = () => back.remove();
+  back.querySelector('#edpClose').addEventListener('click', close);
+  back.addEventListener('click', (e) => { if (e.target === back) close(); });
+  back.querySelectorAll('#edpLang button').forEach(x => {
+    x.addEventListener('click', () => { lang = x.dataset.lang; draw(); });
+  });
+  if (mode === 'save'){
+    back.querySelector('#edpBack').addEventListener('click', close);
+    back.querySelector('#edpOk').addEventListener('click', () => {
+      back.querySelector('#edpState').textContent = '저장 중…';
+      onOk(close);
+    });
+  }
+  draw();
+}
 
 /* 승인 대기 저장 — 판정 없이 피드백만 적어두는 것도 허용한다 */
 function saveApproval(r, verdict, advance){
