@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" class="lang-en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found | PracExam</title>
+<meta name="description" content="The page you are looking for does not exist on PracExam.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+
+<!-- 🔴 이 페이지는 «색인하지 않는다».
+     없는 주소가 검색 결과에 오르면 고객이 빈 페이지로 들어온다. -->
+<meta name="robots" content="noindex, follow">
+
+<!-- ===========================================================================
+     404 — 없는 주소 (2026-08-31 신설)
+
+     🔴 왜 이 파일이 필요한가
+     Cloudflare Pages 는 `404.html` 이 «없으면» 못 찾은 주소에 **홈(index.html)을
+     HTTP 200 으로** 돌려준다(SPA 되돌림). 그래서 실측하면 이랬다 —
+
+         /llms.txt          → 200 (홈이 나옴)
+         /no-such-page-xyz  → 200 (홈이 나옴)
+         /tips/없는글        → 200 (홈이 나옴)
+
+     검색엔진에게 200 은 «이 주소에 페이지가 있다»는 뜻이다. 그래서 있지도 않은
+     주소가 색인에 쌓이고(soft 404), 같은 내용이 여러 주소에 있는 것처럼 보여
+     사이트 신뢰도를 깎는다. AI 검색도 같은 색인을 쓴다.
+
+     이 파일 하나를 두면 Cloudflare Pages 가 **404 상태코드와 함께** 이것을 준다.
+
+     🔴 고칠 때 — 이 페이지는 «가벼워야» 한다. 없는 주소로 들어온 사람과 봇이
+        보는 자리라 무거운 것을 얹을 값이 없다. 스크립트도 언어 전환 하나뿐이다.
+     =========================================================================== -->
+<style>
+/* refund.html·privacy.html 과 «같은» 토큰 — Harbor 디자인 고정(다크 모드 없음) */
+:root{
+  --page-bg:#F6F8F7; --white:#ffffff; --border-clr:#E3E9E7;
+  --text-main:#232e30; --text-mid:#4b5759; --text-muted:#4E5C66;
+  --navy:#354649; --navy-mid:#4d6164; --accent:#6FA39E;
+  --font-sans:'Inter','Pretendard Variable',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:var(--font-sans);background:var(--page-bg);color:var(--text-main);line-height:1.7;
+  word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;min-height:100vh;}
+.lang-ko .en, .lang-en .ko { display:none !important; }
+.wrap{max-width:820px;margin:0 auto;padding:0 24px;}
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-clr);}
+.nav-inner{max-width:820px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;text-decoration:none;}
+.logo img{height:30px;width:auto;display:block;}
+.lang-toggle{display:flex;border:1.5px solid rgba(53,70,73,.22);border-radius:8px;overflow:hidden;flex:0 0 auto;}
+.lang-toggle button{font-family:var(--font-sans);font-weight:700;font-size:12px;letter-spacing:.05em;
+  padding:6px 11px;border:none;background:var(--white);color:var(--text-muted);cursor:pointer;}
+.lang-toggle button.active{background:var(--navy);color:var(--white);}
+
+main.wrap{flex:1;padding:72px 24px 88px;}
+.code{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--text-muted);margin-bottom:10px;}
+h1{font-size:clamp(24px,4.2vw,33px);line-height:1.25;letter-spacing:-.02em;margin-bottom:12px;}
+p.lead{color:var(--text-mid);font-size:15.5px;margin-bottom:30px;}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:34px;}
+.btn{display:inline-block;text-decoration:none;font-size:14.5px;font-weight:700;
+  padding:11px 18px;border-radius:10px;border:1px solid var(--border-clr);
+  background:var(--white);color:var(--navy);}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:var(--white);}
+.hint{background:#EDF4F3;border:1px solid #C9DEDB;border-radius:var(--radius);
+  padding:15px 18px;font-size:14px;color:var(--text-mid);}
+.hint a{color:var(--accent);}
+
+footer{border-top:1px solid var(--border-clr);padding:26px 0;font-size:13px;color:var(--text-muted);text-align:center;}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.footer-links a{color:var(--text-muted);text-decoration:none;}
+.footer-links a:hover{color:var(--navy);}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner">
+  <a class="logo" href="/"><img src="/PracExam_logo_dark_transparent.png" alt="PracExam" height="30"></a>
+  <div class="lang-toggle">
+    <button id="btn-ko" onclick="setLang('ko')">KO</button>
+    <button id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</div></nav>
+
+<main class="wrap">
+  <div class="code">404</div>
+
+  <h1>
+    <span class="en">We couldn't find that page</span>
+    <span class="ko">찾으시는 페이지가 없습니다</span>
+  </h1>
+
+  <p class="lead">
+    <span class="en">The link may be old, or the address may have a typo. Everything below still works.</span>
+    <span class="ko">주소가 바뀌었거나 잘못 적혔을 수 있습니다. 아래는 그대로 열립니다.</span>
+  </p>
+
+  <div class="links">
+    <a class="btn primary" href="/"><span class="en">Home</span><span class="ko">홈</span></a>
+    <a class="btn" href="/app"><span class="en">Study</span><span class="ko">문제 풀기</span></a>
+    <a class="btn" href="/popquiz"><span class="en">Pop Quiz</span><span class="ko">Pop Quiz</span></a>
+    <a class="btn" href="/tips/"><span class="en">Study Tips</span><span class="ko">Study Tips</span></a>
+  </div>
+
+  <div class="hint">
+    <span class="en">Still stuck? Email <a href="mailto:hello@pracexam.com">hello@pracexam.com</a> and tell us the link you followed — we'll fix it.</span>
+    <span class="ko">그래도 안 되시면 <a href="mailto:hello@pracexam.com">hello@pracexam.com</a> 으로 눌렀던 링크를 알려 주세요. 저희가 고치겠습니다.</span>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 dxd investment group LLC. All rights reserved.</span>
+  <div class="footer-links">
+    <a href="/"><span class="ko">홈</span><span class="en">Home</span></a>
+    <a href="/terms.html"><span class="ko">이용약관</span><span class="en">Terms</span></a>
+    <a href="/privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
+    <a href="/refund.html"><span class="ko">환불정책</span><span class="en">Refunds</span></a>
+  </div>
+</div></footer>
+
+<script>
+/* 다른 정적 페이지(refund·privacy)와 «같은» 방식 — 고른 언어는 ea_lang 에 남는다.
+   🔴 여기서 언어를 «저장하지» 않는다. 없는 주소에 잘못 들어온 사람의 선택이
+      앱 전체의 언어를 바꾸면 안 된다. 읽기만 한다. */
+function setLang(lang){
+  document.getElementById('html-root').className = 'lang-' + lang;
+  document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+}
+(function(){
+  var saved = null;
+  try { saved = localStorage.getItem('ea_lang'); } catch(e){}
+  /* 저장된 것이 없으면 브라우저 언어를 따른다 — 한국 고객이 영어 화면을 안 보게 */
+  if (!saved) saved = (navigator.language || 'en').toLowerCase().indexOf('ko') === 0 ? 'ko' : 'en';
+  setLang(saved);
+})();
+</script>
+</body>
+</html>

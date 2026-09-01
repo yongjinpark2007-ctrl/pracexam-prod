@@ -37,6 +37,27 @@ class TitleRewriter {
   element(el) { el.setInnerContent(KO_TITLE); }
 }
 
+// 🔴 2026-08-31 — 이 바꿔치기는 «루트 한 장»에만 건다.
+//
+// [무엇이 잘못돼 있었나] 위 주석은 처음부터 "루트 페이지 하나로" 라고 적어 두었는데,
+// 코드는 «모든 HTML» 에 걸리고 있었다. 그래서 한국어 브라우저·네이버 봇이 보면 —
+//
+//     /refund.html   → 미국세무사(EA) 문제은행 · 한글 해설 5,000문항 | PracExam
+//     /privacy.html  → (같음)
+//     /tips/ko/      → (같음)   ← 애써 쓴 글이 홈과 같은 제목을 달고 있었다
+//
+// [왜 큰일인가] 검색엔진과 AI 검색에게 «제목·설명이 같은 페이지»는 복사본이다.
+// 한국어로 우리를 찾을 길을 우리 손으로 막고 있었다 — 유료 고객 한 분이 실제로
+// ChatGPT 검색으로 들어오신 바로 그 경로다(2026-08-19 · utm_source=chatgpt.com).
+//
+// [고침] 경로가 루트일 때만 건다. 다른 페이지는 «자기 제목»을 그대로 쓴다
+//        (그 페이지들은 이미 안에 KO/EN 두 벌을 다 갖고 있다).
+// 🔴 새 페이지를 만들 때 이 목록에 더하지 말 것 — 루트만이 맞다.
+function isRoot(url) {
+  const p = url.pathname;
+  return p === "/" || p === "/index.html";
+}
+
 export async function onRequest(context) {
   const { request, next } = context;
   const response = await next();
@@ -44,6 +65,9 @@ export async function onRequest(context) {
   // HTML 응답에만 적용
   const ct = response.headers.get("content-type") || "";
   if (!ct.includes("text/html")) return response;
+
+  // 루트가 아니면 손대지 않는다 (위 설명 참조)
+  if (!isRoot(new URL(request.url))) return response;
 
   // 영어권이면 원본 그대로 반환
   if (!wantsKorean(request)) return response;

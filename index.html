@@ -44,10 +44,31 @@
 </script>
 <!-- ===== /유입 출처 갈무리 ===== -->
 
-<!-- ===== Naver Search Advisor 소유확인 (2026-07-03) =====
-     ⚠️ content 값을 네이버 서치어드바이저에서 발급받은 실제 코드로 교체.
-        서치어드바이저 → 사이트 등록 → 소유확인 → HTML 태그 방식 -->
-<meta name="naver-site-verification" content="REPLACE_WITH_YOUR_NAVER_VERIFICATION_CODE">
+<!-- ===== 검색엔진 소유확인 — 🔴 «두 칸 다» 아직 안 채워졌습니다 =====
+
+     2026-08-31 실측: 커밋 487개를 훑어 보니 아래 네이버 값은 «한 번도»
+     실제 코드였던 적이 없고, 인증 파일 방식으로 한 흔적도 없습니다.
+     (한국 노출 준비 자체는 되어 있습니다 — functions/_middleware.js 가
+      네이버 봇 Yeti 에게 한글 제목·설명을 내주고, 꼬리말에 네이버 카페도 있습니다.
+      마지막 «소유확인» 한 칸만 비어 있습니다.)
+
+     🔑 왜 지금 중요한가 — 2026-08-19 에 유료 고객 한 분이 **ChatGPT 검색**으로
+        들어오셨습니다(DB 실측 · utm_source=chatgpt.com · 유료 8명 중 1명).
+        ChatGPT 검색은 Bing 색인에 크게 기대므로, Bing 에 등록이 안 되어 있으면
+        그 경로가 통째로 막힙니다. 네이버는 한국 고객이 우리를 찾는 길입니다.
+
+     ── 채우는 법 (사장님) ─────────────────────────────────────────────
+     ① Bing   : bing.com/webmasters → 사이트 추가 → pracexam.com
+                → 소유권 확인 → «HTML 메타 태그» 의 content 값만 복사
+                (구글 서치콘솔을 쓰고 계시면 «Google Search Console 에서 가져오기»
+                 를 누르면 확인 절차 없이 한 번에 끝납니다)
+     ② 네이버 : searchadvisor.naver.com → 웹마스터도구 → 사이트 등록
+                → 소유확인 → «HTML 태그» 의 content 값만 복사
+     ③ 둘 다 등록 뒤 **사이트맵 제출**: https://pracexam.com/sitemap.xml
+     ⚠️ 값만 아래 두 줄에 넣으면 됩니다. 태그 전체를 붙여넣지 마십시오.
+     ─────────────────────────────────────────────────────────────── -->
+<meta name="msvalidate.01"            content="REPLACE_WITH_YOUR_BING_VERIFICATION_CODE">
+<meta name="naver-site-verification"  content="REPLACE_WITH_YOUR_NAVER_VERIFICATION_CODE">
 
 <!-- ===== Favicon (2026-07-01) ===== -->
 <link rel="icon" href="favicon.ico" sizes="any">
