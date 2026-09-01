@@ -1,5 +1,18 @@
+# PracExam robots.txt
+#
+# 🔴 2026-08-31 — Cloudflare Pages 는 `.html` 을 떼어낸 주소로 «308 넘김» 을 한다.
+#    그래서 고객이 실제로 쓰는 주소는 /app.html 이 아니라 **/app** 이고,
+#    `Disallow: /app.html` 만 적어 둔 동안 **/app 은 그대로 크롤링되고 있었다**(실측 200).
+#    로그인 화면뿐이라 검색에 올릴 값이 없다.
+#
+#    ⚠️ 그렇다고 `Disallow: /app` 이라 적으면 «앞글자 맞춤»이라
+#       apple-touch-icon.png · app_comingsoon.html 까지 함께 막힌다.
+#       그래서 끝을 못 박는 `$` 를 쓴다. `$` 를 모르는 크롤러는 그 줄을 그냥
+#       안 맞는 것으로 보고 지나가므로, 틀려도 «덜 막는» 쪽으로 실패한다(안전).
+
 User-agent: *
 Allow: /
+Disallow: /app$
 Disallow: /app.html
 Disallow: /admin
 Disallow: /review
