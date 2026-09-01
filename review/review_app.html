@@ -494,6 +494,22 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
 .q-real .qr-tipb{font-size:17px;line-height:1.8;color:#4b5759;
   word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap}
 
+/* ── 문항 ↔ War Room 오가기 (2026-09-01 사장님 지시) ────────────────────────
+   *"문제에 나와있는 토픽 버튼을 누르면 해당하는 War Room 토픽으로 … 보고 또는
+     수정한뒤에는 원래 있었던 문제로 돌아올 수 있도록"*
+   🔑 집 규칙과 이어진다 — 「문항이 틀렸으면 시트부터 의심하라」. 문항과 시트를
+      한 번만 대어 보면 잡히는 오류가 실제로 있었다(C2108-002 · C2094-009). */
+.q-badge.q-jump{cursor:pointer;border-color:#A3C6C4;background:rgba(111,163,158,.14);
+  color:#2b4a4e;font-weight:700}
+.q-badge.q-jump:hover{background:rgba(111,163,158,.28);border-color:#6FA39E}
+.q-badge.q-jump .ar{opacity:.6;margin-left:4px;font-weight:400}
+/* 돌아갈 자리 — 화면 맨 위에 붙여 «어디서 왔는지»를 늘 보이게 한다 */
+.wr-back{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:#FBF1EC;border:1px solid #EFD0C1;border-radius:10px;
+  padding:10px 14px;margin-bottom:14px;font-size:calc(13.5px * var(--fs));color:#7a4a35}
+.wr-back b{color:#5c3626}
+.wr-back .btn{margin-left:auto}
+
 </style>
 </head>
 <body>
@@ -659,7 +675,10 @@ const S = {
   proposal: null,     // 승인 대기 모드에서 읽어들인 제안 묶음 {batch, created, items:[...]}
   proposalBig: false, // 제안이 커서 브라우저에 담아두지 못했다(새로고침 시 다시 열어야 함)
   editing: false,     // ✏️ 직접 수정 칸이 열려 있는가
-  edDirty: false      // 고쳐 놓고 아직 저장 안 한 것이 있는가
+  edDirty: false,     // 고쳐 놓고 아직 저장 안 한 것이 있는가
+  // 🔴 문항에서 War Room 으로 건너뛴 자리. {pool, id, label} 을 담아 두었다가
+  //    「문제로 돌아가기」로 그대로 되돌린다. 돌아가면 비운다.
+  wrFrom: null
 };
 
 /* 문항 풀. study/mock 은 questions.pool 값과 1:1 대응.
@@ -1643,6 +1662,7 @@ function renderDetail(){
         <button class="btn back-btn" id="btnBack" style="padding:7px 13px;">← 목록</button>
       </div>
     </div>
+    ${wrBackBar()}
     <div class="wr-note">🖥 아래는 <b>실제 pracexam.com War Room 과 같은 화면</b>입니다 —
       글꼴·크기·표·상자를 앱에서 값 그대로 옮겼습니다. (글자 크기 버튼은 여기에 안 걸립니다.)</div>
     ${wrRealHtml(title, body)}`;
@@ -1656,7 +1676,10 @@ function renderDetail(){
     <div class="question-card">
       <div class="question-meta">
         <span class="q-badge">${esc(r.question_id)}</span>
-        ${r.outline_code ? `<span class="q-badge q-badge-gray">${esc(r.outline_code)}</span>` : ''}
+        ${r.outline_code
+          ? `<button type="button" class="q-badge q-jump" data-wr="${esc(r.outline_code)}"
+               title="이 토픽의 War Room 치트시트를 봅니다">${esc(r.outline_code)}<span class="ar">↗</span></button>`
+          : ''}
         ${r.topic ? `<span class="q-badge q-badge-gray">${esc(r.topic)}</span>` : ''}
         ${r.difficulty ? `<span class="q-badge q-badge-gray">${esc(r.difficulty)}</span>` : ''}
         ${r.is_active === false ? '<span class="q-badge q-badge-gray">비활성</span>' : ''}
@@ -1759,6 +1782,12 @@ function renderDetail(){
     });
     edWarnCheck(r);
   }
+
+  /* 문항의 토픽 배지 → War Room · War Room 의 띠 → 원래 문항 */
+  const jump = $('detail').querySelector('[data-wr]');
+  if (jump) jump.addEventListener('click', () => wrJump(jump.dataset.wr, r.question_id));
+  const wb = $('btnWrBack');
+  if (wb) wb.addEventListener('click', wrBack);
 
   /* 🔴 실제 화면과 같아지려면 «표 감싸기»까지 해야 한다(app.html _wrPostProcess).
      이것을 빼면 넓은 표가 카드 밖으로 삐져나온다 — 실제 화면에서는 안 그런다. */
@@ -2321,6 +2350,77 @@ function qShowPreview(r, mode, onOk){
     });
   }
   draw();
+}
+
+/* ══ 문항 ↔ War Room 오가기 (2026-09-01 사장님 지시) ════════════════════════
+   *"문제에 나와있는 토픽 버튼을 누르면 해당하는 War Room 토픽으로 갈 수 있도록 …
+     War Room을 보고 또는 수정한뒤에는 원래 있었던 문제로 돌아올 수 있도록"*
+
+   🔑 왜 값진가 — 집 규칙이 「문항이 틀렸으면 시트부터 의심하라」이고, 실제로
+      정답이 틀린 두 문항의 시트는 «맞게» 가르치고 있었다(C2108-002·C2094-009).
+      한 번만 대어 봤으면 둘 다 잡혔다. 그 「한 번」을 한 번의 클릭으로 만든다.
+
+   🔴 오갈 때 «저장 안 한 것»을 잃지 않는다 — confirmDiscard() 가 먼저 묻는다.
+   🔴 돌아갈 자리는 «메모리»에만 둔다(localStorage 아님). 새로고침하면 사라지는
+      것이 맞다 — 어제 보던 문항으로 오늘 끌려가면 더 헷갈린다.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 그 문항의 토픽 코드 — War Room 은 outline_code 를 열쇠로 쓴다 */
+function wrCodeOf(r){
+  return (r && !r.is_wr && !r.is_ap && r.outline_code) ? String(r.outline_code).trim() : '';
+}
+
+/* 문항 → War Room */
+async function wrJump(code, fromId){
+  if (!await confirmDiscard()) return;
+  const from = { pool: S.pool, id: fromId, label: fromId };
+  if (S.exam !== 'ea'){
+    alert('War Room 은 EA 전용입니다.');
+    return;
+  }
+  S.wrFrom  = from;
+  S.pool    = 'warroom';
+  S.editing = false;
+  S.edDirty = false;
+  S.currentId = null;
+  renderPoolSeg();
+  await loadExam();                       // loadWarRoom() 으로 간다
+  // 🔴 그 토픽이 목록에 «없을 수» 있다(치트시트가 아직 안 만들어진 코드).
+  //    그때는 조용히 목록만 보여 주지 말고 왜 못 갔는지 말해 준다.
+  const hit = S.rows.find(x => x.question_id === code);
+  if (hit){
+    await selectQuestion(code);
+  } else {
+    $('detail').innerHTML =
+      '<div class="empty-detail"><b>' + esc(code) + '</b> 치트시트가 없습니다.<br><br>' +
+      'War Room 에 아직 이 토픽이 없거나, 문항의 토픽 코드가 시트와 다릅니다.<br>' +
+      '왼쪽 목록에서 가까운 토픽을 찾아보실 수 있습니다.</div>';
+  }
+  renderList();
+}
+
+/* War Room → 원래 문항 */
+async function wrBack(){
+  const from = S.wrFrom;
+  if (!from) return;
+  if (!await confirmDiscard()) return;
+  S.wrFrom  = null;
+  S.pool    = from.pool;
+  S.editing = false;
+  S.edDirty = false;
+  S.currentId = null;
+  renderPoolSeg();
+  await loadExam();
+  if (S.rows.some(x => x.question_id === from.id)) await selectQuestion(from.id);
+  else renderList();
+}
+
+/* 돌아갈 자리 띠 — War Room 화면 맨 위에 붙는다 */
+function wrBackBar(){
+  if (!S.wrFrom || S.pool !== 'warroom') return '';
+  return '<div class="wr-back">↩ <b>' + esc(S.wrFrom.label) + '</b> 을(를) 보다가 왔습니다.' +
+    ' 시트를 확인·수정한 뒤 돌아가십시오.' +
+    '<button class="btn primary" id="btnWrBack">문제로 돌아가기 →</button></div>';
 }
 
 /* 승인 대기 저장 — 판정 없이 피드백만 적어두는 것도 허용한다 */
