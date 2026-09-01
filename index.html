@@ -798,7 +798,11 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 #about{padding:28px 0; background:var(--card-bg); border-top:1px solid var(--border-clr);}
 .about-strip{max-width:840px; margin:0 auto; text-align:center; color:var(--text-muted);}
 .about-strip h2{font-size:13px; font-weight:700; line-height:1.5; margin:0 0 7px; color:var(--text-muted); letter-spacing:.01em;}
-.about-strip p{font-size:12.5px; line-height:1.7; margin:0 0 9px;}
+/* 🔴 text-wrap:balance — 마지막 줄에 «꼬리»가 남는 것을 막는다(사장님 2026-09-01
+   *"애매하게 3줄이 되었습니다. 끝말이 꼬리처럼 3번째 줄에 붙음"*).
+   실측 = 97·102·«6»자 → 68·73·64자 로 고르게 나뉜다.
+   브라우저가 이 값을 모르면 그냥 지금처럼 흐른다(무장애). 글자는 한 자도 안 바뀐다. */
+.about-strip p{font-size:12.5px; line-height:1.7; margin:0 0 9px; text-wrap:balance;}
 .about-facts{display:flex; flex-wrap:wrap; justify-content:center; gap:3px 15px; margin:0; font-size:12px; line-height:1.7;}
 .about-facts > div{display:flex; gap:5px;}
 .about-facts dt{font-weight:600; opacity:.75;}
