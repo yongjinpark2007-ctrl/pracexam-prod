@@ -89,3 +89,17 @@ Are you stuck endlessly reading thick tax textbooks? The EA exam is fundamentall
 
 *Reference: [IRS Candidate Information Bulletin](https://test-takers.psigov.us/api/content/bulletin/12238)*
 </details>
+
+## Data-Driven Weakness Targeting
+Stop guessing what you don't know. PracExam tracks your performance across all 350+ topics and automatically isolates your critical blind spots based on real attempt data and dril down that topic.
+
+**Real User Dashboard Example:**
+| Topic | Attempts | Accuracy | Action |
+| :--- | :--- | :--- | :--- |
+| Itemized deductions for Form 1040-NR | 3 | **0%** | `[Drill Down]` |
+| Uncollected Social Security and Medicare tax | 7 | **14%** | `[Drill Down]` |
+| Sources of applicable deductions (itemized, standard) | 8 | **25%** | `[Drill Down]` |
+| Self-employment tax | 4 | **25%** | `[Drill Down]` |
+| Passive income and loss | 8 | **38%** | `[Drill Down]` |
+....
+Instead of re-reading entire textbook chapters, simply click on your weakest topic to launch a hyper-focused practice session. Attack exactly where you are losing points and turn your lowest scores into passing grades with maximum efficiency.

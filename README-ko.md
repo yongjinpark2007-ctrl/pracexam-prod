@@ -87,3 +87,18 @@ Gleim, Surgent, Hock 등 어떤 메인 교재를 사용하든 상관없습니다
 
 *참고 자료: [IRS Candidate Information Bulletin](https://test-takers.psigov.us/api/content/bulletin/12238)*
 </details>
+
+## 데이터 기반 취약점 집중 공략
+내가 무엇을 모르는지 감으로 짐작하지 마세요. PracExam은 350여 개의 모든 세부 토픽에 대한 누적 풀이 데이터를 바탕으로 수험생의 치명적인 사각지대를 정확히 찾아내고 집중 학습합니다.
+
+**실제 사용자 통계 대시보드 예시:**
+| 세부 토픽 | 누적 시도 | 정답률 | 맞춤 학습 |
+| :--- | :--- | :--- | :--- |
+| Itemized deductions for Form 1040-NR | 3 | **0%** | `[집중 풀기]` |
+| Uncollected Social Security and Medicare tax | 7 | **14%** | `[집중 풀기]` |
+| Sources of applicable deductions (itemized, standard) | 8 | **25%** | `[집중 풀기]` |
+| Self-employment tax | 4 | **25%** | `[집중 풀기]` |
+| Passive income and loss | 8 | **38%** | `[집중 풀기]` |
+.....
+
+방대한 세법 챕터를 처음부터 다시 읽는 대신, 정답률이 낮은 토픽을 클릭하여 해당 유형만 집중적으로 파고드는 맞춤형 학습을 시작하세요. 점수가 새고 있는 정확한 지점을 타격하여 가장 적은 시간 투자로 최대의 점수 상승을 이끌어냅니다.
