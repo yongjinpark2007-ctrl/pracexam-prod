@@ -103,3 +103,37 @@ Stop guessing what you don't know. PracExam tracks your performance across all 3
 | Passive income and loss | 8 | **38%** | `[Drill Down]` |
 ....
 Instead of re-reading entire textbook chapters, simply click on your weakest topic to launch a hyper-focused practice session. Attack exactly where you are losing points and turn your lowest scores into passing grades with maximum efficiency.
+
+## Inside the War Room: A Sneak Peek
+Some wonder if PracExam lacks a traditional textbook. The truth? We replaced it with something far more effective. Our **War Room** breaks down all 356 IRS topics into highly digestible, exam-focused briefs that appear exactly when you need them. It is linked to each explanation of questions to deep dive the topic as an integrated smart text book. 
+
+Here is a preview of what you see when you dive into a topic like **Tax Credits**:
+
+> ### 💡 Topic: Sources of Applicable Credits
+> **1. Credit vs Deduction · Refundable vs Nonrefundable**
+> A credit cuts the tax itself, dollar for dollar; a deduction cuts only taxable income and is worth amount × marginal rate. At 25%, $1,000 of deduction saves $250 — $1,000 of credit saves $1,000.
+> 
+> **⚠️ Common Trap (Engineered for the Exam):**
+> Leftover nonrefundable credit does not behave alike. The care credit is simply lost — no refund, no carryover. The foreign tax credit carries back 1 year and forward 10. The credit for prior year minimum tax (Form 8801) carries forward indefinitely.
+>
+> **4. Education Credits — AOTC vs LLC**
+> | Feature | American Opportunity (AOTC) | Lifetime Learning (LLC) |
+> | :--- | :--- | :--- |
+> | **Maximum** | $2,500 per student | $2,000 per return |
+> | **Refundable** | 40%, up to $1,000 | None — unused credit lost |
+> | **Student Req.** | First 4 years; at least half-time | Any postsecondary study |
+
+<details>
+<summary><strong>🔍 Click here to view the full War Room brief for this topic</strong></summary>
+
+**2. CTC & Credit for Other Dependents (ODC)**
+Child Tax Credit: $2,200 per qualifying child under 17. It phases out above $200,000 of MAGI ($400,000 on a joint return), by $50 for each $1,000 over. For 2025 an SSN is needed by the taxpayer as well as the child (at least one spouse on a joint return) — an ITIN or ATIN will not do.
+Additional Child Tax Credit: the refundable part, up to $1,700 per child, equal to 15% of earned income over $2,500. Below $2,500 of earnings it produces nothing.
+Credit for Other Dependents: $500 per dependent (nonrefundable), for dependents who don't qualify for the CTC (incl. a child 17+); SSN, ITIN, or ATIN.
+
+**3. Child and Dependent Care Credit**
+Form 2441. Credit = qualifying expenses × rate, and the rate slides from 35% (AGI $15,000 or less) down one point per $2,000 to 20% (AGI over $43,000) — 2025 figures. Expenses are capped by earned income — for a couple, the lower spouse's earnings. A spouse who is a full-time student is treated as having deemed earned income ($250 for 1 / $500 for 2+) for each month as a student.
+
+**5. Foreign Tax Credit (FTC)**
+Relieves the double tax on foreign-source income. Form 1116, or straight onto Schedule 3 if the foreign tax is $300 or less ($600 MFJ). Nonrefundable; excess carries back 1 year, forward 10. Nonresident aliens are not eligible.
+</details>
