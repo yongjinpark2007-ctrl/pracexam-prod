@@ -91,7 +91,7 @@ Are you stuck endlessly reading thick tax textbooks? The EA exam is fundamentall
 </details>
 
 ## Data-Driven Weakness Targeting
-Stop guessing what you don't know. PracExam tracks your performance across all 350+ topics and automatically isolates your critical blind spots based on real attempt data and dril down that topic.
+Stop guessing what you don't know. PracExam tracks your performance across all 350+ topics and automatically isolates your critical blind spots based on real attempt data and drill down that topic.
 
 **Real User Dashboard Example:**
 | Topic | Attempts | Accuracy | Action |
