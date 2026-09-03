@@ -9728,10 +9728,11 @@ async function mockReviewItem(qid){
          '<span style="font-size:13px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+mockEsc((mine&&(mine.topic||mine.outline_code))||'')+'</span></div>')
       : '';
     // War Room 링크 — 학습 화면 해설의 Topic 배지(showExplanation)와 «같은 방식».
-    // 문항의 topic·보기를 함께 넘겨야 War Room 이 「이 문제와 관련」 칩을 만든다.
+    // 문항의 topic·보기·시험팁을 함께 넘겨야 War Room 이 「이 문제와 관련」 칩을 만든다
+    // (2026-09-02 시험팁 추가 — 계산형 문항은 보기가 금액뿐이라 낱말이 안 잡히는 자리를 메운다).
     var _woc=((mine&&mine.outline_code)||'').trim();
     var _wtn=(mine&&(mine.topic||mine.outline_code))||'';
-    window._mkWrQ = _woc ? { topic:(mine&&mine.topic)||'', options:(q.options||[]) } : null;
+    window._mkWrQ = _woc ? { topic:(mine&&mine.topic)||'', options:(q.options||[]), examtip:tip } : null;
     var wrBtn = _woc
       ? ('<button class="mk-wr-link" onclick="mockGoWarRoom(\''+_woc+'\', window._mkWrQ)" '+
          'title="'+mL('War Room에서 이 주제 자세히 보기','Open this topic in War Room')+'">'+
@@ -10281,12 +10282,19 @@ var WR_RELW3='1023 1023-ez 1031 1033 1040-nr 1099-a 1127 12153 2000 267 3115 352
 var WR_RELW2='1040-x 1041 1099-nec 121 1245 1250 179 2553 2848 351 709 843 8821 8938 990 abatement abatements aca access accounting accumulated advertising advice allowance alternative amended analysis appeal appeals areas assistance at-risk attribute audit audits avoidance bad bankruptcy bonus boot brokerage burden caf cancellation capitalize card cards carryovers cdp changing charitable charity children closely closing cod codes collectible commercial communications comparison compliance compromise conduct conference conflict consequences consideration constitutes constructive contemporaneous continue continuing contractor controlled conversions converted copies copy corrections criminal criteria ctc currently data death decedent decisions deductibility deficiency definition deposit deposits diligence disaster discharge disclose disclosure divorce duplicate duties e-file education elements employed enrollment entities essentials estimated exchange exemptions expensing family farm farmers fbar fees feie fiduciary fix former fraud function furnish gift gifts goods granted green groups health hot household identification identifying identity initial insolvency installment insurance internal interpretation inventory investigation iras issuance itemized judicial k-1 keeping length letter levy life lifetime liquidation liquidations local long-term maintain meals medical medicare meeting minimum negotiation nftl nol non-taxable obbba offer officer omission operating paper parties pass-through passive pensions photo poa potential practitioner premium preparation prior-year private proceedings professional program prohibited prompt proof proprietorships protest provider ptc ptin qbi qualification qualifications recapture reconciliation recovery refundable regulations repair repayment representing requesting residency residential respect retirement revocation room roth salary salt sanctions savings scope self-employed series settlement sheet signing size splits sstb sstbs submission submissions subsequent substantiation substantive supporting systems tax-exempt tax-free taxability third-party traditional transcript transcripts travel treasury underpayment vacation vehicle verification versus worker 가산세 감면 감사 거부 거주자 검증 경비 계정 고용세 공개 공제의 교육 교환 구매 구제 근로자 금융 기능 기부 기부금 기여 기준액 기타 농업 대리권 대리인의 대응 대출 독립계약자 등록 메디케어세 면책 목록 반환 발급 벌금 벌칙 변경 별거 보너스 보험료 복원 부상 부양가족 부채 분배금 분석 비거주 비자 사망 사망자 사본 사업상 사업용 사업체 사회보장 사회보장세 상계 상속 상환 설립 세금신고 세액공제 세율 소득의 수리 수수료 수정신고 시간 시스템 시효 식별번호 신고기한 신고와 신고자 신고지위 신속 신탁 실무자 양식 연금 연방세 영업소득 예치 외국인 외부기초 용역 운영 원금 위반 위임장 유산 은행 의료 의무와 의존 이자소득 인출 일반소득 임대소득 자금 자녀의 자선 자선기부 자영업세 자영업자 장부 장소 장애 재고 재산세 재산의 재해 쟁점 전년도 전자신고 전통 정보보고 정산 정정 제외액 제재 제한적 조사 종료 종류 종이 주거 주택 준비자 중복 증여 증여세 지급된 지분의 지원 지정 진술서 차량 채무 책임 철회 청산 추적 추정세 출석 출자 출처 취득가액 취소 크레딧 테스트 특례 특수 파산 표준공제 프로그램 플랜 필수 한도와 합의 항목별 항목의 해결 해석 해외 허위 형사 형태 환급청구 환수 활용 회계방법 회의 회피 효과 효력';
 var WR_RELW1='1040 1099 230 ability account accounts activity additional adjustments administrative agent agree agreement agreements allocation annual applicable application applying assessment asset assets attorney authority authorization balance ban bank benefit capital care cash change changes character child circular classification client collection collections computation consent contribution contributions corp corporate corporations cost court covered credit credits day deadline deadlines debt debts dependent dependents depreciation disposition dispositions distinctions distribution distributions dividends documentation documents due early earned earnings effects efin ein election elections electronic eligibility employee employees employer employment entity ero error estate estates examination excess excluded exclusion exclusions exempt expense expenses extension extensions fee final financial foreign formation fund funds having held home info information interest intl investment ira ird irm iso itin joint jointly law legal levels liability lien limitations limited llc loan loans loss losses material methods mfj misc nec needs net notice notices number numbers obligations office offsets opr ordinary org outside owners pal partner partnership partnerships party penalties penalty personal pin place plan plans positions power preparer prior procedures process profits property provisions public publications purchased qualified qualify quick rar real reasonable reasons receipt receipts recognition records reduction refund refunds relief rental rentals reporting representation representative request requested requests results retain revenue review right sale sales section security self-employment separately service services shareholder shareholders signature signatures simple social sold sole source sources special spouse standard standards stated statement statements statute stock student support taxes termination timing transaction transactions transfer treatment trust trusts type types unrelated values vision wages war withholding written 가능성 가능한 가족 감가상각 감소 거래 검토 계좌 고객 고용 고용주 고의 과세연도 권리 권한 규칙 금지 급여 기간 기록 기초 기한 납부 납세자가 납세자의 누락 대가 대리 대리인 동산 동의 매각 면제 목적 문서 미국 배당 배분 배우자 배제 범위 법인 법적 보관 보수 부과 부동산 부부 분류 분배 비과세 비교 비용 사업 사유 상태 상한 서류 서면 서명 서비스 선택 성격 세금 세무 세법 손실 수령 승인 신청 실질적 연간 연장 영향 요소 요청 원천 원천징수 유지 유형 의무 이월 이자 이전 인식 임금 임대 입증 자격 자료 자산 작성 잔액 재산 적격 전자 전환 절차 접근 정리 정보 정의 제공 제외 조정 주식 주주 증빙 지분 지침 직원 징수 차감 처분 청구 체계 총소득 추가 취득 통지 투자 파트너 파트너십 판정 포인트 한계 항목 행위 현금 환급 활동';
 var _WR_RELW=null, _WR_RELDF=null;
+// 🔴 시트 제목을 지을 때 습관적으로 붙는 «두루뭉실한 연결어» — 문제은행 전체에서는 드물어
+// 가중치가 높게 잡히지만(planning=3), 실제로는 아무 시트에나 걸리는 헛짚음을 낸다
+// (2026-09-02 실측 — topic 칸이 "Tax Planning Adjustments…"인 문항이 planning 한 낱말로
+// 「교육 플랜」·「유산설계」·「은퇴플랜 분배」·「적격플랜 대출」을 전부 끌어왔다. 무관함).
+// plan·plans 는 원래 가중치 1(약함)이지만 topic 에 걸리면 그 약한 값으로도 헛짚으므로 함께 뺀다.
+var WR_REL_STOP=['plan','plans','planning','플랜'];
 function _wrRelW(){
   if(_WR_RELW) return _WR_RELW;
   _WR_RELW={};
   [[3,WR_RELW3],[2,WR_RELW2],[1,WR_RELW1]].forEach(function(p){
     p[1].split(' ').forEach(function(w){ if(w) _WR_RELW[w]=p[0]; });
   });
+  WR_REL_STOP.forEach(function(w){ delete _WR_RELW[w]; });
   return _WR_RELW;
 }
 function _wrRelToks(s){
@@ -10377,13 +10385,16 @@ function _wrNbspJoin(html){
 function openWarRoomTopic(code, q){
   code=((code||'')+'').trim(); if(!code) return;
   window._wrPendingCode=code;
-  // 문항의 topic명·보기를 '이 문제와 관련' 검색어로 넘긴다 (2026-08-06 개편 — 아래 _wrRenderRelated 참조)
+  // 문항의 topic명·보기·시험팁을 '이 문제와 관련' 검색어로 넘긴다 (2026-08-06 개편 · 2026-09-02 시험팁 추가
+  // — 아래 _wrRenderRelated 참조). 계산형 문항은 보기가 금액뿐이라(예: "$36,000") 낱말이 하나도 안 잡히는데,
+  // 시험팁은 항상 산문이라 그 자리를 메운다(사용자 제안 2026-09-02, 실측으로 확인).
   window._wrQSignal=null;
   if(q){
     var _o=q.options||[];
     if(typeof _o==='string'){ try{ _o=JSON.parse(_o); }catch(e){ _o=[_o]; } }
     if(!Array.isArray(_o)) _o=[];
-    window._wrQSignal={origin:code, topic:(q.topic||''), opts:_o.join(' ')};
+    var _tip=[q.examTip,q.examTipEn,q.examtip,q.examtip_en].filter(Boolean).join(' ');
+    window._wrQSignal={origin:code, topic:(q.topic||''), opts:_o.join(' ')+' '+_tip};
   }
   // 진행 중 학습 세션이 있으면 복귀 배지를 '문제로 돌아가기' 모드로
   window._wrFromQuiz = !!(S.quizQueue && S.quizQueue.length>0 && S.quizIdx<S.quizQueue.length);
