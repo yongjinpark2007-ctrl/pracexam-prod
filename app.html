@@ -507,8 +507,11 @@ html, body {
   color:var(--text-mid);cursor:pointer;
 }
 @media(hover:hover){.topic-all button:hover{border-color:var(--border-hover);}}
-/* 접었다 펴는 목록 칸 — 배너 바로 밑에 붙는다 */
-.topic-panel{margin:-1.1rem 0 1.5rem;}
+/* 접었다 펴는 목록 칸 — 배너 바로 밑에 붙는다
+   🔴 위 .setup-banner 의 margin-bottom(.9rem)과 정확히 상쇄되는 값을 써야 한다.
+   -1.1rem 이면 .9rem 을 넘어서 0.2rem(≈3.2px)만큼 배너 박스 안으로 파고들어
+   맨 위 문장이 배너와 겹친다(2026-09-02 사용자 신고 · 실측 확인). */
+.topic-panel{margin:-.9rem 0 1.5rem;}
 .topic-bar-ico svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .topic-bar-names{
   display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
