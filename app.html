@@ -9894,6 +9894,8 @@ if ('serviceWorker' in navigator) {
    넓은 표는 .wr-tblwrap 가로 스크롤로 유연하게 수용. */
 .wr-body{word-break:normal;overflow-wrap:normal;}
 .wr-body p,.wr-body li{word-break:keep-all;overflow-wrap:break-word;}
+.wr-body mark.wr-hl{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;border-radius:3px;color:inherit;}
+.wr-body mark.wr-hl.cur{background:#ffd75e;border-bottom-color:#c98f1a;}
 .wr-tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px;}
 .wr-tblwrap>table{margin:0;}
 .wr-body table{width:100%;border-collapse:collapse;margin:4px 0 14px;font-size:13.5px;}
@@ -9964,7 +9966,7 @@ if ('serviceWorker' in navigator) {
 .wr-sr-in{display:inline-block;font-size:9px;font-weight:800;color:#8a6d3b;background:rgba(221,143,117,.18);border:1px solid rgba(221,143,117,.45);border-radius:5px;padding:0 5px;margin-left:6px;vertical-align:1px;}
 </style>
 <script>
-var WR={rows:[],order:[],cur:null};
+var WR={rows:[],order:[],cur:null,searchTerm:null};
 function _wrLang(){ return (typeof LANG!=='undefined' && LANG==='en')?'en':'ko'; }
 function _wrT(r){ return _wrLang()==='en'?(r.title_en||r.title_ko):(r.title_ko||r.title_en); }
 function _wrEsc(s){var d=document.createElement('div');d.textContent=(s==null?'':s);return d.innerHTML;}
@@ -10054,6 +10056,7 @@ var _WR_BODY = Object.create(null);   // 정규화 질의 → {outline_code:1} �
 var _WR_SEQ  = 0;                     // 늦게 온 응답이 새 질의를 덮지 않게
 function _wrRenderSearch(q){
   var nq=_wrNorm(q).trim();
+  WR.searchTerm=String(q||'').trim();          // 본문에 노란 표시할 때 쓸 «원문 그대로»(대소문자 보존)
   _wrPaintSearch(nq);                                     // ① 제목으로 먼저 그린다(즉시)
   if(Object.prototype.hasOwnProperty.call(_WR_BODY,nq)) return;   // 이미 받아 둔 질의
   var seq=++_WR_SEQ;
@@ -10117,10 +10120,21 @@ function _wrSearchClear(){
 // 검색을 접고 목차로 돌아간다 — 지금 보던 토픽 표시와 이전/다음 차례를 되돌린다
 function _wrExitSearch(){
   WR.searchOrder=null;
+  WR.searchTerm=null;
+  _wrUnhighlight(document.getElementById('wr-content'));
   _wrRenderDomains(WR.curPart);
   WR.order=_wrPartOrder(WR.curPart);
   if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
   _wrUpdateNav();
+}
+// 노란 표시(<mark class="wr-hl">)를 걷어낸다 — 검색을 접을 때(글자는 그대로, 태그만 벗긴다)
+function _wrUnhighlight(root){
+  if(!root) return;
+  root.querySelectorAll('mark.wr-hl').forEach(function(m){
+    var p=m.parentNode; if(!p) return;
+    while(m.firstChild) p.insertBefore(m.firstChild, m);
+    p.removeChild(m);
+  });
 }
 // 한 파트의 토픽 차례 = 목차(도메인 그룹)에 보이는 순서 그대로
 function _wrPartOrder(p){
@@ -10153,6 +10167,7 @@ function _wrSetPart(p, preferCode){
   var buck=(WR.byPart&&WR.byPart[p])||{};
   // 이전/다음 순서 = 현재 Part의 토픽만, 목차(도메인 그룹)에 보이는 순서 그대로 (2026-07-27)
   WR.searchOrder=null;                 // 파트 표를 누르면 검색은 접힌다
+  WR.searchTerm=null;
   WR.order=_wrPartOrder(p);
   var firstCode=WR.order.length?WR.order[0]:null;
   var showCode=firstCode;
@@ -10223,10 +10238,14 @@ async function wrShow(code){
     var _up=document.getElementById('wr-gate-up');
     if(_up) _up.onclick=function(){ if(typeof showPricingModal==='function') showPricingModal(); };
     if(peek) _wrPostProcess(content);
+    var _fmP=(WR.searchTerm && WR.searchOrder && WR.searchOrder.length) ? _wrHighlightBody(content.querySelector('.wr-peek'), WR.searchTerm) : null;
     _wrRenderRelated(content, code);
-    _wrUpdateNav(); _wrCloseTocMobile(); return;
+    _wrUpdateNav(); _wrCloseTocMobile();
+    try{ if(_fmP) _fmP.scrollIntoView({block:'center',behavior:'smooth'}); else window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
+    return;
   }
   content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+  var _fm=null;
   try{
     var res=await sb.rpc('get_war_room_topic',{p_code:code});
     if(res.error) throw res.error;
@@ -10234,10 +10253,50 @@ async function wrShow(code){
     var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
     content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
     _wrPostProcess(content);
+    // 🆕 2026-09-04 — 검색으로 들어온 토픽은 그 검색어를 본문에 노란 표시(사용자 지적: 검색 결과를
+    // 열어도 본문 어디에 있는지 찾기 힘들다). review_app 의 <mark class="ap-mk"> 와 같은 배색.
+    if(WR.searchTerm && WR.searchOrder && WR.searchOrder.length) _fm=_wrHighlightBody(content.querySelector('.wr-body'), WR.searchTerm);
     _wrRenderRelated(content, code);
   }catch(e){ content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; _wrRenderRelated(content, code); }
   _wrUpdateNav(); _wrCloseTocMobile();
-  try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+  try{ if(_fm) _fm.scrollIntoView({block:'center',behavior:'smooth'}); else window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
+}
+// 문단 안에서 검색어를 찾아 <mark class="wr-hl"> 로 감싼다 — 첫 번째 것은 «cur» 로 한 단계 더
+// 진하게 표시하고 그 요소를 돌려준다(호출부가 그리로 스크롤한다). 텍스트는 한 글자도 안 바꾼다.
+function _wrEscRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function _wrHighlightBody(root, term){
+  if(!root || !term) return null;
+  var t=String(term).trim(); if(t.length<2) return null;
+  var re;
+  try{ re=new RegExp(_wrEscRe(t),'gi'); }catch(e){ return null; }
+  var walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode:function(n){
+      var p=n.parentNode, tag=p&&p.nodeName;
+      if(!p || tag==='SCRIPT' || tag==='STYLE' || tag==='MARK') return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var nodes=[], n;
+  while((n=walker.nextNode())) nodes.push(n);   // 먼저 다 모으고 «그 뒤에» 고친다 — 도는 중에 DOM 을 바꾸면 walker 가 깨진다
+  var first=null;
+  nodes.forEach(function(node){
+    var text=node.nodeValue, m, last=0, frag=null;
+    re.lastIndex=0;
+    while((m=re.exec(text))!==null){
+      if(!frag) frag=document.createDocumentFragment();
+      if(m.index>last) frag.appendChild(document.createTextNode(text.slice(last,m.index)));
+      var mk=document.createElement('mark'); mk.className=first?'wr-hl':'wr-hl cur'; mk.textContent=m[0];
+      if(!first) first=mk;
+      frag.appendChild(mk);
+      last=m.index+m[0].length;
+      if(re.lastIndex===m.index) re.lastIndex++;   // 빈 매치 무한루프 방지
+    }
+    if(frag){
+      if(last<text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    }
+  });
+  return first;
 }
 function _wrUpdateNav(){
   var i=WR.order.indexOf(WR.cur);
