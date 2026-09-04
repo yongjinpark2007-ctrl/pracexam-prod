@@ -137,3 +137,9 @@ Form 2441. Credit = qualifying expenses × rate, and the rate slides from 35% (A
 **5. Foreign Tax Credit (FTC)**
 Relieves the double tax on foreign-source income. Form 1116, or straight onto Schedule 3 if the foreign tax is $300 or less ($600 MFJ). Nonrefundable; excess carries back 1 year, forward 10. Nonresident aliens are not eligible.
 </details>
+
+> ### 💡 Customer Review
+> **IRS Enrolled Agent Group at Facebook**
+This is actual customer review at facebook group
+I am in a somewhat similar boat but over the past couple years I've taken tax, accounting/bookkeeping classes, and then I did a season of taxes. I'd thought about the EA before I did the tax season but knew it was just silly to even think about without having done at least one season. So I just dismissed it.
+I learned SO much in doing even one tax season and realized I actually "enjoyed" the field. So, after a lot of research and thinking about it, a couple months after tax season ended I decided to take the leap to get my EA. Knowing it would be a reach. I've been using HOCK international, Tom Norton YouTube videos (EA Tax Training), and PracExam. The variety helps me answer the concepts from different sources so I think about it differently and keeps my interest. That's my journey so far. - Carrie R
