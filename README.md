@@ -143,3 +143,28 @@ Relieves the double tax on foreign-source income. Form 1116, or straight onto Sc
 This is actual customer review at facebook group
 I am in a somewhat similar boat but over the past couple years I've taken tax, accounting/bookkeeping classes, and then I did a season of taxes. I'd thought about the EA before I did the tax season but knew it was just silly to even think about without having done at least one season. So I just dismissed it.
 I learned SO much in doing even one tax season and realized I actually "enjoyed" the field. So, after a lot of research and thinking about it, a couple months after tax season ended I decided to take the leap to get my EA. Knowing it would be a reach. I've been using HOCK international, Tom Norton YouTube videos (EA Tax Training), and PracExam. The variety helps me answer the concepts from different sources so I think about it differently and keeps my interest. That's my journey so far. - Carrie R
+
+News
+PracExam Partners with California University of Technology
+Enrolled Agent candidates in CAL U TECH’s Fall 2026 EA prep course get three months of free access to PracExam’s practice-exam platform, plus a discount after that.
+
+September 4, 2026
+(https://pracexam.com/tips/pracexam-calutech-partnership/)
+News
+California University of Technology (CAL U TECH), based in Tustin, California, has signed a memorandum of understanding (MOU) with PracExam to strengthen exam readiness for Enrolled Agent (EA) candidates. Under the agreement, students enrolled in CAL U TECH’s Certificate in Enrolled Agent Exam Preparation program receive three months of free access to PracExam’s practice-exam app.
+
+The goal is straightforward: repeated, realistic problem-solving and mock exams so students can find their weak spots and build exam-day stamina before test day.
+
+The Fall 2026 EA prep course
+CAL U TECH’s Fall 2026 Enrolled Agent prep course begins Tuesday, September 1, and runs eight weeks — two hours every Tuesday evening, 7 PM, via Zoom. The course works systematically through the IRS Special Enrollment Examination’s (SEE) major domains, and goes beyond lecture to build pass-readiness through real exam-style questions and simulated tests.
+
+Starting this term, the three months of free PracExam access made available through the MOU lets students tie lecture, self-study, and mock exams together into one loop instead of three separate efforts.
+
+Three months of free PracExam access
+The centerpiece of the MOU is that every student enrolled in the prep course gets three months of free access to PracExam’s practice-exam app — working through more than 5,000 exam-style questions, repeatedly, while training the time management and problem-solving skills the actual exam demands. CAL U TECH’s plan is to combine lecture, practice questions, mock exams, and repetition into one system that raises both study efficiency and pass rates.
+
+"The Enrolled Agent is an important professional credential — one that combines specialized expertise in U.S. federal tax law with the ethical responsibility to serve taxpayers. CAL U TECH’s goal is to prepare students with the real-world knowledge and practical skills they need for actual tax practice, not just to get them through the exam."
+Dr. James Koo, California University of Technology
+
+"The three months of free access to PracExam’s practice app, made available through our MOU with PracExam, will be a great opportunity for students to experience real exam conditions and repeatedly strengthen the areas where they fall short."
+Dr. James Koo, California University of Technology

@@ -143,3 +143,30 @@ Form 2441로 신청함. 공제액 = 적격비용 × 비율이고, 비율은 AGI 
 아래는 Facebook내 IRS Enrolled Agent Group에서 실제 고객 Review 입니다.
 I am in a somewhat similar boat but over the past couple years I've taken tax, accounting/bookkeeping classes, and then I did a season of taxes. I'd thought about the EA before I did the tax season but knew it was just silly to even think about without having done at least one season. So I just dismissed it.
 I learned SO much in doing even one tax season and realized I actually "enjoyed" the field. So, after a lot of research and thinking about it, a couple months after tax season ended I decided to take the leap to get my EA. Knowing it would be a reach. I've been using HOCK international, Tom Norton YouTube videos (EA Tax Training), and PracExam. The variety helps me answer the concepts from different sources so I think about it differently and keeps my interest. That's my journey so far. - Carrie R
+
+
+소식 
+PracExam-CAL U TECH MOU 체결, EA 실전문제 풀이 제공
+California University of Technology(CAL U TECH)의 2026년 가을학기 EA 준비반 수강생은 PracExam 연습문제 플랫폼을 3개월 무료로 쓰고, 그 뒤에는 할인도 받습니다.
+
+2026년 9월 4일
+(https://pracexam.com/tips/ko/pracexam-calutech-partnership/)
+
+소식
+California University of Technology(CAL U TECH)는 미국 연방 세무사(EA, Enrolled Agent) 시험 준비생들의 실전 시험 대비 능력을 강화하기 위해 PracExam과 업무협약(MOU)을 체결했다고 밝혔습니다. 이번 협약에 따라 CAL U TECH의 Certificate in Enrolled Agent Exam Preparation 과정에 등록한 학생들은 PracExam 실전 테스트 앱을 3개월간 무료로 이용할 수 있게 됩니다.
+
+이를 통해 학생들은 실제 시험 환경과 유사한 방식으로 반복적인 문제풀이와 모의시험을 진행하면서 자신의 취약 분야를 파악하고 시험 적응력을 높일 수 있을 것으로 기대됩니다.
+
+2026년 가을학기 EA 시험준비 과정
+CAL U TECH의 2026년 가을학기 Enrolled Agent 시험준비 과정은 9월 1일(화)부터 시작하며, 8주 과정으로 매주 화요일 저녁 7시부터 2시간 동안 Zoom으로 진행됩니다. 이번 과정은 IRS Special Enrollment Examination(SEE)의 주요 시험 영역을 체계적으로 학습하고, 단순한 이론 교육을 넘어 실제 시험문제와 실전 시뮬레이션을 통해 합격 가능성을 높이는 데 초점을 둡니다.
+
+특히 이번 학기부터 PracExam과의 MOU를 통해 제공되는 3개월 무료 실전 테스트 앱을 활용함으로써, 수강생들은 강의와 자기주도 학습, 모의시험을 따로가 아니라 하나로 이어서 준비할 수 있습니다.
+
+PracExam 실전 테스트 앱 3개월 무료 제공
+이번 MOU의 가장 큰 특징은 시험준비 과정 등록생들에게 PracExam의 실전 테스트 앱을 3개월간 무료로 제공한다는 점입니다. 학생들은 앱을 활용해 5,000개의 다양한 실전문제 유형을 반복적으로 풀고, 실제 시험을 대비한 시간 관리와 문제 해결 능력을 훈련할 수 있습니다. CAL U TECH은 강의, 실전문제, 모의시험, 반복학습을 통합한 교육 시스템으로 EA 시험 준비의 효율성을 높이고 학생들의 합격을 적극적으로 지원할 계획입니다.
+
+"Enrolled Agent는 미국 연방세법 분야에서 전문적인 지식과 윤리적 책임을 갖추고 납세자를 지원할 수 있는 중요한 전문 자격입니다. CAL U TECH은 학생들이 단순히 시험을 준비하는 데 그치지 않고 실제 세무업무에 필요한 지식과 실무능력을 갖추도록 교육하는 것을 목표로 하고 있습니다."
+James Koo 박사, California University of Technology
+
+"특히 PracExam과의 MOU를 통해 제공되는 3개월 무료 실전 테스트 앱은 학생들이 실제 시험 환경을 경험하고 자신의 부족한 부분을 반복적으로 보완할 수 있는 좋은 기회가 될 것입니다. 이번 가을학기 과정이 EA 자격 취득을 준비하는 분들에게 실질적인 도움이 되기를 기대합니다."
+James Koo 박사, California University of Technology
