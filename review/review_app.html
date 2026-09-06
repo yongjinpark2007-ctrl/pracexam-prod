@@ -1495,12 +1495,34 @@ function buildFilters(){
   $('fPart').innerHTML = '<option value="">전체 파트</option>' +
     usedParts.map(p => `<option value="${p}">${esc(parts[p] || ('Part ' + p))}</option>`).join('');
 
-  const topics = [...new Set(S.rows.map(r => r.topic).filter(Boolean))].sort();
-  $('fTopic').innerHTML = '<option value="">전체 토픽</option>' +
-    topics.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  buildTopicOptions();
 }
 
-['fPart','fVerdict','fTopic'].forEach(id => $(id).addEventListener('change', () => { renderList(); renderStrip(); }));
+/* Part·상태로 좁힌 범위 안에 «실제로 있는» 토픽만 목록에 올린다 (검색어는 안 본다 —
+   토픽 목록 자체를 좁히는 잣대가 아니다). 지금 고른 토픽이 그 범위 밖으로 밀려나면 「전체 토픽」으로 되돌린다. */
+function buildTopicOptions(){
+  const part = $('fPart').value;
+  const vf   = $('fVerdict').value;
+  const prev = $('fTopic').value;
+
+  const rows = S.rows.filter(r => {
+    if (part && String(r.part) !== part) return false;
+    if (vf){
+      const v = S.verdicts[r.question_id];
+      if (vf === 'todo'){ if (v) return false; }
+      else if (!v || v.verdict !== vf) return false;
+    }
+    return true;
+  });
+
+  const topics = [...new Set(rows.map(r => r.topic).filter(Boolean))].sort();
+  $('fTopic').innerHTML = '<option value="">전체 토픽</option>' +
+    topics.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('fTopic').value = topics.includes(prev) ? prev : '';
+}
+
+['fPart','fVerdict'].forEach(id => $(id).addEventListener('change', () => { buildTopicOptions(); renderList(); renderStrip(); }));
+$('fTopic').addEventListener('change', () => { renderList(); renderStrip(); });
 let searchTimer = null;
 $('fSearch').addEventListener('input', () => {
   clearTimeout(searchTimer);
