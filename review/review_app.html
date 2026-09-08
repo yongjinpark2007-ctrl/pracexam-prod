@@ -99,6 +99,15 @@ html,body{
 }
 /* 화면이 좁으면 목록 폭을 조금 양보한다 (모바일 전환 전 구간) */
 @media (max-width:1100px){ .pane-list{width:360px;} }
+.resizer{
+  width:7px;flex-shrink:0;cursor:col-resize;background:transparent;position:relative;
+  touch-action:none;
+}
+.resizer::after{
+  content:'';position:absolute;top:0;bottom:0;left:3px;width:1px;background:var(--border-clr);
+}
+.resizer:hover::after,.resizer.dragging::after{left:2px;width:3px;background:var(--border-hover);}
+.resizer.dragging{background:rgba(53,70,73,.04);}
 .filters{padding:10px 12px;border-bottom:1px solid var(--border-clr);display:flex;flex-direction:column;gap:8px;}
 .filter-row{display:flex;gap:6px;}
 .filters select,.filters input{
@@ -261,6 +270,7 @@ html,body{
   .main.detail-open .pane-list{transform:translateX(-100%);}
   .main{position:relative;}
   .pane-detail{width:100%;}
+  .resizer{display:none;}
   .back-btn{display:inline-flex;}
   /* 모바일에서도 배율은 유지한다 — 고정 px 로 덮으면 A+ 가 무효가 된다 */
   .question-text{font-size:calc(19px * var(--fs));}
@@ -594,6 +604,9 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
       </div>
       <div class="qlist" id="qlist"></div>
     </aside>
+
+    <div class="resizer" id="resizer" role="separator" aria-orientation="vertical"
+         aria-label="목록 폭 조정" title="드래그해서 목록 폭을 조정합니다"></div>
 
     <section class="pane-detail" id="paneDetail">
       <div class="detail-inner" id="detail">
@@ -1528,6 +1541,62 @@ $('fSearch').addEventListener('input', () => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => { renderList(); renderStrip(); }, 180);
 });
+
+/* ── 목록 폭 드래그 조정 (사용자 요청 2026-09-07) ─────────────────────────────
+   경계바(#resizer)를 잡고 왼쪽/오른쪽으로 끌면 #paneList 폭이 바뀐다.
+   모바일 폭(≤820px)에서는 목록이 전체화면 오버레이라 지정 폭을 적용하지 않는다 —
+   그 상태에서 인라인 width 를 남겨 두면 모바일 CSS(width:100%)보다 우선해 버린다. */
+(function initResizer(){
+  const MIN_W = 280, MAX_W = 720, MOBILE_BP = 820, LS_KEY = 'ra_paneListWidth';
+  const resizer = $('resizer'), paneList = $('paneList');
+  if (!resizer || !paneList) return;
+
+  function applySaved(){
+    if (window.innerWidth <= MOBILE_BP) return;
+    const saved = parseInt(localStorage.getItem(LS_KEY) || '', 10);
+    if (saved) paneList.style.width = Math.min(MAX_W, Math.max(MIN_W, saved)) + 'px';
+  }
+  try { applySaved(); } catch(e){ /* localStorage 막힌 환경 — 기본 폭으로 둔다 */ }
+
+  let dragging = false, startX = 0, startW = 0;
+
+  function onMove(clientX){
+    const dx = clientX - startX;
+    const w = Math.min(MAX_W, Math.max(MIN_W, startW + dx));
+    paneList.style.width = w + 'px';
+  }
+  function stop(){
+    if (!dragging) return;
+    dragging = false;
+    resizer.classList.remove('dragging');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+    try { localStorage.setItem(LS_KEY, String(parseInt(paneList.style.width, 10) || '')); } catch(e){}
+  }
+  function start(clientX){
+    if (window.innerWidth <= MOBILE_BP) return;   // 모바일 오버레이 모드에서는 끌지 않는다
+    dragging = true;
+    startX = clientX;
+    startW = paneList.getBoundingClientRect().width;
+    resizer.classList.add('dragging');
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+  }
+
+  resizer.addEventListener('mousedown', e => { start(e.clientX); e.preventDefault(); });
+  window.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX); });
+  window.addEventListener('mouseup', stop);
+
+  resizer.addEventListener('touchstart', e => { start(e.touches[0].clientX); }, { passive:true });
+  window.addEventListener('touchmove', e => { if (dragging) onMove(e.touches[0].clientX); }, { passive:true });
+  window.addEventListener('touchend', stop);
+
+  // 모바일 폭으로 줄어들면 인라인 width 를 지워 오버레이 CSS 가 다시 이긴다
+  window.addEventListener('resize', () => {
+    if (window.innerWidth <= MOBILE_BP) paneList.style.width = '';
+    else applySaved();
+  });
+})();
 
 /* part·토픽·검색어로만 좁힌 범위 — 상단 합격/보류/탈락/미검토 칩의 «분모»가 된다.
    판정(fVerdict) 자체는 여기서 빼야 그 안에서의 분포를 보여줄 수 있다. */
