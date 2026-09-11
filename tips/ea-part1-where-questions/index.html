@@ -109,6 +109,11 @@ html{scrollbar-gutter:stable;}
 html[lang="ko"]{
   --font-display:"Noto Sans KR","Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --font-serif:"Noto Sans KR","Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  /* 🔴 2026-09-11 사용자 지적 — 본문 글씨크기가 «고르지 않다». --font-sans 만 안 바꿔서
+     본문(.na-col p·li·figcaption·na-src·표)이 이 규칙 밖에 있었다. 제목만 Noto Sans KR 로
+     뜨고 본문은 브라우저마다 다른 대체 글꼴(맑은 고딕 등)로 떨어져, «같은 px 값»인데도
+     x-height 가 달라 크기가 어긋나 보였다. 본문도 같은 글꼴로 맞춘다. */
+  --font-sans:"Noto Sans KR","Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
 }
 html[lang="ko"] .na-h1,html[lang="ko"] .nl-h1{font-weight:800;letter-spacing:-.025em;line-height:1.28}
 html[lang="ko"] .na-col h2,html[lang="ko"] .nl-leadtitle,html[lang="ko"] .nl-rowtitle,
