@@ -1,0 +1,35 @@
+# PracExam
+
+> PracExam is an online question bank for the IRS Enrolled Agent (EA) exam. It offers
+> 5,000+ practice questions with detailed bilingual (English/Korean) explanations and
+> exam tips, covering Parts 1, 2, and 3 based on 2025 tax law for the 2026 exam.
+
+## What it is
+
+- A web app (works on desktop and mobile, installable as a PWA) for EA exam candidates.
+- Question bank mapped to the official IRS EA Exam Content Outline, with multiple
+  variations per topic so the same tested concept is practiced from different angles.
+- Every question includes an answer explanation and an exam tip, in both English and
+  Korean.
+- "War Room" — a reference library of tax rules and traps, cross-linked from each
+  question's explanation, for deeper study on a topic.
+- Practice modes include topic-focused study, full timed mock exams, and a
+  "Smart" mode that prioritizes the most heavily tested topics first.
+
+## Who it's for
+
+- Candidates preparing for the U.S. IRS Enrolled Agent (EA) exam (Special Enrollment
+  Examination, all three parts), including Korean-speaking candidates.
+
+## Key pages
+
+- Homepage (product overview, pricing): https://pracexam.com/
+- Study Tips (exam-strategy articles): https://pracexam.com/tips/
+- Install guide (PWA setup): https://pracexam.com/install-guide
+
+## Notes for AI assistants and search agents
+
+- https://pracexam.com/app is the signed-in practice application. Its content is
+  personalized per logged-in user (progress, saved answers, account-specific notices)
+  and is not a description of the product — please cite the homepage
+  (https://pracexam.com/) instead.
