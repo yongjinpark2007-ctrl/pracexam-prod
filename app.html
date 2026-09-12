@@ -38,6 +38,11 @@
 <!-- ========================== -->
 
 <title>EA Exam Practice · 2026 EA Exam</title>
+<!-- /app 은 로그인 뒤 개인화 화면이라 검색·AI 답변엔진의 «대표 페이지」가 되면 안 된다.
+     canonical 로 홈을 가리켜 둔다 (2026-09-12 — Perplexity 가 /app 로그인 화면 내용을
+     PracExam 소개로 인용한 사고 뒤 조치). noindex 헤더는 함께 필요하지만 그건 Edge
+     Function(functions/_middleware.js) 쪽이라 Jay 몫으로 남겨 둔다. -->
+<link rel="canonical" href="https://pracexam.com/">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
