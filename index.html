@@ -995,26 +995,30 @@ html{scrollbar-gutter:stable;}
          원본 = new landing design\Hero Rotation Images\ · 전부 816x544(3:2)로 통일 잘라냄.
          1번째(Start.jfif → hero-rot-1)만 즉시 로딩(fetchpriority=high, LCP 요소) —
          나머지 4장은 src 를 안 주고 data-src 로만 적어 두었다가, 페이지 load 이벤트 뒤
-         아래 스크립트가 채운다(무거워지지 않게 — 첫 로딩 때는 안 받아온다). -->
+         아래 스크립트가 채운다(무거워지지 않게 — 첫 로딩 때는 안 받아온다).
+         🔴 2026-09-13 저녁 — 캐시 버스터 `?v=N` 을 붙였다. 이 파일들은 캐시가 4시간
+         (Cache-Control: max-age=14400)이라 «같은 이름으로 사진만 갈아치우면» 그 4시간
+         안에 한 번이라도 방문한 사람은 새 사진을 못 본다(실측 — 사용자가 "1장만 바뀌었다"
+         고 보고). ✅ 사진을 다시 바꿀 때는 반드시 이 v= 숫자를 «하나씩 올릴 것». -->
     <div class="hero-demo" aria-hidden="true" id="hero-rot">
-      <img class="hero-photo rot-active" src="hero-rot-1.webp"
-           srcset="hero-rot-1.webp 816w, hero-rot-1-2x.webp 1632w"
+      <img class="hero-photo rot-active" src="hero-rot-1.webp?v=2"
+           srcset="hero-rot-1.webp?v=2 816w, hero-rot-1-2x.webp?v=2 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="" fetchpriority="high">
-      <img class="hero-photo" data-src="hero-rot-2.webp"
-           data-srcset="hero-rot-2.webp 816w, hero-rot-2-2x.webp 1632w"
+      <img class="hero-photo" data-src="hero-rot-2.webp?v=2"
+           data-srcset="hero-rot-2.webp?v=2 816w, hero-rot-2-2x.webp?v=2 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="">
-      <img class="hero-photo" data-src="hero-rot-3.webp"
-           data-srcset="hero-rot-3.webp 816w, hero-rot-3-2x.webp 1632w"
+      <img class="hero-photo" data-src="hero-rot-3.webp?v=2"
+           data-srcset="hero-rot-3.webp?v=2 816w, hero-rot-3-2x.webp?v=2 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="">
-      <img class="hero-photo" data-src="hero-rot-4.webp"
-           data-srcset="hero-rot-4.webp 816w, hero-rot-4-2x.webp 1632w"
+      <img class="hero-photo" data-src="hero-rot-4.webp?v=2"
+           data-srcset="hero-rot-4.webp?v=2 816w, hero-rot-4-2x.webp?v=2 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="">
-      <img class="hero-photo" data-src="hero-rot-5.webp"
-           data-srcset="hero-rot-5.webp 816w, hero-rot-5-2x.webp 1632w"
+      <img class="hero-photo" data-src="hero-rot-5.webp?v=2"
+           data-srcset="hero-rot-5.webp?v=2 816w, hero-rot-5-2x.webp?v=2 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="">
     </div>
