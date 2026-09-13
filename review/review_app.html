@@ -8,6 +8,29 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* 🔴 2026-09-13 — «고쳐서 승인» 버튼이 안 보이신다 하여 원인을 가리려고 넣는다.
+   ① 이 띠가 보이면 «새 파일»을 읽은 것이다 (안 보이면 브라우저가 옛 파일을 본다)
+   ② JS 오류가 나면 붉게 찍는다 — 오류로 화면이 죽으면 버튼도 안 그려진다
+   원인을 잡으면 이 블록을 지운다. */
+window.addEventListener('DOMContentLoaded', function(){
+  var d = document.createElement('div');
+  d.id = '__vbar';
+  d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#fff3d6;' +
+    'border-bottom:2px solid #e0cfa0;color:#8a5a00;font-weight:700;font-size:12px;' +
+    'padding:6px 12px;text-align:center;font-family:system-ui,sans-serif';
+  d.innerHTML = '✏️ 고쳐서 승인 — 새 판 (09-13 10:10) · 이 줄이 보이면 «새 파일»입니다' +
+    ' <span id="__verr" style="color:#b42318"></span>' +
+    ' <button onclick="this.parentNode.remove()" style="margin-left:8px;border:1px solid #e0cfa0;' +
+    'background:#fff;border-radius:5px;padding:1px 8px;cursor:pointer">닫기</button>';
+  document.body.appendChild(d);
+});
+window.onerror = function(msg, src, line){
+  var e = document.getElementById('__verr');
+  if (e) e.textContent = ' 🔴 JS 오류: ' + msg + ' (' + line + '줄)';
+  return false;
+};
+</script>
 <style>
 /* ==========================================================================
    PracExam Review — HARBOR DESIGN
@@ -323,6 +346,29 @@ html,body{
 .ap-why{margin:12px 0;border:1px solid #dbe4e5;border-radius:10px;background:#fbfdfd;padding:12px 14px}
 .ap-h{font-size:12px;font-weight:700;color:#5b6b6e;letter-spacing:.02em;margin-bottom:7px}
 .ap-body{font-size:calc(14px * var(--fs));line-height:1.75;color:#20343a;white-space:pre-wrap}
+/* ✏️ 고쳐서 승인 (2026-09-13 사장님 지시) — «라이브를 바로 고치는» ✏️ 직접 수정과 다르다.
+   이것은 «승인될 글»을 고치고, 승인해야 라이브에 들어간다. */
+.ap-edit-btn{margin-left:8px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;
+  border:1px solid #cfd8da;background:#fff;color:#4a6b72;cursor:pointer}
+.ap-edit-btn:hover{border-color:#8fb3bb;color:#25545e}
+.ap-edited-chip{margin-left:6px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:#fff3d6;color:#8a5a00;border:1px solid #f0d9a0}
+.ap-after-ed .ap-col-h{background:#fff8e8 !important;color:#8a5a00 !important}
+.ap-after-ed{border-color:#f0d9a0 !important}
+.ap-edbox{padding:10px;border-top:1px dashed #dbe4e5;background:#fcfdfd}
+.ap-edta{width:100%;min-height:160px;font:inherit;font-size:calc(13.5px * var(--fs));line-height:1.65;
+  padding:10px;border:1px solid #cfd8da;border-radius:8px;resize:vertical;white-space:pre-wrap}
+.ap-edwarn{margin:8px 0 0;font-size:12px;line-height:1.6;color:#b42318}
+.ap-edfoot{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.ap-editbar{margin:10px 0 2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:10px 12px;border:1px dashed #e0cfa0;border-radius:10px;background:#fffdf6}
+.ap-editall{font-weight:700;border-color:#e0cfa0 !important;background:#fff8e8 !important;
+  color:#8a5a00 !important;padding:9px 15px !important}
+.ap-editall:hover{border-color:#c9a94e !important}
+.ap-editbar-note{font-size:12px;color:#7a6a45;line-height:1.5}
+/* 🔑 «새 파일을 보고 있는가»를 눈으로 확인하시는 표시 — 안 보이면 브라우저 캐시다 */
+.ap-ver{margin-left:8px;font-size:10px;color:#b9ac8a;border:1px solid #e6dcc2;
+  border-radius:999px;padding:1px 7px;white-space:nowrap}
 .ap-diff{margin:12px 0}
 .ap-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:900px){.ap-cols{grid-template-columns:1fr}}
@@ -1127,17 +1173,91 @@ function apDiff(c){
   const long = c.html || !hasBefore
             || apVal(c.after).length  > 160
             || (hasBefore && apVal(c.before).length > 160);
+  /* ✏️ 2026-09-13 사장님 지시 — «고쳐서 승인».
+       "review_app에 승인을 올릴때 내가 수정해서 승인할 수 있는 기능을 넣을 수 있나요?
+        일부 Word나 줄바꿈등의 마이너한 수정하고 승인 기능이 가능한지."
+     🔴 기존 [✏️ 직접 수정]과 «다른» 것이다 — 그것은 «라이브»를 바로 고치고,
+        이것은 «승인될 글»을 고친다. 고친 글은 회신 JSON 의 `edited` 로 나가고
+        `apply_proposal.py` 가 제안서 글 «대신» 그것을 넣는다. */
+  const key = apEditKey(c);
+  const ed  = apEditGet(key);
+  const shown = (ed !== null && ed !== undefined) ? ed : apVal(c.after);
+  const isEd = (ed !== null && ed !== undefined) && ed !== apVal(c.after);
   return `<div class="ap-diff">
-    <div class="ap-h">${esc(apFieldName(c.field))}</div>
+    <div class="ap-h">${esc(apFieldName(c.field))}
+      ${c.html ? '' : `<button class="ap-edit-btn" data-edkey="${esc(key)}">${
+        isEd ? '✏️ 고친 글 (되돌리기)' : '✏️ 고쳐서 승인'}</button>`}
+      ${isEd ? '<span class="ap-edited-chip">고침</span>' : ''}
+    </div>
     <div class="ap-cols${long ? ' ap-stack' : ''}">
-      <div class="ap-col ap-after"><div class="ap-col-h">✅ 반영하면 이렇게 됩니다 (제안)</div>
-        ${cell(c.after)}</div>
+      <div class="ap-col ap-after${isEd ? ' ap-after-ed' : ''}">
+        <div class="ap-col-h">${isEd
+          ? '✏️ 사장님이 고치신 글 — 이대로 반영됩니다'
+          : '✅ 반영하면 이렇게 됩니다 (제안)'}</div>
+        ${c.html ? cell(c.after)
+                 : `<pre class="ap-after-pre" data-edshow="${esc(key)}">${esc(shown)}</pre>`}
+        <div class="ap-edbox" id="edbox-${esc(key)}" style="display:none">
+          <textarea class="ap-edta" data-edta="${esc(key)}">${esc(shown)}</textarea>
+          <div class="ap-edwarn" id="edwarn-${esc(key)}"></div>
+          <div class="ap-edfoot">
+            <button class="btn primary" data-edsave="${esc(key)}">고침 저장</button>
+            <button class="btn" data-edreset="${esc(key)}">제안 글로 되돌리기</button>
+            <button class="btn" data-edcancel="${esc(key)}">닫기</button>
+          </div>
+        </div>
+      </div>
       ${hasBefore ? `<div class="ap-col ap-before"><div class="ap-col-h">지금 라이브 모습 (기존)</div>
         ${cell(c.before)}</div>` : ''}
     </div>
     ${c.note   ? `<div class="ap-note">${esc(c.note)}</div>` : ''}
     ${c.reason ? `<div class="ap-reason">${esc(c.reason)}</div>` : ''}
   </div>`;
+}
+
+/* ── ✏️ 고쳐서 승인 — 도우미 ────────────────────────────────────────────────
+   저장 자리 = apLoadStore().batches[묶음].edits[문항ID][칸] = "고친 글"
+   판정(feedback)과 «따로» 둔다 — 판정을 다시 눌러도 고친 글이 안 날아가게. */
+function apEditKey(c){
+  return String(S.currentId || '') + '::' + String(c.field || '');
+}
+function apEditStoreGet(){
+  const b = apCurBatch();
+  return (b && b.edits) || {};
+}
+function apEditGet(key){
+  const [qid, fld] = key.split('::');
+  const e = apEditStoreGet()[qid];
+  return e ? e[fld] : null;
+}
+function apEditSet(key, val){
+  const store = apLoadStore();
+  const batch = store.current || String((S.proposal && S.proposal.batch) || '(이름 없음)');
+  const b = store.batches[batch] || (store.batches[batch] = { feedback:{} });
+  b.edits = b.edits || {};
+  const [qid, fld] = key.split('::');
+  b.edits[qid] = b.edits[qid] || {};
+  if (val === null) {
+    delete b.edits[qid][fld];
+    if (!Object.keys(b.edits[qid]).length) delete b.edits[qid];
+  } else {
+    b.edits[qid][fld] = val;
+  }
+  if (b.exportedAt) b.dirtySinceExport = true;
+  store.current = batch;
+  return apSaveStore(store);
+}
+/* 🔴 문지기가 못 보는 자리다 — 저장 «전»에 바로 아는 것만 알린다.
+      세미콜론(사장님 전면 금지) · 내부 표기 «» 「」(창끼리 쓰는 기호) · 빈 글. */
+function apEditWarn(field, val){
+  const w = [];
+  const semi = (val.match(/;/g) || []).length;
+  if (semi) w.push(`세미콜론 ${semi}개 — 사장님 지시로 전면 금지입니다. 쉼표나 -로 바꾸십시오.`);
+  const mark = (val.match(/[«»「」]/g) || []).length;
+  if (mark) w.push(`내부 표기 ${mark}개(« » 「 」) — 창끼리 쓰는 기호라 고객 화면에 나가면 안 됩니다.`);
+  if (!val.trim()) w.push('글이 비었습니다.');
+  if (/\n\n/.test(val) && /해설|시험팁/.test(apFieldName(field) || ''))
+    w.push('빈 줄이 있습니다 — 계산 블록이 아니면 줄바꿈 하나로 나눕니다.');
+  return w;
 }
 
 function apShowPaste(){
@@ -1242,16 +1362,30 @@ function apMarkExported(batch, n){
 
 async function apExport(){
   const fb = apFb();
+  /* ✏️ 2026-09-13 — 「고쳐서 승인」한 글을 회신에 함께 싣는다.
+     `apply_proposal.py` 가 `edited` 를 보면 «제안서 글 대신» 그것을 라이브에 넣는다. */
+  const eds = apEditStoreGet();
   const items = (S.proposal && S.proposal.items ? S.proposal.items : [])
-    .map(it => ({
-      id: String(it.id),
-      decision: fb[it.id] ? (fb[it.id].decision || null) : null,
-      feedback: fb[it.id] ? (fb[it.id].feedback || '') : '',
-      at:       fb[it.id] ? (fb[it.id].at || null) : null
-    }))
-    .filter(x => x.decision || x.feedback);
+    .map(it => {
+      const row = {
+        id: String(it.id),
+        decision: fb[it.id] ? (fb[it.id].decision || null) : null,
+        feedback: fb[it.id] ? (fb[it.id].feedback || '') : '',
+        at:       fb[it.id] ? (fb[it.id].at || null) : null
+      };
+      if (eds[it.id] && Object.keys(eds[it.id]).length) row.edited = eds[it.id];
+      return row;
+    })
+    .filter(x => x.decision || x.feedback || x.edited);
 
   if (!items.length){ alert('내보낼 판정·피드백이 아직 없습니다.'); return; }
+
+  /* 🔴 고친 글이 있는데 «승인»이 아니면 그 고침은 버려진다 — 먼저 알린다. */
+  const orphan = items.filter(x => x.edited && x.decision !== 'pass').map(x => x.id);
+  if (orphan.length && !confirm(
+      '고치신 글이 있는데 «승인»이 아닌 항목이 있습니다.\n\n' + orphan.join(' · ') +
+      '\n\n승인이 아니면 그 고침은 라이브에 안 들어갑니다. 그대로 내보낼까요?')) return;
+  const nEd = items.filter(x => x.edited).length;
 
   const batch = (S.proposal && S.proposal.batch) || 'batch';
   const name  = `review_feedback_${batch}.json`;
@@ -1283,7 +1417,8 @@ async function apExport(){
       await w.write(text); await w.close();
       await apDirShow();
       apMarkExported(batch, items.length);
-      alert(`저장했습니다 — ${dir.name} 폴더의 ${fname}\n(${items.length}건)\n\n` +
+      alert(`저장했습니다 — ${dir.name} 폴더의 ${fname}\n(${items.length}건` +
+            (nEd ? ` · 그중 ✏️ 고쳐서 승인 ${nEd}건` : '') + `)\n\n` +
             (fname !== name
               ? `※ 예전에 같은 묶음을 검토한 회신이 이미 있어서, 그것을 지우지 않으려고\n` +
                 `   새 이름으로 저장했습니다.\n\n`
@@ -1730,6 +1865,15 @@ function renderDetail(){
         <button class="btn back-btn" id="btnBack" style="margin-left:auto;padding:7px 13px;">← 목록</button>
       </div>
       <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:10px;">${esc(it.title || '')}</div>
+      <div class="ap-editbar">
+        <button class="btn ap-editall" id="apEditTop">✏️ 고쳐서 승인 — 글 손보기</button>
+        <span class="ap-editbar-note">${(() => {
+          const e = apEditStoreGet()[it.id] || {};
+          const n = Object.keys(e).length;
+          return n ? `고치신 칸 ${n}개 — 승인하면 그 글이 반영됩니다`
+                   : '오타·줄바꿈 같은 작은 것은 여기서 고치고 바로 승인하실 수 있습니다';
+        })()}<span class="ap-ver">v09-13 고쳐서승인</span></span>
+      </div>
       ${it.kind === 'sheet' ? apSheet(it.sheet) : ''}
       ${(it.changes || []).map(apDiff).join('')}
       ${it.why ? `<div class="ap-why"><div class="ap-h">제안 이유</div>
@@ -1834,6 +1978,15 @@ function renderDetail(){
         <button class="vbtn hold   ${v.verdict === 'hold'   ? 'on' : ''}" data-v="hold">${vlab('hold')}<span class="k">2</span></button>
         <button class="vbtn reject ${v.verdict === 'reject' ? 'on' : ''}" data-v="reject">${vlab('reject')}<span class="k">3</span></button>
       </div>
+      ${r.is_ap ? `<div class="ap-editbar">
+        <button class="btn ap-editall" id="apEditAll">✏️ 고쳐서 승인 — 글 손보기</button>
+        <span class="ap-editbar-note">${(() => {
+          const e = apEditStoreGet()[r.question_id] || {};
+          const n = Object.keys(e).length;
+          return n ? `고치신 칸 ${n}개 — 승인하면 그 글이 반영됩니다`
+                   : '오타·줄바꿈 같은 작은 것은 여기서 고치고 바로 승인하실 수 있습니다';
+        })()}</span>
+      </div>` : ''}
       <textarea id="vnote" placeholder="${ap
         ? '피드백을 자유롭게 적으세요. 길이 제한 없습니다 — 다른 AI(Gemini 등)에게 받은 답변을 통째로 붙여넣어도 그대로 전달됩니다.'
         : '문제점·수정 지시를 적어두세요. 생성 파이프라인에서 이 메모를 보고 재작업합니다.'}">${esc(v.note)}</textarea>
@@ -1903,6 +2056,90 @@ function renderDetail(){
   });
   $('detail').querySelectorAll('.vbtn').forEach(b => {
     b.addEventListener('click', () => saveVerdict(b.dataset.v, true));
+  });
+
+  /* ✏️ 고쳐서 승인 — 판정 카드의 «큰» 버튼. 칸 제목 옆 작은 버튼을 못 보신다 하셔서
+     사장님이 늘 보시는 자리에 하나 더 두고, 누르면 고칠 칸을 «모두» 펼친다. */
+  const _toggleAll = (btn) => {
+    const boxes = $('detail').querySelectorAll('.ap-edbox');
+    if (!boxes.length){
+      alert('이 항목에는 글로 고칠 칸이 없습니다.\n(치트시트 제안은 HTML 이라 이 기능을 아직 안 씁니다.)');
+      return;
+    }
+    const anyClosed = [...boxes].some(b => b.style.display === 'none');
+    boxes.forEach(b => { b.style.display = anyClosed ? 'block' : 'none'; });
+    if (anyClosed){
+      $('detail').querySelectorAll('.ap-edta').forEach(ta => {
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(Math.max(ta.scrollHeight, 160), 700) + 'px';
+      });
+      const first = $('detail').querySelector('.ap-edbox');
+      if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    ['apEditTop','apEditAll'].forEach(id => {
+      const b2 = $(id);
+      if (b2) b2.textContent = anyClosed ? '✕ 고침칸 닫기' : '✏️ 고쳐서 승인 — 글 손보기';
+    });
+  };
+  ['apEditTop','apEditAll'].forEach(id => {
+    const b2 = $(id);
+    if (b2) b2.addEventListener('click', () => _toggleAll(b2));
+  });
+
+  /* ✏️ 고쳐서 승인 (2026-09-13) — 열기·저장·되돌리기 */
+  $('detail').querySelectorAll('[data-edkey]').forEach(b => {
+    b.addEventListener('click', () => {
+      const k   = b.dataset.edkey;
+      const box = document.getElementById('edbox-' + k);
+      if (!box) return;
+      const open = box.style.display !== 'none';
+      box.style.display = open ? 'none' : 'block';
+      if (!open){
+        const ta = box.querySelector('[data-edta]');
+        if (ta){ ta.style.height = 'auto'; ta.style.height = Math.min(Math.max(ta.scrollHeight, 160), 700) + 'px'; ta.focus(); }
+      }
+    });
+  });
+  $('detail').querySelectorAll('[data-edta]').forEach(ta => {
+    const k = ta.dataset.edta, fld = k.split('::')[1];
+    const paint = () => {
+      const w = apEditWarn(fld, ta.value);
+      const el = document.getElementById('edwarn-' + k);
+      if (el) el.innerHTML = w.length
+        ? '🔴 ' + w.map(x => esc(x)).join('<br>🔴 ')
+        : '<span style="color:#16a34a">문지기가 바로 아는 것 중에는 걸리는 것이 없습니다.</span>';
+    };
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(Math.max(ta.scrollHeight, 160), 700) + 'px';
+      paint();
+    });
+    paint();
+  });
+  $('detail').querySelectorAll('[data-edsave]').forEach(b => {
+    b.addEventListener('click', () => {
+      const k  = b.dataset.edsave;
+      const ta = $('detail').querySelector(`[data-edta="${k}"]`);
+      if (!ta) return;
+      const w = apEditWarn(k.split('::')[1], ta.value);
+      if (w.length && !confirm('아래가 걸립니다. 그래도 이 글로 저장할까요?\n\n· ' + w.join('\n· '))) return;
+      apEditSet(k, ta.value);
+      renderDetail();
+      setSaveState('고침 저장됨 — 승인하면 이 글이 반영됩니다', 'ok');
+    });
+  });
+  $('detail').querySelectorAll('[data-edreset]').forEach(b => {
+    b.addEventListener('click', () => {
+      apEditSet(b.dataset.edreset, null);
+      renderDetail();
+      setSaveState('제안 글로 되돌렸습니다', 'ok');
+    });
+  });
+  $('detail').querySelectorAll('[data-edcancel]').forEach(b => {
+    b.addEventListener('click', () => {
+      const box = document.getElementById('edbox-' + b.dataset.edcancel);
+      if (box) box.style.display = 'none';
+    });
   });
   $('btnSave').addEventListener('click', () => saveVerdict(null, false));
   $('btnPrev').addEventListener('click', () => step(-1));
