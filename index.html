@@ -352,9 +352,9 @@ section{padding:88px 0;}
   transition:opacity 3.5s linear;
 }
 .hero-photo.rot-active{ opacity:1; }
-@media (prefers-reduced-motion: reduce){
-  .hero-photo{ transition:none; }
-}
+/* 🔴 2026-09-13 — prefers-reduced-motion 분기를 없앴다(사용자 지시). 브라우저·기기마다
+   그 설정 감지가 달라(크롬에서만 켜진 것으로 잡히는 사례 실측) fade 유무가 들쭉날쭉했다.
+   모든 곳에서 «항상 같은» fade 가 나오게 통일한다. */
 /* 데스크톱·아이패드 가로(≥901px) — 사용자 지시(2026-08-27): 사진을 «크게», 왼쪽은 그라데이션으로
    배경에 녹인다(카드 틀·그림자 없음 · 화면 오른쪽 끝까지). 얼굴은 사진 오른쪽 60% 지점이라
    왼쪽 34% 페이드에 닿지 않는다(얼굴이 중요 — 사용자). 폰·아이패드 세로는 아래 900 블록의 카드 그대로. */
@@ -2487,10 +2487,8 @@ function doWaitlist(){
 
 // ── 히어로 사진 로테이션 (2026-09-13) ──────────────────────
 // ⚠️ 나머지 4장은 페이지 load 이벤트 «뒤»에만 받아온다 — 첫 화면 로딩 속도(LCP)에 영향 없게.
-// 🔴 2026-09-13 정정 — prefers-reduced-motion 이면 로테이션 자체를 «껐었다»(사용자 실측:
-// "사진 전환이 안됩니다" — 원격 데스크톱 등 「애니메이션 표시」가 꺼진 Windows 환경에서
-// 이 미디어쿼리가 true 로 잡혀 첫 장에 고정됐다). 그 설정은 CSS 쪽에서 «전환 효과(fade)»만
-// 끄면 충분하다 — 사진이 «바뀌는 것» 자체를 죽일 까닭이 없다.
+// 🔴 prefers-reduced-motion 분기는 넣었다가 뺐다 — 브라우저마다(같은 기기의 크롬·엣지끼리도)
+// 그 설정 감지가 달라 fade 유무가 들쭉날쭉했다(사용자 실측). 이제 항상 돈다.
 (function(){
   var root = document.getElementById('hero-rot');
   if(!root) return;
