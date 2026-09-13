@@ -622,7 +622,7 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
         <div class="filter-row ap-bar" id="apBar" style="display:none">
           <button class="btn btn-sm" id="apImport">제안 파일 열기</button>
           <button class="btn btn-sm" id="apPasteBtn">붙여넣기</button>
-          <button class="btn btn-sm primary" id="apExport">피드백 내보내기</button>
+          <button class="btn btn-sm primary" id="apExport" title="단축키: E">피드백 내보내기</button>
           <button class="btn btn-sm" id="apHist" title="지금까지 검토한 묶음과 완료 여부를 봅니다">검토 이력</button>
           <button class="btn btn-sm" id="apSetDir" title="'claude proposal' 폴더를 한 번만 지정해 두면 다음부터는 자동으로 그 폴더에 저장됩니다">저장 폴더</button>
           <input type="file" id="apFile" accept=".json,application/json" style="display:none">
@@ -2890,12 +2890,18 @@ async function confirmDiscard(){
 
 /* ── 키보드 ──────────────────────────────────────────────────────────────── */
 document.addEventListener('keydown', (e) => {
-  if (!S.user || !S.currentId) return;
+  if (!S.user) return;
   const tag = (e.target.tagName || '').toLowerCase();
   const typing = tag === 'textarea' || tag === 'input' || tag === 'select';
 
-  if (e.key === 's' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); saveVerdict(null, false); return; }
+  if (e.key === 's' && (e.ctrlKey || e.metaKey) && S.currentId){ e.preventDefault(); saveVerdict(null, false); return; }
   if (typing) return;   // 메모 입력 중에는 단축키 비활성
+
+  /* 🆕 2026-09-13 — [피드백 내보내기] 단축키. 배치 «전체»를 내보내는 동작이라
+     문항이 하나도 안 열려 있어도 된다 — 그래서 아래 S.currentId 검사보다 앞에 둔다. */
+  if (isAp() && (e.key === 'e' || e.key === 'E')){ e.preventDefault(); apExport(); return; }
+
+  if (!S.currentId) return;   // 여기부터는 «지금 열린 문항»에 대한 단축키들
 
   if (e.key === '1'){ e.preventDefault(); saveVerdict('pass', true); }
   else if (e.key === '2'){ e.preventDefault(); saveVerdict('hold', true); }
