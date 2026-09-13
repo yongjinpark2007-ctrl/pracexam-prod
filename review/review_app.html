@@ -226,6 +226,14 @@ html,body{
 .btn.primary{background:var(--navy);border-color:var(--navy);color:#fff;}
 .btn.primary:hover{background:#2a383a;}
 .btn:disabled{opacity:.45;cursor:not-allowed;}
+/* 🔴 2026-09-13 — 툴바 성격의 작은 버튼들(제안 파일 열기·검토 이력·수정 이력·
+   ← 목록·비우기·고쳐서 승인 등)을 하나의 공용 크기로. 전엔 부모 컨테이너(.ap-bar·
+   .ap-stale)에 기대어 크기를 걸었는데, 그 컨테이너 «밖에» 있는 #edHistBtn(수정 이력)은
+   안 걸려 혼자 기본 큰 크기로 남았다(사장님 실측 — "수정이력 버튼이 다른 것보다 크다").
+   ⟹ 컨테이너에 기대지 말고 버튼 자체에 이 클래스를 붙인다.
+   세로 padding(10px)은 옆의 필터 select·input(.filters select,.filters input 도 10px)과
+   맞춰 «같은 줄에 있을 때 높이가 맞도록» 했다(사장님 실측 — "전체 파트 메뉴 버튼과도 차이난다"). */
+.btn-sm{padding:10px 14px;font-size:calc(14px * var(--fs));border-radius:8px;}
 .save-state{font-size:calc(15.5px * var(--fs));font-weight:600;color:var(--text-muted);margin-left:auto;}
 .save-state.ok{color:var(--success-color);}
 .save-state.err{color:var(--danger-color);}
@@ -261,10 +269,8 @@ html,body{
 }
 
 /* ── MOBILE ─────────────────────────────────────────────────────────────── */
-/* 🔴 2026-09-13 UI 정리 — .back-btn 은 전엔 세 자리 모두 인라인 style="padding:7px 13px"
-   로 따로 적혀 있었다(하나는 margin-left:auto 까지 붙어 셋이 «서로 다른» 선언이었다).
-   여기 한 곳으로 모으고 --fs 배율을 걸었다(고정 px 라 글자 크게 버튼이 안 먹었었다). */
-.back-btn{display:none;padding:7px 14px;font-size:calc(14px * var(--fs));}
+/* 크기는 markup 에 붙인 .btn-sm 이 준다(위 .btn-sm 정의 참조) — 여기는 표시 여부만 */
+.back-btn{display:none;}
 @media (max-width:820px){
   .pane-list{
     width:100%;position:absolute;inset:0;top:0;z-index:20;
@@ -281,9 +287,7 @@ html,body{
 }
 /* ── 승인 대기(Claude 제안 검토) 모드 ─────────────────────────────────────── */
 .ap-bar{gap:6px;flex-wrap:wrap}
-/* 🔴 2026-09-13 — 전엔 고정 12px(글자 크게 버튼이 안 먹음). .back-btn·.ap-stale .btn 과
-   같은 값으로 통일(아래 두 곳 참조) — 이 셋이 예전엔 «셋 다 다른» 작은 버튼이었다. */
-.ap-bar .btn{padding:7px 14px;font-size:calc(14px * var(--fs));}
+/* 크기는 markup 에 붙인 .btn-sm 이 준다(위 .btn-sm 정의 참조) */
 /* 저장 폴더 안내(.ap-dir)는 그 아래 묶음 정보(.ap-info)와 같은 크기로 — 눈에 튀지 않게 */
 .ap-info,.ap-dir{font-size:12px;color:#5b6b6e;line-height:1.5}
 .ap-info b,.ap-dir b{color:#20343a}
@@ -370,8 +374,8 @@ html,body{
 .ap-stale{margin-top:8px;padding:8px 10px;border:1px solid #E0A85A;border-radius:8px;
   background:rgba(224,168,90,.12);font-size:12px;color:#7a5518;line-height:1.6;
   display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-/* 크기는 .ap-bar .btn·.back-btn 과 같은 값(위 참조) — 자리(margin-left:auto)만 여기서 */
-.ap-stale .btn{padding:7px 14px;font-size:calc(14px * var(--fs));margin-left:auto;flex:none}
+/* 크기는 markup 에 붙인 .btn-sm 이 준다(위 .btn-sm 정의 참조) — 자리만 여기서 */
+.ap-stale .btn{margin-left:auto;flex:none}
 /* ── 치트시트(War Room) 제안 검토 — kind:'sheet' ────────────────────────────
    본문이 HTML 이라 문항용(전부 escape)으로는 검토가 안 된다. 수정 반영본을 그대로 렌더하고
    바뀐 곳만 노란 표시(<mark class="ap-mk">)로 짚어 준다. */
@@ -616,16 +620,16 @@ mark.ap-mk{background:#fff3c4;border-bottom:2px solid #e6c757;padding:1px 2px;bo
         </div>
         <!-- 승인 대기 모드 전용 도구 -->
         <div class="filter-row ap-bar" id="apBar" style="display:none">
-          <button class="btn" id="apImport">제안 파일 열기</button>
-          <button class="btn" id="apPasteBtn">붙여넣기</button>
-          <button class="btn primary" id="apExport">피드백 내보내기</button>
-          <button class="btn" id="apHist" title="지금까지 검토한 묶음과 완료 여부를 봅니다">검토 이력</button>
-          <button class="btn" id="apSetDir" title="'claude proposal' 폴더를 한 번만 지정해 두면 다음부터는 자동으로 그 폴더에 저장됩니다">저장 폴더</button>
+          <button class="btn btn-sm" id="apImport">제안 파일 열기</button>
+          <button class="btn btn-sm" id="apPasteBtn">붙여넣기</button>
+          <button class="btn btn-sm primary" id="apExport">피드백 내보내기</button>
+          <button class="btn btn-sm" id="apHist" title="지금까지 검토한 묶음과 완료 여부를 봅니다">검토 이력</button>
+          <button class="btn btn-sm" id="apSetDir" title="'claude proposal' 폴더를 한 번만 지정해 두면 다음부터는 자동으로 그 폴더에 저장됩니다">저장 폴더</button>
           <input type="file" id="apFile" accept=".json,application/json" style="display:none">
         </div>
         <!-- ✏️ 직접 수정 이력 (2026-08-30) -->
         <div class="filter-row">
-          <button class="btn" id="edHistBtn" title="review_app 에서 손으로 고친 기록을 봅니다. Claude 도 같은 기록을 읽습니다">✏️ 수정 이력</button>
+          <button class="btn btn-sm" id="edHistBtn" title="review_app 에서 손으로 고친 기록을 봅니다. Claude 도 같은 기록을 읽습니다">✏️ 수정 이력</button>
         </div>
         <div class="filter-row ap-dir" id="apDirInfo" style="display:none"></div>
         <div class="filter-row ap-info" id="apInfo" style="display:none"></div>
@@ -1844,11 +1848,11 @@ function renderDetail(){
         ${it.topic ? `<span class="q-badge q-badge-gray">${esc(it.topic)}</span>` : ''}
         <span class="q-badge ${applied ? 'ap-applied' : 'ap-pending'}">${
           applied ? '적용 완료 · 사후 검토' : '적용 전 · 승인 필요'}</span>
-        <button class="btn back-btn" id="btnBack" style="margin-left:auto">← 목록</button>
+        <button class="btn btn-sm back-btn" id="btnBack" style="margin-left:auto">← 목록</button>
       </div>
       <div class="question-text" style="font-size:calc(18px * var(--fs));margin-bottom:10px;">${esc(it.title || '')}</div>
       <div class="ap-editbar">
-        <button class="btn ap-editall" id="apEditTop">✏️ 고쳐서 승인 — 글 손보기</button>
+        <button class="btn btn-sm ap-editall" id="apEditTop">✏️ 고쳐서 승인 — 글 손보기</button>
         <span class="ap-editbar-note">${(() => {
           const e = apEditStoreGet()[it.id] || {};
           const n = Object.keys(e).length;
@@ -1886,7 +1890,7 @@ function renderDetail(){
           <button data-lang="en" class="${S.lang === 'en' ? 'active' : ''}">EN</button>
         </span>
         ${edBtn()}
-        <button class="btn back-btn" id="btnBack">← 목록</button>
+        <button class="btn btn-sm back-btn" id="btnBack">← 목록</button>
       </div>
     </div>
     ${wrBackBar()}
@@ -1913,7 +1917,7 @@ function renderDetail(){
         ${r.state_qid ? '<span class="q-badge" style="background:rgba(111,163,158,.18);border-color:#A3C6C4;">NA · CA/TX/NJ/NY 공통</span>' : ''}
         <span style="margin-left:auto"></span>
         ${edBtn()}
-        <button class="btn back-btn" id="btnBack">← 목록</button>
+        <button class="btn btn-sm back-btn" id="btnBack">← 목록</button>
       </div>
       <div class="question-text">${esc(r.text || '')}</div>
       <div class="options-list">
@@ -1961,7 +1965,7 @@ function renderDetail(){
         <button class="vbtn reject ${v.verdict === 'reject' ? 'on' : ''}" data-v="reject">${vlab('reject')}<span class="k">3</span></button>
       </div>
       ${r.is_ap ? `<div class="ap-editbar">
-        <button class="btn ap-editall" id="apEditAll">✏️ 고쳐서 승인 — 글 손보기</button>
+        <button class="btn btn-sm ap-editall" id="apEditAll">✏️ 고쳐서 승인 — 글 손보기</button>
         <span class="ap-editbar-note">${(() => {
           const e = apEditStoreGet()[r.question_id] || {};
           const n = Object.keys(e).length;
@@ -1974,7 +1978,7 @@ function renderDetail(){
         : '문제점·수정 지시를 적어두세요. 생성 파이프라인에서 이 메모를 보고 재작업합니다.'}">${esc(v.note)}</textarea>
       ${ap && staleNote ? `<div class="ap-stale" id="apStale">
         지난 회신에 적으신 글이 그대로 남아 있습니다 — 두면 이번 회신에도 함께 나갑니다.
-        <button class="btn" id="apClearNote">비우기</button></div>` : ''}
+        <button class="btn btn-sm" id="apClearNote">비우기</button></div>` : ''}
       ${ap ? '<div class="ap-count" id="apCount"></div>' : ''}
       <div class="verdict-foot">
         <button class="btn" id="btnPrev">← 이전</button>
