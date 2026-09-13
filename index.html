@@ -336,12 +336,24 @@ section{padding:88px 0;}
   right:0; top:50%;
   transform:translateY(-50%);
   width:min(560px, 44vw);
+  aspect-ratio:3/2;   /* 슬라이드 5장이 모두 이 비율(816x544) — 자리를 미리 잡아 흔들림(CLS) 방지 */
   z-index:1;
 }
+/* 히어로 사진 로테이션 (2026-09-13 사용자 지시) — 5장을 겹쳐 놓고 opacity 로 crossfade.
+   1번째(맨 처음 DOM 순서)만 즉시 로딩(fetchpriority=high) · 나머지 4장은 data-src 로 두었다가
+   페이지가 다 뜬 뒤 JS 가 채운다(아래 스크립트) — 첫 화면 로딩 속도(LCP)에 영향 없음. */
 .hero-photo{
-  display:block; width:100%; height:auto;
+  display:block; width:100%; height:100%;
+  position:absolute; inset:0;
+  object-fit:cover;
   border-radius:20px;
   box-shadow:0 26px 50px -18px rgba(53,70,73,.30), 0 6px 14px rgba(53,70,73,.08);
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+.hero-photo.rot-active{ opacity:1; }
+@media (prefers-reduced-motion: reduce){
+  .hero-photo{ transition:none; }
 }
 /* 데스크톱·아이패드 가로(≥901px) — 사용자 지시(2026-08-27): 사진을 «크게», 왼쪽은 그라데이션으로
    배경에 녹인다(카드 틀·그림자 없음 · 화면 오른쪽 끝까지). 얼굴은 사진 오른쪽 60% 지점이라
@@ -979,22 +991,32 @@ html{scrollbar-gutter:stable;}
       </div>
     </div>
 
-    <!-- 히어로 사진: 절대위치, 오른쪽 배치 — 예제 문제 카드는 아래 #samples 섹션이 대신한다 (2026-08-27 · PDF 3쪽 안).
-         첫 화면의 가장 큰 그림(LCP)이라 lazy 금지 · fetchpriority=high. 원본 = new landing design\ -->
-    <div class="hero-demo" aria-hidden="true">
-      <!-- 한국어 화면 = 한국인 사진 / 영어 화면 = Eng_White_Woman (사용자 2026-08-27 교체). .lang-ko/.lang-en 이 서로를 숨긴다.
-           두 사진 모두 3:2 로 같은 높이 — 언어 토글 때 높이가 출렁이면 안 된다(사용자).
-           KO·EN 원본 모두 2752x1536(1.79:1)이라 «왼쪽 빈 창가 448px 만» 잘라 3:2 로 맞춤
-           (인물·손·책상·노트북·세로 무손실 · 얼굴은 가로 60% 지점이라 왼쪽 페이드에 안 닿는다).
-           두 파일 다 816x544 / 1632x1088 로 «치수가 같다» — 토글해도 높이가 안 출렁인다. -->
-      <img class="hero-photo ko" src="hero-study-ko.webp"
-           srcset="hero-study-ko.webp 816w, hero-study-ko-2x.webp 1632w"
+    <!-- 히어로 사진 로테이션 (2026-09-13 사용자 지시) — 5장, 한글·영문 구분 없이 동일(사용자).
+         원본 = new landing design\Hero Rotation Images\ · 전부 816x544(3:2)로 통일 잘라냄.
+         1번째(Start.jfif → hero-rot-1)만 즉시 로딩(fetchpriority=high, LCP 요소) —
+         나머지 4장은 src 를 안 주고 data-src 로만 적어 두었다가, 페이지 load 이벤트 뒤
+         아래 스크립트가 채운다(무거워지지 않게 — 첫 로딩 때는 안 받아온다). -->
+    <div class="hero-demo" aria-hidden="true" id="hero-rot">
+      <img class="hero-photo rot-active" src="hero-rot-1.webp"
+           srcset="hero-rot-1.webp 816w, hero-rot-1-2x.webp 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
            width="816" height="544" alt="" fetchpriority="high">
-      <img class="hero-photo en" src="hero-study.webp"
-           srcset="hero-study.webp 816w, hero-study-2x.webp 1632w"
+      <img class="hero-photo" data-src="hero-rot-2.webp"
+           data-srcset="hero-rot-2.webp 816w, hero-rot-2-2x.webp 1632w"
            sizes="(max-width:900px) 92vw, 60vw"
-           width="816" height="544" alt="" fetchpriority="high">
+           width="816" height="544" alt="">
+      <img class="hero-photo" data-src="hero-rot-3.webp"
+           data-srcset="hero-rot-3.webp 816w, hero-rot-3-2x.webp 1632w"
+           sizes="(max-width:900px) 92vw, 60vw"
+           width="816" height="544" alt="">
+      <img class="hero-photo" data-src="hero-rot-4.webp"
+           data-srcset="hero-rot-4.webp 816w, hero-rot-4-2x.webp 1632w"
+           sizes="(max-width:900px) 92vw, 60vw"
+           width="816" height="544" alt="">
+      <img class="hero-photo" data-src="hero-rot-5.webp"
+           data-srcset="hero-rot-5.webp 816w, hero-rot-5-2x.webp 1632w"
+           sizes="(max-width:900px) 92vw, 60vw"
+           width="816" height="544" alt="">
     </div>
 
   </div>
@@ -2462,6 +2484,38 @@ function doWaitlist(){
       false);
   });
 }
+
+// ── 히어로 사진 로테이션 (2026-09-13) ──────────────────────
+// ⚠️ 나머지 4장은 페이지 load 이벤트 «뒤»에만 받아온다 — 첫 화면 로딩 속도(LCP)에 영향 없게.
+// prefers-reduced-motion 이면 자동 전환을 아예 안 돌린다(첫 사진 고정).
+(function(){
+  var root = document.getElementById('hero-rot');
+  if(!root) return;
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.hero-photo'));
+  if(slides.length < 2) return;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function loadDeferred(){
+    slides.forEach(function(img){
+      if(img.dataset.src){
+        img.src = img.dataset.src;
+        if(img.dataset.srcset) img.srcset = img.dataset.srcset;
+      }
+    });
+  }
+  window.addEventListener('load', function(){
+    setTimeout(loadDeferred, 300);   // load 직후도 한 박자 늦춰 «정말 한가할 때» 받아온다
+  });
+
+  if(reduceMotion) return;
+
+  var i = 0;
+  setInterval(function(){
+    slides[i].classList.remove('rot-active');
+    i = (i + 1) % slides.length;
+    slides[i].classList.add('rot-active');
+  }, 5000);
+})();
 </script>
 </body>
 </html>
