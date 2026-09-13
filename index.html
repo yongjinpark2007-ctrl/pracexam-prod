@@ -2487,13 +2487,15 @@ function doWaitlist(){
 
 // ── 히어로 사진 로테이션 (2026-09-13) ──────────────────────
 // ⚠️ 나머지 4장은 페이지 load 이벤트 «뒤»에만 받아온다 — 첫 화면 로딩 속도(LCP)에 영향 없게.
-// prefers-reduced-motion 이면 자동 전환을 아예 안 돌린다(첫 사진 고정).
+// 🔴 2026-09-13 정정 — prefers-reduced-motion 이면 로테이션 자체를 «껐었다»(사용자 실측:
+// "사진 전환이 안됩니다" — 원격 데스크톱 등 「애니메이션 표시」가 꺼진 Windows 환경에서
+// 이 미디어쿼리가 true 로 잡혀 첫 장에 고정됐다). 그 설정은 CSS 쪽에서 «전환 효과(fade)»만
+// 끄면 충분하다 — 사진이 «바뀌는 것» 자체를 죽일 까닭이 없다.
 (function(){
   var root = document.getElementById('hero-rot');
   if(!root) return;
   var slides = Array.prototype.slice.call(root.querySelectorAll('.hero-photo'));
   if(slides.length < 2) return;
-  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function loadDeferred(){
     slides.forEach(function(img){
@@ -2503,11 +2505,13 @@ function doWaitlist(){
       }
     });
   }
-  window.addEventListener('load', function(){
-    setTimeout(loadDeferred, 300);   // load 직후도 한 박자 늦춰 «정말 한가할 때» 받아온다
-  });
-
-  if(reduceMotion) return;
+  if(document.readyState === 'complete'){
+    setTimeout(loadDeferred, 300);
+  } else {
+    window.addEventListener('load', function(){
+      setTimeout(loadDeferred, 300);   // load 직후도 한 박자 늦춰 «정말 한가할 때» 받아온다
+    });
+  }
 
   var i = 0;
   setInterval(function(){
