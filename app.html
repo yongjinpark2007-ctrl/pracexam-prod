@@ -4269,7 +4269,7 @@ async function fetchProgressRows(){
   try{
     return await _legacyPaginate(function(){
       return sb.from('user_progress')
-        .select('question_id, times, correct_count, wrong_count, flagged')
+        .select('question_id, times, correct_count, wrong_count, flagged, updated_at')
         .eq('user_id', SB_USER.id);
     });
   }catch(e){
@@ -4428,9 +4428,15 @@ async function loadFromCloud(){
     // ── user_progress (fetchProgressRows 에서 병렬 취득 완료) ──
     S.answered = {};
     S.flagged  = new Set();
+    // 🔴 2026-09-14 — 공부 빈도(studyFrequency)가 «세션 기록만» 보다가 복습(다시 풀기)
+    //    한 날을 통째로 놓쳤다(사용자 실측 — 매일 풀었는데 빈도가 계속 줄어듦).
+    //    복습은 showResults()가 sessions에 절대 안 남기므로, 대신 문항을 실제로 푼
+    //    자취(user_progress.updated_at)를 따로 모아 둔다.
+    S.progressDates = [];
     (pRows || []).forEach(r => {
       S.answered[r.question_id] = { times: r.times, correct: r.correct_count, wrong: r.wrong_count };
       if(r.flagged) S.flagged.add(r.question_id);
+      if(r.updated_at) S.progressDates.push(r.updated_at);
     });
 
     // Phase 2-9: 로컬 vs 클라우드 불일치 경고 (data-loss 사고 조기 감지)
@@ -5217,7 +5223,7 @@ function exportData(){
 }
 function resetData(){
   localStorage.removeItem('ea_prep_v3');
-  S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={};
+  S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={}; S.progressDates=[];
   S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.adminQcMode=false; S.retryFlaggedMode=false; S.reviewFrom=null;
   if(SB_USER){ sb.from('live_session').delete().eq('user_id', SB_USER.id); }
   renderDashboard(); renderBookmarks(); updateAvailCount();
@@ -5411,22 +5417,29 @@ function heroFreqSub(f){
                          : (f.win + '일 중 ' + f.days + '일');
 }
 
-// 공부 빈도 = 최근 14일 가운데 «학습 세션을 끝낸 날»이 며칠인가.
+// 공부 빈도 = 최근 14일 가운데 «학습 세션을 끝낸 날 또는 문항을 실제로 푼 날»이 며칠인가.
 // ⚠️ Part 를 가리지 않는다 — Part 2 를 푼 날도 공부한 날이다(사용자 결정 2026-08-21).
 // ⚠️ 세션을 끝내야 셈에 들어간다. 풀다 중간에 나간 날과 모의고사는 안 센다.
+// 🔴 2026-09-14 — «세션 기록»만 보던 것을 고쳤다. 복습(다시 풀기)은 showResults()가
+//    sessions에 절대 남기지 않아서, 복습으로만 공부한 날은 통째로 안 잡히고 있었다
+//    (사용자 실측 — 매일 풀었는데도 빈도가 꾸준히 줄어듦. user_progress 대조로 확인:
+//    09-03·09-04·09-10·09-12 는 실제로 풀었는데 sessions 는 0건이었다).
+//    이제 user_progress.updated_at(문항을 실제로 푼 자취)도 함께 본다.
 const STUDY_FREQ_WINDOW = 14;
 function studyFrequency(){
   var start = new Date(); start.setHours(0,0,0,0);
   start.setDate(start.getDate() - (STUDY_FREQ_WINDOW - 1));
   var cutoff = start.getTime();
   var seen = {};
-  (S.sessions || []).forEach(function(s){
-    if(!s.created_at) return;
-    var d = new Date(s.created_at);
+  function mark(ts){
+    if(!ts) return;
+    var d = new Date(ts);
     var ms = d.getTime();
     if(!isFinite(ms) || ms < cutoff) return;
     seen[d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate()] = 1;
-  });
+  }
+  (S.sessions || []).forEach(function(s){ mark(s.created_at); });
+  (S.progressDates || []).forEach(mark);
   var n = Object.keys(seen).length;
   if(n > STUDY_FREQ_WINDOW) n = STUDY_FREQ_WINDOW;
   return { days:n, win:STUDY_FREQ_WINDOW, pct: Math.round(n / STUDY_FREQ_WINDOW * 100) };
