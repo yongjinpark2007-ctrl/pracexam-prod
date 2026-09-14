@@ -944,7 +944,7 @@ html{scrollbar-gutter:stable;}
       </button>
     </div>
     </div>
-    <div class="lang-toggle">
+    <div class="lang-toggle" title="Shortcut: L">
       <button id="btn-ko" onclick="setLang('ko')">KO</button>
       <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
     </div>
@@ -1891,6 +1891,12 @@ document.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape') closeNavMenu();
+  // 🆕 2026-09-14 — [L] 단축키: 한/영 전환. 헤더 KO/EN 버튼(setLang)과 «똑같은» 동작.
+  else if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey && !e.altKey){
+    var tg = e.target;
+    if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
+    setLang(_curLang() === 'ko' ? 'en' : 'ko');
+  }
 });
 
 // ════════════════════════════════════════════════════════════════
