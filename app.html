@@ -4970,6 +4970,12 @@ function applyLang(){
   try{ if(document.querySelector('#screen-mock.active') && typeof renderMockHub==='function') renderMockHub(); }catch(e){}
   try{ if(document.querySelector('#screen-mock-history.active') && typeof renderMockHistory==='function') renderMockHistory(); }catch(e){}
   try{ if(document.querySelector('#screen-mock-result.active') && typeof renderMockResult==='function' && Mock.result) renderMockResult(Mock.result); }catch(e){}
+  // 🔴 2026-09-14 — War Room 은 여기 없어서 안 바뀌고 있었다(사용자 실측 —
+  // "제목 메뉴만 바뀌고 본문내용은 안바뀝니다"). 예전엔 헤더 KO/EN 버튼의 «클릭 이벤트»에만
+  // 걸린 별도 훅(_wrBuildShell 재호출, 아래 renderWarRoom 안)이 있어서 그 버튼을 «마우스로
+  // 클릭할 때만» 재렌더됐다 — L 단축키는 setLang() 을 직접 불러 그 훅을 안 거친다.
+  // 언어를 바꾸는 «모든» 경로가 여기를 지나가므로, War Room 재렌더는 이제 여기 한 곳으로 모은다.
+  try{ if(document.querySelector('#screen-warroom.active') && WR && WR.cur && typeof _wrBuildShell==='function') _wrBuildShell(WR.rows, WR.cur); }catch(e){}
 }
 function toggleLang(){
   LANG = (LANG === 'ko') ? 'en' : 'ko';
@@ -10008,8 +10014,9 @@ async function renderWarRoom(preferCode){
     if(!rows.length){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room content is coming soon.':'War Room 콘텐츠가 곧 제공됩니다.')+'</div>'; return; }
     WR.rows=rows;
     _wrBuildShell(rows, preferCode||undefined);
-    // 언어 토글 시 재렌더 (한 번만 훅)
-    ['lang-ko','lang-en'].forEach(function(id){ var b=document.getElementById(id); if(b&&!b._wrHook){ b._wrHook=1; b.addEventListener('click',function(){ setTimeout(function(){ var sc=document.getElementById('screen-warroom'); if(sc&&sc.classList.contains('active')&&WR.cur){ _wrBuildShell(WR.rows, WR.cur); } },60); }); } });
+    // 🔴 2026-09-14 — 언어 토글 시 재렌더하던 «클릭 전용» 훅을 지웠다. 헤더 버튼을 «클릭」할
+    // 때만 걸려서, L 단축키처럼 setLang() 을 직접 부르는 경로는 못 봤다(사용자 실측 — War Room
+    // 본문이 안 바뀜). 이제 applyLang() 안에서 «언어가 바뀌는 모든 경로»를 한 곳에서 잡는다.
   }catch(e){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room is being set up.':'War Room 준비 중입니다. (콘텐츠 적재 대기)')+'</div>'; }
 }
 
