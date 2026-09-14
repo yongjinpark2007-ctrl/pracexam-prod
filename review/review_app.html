@@ -1123,7 +1123,7 @@ function apSheet(sh){
     <div class="ap-sheet-head">
       <span class="q-badge">${esc(sh.code || '')}</span>
       ${sh.domain ? `<span class="q-badge q-badge-gray">${esc(sh.domain)}</span>` : ''}
-      <span class="lang-toggle" style="margin-left:auto">
+      <span class="lang-toggle" style="margin-left:auto" title="단축키: L">
         <button data-lang="ko" class="${lang === 'ko' ? 'active' : ''}">KO</button>
         <button data-lang="en" class="${lang === 'en' ? 'active' : ''}">EN</button>
       </span>
@@ -1885,7 +1885,7 @@ function renderDetail(){
         ${r.topic ? `<span class="q-badge q-badge-gray">${esc(r.topic)}</span>` : ''}
         ${r.is_free ? '<span class="q-badge q-badge-gray">FREE</span>' : ''}
         ${r.wr_status && r.wr_status !== 'published' ? `<span class="q-badge q-badge-gray">${esc(r.wr_status)}</span>` : ''}
-        <span class="lang-toggle" style="margin-left:auto">
+        <span class="lang-toggle" style="margin-left:auto" title="단축키: L">
           <button data-lang="ko" class="${S.lang === 'ko' ? 'active' : ''}">KO</button>
           <button data-lang="en" class="${S.lang === 'en' ? 'active' : ''}">EN</button>
         </span>
@@ -1933,7 +1933,7 @@ function renderDetail(){
     <div class="explanation-card">
       <div class="exp-head">
         <span class="exp-label">해설</span>
-        <span class="lang-toggle">
+        <span class="lang-toggle" title="단축키: L">
           <button data-lang="ko" class="${S.lang === 'ko' ? 'active' : ''}">KO</button>
           <button data-lang="en" class="${S.lang === 'en' ? 'active' : ''}">EN</button>
         </span>
@@ -2908,6 +2908,9 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === '3'){ e.preventDefault(); saveVerdict('reject', true); }
   else if (e.key === 'q' || e.key === 'Q' || e.key === 'ArrowUp'){ e.preventDefault(); step(-1); }   // 이전
   else if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowDown'){ e.preventDefault(); step(1); }   // 다음
+  /* 🆕 2026-09-14 — [KO/EN] 단축키. 승인 화면 포함 renderDetail() 이 그리는 화면은
+     전부 S.lang 하나를 본다 — KO/EN 버튼 클릭(줄 2041)과 «똑같은» 동작. */
+  else if (e.key === 'l' || e.key === 'L'){ e.preventDefault(); S.lang = (S.lang === 'en') ? 'ko' : 'en'; renderDetail(); }
 });
 
 window.addEventListener('beforeunload', (e) => {
