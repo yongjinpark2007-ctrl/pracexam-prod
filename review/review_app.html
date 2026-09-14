@@ -2536,7 +2536,7 @@ function edShowPreview(r, mode, onOk){
   back.className = 'aph-back';
   back.innerHTML =
     '<div class="aph-box wide"><div class="aph-h"><b>👁 미리보기 — 실제 화면</b>' +
-    '<span class="lang-toggle" id="edpLang" style="margin-left:12px">' +
+    '<span class="lang-toggle" id="edpLang" style="margin-left:12px" title="단축키: L">' +
     '<button data-lang="ko">KO</button><button data-lang="en">EN</button></span>' +
     '<button class="btn" id="edpClose">닫기</button></div>' +
     '<div class="aph-body" id="edpBody"></div>' +
@@ -2548,12 +2548,24 @@ function edShowPreview(r, mode, onOk){
     '</div>';
   document.body.appendChild(back);
 
-  var close = function(){ back.remove(); };
+  /* 🆕 2026-09-14 — [L] 단축키. 이 모달은 S.lang 이 아니라 «자기만의» lang 을 쓰므로
+     전역 핫키(L)와 따로 처리한다. 전역 쪽은 .aph-back 모달이 떠 있으면 자기 것을
+     양보한다(위 keydown 핸들러 참조) — 안 그러면 한 번의 L 이 두 군데를 동시에 바꾼다. */
+  function onKey(e){
+    if (e.key !== 'l' && e.key !== 'L') return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+    e.preventDefault();
+    lang = (lang === 'en') ? 'ko' : 'en';
+    draw();
+  }
+  var close = function(){ back.remove(); document.removeEventListener('keydown', onKey); };
   back.querySelector('#edpClose').addEventListener('click', close);
   back.addEventListener('click', function(e){ if (e.target === back) close(); });
   back.querySelectorAll('#edpLang button').forEach(function(x){
     x.addEventListener('click', function(){ lang = x.dataset.lang; draw(); });
   });
+  document.addEventListener('keydown', onKey);
   if (mode === 'save'){
     back.querySelector('#edpBack').addEventListener('click', close);
     back.querySelector('#edpOk').addEventListener('click', function(){
@@ -2648,7 +2660,7 @@ function qShowPreview(r, mode, onOk){
   back.className = 'aph-back';
   back.innerHTML =
     '<div class="aph-box wide"><div class="aph-h"><b>👁 미리보기 — 실제 화면</b>' +
-    '<span class="lang-toggle" id="edpLang" style="margin-left:12px">' +
+    '<span class="lang-toggle" id="edpLang" style="margin-left:12px" title="단축키: L">' +
     '<button data-lang="ko">KO</button><button data-lang="en">EN</button></span>' +
     '<button class="btn" id="edpClose">닫기</button></div>' +
     '<div class="aph-body" id="edpBody"></div>' +
@@ -2660,12 +2672,24 @@ function qShowPreview(r, mode, onOk){
     '</div>';
   document.body.appendChild(back);
 
-  const close = () => back.remove();
+  /* 🆕 2026-09-14 — [L] 단축키. 이 모달은 S.lang 이 아니라 «자기만의» lang 을 쓰므로
+     전역 핫키(L)와 따로 처리한다. 전역 쪽은 .aph-back 모달이 떠 있으면 자기 것을
+     양보한다(위 keydown 핸들러 참조) — 안 그러면 한 번의 L 이 두 군데를 동시에 바꾼다. */
+  const onKey = (e) => {
+    if (e.key !== 'l' && e.key !== 'L') return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+    e.preventDefault();
+    lang = (lang === 'en') ? 'ko' : 'en';
+    draw();
+  };
+  const close = () => { back.remove(); document.removeEventListener('keydown', onKey); };
   back.querySelector('#edpClose').addEventListener('click', close);
   back.addEventListener('click', (e) => { if (e.target === back) close(); });
   back.querySelectorAll('#edpLang button').forEach(x => {
     x.addEventListener('click', () => { lang = x.dataset.lang; draw(); });
   });
+  document.addEventListener('keydown', onKey);
   if (mode === 'save'){
     back.querySelector('#edpBack').addEventListener('click', close);
     back.querySelector('#edpOk').addEventListener('click', () => {
@@ -2909,8 +2933,12 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'q' || e.key === 'Q' || e.key === 'ArrowUp'){ e.preventDefault(); step(-1); }   // 이전
   else if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowDown'){ e.preventDefault(); step(1); }   // 다음
   /* 🆕 2026-09-14 — [KO/EN] 단축키. 승인 화면 포함 renderDetail() 이 그리는 화면은
-     전부 S.lang 하나를 본다 — KO/EN 버튼 클릭(줄 2041)과 «똑같은» 동작. */
-  else if (e.key === 'l' || e.key === 'L'){ e.preventDefault(); S.lang = (S.lang === 'en') ? 'ko' : 'en'; renderDetail(); }
+     전부 S.lang 하나를 본다 — KO/EN 버튼 클릭(줄 2041)과 «똑같은» 동작.
+     🔴 «고쳐서 승인» 미리보기 모달(edShowPreview·qShowPreview)은 «자기만의» lang 을
+     따로 쓰고 L 도 자기가 처리한다 — 그 모달이 떠 있으면(.aph-back) 여기서는 양보한다. */
+  else if ((e.key === 'l' || e.key === 'L') && !document.querySelector('.aph-back')){
+    e.preventDefault(); S.lang = (S.lang === 'en') ? 'ko' : 'en'; renderDetail();
+  }
 });
 
 window.addEventListener('beforeunload', (e) => {
