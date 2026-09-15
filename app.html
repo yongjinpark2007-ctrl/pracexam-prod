@@ -2288,7 +2288,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       </div>
 
       <div class="ann-field">
-        <label>국문 제목 줄 (선택 · 비우면 “실전 감각을 키우는 한 문제”)</label>
+        <label>국문 제목 줄 (선택 · 비우면 “실전 문제 풀이로 시험 감각 UP!”)</label>
         <input class="ann-input" id="daily-copy-head-ko" maxlength="120" oninput="adminDailyCopyPreview()"
                placeholder="예) 돌봄 크레딧, 한 문제로 짚어 보기">
       </div>
@@ -6050,7 +6050,7 @@ function _pqCopyCard(lang, headline, introHtml){
   var isKo = lang === 'ko';
   // 🔴 2026-09-15 — 「가장 많이 틀리는」은 우리가 «재지 않는» 통계였다(문제는 daily_quiz 표에서
   // 손으로 고른다). popquiz 페이지 문구와 같은 방향으로 바꿈 — 통계도 주기도 주장하지 않는다.
-  var defHead  = isKo ? '실전 감각을 키우는 한 문제' : 'Sharpen Your Exam Instincts';
+  var defHead  = isKo ? '실전 문제 풀이로 시험 감각 UP!' : 'Sharpen Your Exam Instincts';
   var defIntro = isKo
     ? '새 Pop Quiz 문제가 방금 올라갔습니다. 실제 시험 스타일 그대로인 한 문제입니다. 아래 버튼을 클릭하셔서 확인해보세요.'
     : "A new question just went up on the Pop Quiz page &mdash; real exam-style, with a full explanation. Here's a look at it.";
