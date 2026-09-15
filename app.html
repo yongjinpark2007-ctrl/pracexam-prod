@@ -8095,9 +8095,18 @@ async function showExplanation(q, isOk, timeout){
     banner.textContent = (LANG === 'en') ? '⏱ Time\'s up' : '⏱ 시간 종료';
   } else {
     banner.className='result-banner '+(isOk?'ok':'fail');
-    banner.textContent = (LANG === 'en')
-      ? (isOk ? '✓ Correct!' : '✗ Incorrect')
-      : (isOk ? '✓ 정답입니다!' : '✗ 오답입니다');
+    // 🔴 2026-09-14 — 예전엔 ✓/✗ «글자»(유니코드 기호)를 썼다. 이 기호가 기본 글꼴
+    // (Pretendard)에 없어 브라우저가 대신 글꼴을 골랐는데, 그 폴백 글꼴이 lang 속성
+    // (ko/en)에 따라 달라져 «같은 기호인데 모양이 달라» 보였다(사용자 실측 —
+    // "정답/오답 아이콘이 한글, 영어가 다르다"). SVG 로 바꾸면 글꼴과 무관하게 항상 같다.
+    // .result-banner 는 이미 display:flex;align-items:center;gap:10px 라 아이콘·글자
+    // 사이 간격은 그 gap 이 준다 — margin 을 따로 안 준다(둘 다 주면 간격이 벌어진다).
+    var _icon = isOk
+      ? '<svg viewBox="0 0 24 24" width="18" height="18" style="flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="18" height="18" style="flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    banner.innerHTML = _icon + ((LANG === 'en')
+      ? (isOk ? 'Correct!' : 'Incorrect')
+      : (isOk ? '정답입니다!' : '오답입니다'));
   }
 
   const expText = pickLang(q.explanation, q.explanationEn);
