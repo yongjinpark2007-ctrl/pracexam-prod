@@ -872,8 +872,11 @@ html, body {
    🔴 4차 — prefers-reduced-motion 분기를 없앴다. 히어로 로테이션 때와 «같은 자국»(사용자
    실측: "크롬에서는 글로우가 안됩니다") — 같은 기기에서도 크롬·엣지가 이 설정을 다르게
    판단해 애니메이션 유무가 들쭉날쭉했다. 이제 항상 돈다.
-   🆕 그리고 «한 번 눌러 본 뒤에는» 더 안 켜지게(사용자 지시 — "New Notification" 처럼).
-   .wr-glow 클래스가 있을 때만 돈다 — showExplanation() 이 localStorage 를 보고 붙인다. */
+   🆕 그리고 «문항마다» 새로 켜지고 다녀오면 그 문항만 꺼짐(사용자 지시 — "New Notification"
+   처럼, 다만 «전역 1회성»이 아니라 «문항 단위 1회성». 5차 정정 — 처음엔 localStorage 로
+   영구 기억했다가, "다음 문제에서는 다시 글로우"라는 사용자 정정을 받고 걷어냈다).
+   .wr-glow 클래스가 있을 때만 돈다 — showExplanation() 이 문항이 바뀔 때마다 다시 붙이고,
+   배지를 누르면 «그 엘리먼트 하나»에서만 뗀다(영구 저장 없음). */
 @keyframes wrPulse{0%,100%{border-color:rgba(53,70,73,.18);box-shadow:0 0 0 0 rgba(77,97,100,0);}
   50%{border-color:rgba(77,97,100,.40);box-shadow:0 0 0 2px rgba(77,97,100,.08),0 0 13px 2px rgba(77,97,100,.18);}}
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow{animation:wrPulse 6s ease-in-out infinite;}
@@ -8084,13 +8087,14 @@ async function showExplanation(q, isOk, timeout){
       // COP 매핑 문제: 배지 클릭 → War Room 해당 토픽 (2026-07-30)
       topicBadge.innerHTML = '<svg class="wr-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' + '<span class="wr-txt"><b>War Room</b> · ' + _escHtml(_tn) + '</span><span class="wr-arrow">↗</span>';
       topicBadge.classList.add('exp-topic-link');
-      // 🆕 2026-09-14 — 글로우는 "한 번도 War Room 을 눌러 본 적 없을 때"만 켠다(사용자 지시 —
-      // 새 기능 알림처럼, 한 번 보면(눌러 보면) 더는 강조하지 않는다).
-      var _wrSeen = false; try{ _wrSeen = !!localStorage.getItem('ea_wr_badge_seen'); }catch(e){}
-      topicBadge.classList.toggle('wr-glow', !_wrSeen);
+      // 🆕 2026-09-14 — 글로우는 «문항마다» 새로 켠다(사용자 정정 — 전역 1회성이 아니라
+      // "새 문제가 나오면 글로우, 다녀오면 그 문항만 Off, 다음 문항에선 다시 글로우").
+      // showExplanation() 은 문항이 바뀔 때마다 다시 불리므로, 여기서 항상 켜 두기만 하면
+      // 된다 — 끄는 것은 아래 onclick 이 «이번 배지 엘리먼트 하나»에서만 한다(localStorage
+      // 같은 영구 저장은 안 쓴다 — 다음 문항에서 자동으로 다시 켜져야 하므로).
+      topicBadge.classList.add('wr-glow');
       topicBadge.title = (LANG === 'en') ? 'Open this topic in War Room' : 'War Room에서 이 주제 자세히 보기';
       topicBadge.onclick = function(){
-        try{ localStorage.setItem('ea_wr_badge_seen', '1'); }catch(e){}
         topicBadge.classList.remove('wr-glow');
         openWarRoomTopic(_oc, q);
       };
