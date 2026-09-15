@@ -527,6 +527,23 @@ function onAnswer(chosen, correctIdx){
 
 function toggleNavMenu(){var m=document.getElementById("nav-menu"),b=document.getElementById("nav-toggle");if(!m||!b)return;var o=m.classList.toggle("open");b.classList.toggle("open",o);b.setAttribute("aria-expanded",o?"true":"false");}
 function closeNavMenu(){var m=document.getElementById("nav-menu"),b=document.getElementById("nav-toggle");if(!m||!b)return;m.classList.remove("open");b.classList.remove("open");b.setAttribute("aria-expanded","false");}
+
+// 🆕 2026-09-15 — [L] 단축키: 한/영 전환. 헤더 KO/EN 버튼(setLang)과 «똑같은» 동작이다.
+//   🔴 09-14 에 이 핫키를 index·app·review_app «셋에만» 넣고 이 페이지를 빠뜨렸다
+//      (사장님 신고 — "pop quiz가 안됨"). 한 기능을 여러 페이지에 달 때는 «그 파일 목록을
+//      먼저 세라» — 기억으로 세면 꼭 하나가 빠진다.
+//   🔴 `e.code === 'KeyL'` 도 함께 보는 까닭 = 한글 IME 가 켜져 있으면 브라우저가 `e.key` 를
+//      'l' 이 아니라 'Process' 로 보낸다. `e.code` 는 «물리적 키»라 IME·자판과 무관하다.
+document.addEventListener('keydown', function(e){
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'Escape'){ closeNavMenu(); return; }
+  if (e.key !== 'l' && e.key !== 'L' && e.code !== 'KeyL') return;
+  var tg = e.target;
+  if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
+  var cur = 'en';
+  try{ cur = (document.getElementById('html-root').className === 'lang-ko') ? 'ko' : 'en'; }catch(err){}
+  setLang(cur === 'ko' ? 'en' : 'ko');
+});
 </script>
 </body>
 </html>

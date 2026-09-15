@@ -2552,7 +2552,10 @@ function edShowPreview(r, mode, onOk){
      전역 핫키(L)와 따로 처리한다. 전역 쪽은 .aph-back 모달이 떠 있으면 자기 것을
      양보한다(위 keydown 핸들러 참조) — 안 그러면 한 번의 L 이 두 군데를 동시에 바꾼다. */
   function onKey(e){
-    if (e.key !== 'l' && e.key !== 'L') return;
+    // 🔴 2026-09-15 — `e.code === 'KeyL'` 를 함께 본다. 한글 IME 가 켜져 있으면
+    //    브라우저가 `e.key` 를 'l' 이 아니라 **'Process'** 로 보내 핸들러가 그냥 지나갔다
+    //    (사장님 신고 — 「index 는 L 핸키가 안됩니다」). `e.code` 는 «물리적 키»라 IME·자판과 무관하다.
+    if (e.key !== 'l' && e.key !== 'L' && e.code !== 'KeyL') return;
     var tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
     e.preventDefault();
@@ -2676,7 +2679,10 @@ function qShowPreview(r, mode, onOk){
      전역 핫키(L)와 따로 처리한다. 전역 쪽은 .aph-back 모달이 떠 있으면 자기 것을
      양보한다(위 keydown 핸들러 참조) — 안 그러면 한 번의 L 이 두 군데를 동시에 바꾼다. */
   const onKey = (e) => {
-    if (e.key !== 'l' && e.key !== 'L') return;
+    // 🔴 2026-09-15 — `e.code === 'KeyL'` 를 함께 본다. 한글 IME 가 켜져 있으면
+    //    브라우저가 `e.key` 를 'l' 이 아니라 **'Process'** 로 보내 핸들러가 그냥 지나갔다
+    //    (사장님 신고 — 「index 는 L 핸키가 안됩니다」). `e.code` 는 «물리적 키»라 IME·자판과 무관하다.
+    if (e.key !== 'l' && e.key !== 'L' && e.code !== 'KeyL') return;
     const tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
     e.preventDefault();
@@ -2936,7 +2942,10 @@ document.addEventListener('keydown', (e) => {
      전부 S.lang 하나를 본다 — KO/EN 버튼 클릭(줄 2041)과 «똑같은» 동작.
      🔴 «고쳐서 승인» 미리보기 모달(edShowPreview·qShowPreview)은 «자기만의» lang 을
      따로 쓰고 L 도 자기가 처리한다 — 그 모달이 떠 있으면(.aph-back) 여기서는 양보한다. */
-  else if ((e.key === 'l' || e.key === 'L') && !document.querySelector('.aph-back')){
+  // 🔴 2026-09-15 — `e.code === 'KeyL'` 를 함께 본다. 한글 IME 가 켜져 있으면
+  //    브라우저가 `e.key` 를 'l' 이 아니라 **'Process'** 로 보내 핸들러가 그냥 지나갔다
+  //    (사장님 신고 — 「index 는 L 핸키가 안됩니다」). `e.code` 는 «물리적 키»라 IME·자판과 무관하다.
+  else if ((e.key === 'l' || e.key === 'L' || e.code === 'KeyL') && !document.querySelector('.aph-back')){
     e.preventDefault(); S.lang = (S.lang === 'en') ? 'ko' : 'en'; renderDetail();
   }
 });

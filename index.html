@@ -1892,7 +1892,10 @@ document.addEventListener('click', function(e){
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape') closeNavMenu();
   // 🆕 2026-09-14 — [L] 단축키: 한/영 전환. 헤더 KO/EN 버튼(setLang)과 «똑같은» 동작.
-  else if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey && !e.altKey){
+  // 🔴 2026-09-15 — `e.code === 'KeyL'` 를 함께 본다. 한글 IME 가 켜져 있으면
+  //    브라우저가 `e.key` 를 'l' 이 아니라 **'Process'** 로 보내 핸들러가 그냥 지나갔다
+  //    (사장님 신고 — 「index 는 L 핸키가 안됩니다」). `e.code` 는 «물리적 키»라 IME·자판과 무관하다.
+  else if ((e.key === 'l' || e.key === 'L' || e.code === 'KeyL') && !e.ctrlKey && !e.metaKey && !e.altKey){
     var tg = e.target;
     if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
     setLang(_curLang() === 'ko' ? 'en' : 'ko');
