@@ -8087,14 +8087,19 @@ async function showExplanation(q, isOk, timeout){
       // COP 매핑 문제: 배지 클릭 → War Room 해당 토픽 (2026-07-30)
       topicBadge.innerHTML = '<svg class="wr-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>' + '<span class="wr-txt"><b>War Room</b> · ' + _escHtml(_tn) + '</span><span class="wr-arrow">↗</span>';
       topicBadge.classList.add('exp-topic-link');
-      // 🆕 2026-09-14 — 글로우는 «문항마다» 새로 켠다(사용자 정정 — 전역 1회성이 아니라
-      // "새 문제가 나오면 글로우, 다녀오면 그 문항만 Off, 다음 문항에선 다시 글로우").
-      // showExplanation() 은 문항이 바뀔 때마다 다시 불리므로, 여기서 항상 켜 두기만 하면
-      // 된다 — 끄는 것은 아래 onclick 이 «이번 배지 엘리먼트 하나»에서만 한다(localStorage
-      // 같은 영구 저장은 안 쓴다 — 다음 문항에서 자동으로 다시 켜져야 하므로).
-      topicBadge.classList.add('wr-glow');
+      // 🆕 2026-09-14 — 글로우는 «문항마다» 새로 켠다. 처음엔 "showExplanation() 이 문항마다
+      // 다시 불리니 항상 켜 두기만 하면 된다"고 생각했는데 «틀렸다» — «같은» 문항으로 «돌아올
+      // 때도» showExplanation() 이 다시 불린다(이미 제출된 문항을 다시 열면 위의 isLocked
+      // 분기가 showExplanation 을 또 부른다). 그래서 War Room 다녀와서 «같은 문항»으로
+      // 돌아오면 무조건 다시 켜져 버렸다(사용자 실측 — "다녀왔는데 계속 글로우가 나옵니다").
+      // ⟹ «이 문항을 이미 눌러 봤는가»를 S.sessionAnswers[S.quizIdx] 에 붙여 기억한다
+      //    (문항이 바뀌면 인덱스가 바뀌므로 다음 문항은 자동으로 다시 켜진다. 영구 저장 아님 —
+      //    새로고침·다음 세션이면 다시 켜져도 무방하다).
+      var _saNow = S.sessionAnswers && S.sessionAnswers[S.quizIdx];
+      topicBadge.classList.toggle('wr-glow', !(_saNow && _saNow.wrSeen));
       topicBadge.title = (LANG === 'en') ? 'Open this topic in War Room' : 'War Room에서 이 주제 자세히 보기';
       topicBadge.onclick = function(){
+        if(_saNow) _saNow.wrSeen = true;
         topicBadge.classList.remove('wr-glow');
         openWarRoomTopic(_oc, q);
       };
