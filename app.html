@@ -518,9 +518,6 @@ html, body {
    .9rem-.4rem=.5rem(=8px) 정도 남아 붙어 있으면서도 눌리지는 않는다. */
 .topic-panel{margin:-.4rem 0 1.5rem;}
 .topic-bar-ico svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.topic-bar-names{
-  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
 .topic-hint{
   background:var(--ann-item-bg);border:1px solid rgba(53,70,73,.10);border-radius:10px;
   padding:11px 13px;font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;
@@ -7207,14 +7204,13 @@ function renderTopicPicker(){
   '</div>';
 
   // ── 접힌 한 줄 (Part 고르기와 같은 .setup-banner 문법) ──
-  //    고른 주제가 있으면 그 이름을 그대로 보여 준다 — 열지 않아도 무엇을 골랐는지 보인다.
+  //    고른 «수»만 말한다. 이름을 늘어놓던 것은 2026-09-19 에 걷었다 — 여럿 고르면
+  //    글이 상자 밖으로 나갔고(사장님 지적), 이름은 펴면 목록에서 그대로 보인다.
   var barTitle = chosen.length
     ? (LANG === 'en' ? (chosen.length + (chosen.length===1?' topic':' topics') + ' selected')   // 1 topic / 2 topics
                      : ('주제 ' + chosen.length + '개 선택됨'))
     : t('topic_bar_all');
-  var barSub = chosen.length
-    ? '<span class="topic-bar-names">' + chosen.join(', ') + '</span>'
-    : t('topic_bar_none');
+  var barSub = chosen.length ? '' : t('topic_bar_none');
   var bar =
     '<div class="setup-banner" onclick="topicToggleOpen()" style="cursor:pointer;">' +
       '<div class="setup-banner-icon topic-bar-ico">' +
@@ -7224,7 +7220,7 @@ function renderTopicPicker(){
       '</div>' +
       '<div class="setup-banner-info">' +
         '<div class="setup-banner-title">' + barTitle + '</div>' +
-        '<div class="setup-banner-sub">' + barSub + '</div>' +
+        (barSub ? ('<div class="setup-banner-sub">' + barSub + '</div>') : '') +
       '</div>' +
       '<div class="setup-banner-change">' + t('setup_change') + '</div>' +
     '</div>';
