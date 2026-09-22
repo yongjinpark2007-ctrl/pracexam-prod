@@ -154,7 +154,7 @@ California University of Technology(CAL U TECH)의 2026년 가을학기 EA 준�
 [글 전문 보기](https://pracexam.com/tips/ko/pracexam-calutech-partnership/)
 
 소식
-California University of Technology(CAL U TECH)는 미국 연방 세무사(EA, Enrolled Agent) 시험 준비생들의 실전 시험 대비 능력을 강화하기 위해 PracExam과 업무협약(MOU)을 체결했다고 밝혔습니다. 이번 협약에 따라 CAL U TECH의 Certificate in Enrolled Agent Exam Preparation 과정에 등록한 학생들은 PracExam 실전 테스트 앱을 3개월간 무료로 이용할 수 있게 됩니다.
+California University of Technology(CAL U TECH)는 미국 세무사(EA, Enrolled Agent) 시험 준비생들의 실전 시험 대비 능력을 강화하기 위해 PracExam과 업무협약(MOU)을 체결했다고 밝혔습니다. 이번 협약에 따라 CAL U TECH의 Certificate in Enrolled Agent Exam Preparation 과정에 등록한 학생들은 PracExam 실전 테스트 앱을 3개월간 무료로 이용할 수 있게 됩니다.
 
 이를 통해 학생들은 실제 시험 환경과 유사한 방식으로 반복적인 문제풀이와 모의시험을 진행하면서 자신의 취약 분야를 파악하고 시험 적응력을 높일 수 있을 것으로 기대됩니다.
 
