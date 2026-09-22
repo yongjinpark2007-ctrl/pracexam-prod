@@ -1610,6 +1610,15 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>관리자</span></button>
 </div>
 
+<!-- 갱신 결제 실패 안내 (2026-09-21) — 중단 «전»에는 날짜·마감을 말하지 않는다 -->
+<div id="pastdue-banner" style="display:none;padding:9px 16px;font-size:13px;line-height:1.55;">
+  <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span id="pastdue-text" style="flex:1;min-width:200px;"></span>
+    <a id="pastdue-btn" class="btn-navy" target="_blank" rel="noopener"
+       style="padding:5px 14px;font-size:12.5px;white-space:nowrap;text-decoration:none;display:none;"></a>
+  </div>
+</div>
+
 <!-- 모의고사 진행 중 전역 배너 (응시 화면 외 모든 화면 상단, 2026-07-17 피드백 5) -->
 <div id="mock-global-banner" style="display:none;background:var(--accent-tint);border-bottom:1px solid var(--accent-border);padding:8px 16px;font-size:13px;color:var(--text-main);line-height:1.5;">
   <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -3681,7 +3690,7 @@ async function loadTrialStatus(){
   try{
     const { data, error } = await sb
       .from('profiles')
-      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled, signup_welcome_sent, comp_program')
+      .select('trial_ends_at, is_paid, daily_used, daily_date, marketing_consent, paid_until, plan_code, first_name, last_name, sub_canceled, signup_welcome_sent, comp_program, past_due_since, pay_link')
       .eq('id', SB_USER.id)
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
@@ -3695,6 +3704,9 @@ async function loadTrialStatus(){
     S.lastName  = data.last_name || null;
     S.trialEndsAt = data.trial_ends_at;
     S.trialExpired = !S.isPaid && S.trialEndsAt && (new Date(S.trialEndsAt) < new Date());
+    S.pastDueSince = data.past_due_since || null;   // 갱신 결제 실패 — 화면 안내용
+    S.payLink = data.pay_link || null;              // Paddle 본인 결제수단 변경 주소
+    try{ renderPastDueBanner(); }catch(e){ console.warn('pastdue banner:', e); }
 
     // ── 무료 제공 프로그램 배지 (앰배서더 등) — 본인에게만 보인다 ──
     // 문구는 DB(comp_programs.badge_label)가 진실 소스라 앱 재배포 없이 바꿀 수 있다.
@@ -4876,6 +4888,15 @@ var UI_TEXT = {
   pricing_subscribe_pre:{ko:'구독하기', en:'Subscribe'},
   pricing_fineprint:{ko:'매월 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews monthly · cancel anytime. Payments securely handled by Paddle.'},
   paid_until_label:{ko:'다음 결제일', en:'Renews'},
+  pd_open_title:{ko:'결제가 처리되지 않았습니다',
+                 en:'We could not process your payment'},
+  pd_open_body:{ko:'등록하신 카드로 결제가 이루어지지 않았습니다. 카드 정보를 확인해 주세요.',
+                en:'Your card was not charged successfully. Please check your card details.'},
+  pd_paused_title:{ko:'계정이 일시중지되었습니다',
+                   en:'Your account is paused'},
+  pd_paused_body:{ko:'결제가 확인되지 않아 유료 이용이 일시중지되었습니다. 결제가 완료되면 바로 다시 이용하실 수 있습니다.',
+                  en:'We could not confirm your payment, so paid access is paused. It resumes as soon as payment goes through.'},
+  pd_btn:{ko:'결제수단 확인하기', en:'Check payment method'},
   manage_billing: {ko:'결제·해지 관리: 구매 시 받은 Paddle 영수증 메일 또는 hello@pracexam.com', en:'Manage/cancel billing: your Paddle receipt email or hello@pracexam.com'},
   member_active:  {ko:'멤버십 이용 중', en:'Membership active'},
   manage_cta:     {ko:'관리', en:'Manage'},
@@ -4906,6 +4927,44 @@ var UI_TEXT = {
   common_all_parts:{ko:'All Parts', en:'All Parts'}
 };
 // 숫자 + 단위 헬퍼 (언어별): "5문제" / "5 Q", "3정답" / "3 correct" 등
+/* ══════════════════════════════════════════════════════════════════════
+   갱신 결제 실패 안내 (2026-09-21)
+   ──────────────────────────────────────────────────────────────────────
+   왜: 지금까지 고객은 자기 카드가 거절된 것을 우리 앱 안에서 전혀 알 수 없었다
+       (실측 — app.html 에 결제 실패 문구 0곳). Paddle 메일을 못 보면 그대로 쓰다가
+       어느 날 갑자기 막힌다.
+   문구 원칙(사장님 2026-09-21):
+     · 중단 «전»에는 날짜도 마감도 말하지 않는다. 결제가 안 됐다는 사실과 고칠 길만 준다.
+     · 중단 «후»에 비로소 "일시중지되었습니다"라고 알린다 — 예고가 아니라 통지다.
+   두 상태 모두 webhook 이 채우는 past_due_since 로 갈리고, 막는 것은 지금까지처럼
+   is_paid·paid_until 이 한다. 이 함수는 «보여 주기»만 한다. */
+function renderPastDueBanner(){
+  var box = document.getElementById('pastdue-banner');
+  if(!box) return;
+  var txt = document.getElementById('pastdue-text');
+  var btn = document.getElementById('pastdue-btn');
+
+  if(!S.pastDueSince){ box.style.display = 'none'; return; }
+
+  var paused = !S.isPaid;      // 유예가 끝나 시간당 스윕이 내린 상태
+  box.style.background   = paused ? '#FBE9E7' : 'var(--accent-tint)';
+  box.style.borderBottom = '1px solid ' + (paused ? '#E8B4A8' : 'var(--accent-border)');
+  box.style.color        = 'var(--text-main)';
+
+  txt.innerHTML = '<b>' + t(paused ? 'pd_paused_title' : 'pd_open_title') + '</b><br>' +
+                  t(paused ? 'pd_paused_body' : 'pd_open_body');
+
+  if(S.payLink){
+    btn.href = S.payLink;
+    btn.textContent = t('pd_btn');
+    btn.style.display = '';
+  }else{
+    btn.style.display = 'none';
+  }
+  box.style.display = 'block';
+}
+
+
 function uQ(n){ return LANG === 'en' ? (n + ' Q') : (n + '문제'); }
 function uQuestions(n){ return LANG === 'en' ? (n + ' questions') : (n + '문제'); }
 function uCorrect(n){ return LANG === 'en' ? (n + ' correct') : (n + ' 정답'); }
