@@ -335,6 +335,12 @@ section{padding:88px 0;}
    letter-spacing 은 0 으로 푼다 — h1 의 -.02em 은 «큰 글씨»용이라 작아진 부제에
    그대로 두면 글자가 붙어 보인다. */
 .hero h1 em{font-style:italic; font-weight:800; color:var(--accent); text-shadow:0 2px 8px rgba(111,163,158,.15); font-size:clamp(27px,4.4vw,40px); letter-spacing:0; display:inline-block; margin-top:5px;}
+/* 🔴 사장님 2026-09-22 — *"모바일 화면에서 글씨가 작아서 빈공간이 있어 허전해 보이니
+   모바일에서만 한정으로 이 글씨를 제목과 동일한 크기로"*. 1em = h1 이 그때 쓰는 크기를
+   «그대로» 물려받는다(폰에서 34px). 값을 박지 않아야 h1 이 바뀌어도 따라간다.
+   ⛔ 이 규칙을 지우면 폰에서 부제가 27px 로 돌아가 다시 허전해진다.
+   두 줄로 접히는 것은 «의도»다 — 한 줄에 들어가는 한계가 23px 이라 어차피 접힌다. */
+@media (max-width:600px){ .hero h1 em{font-size:1em;} }
 .hero p.lead{font-size:18px; max-width:480px; margin-bottom:30px;}
 .hero-actions{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:22px;}
 .hero-note{font-size:13px; color:var(--text-muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
