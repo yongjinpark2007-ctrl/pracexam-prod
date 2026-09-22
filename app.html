@@ -1396,7 +1396,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 @media(min-width:721px) and (max-width:900px){
   .hr-cell{width:116px;}
   .dash-hero-split{gap:22px;}
-  .dash-hero-cta{width:100%;font-size:16px;padding:14px 12px;white-space:nowrap;word-break:keep-all;}
+  /* 🔴 2026-09-21 — 이 구간(태블릿 768·820·900)에서만 히어로 CTA 가 47px 로 «혼자 얇았다».
+     세션 시작 56 · 모의고사 57 과 10px 차이. 사장님이 «타블렛에서 달라 보인다»고 짚으셨다.
+     🔑 글자 16px 는 «좁아진 오른쪽 칸에 한 줄로 맞추려고» 일부러 줄인 것이라 키우면 안 된다
+        (칸 폭이 원 132→116px 로 준다). ⟹ 글자는 두고 «세로 padding 으로만» 높이를 맞춘다.
+     ⛔ font-size 를 18~19px 로 올려 「통일」하지 말 것 — 줄바꿈이 난다. */
+  .dash-hero-cta{width:100%;font-size:16px;padding:18px 12px;white-space:nowrap;word-break:keep-all;}
   .hero-quote{width:100%;}
 }
 
