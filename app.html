@@ -1154,7 +1154,11 @@ html, body {
 .dash-hero-cta{
   background:linear-gradient(135deg,#354649,#4d6164);color:#E0E7E9;
   border:none;border-radius:12px;padding:16px 24px;margin-top:0;width:100%;
-  font-family:inherit;font-size:19px;font-weight:800;
+  /* 🔴 2026-09-21 사장님 — «너무 튄다». 재 보니 800/19px 로, 같은 카드 안 히어로 제목
+     (700/24px)보다 «더 굵었다». 카드의 주인공은 제목인데 버튼이 그것을 눌렀다.
+     ⟹ 600 으로 내린다. 크기·색·너비는 그대로라 «주 행동»이라는 신호는 유지된다.
+     ⛔ 800 으로 되돌리지 말 것 — 굵기로 강조하던 자리가 아니다(색과 크기가 이미 하고 있다). */
+  font-family:inherit;font-size:19px;font-weight:600;
   cursor:pointer;transition:all .18s;letter-spacing:.01em;
   display:flex;align-items:center;justify-content:center;gap:9px;
 }
