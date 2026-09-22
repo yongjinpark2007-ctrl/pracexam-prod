@@ -613,16 +613,28 @@ var PAYFAILS = [];
 async function loadPayFails(){
   if(SAMPLE) return;
   var box = $('payfail');
-  var r = await sb.rpc('admin_list_payment_alerts', { p_include_resolved: false });
-  if(r.error){
-    // 함수 미배포(구버전)면 아무것도 안 보여 준다. 그 밖의 오류만 알린다.
-    if(notDeployed(r.error)){ box.classList.add('hide'); return; }
+  // Paddle 에 직접 묻는다 — 웹훅이 놓쳐도 여기서는 보인다.
+  // (payment_alerts 는 웹훅이 transaction.payment_failed 를 받아야만 차는데,
+  //  라이브 목적지에 그 이벤트가 구독돼 있지 않아 한 줄도 안 쌓였다.)
+  var r;
+  try{
+    r = await sb.functions.invoke('admin-billing', { body: {} });
+  }catch(e){
+    r = { error: e };
+  }
+  if(r.error || !r.data || r.data.ok !== true){
+    // 🔴 조용히 숨기지 않는다. «이상 없음» 과 «물어보지 못함» 은 다른 말이다.
+    var why = '';
+    if(r.data && r.data.detail) why = String(r.data.detail);
+    else if(r.error && r.error.message) why = String(r.error.message);
+    else why = '알 수 없는 오류';
     box.classList.remove('hide');
-    box.innerHTML = '<h3>결제 실패</h3><div class="pf-sub" style="color:var(--danger-color);">' +
-      esc(rpcErr(r.error)) + '</div>';
+    box.innerHTML = '<h3>결제 상태를 확인하지 못했습니다</h3>' +
+      '<div class="pf-sub" style="color:var(--danger-color);">Paddle 에 물어보지 못했습니다 — ' +
+      esc(why) + '<br>이 칸이 비어 있다고 «문제가 없다»는 뜻이 아닙니다.</div>';
     return;
   }
-  PAYFAILS = r.data || [];
+  PAYFAILS = r.data.items || [];
   renderPayFails();
 }
 
@@ -656,6 +668,10 @@ function pfReason(code){
   return code;   // 모르는 코드는 원문 그대로 — 지어내지 않는다
 }
 
+// past_due = 갱신 결제가 실패해 Paddle 이 재시도 중 · billed = 청구했는데 아직 안 냄
+var PF_STATUS = { past_due: '미납 (재시도 중)', billed: '청구됨 (미결제)' };
+function pfStatus(code){ return PF_STATUS[code] || code || ''; }
+
 function renderPayFails(){
   var box = $('payfail');
   if(!PAYFAILS.length){ box.classList.add('hide'); box.innerHTML = ''; return; }
@@ -670,7 +686,7 @@ function renderPayFails(){
 
     var card = '';
     if(a.card_brand || a.card_last4) card = esc(String(a.card_brand||'')) + ' ···' + esc(String(a.card_last4||''));
-    else if(a.payment_method) card = esc(a.payment_method);
+    if(card && a.card_expiry) card += ' <span style="color:var(--text-muted);">(' + esc(a.card_expiry) + ')</span>';
 
     // 지금 이 사람이 앱을 쓸 수 있는 상태인가 — 가장 급한 정보
     var access;
@@ -681,27 +697,36 @@ function renderPayFails(){
     var link = '';
     if(a.payment_link) link = '<a href="' + esc(a.payment_link) + '" target="_blank" rel="noopener">결제 링크</a>';
 
+    var tries = '';
+    if(a.failure_count > 1) tries = ' <span style="color:var(--danger-color);font-weight:700;">×' + Number(a.failure_count) + '</span>';
+
+    var period = '';
+    if(a.billing_period && a.billing_period.starts_at)
+      period = esc(d(a.billing_period.starts_at)) + ' – ' + esc(d(a.billing_period.ends_at));
+
     return '<tr>' +
-      '<td>' + esc(d(a.occurred_at, true)) + '</td>' +
+      '<td>' + esc(d(a.failed_at || a.created_at, true)) +
+        '<br><span style="color:var(--text-muted);">' + esc(pfStatus(a.status)) + '</span></td>' +
       '<td><span class="who">' + esc(who) + '</span>' +
         (sub.length ? '<br><span style="color:var(--text-muted);">' + sub.join(' · ') + '</span>' : '') + '</td>' +
-      '<td>' + esc(pfMoney(a.amount_cents, a.currency)) + '</td>' +
-      '<td><span class="why">' + esc(pfReason(a.error_code)) + '</span>' +
+      '<td>' + esc(pfMoney(a.amount, a.currency)) +
+        (period ? '<br><span style="color:var(--text-muted);">' + period + '</span>' : '') + '</td>' +
+      '<td><span class="why">' + esc(pfReason(a.error_code)) + '</span>' + tries +
         (card ? '<br><span style="color:var(--text-muted);">' + card + '</span>' : '') + '</td>' +
       '<td>' + access + '</td>' +
       '<td>' + link + '</td>' +
-      '<td><button class="btn-mini" onclick="resolvePayFail(' + Number(a.id) + ')">처리함</button></td>' +
     '</tr>';
   }).join('');
 
   box.innerHTML =
-    '<h3>결제 실패 ' + PAYFAILS.length + '건</h3>' +
+    '<h3>결제 문제 ' + PAYFAILS.length + '건</h3>' +
     '<div class="pf-sub">Paddle 이 며칠에 걸쳐 <b>자동으로 다시 시도</b>하고 고객에게도 메일을 보냅니다. ' +
       '결제 실패만으로 이용이 막히지는 않습니다 — 이미 낸 기간이 끝나면 그때 막힙니다.</div>' +
     '<table><thead><tr>' +
-      '<th>언제</th><th>고객</th><th>금액</th><th>사유</th><th>지금 이용</th><th></th><th style="width:70px;"></th>' +
+      '<th>언제 · 상태</th><th>고객</th><th>금액 · 기간</th><th>사유</th><th>지금 이용</th><th></th>' +
     '</tr></thead><tbody>' + rows + '</tbody></table>' +
-    '<div class="pf-note">〔처리함〕을 누르면 목록에서 사라집니다(기록은 남습니다). 잘못 눌렀으면 SQL 로 되돌릴 수 있습니다.</div>';
+    '<div class="pf-note">Paddle 에서 <b>바로 읽어온 것</b>입니다(웹훅을 거치지 않습니다). ' +
+      '고객이 결제를 끝내면 이 목록에서 저절로 사라집니다 — 따로 눌러 지울 것이 없습니다.</div>';
 }
 
 async function resolvePayFail(id){
