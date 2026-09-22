@@ -171,6 +171,9 @@ figure.na-fig figcaption{font-size:12.5px;line-height:1.55;color:var(--text-mute
 .na-col h2{font-family:var(--font-serif);font-size:25px;line-height:1.32;color:var(--navy);
   margin:42px 0 14px;letter-spacing:-.005em;clear:both}
 .na-col h3{font-family:var(--font-sans);font-weight:800;font-size:16.5px;color:var(--navy-mid);margin:28px 0 9px}
+.na-wrap{counter-reset:na-num}
+.na-col h3.na-num{counter-increment:na-num}
+.na-col h3.na-num::before{content:counter(na-num) ". ";color:var(--terracotta-deep);font-weight:800}
 .na-col ul{margin:0 0 20px;padding-left:22px}
 .na-col li{font-size:17px;line-height:1.7;color:var(--text-main);margin-bottom:9px}
 
