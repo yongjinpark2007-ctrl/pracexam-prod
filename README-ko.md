@@ -3,6 +3,7 @@
 **PracExam - 미국 세무사(EA) 시험 준비 플랫폼**
 PracExam은 미국 세무사(EA) 시험으로 잘 알려진 IRS 특별 등록 시험(SEE)을 준비하는 예비 세무 전문가들을 위해 설계된 온라인 시험 준비 플랫폼입니다.
 웹사이트: [https://pracexam.com](https://pracexam.com)
+Study Tips (시험 전략 글): [https://pracexam.com/tips/ko/](https://pracexam.com/tips/ko/)
 
 **2026 EA 시험 대비 · 2025 세법 반영**
 
@@ -150,7 +151,7 @@ PracExam-CAL U TECH MOU 체결, EA 실전문제 풀이 제공
 California University of Technology(CAL U TECH)의 2026년 가을학기 EA 준비반 수강생은 PracExam 연습문제 플랫폼을 3개월 무료로 쓰고, 그 뒤에는 할인도 받습니다.
 
 2026년 9월 4일
-(https://pracexam.com/tips/ko/pracexam-calutech-partnership/)
+[글 전문 보기](https://pracexam.com/tips/ko/pracexam-calutech-partnership/)
 
 소식
 California University of Technology(CAL U TECH)는 미국 연방 세무사(EA, Enrolled Agent) 시험 준비생들의 실전 시험 대비 능력을 강화하기 위해 PracExam과 업무협약(MOU)을 체결했다고 밝혔습니다. 이번 협약에 따라 CAL U TECH의 Certificate in Enrolled Agent Exam Preparation 과정에 등록한 학생들은 PracExam 실전 테스트 앱을 3개월간 무료로 이용할 수 있게 됩니다.

@@ -3,6 +3,7 @@
 
 PracExam is an online exam-preparation platform engineered for aspiring tax professionals taking the IRS Special Enrollment Examination (SEE), commonly known as the Enrolled Agent (EA) exam.
 Website: [https://pracexam.com](https://pracexam.com)
+Study Tips (exam-strategy articles): [https://pracexam.com/tips/](https://pracexam.com/tips/)
 
 ## 2026 EA EXAM PREP · 2025 TAX LAW
 
@@ -149,7 +150,7 @@ PracExam Partners with California University of Technology
 Enrolled Agent candidates in CAL U TECH’s Fall 2026 EA prep course get three months of free access to PracExam’s practice-exam platform, plus a discount after that.
 
 September 4, 2026
-(https://pracexam.com/tips/pracexam-calutech-partnership/)
+[Read the full article](https://pracexam.com/tips/pracexam-calutech-partnership/)
 News
 California University of Technology (CAL U TECH), based in Tustin, California, has signed a memorandum of understanding (MOU) with PracExam to strengthen exam readiness for Enrolled Agent (EA) candidates. Under the agreement, students enrolled in CAL U TECH’s Certificate in Enrolled Agent Exam Preparation program receive three months of free access to PracExam’s practice-exam app.
 
