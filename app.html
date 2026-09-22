@@ -1455,7 +1455,14 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-hero-title{font-size:20px;}
   .dash-hero-sub{font-size:12.5px;}
   .dash-hero-status{font-size:12px;padding:5px 10px;}
-  .dash-hero-cta{font-size:15px;padding:11px 18px;}
+  /* 🔴 2026-09-21 사장님 — 폰에서 주 버튼 셋의 두께가 갈렸다(실측 387px):
+       학습 계속하기 39px (15px/11·18)  ↔  세션 시작 56px · 모의고사 57px (18px/17·24)
+     까닭 = 히어로 CTA «만» 폰 전용 규칙이 있어 작아졌고, .setup-cta-btn 은 폰 규칙이 «아예 없어»
+            데스크톱 값(17px/24px)을 그대로 썼다. 한쪽만 줄인 것이 아니라 «둘이 반대로» 간 것이다.
+     ⟹ 중간에서 만난다 — 셋 다 padding 14px · 글자 16.5px · 높이 ≈48px.
+     ⛔ 한쪽만 고치지 말 것. 두 클래스를 «같이» 봐야 한다(.setup-cta-btn 은 세션 시작 + 모의고사 셋 공용). */
+  .dash-hero-cta{font-size:16.5px;padding:14px 18px;}
+  .setup-cta-btn{font-size:16.5px;padding:14px 20px;}
 
   /* ── Dashboard v2 Parts list (모바일 타일 3열) ── */
   .dash-parts-list{gap:8px;}
