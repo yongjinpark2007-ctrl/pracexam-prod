@@ -4827,7 +4827,15 @@ var UI_TEXT = {
   //    ⛔ 다섯 단계(학습 시작·기초 다지기·학습 중·실력 굳히기·응시 가능) 중 어느 낱말과도
   //       겹치지 않아야 한다. 새 문구를 넣을 때 반드시 대조할 것.
   //    흐름 = 「현재 집중 영역」 → 「Part 선택」 → Part 1/2/3 (사장님 지시)
-  hero_focus:    {ko:'현재 집중 영역', en:'Current Focus Area'},
+  //    🔴 영문 2026-09-22 — 'Current Focus Area' → 'Current Section' (사장님 지적: 콩글리시).
+  //       Gemini: *"'focus area' 는 미국에서 인사고과·B2B 기업 소프트웨어 말이지 소비자 학습 앱 말이 아니다."*
+  //       ⚠️ 영문은 «애초에 겹침 문제가 없었다» — 5단계가 Get started·Building basics·In progress·
+  //          Solidifying·Exam ready 라 'Now studying' 과 안 겹쳤다. 국문 고침을 영문에 «따라 붙인» 것이 잘못이었다.
+  //       ⛔ 'Study Area'·'Study Part' 로 가지 말 것 — 같은 카드의 버튼이 «Study {p}» 다(08-21 확정).
+  //          'Now Studying' 도 그 버튼과 동사가 겹쳐 쌓인다.
+  //       ⛔ 'Current Topic' 으로 가지 말 것 — 이 앱에서 «토픽»은 War Room 시트이자 「약점 보강 Top 3」의
+  //          단위라 이미 «다른 뜻»으로 쓰인다. 'Section' 은 Part 의 동의어로 읽히고 앱 안에서 안 겹친다.
+  hero_focus:    {ko:'현재 집중 영역', en:'Current Section'},
   hero_start:    {ko:'학습 시작', en:'Get started'},
   hero_ready:    {ko:'응시 가능', en:'Exam ready'},
   hero_almost:   {ko:'실력 굳히기', en:'Solidifying'},
