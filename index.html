@@ -316,10 +316,14 @@ section{padding:88px 0;}
 }
 .hero h1{margin-bottom:18px;}
 /* 🔴 2026-09-22 — 부제가 h1 안에 있어 «제목과 같은 크기»를 물려받고 있었다.
-   .62em = 제목 49 -> 부제 31 -> 본문 18 로 세 단계가 고르게 떨어진다.
+   .80em = 900px 에서 제목 49 -> 부제 40 -> 본문 18.
+   🔴 .62 로 내렸다가 사장님이 «너무 작다» 하셔서 .80 으로 올렸다.
+   ⛔ .88 이상으로 올리지 말 것 — 제목 끝(Exam)과 부제 끝(Finisher)이 거의 같은
+      자리에서 끝나 두 줄이 «한 덩어리»로 뭉쳐 보인다. .80 은 부제가 조금 짧게
+      끝나 위아래 관계가 드러난다.
    letter-spacing 은 0 으로 푼다 — h1 의 -.02em 은 «큰 글씨»용이라 작아진 부제에
    그대로 두면 글자가 붙어 보인다. */
-.hero h1 em{font-style:italic; font-weight:800; color:var(--accent); text-shadow:0 2px 8px rgba(111,163,158,.15); font-size:.62em; letter-spacing:0; display:inline-block; margin-top:5px;}
+.hero h1 em{font-style:italic; font-weight:800; color:var(--accent); text-shadow:0 2px 8px rgba(111,163,158,.15); font-size:.80em; letter-spacing:0; display:inline-block; margin-top:5px;}
 .hero p.lead{font-size:18px; max-width:480px; margin-bottom:30px;}
 .hero-actions{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:22px;}
 .hero-note{font-size:13px; color:var(--text-muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
