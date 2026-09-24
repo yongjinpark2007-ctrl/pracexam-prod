@@ -1563,7 +1563,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
    b4세션). 그 링크로 처음 온 사람은 로그인 화면만 보고 당황한다 → index.html 로 가는 안내를 붙인다.
    ⚠️ 로그인 게이트 영어 전용 규칙(2026-07-27)을 따른다.
    색 = 대시보드 trial-quota-banner 와 같은 --accent-tint/--accent 조합(어둡고 칙칙하다는 지적으로 교체).
-   .lg-card 와 같은 「옅은 보더 + 그림자」로 통일(선테두리만 있던 것을 지적받아 교체). */
+   .lg-card 와 같은 「옅은 보더 + 그림자」로 통일(선테두리만 있던 것을 지적받아 교체).
+   링크 글씨체도 .lg-link(Forgot password? 등)와 같은 값으로 — 로그인 화면에 글씨체가 너무
+   여러 개라는 지적. */
 .lg-newhere{
   background:var(--accent-tint);
   border:1px solid var(--accent-border);
@@ -1576,8 +1578,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   width:100%;max-width:340px;
   margin:-6px 0 22px;
 }
-.lg-newhere a{color:#a4552f;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(164,85,47,.4);}
-.lg-newhere a:hover{border-bottom-color:#a4552f;}
+.lg-newhere a{color:var(--teal);font-weight:600;text-decoration:none;opacity:.85;border-bottom:1px solid transparent;}
+.lg-newhere a:hover{opacity:1;border-bottom-color:var(--teal);}
 .lg-card{
   background:#ffffff;
   border:1px solid var(--border-clr);
