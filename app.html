@@ -1562,10 +1562,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 /* 2026-09-23 — AI 검색(Perplexity 등)이 /app 를 「제품 소개」 링크로 계속 노출한다(§HANDOFF 2026-09-13
    b4세션). 그 링크로 처음 온 사람은 로그인 화면만 보고 당황한다 → index.html 로 가는 안내를 붙인다.
    ⚠️ 로그인 게이트 영어 전용 규칙(2026-07-27)을 따른다.
-   색 = 대시보드 trial-quota-banner 와 같은 --accent-tint/--accent 조합(어둡고 칙칙하다는 지적으로 교체). */
+   색 = 대시보드 trial-quota-banner 와 같은 --accent-tint/--accent 조합(어둡고 칙칙하다는 지적으로 교체).
+   .lg-card 와 같은 「옅은 보더 + 그림자」로 통일(선테두리만 있던 것을 지적받아 교체). */
 .lg-newhere{
   background:var(--accent-tint);
-  border:1px solid var(--accent);
+  border:1px solid var(--accent-border);
+  box-shadow:0 2px 16px rgba(0,0,0,.08);
   border-radius:12px;
   padding:.85rem 1rem;
   font-size:13px;line-height:1.6;
