@@ -285,7 +285,10 @@ html, body {
 .app-footer a{color:var(--text-muted);}
 .app-footer a:hover{color:var(--navy);}
 .app-footer .app-footer-sep{margin:0 8px;opacity:.5;}
-.lg-footer{max-width:340px;margin:48px auto 0;padding-top:22px;border-top:1px solid var(--border-clr);font-size:12px;line-height:1.7;color:var(--text-muted);text-align:center;}
+/* max-width 를 카드(340px)에 맞춰 두었더니 글이 접혀 2줄이 됐다(2026-09-23 지적) —
+   로그인 게이트는 flex column·align-items:center 라 폭을 안 주면 내용 크기만큼만
+   차지한다(부모 padding:2rem 안에서). */
+.lg-footer{margin:48px auto 0;padding-top:22px;border-top:1px solid var(--border-clr);font-size:12px;line-height:1.7;color:var(--text-muted);text-align:center;}
 .lg-footer a{color:var(--text-muted);}
 .lg-footer a:hover{color:var(--navy);}
 .lg-footer .app-footer-sep{margin:0 8px;opacity:.5;}
