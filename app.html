@@ -2219,10 +2219,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <div class="ann-row2">
         <div class="ann-field"><label>분류</label>
           <select class="ann-input" id="ann-f-cat">
+            <option value="plain" selected>아이콘 없음 (텍스트만)</option>
             <option value="notice">일반 (종 아이콘)</option>
             <option value="content">신규 문제/콘텐츠 (신규 태그)</option>
             <option value="maintenance">점검 안내 (회색)</option>
-            <option value="plain">아이콘 없음 (텍스트만)</option>
           </select>
         </div>
         <div class="ann-field" style="flex:0 0 auto;min-width:0;">
@@ -6653,7 +6653,7 @@ function adminAnnNew(){
   ['ann-f-id','ann-f-title-ko','ann-f-title-en','ann-f-body-ko','ann-f-body-en'].forEach(function(id){
     var e=document.getElementById(id); if(e) e.value='';
   });
-  var cat=document.getElementById('ann-f-cat'); if(cat) cat.value='notice';
+  var cat=document.getElementById('ann-f-cat'); if(cat) cat.value='plain';
   var pin=document.getElementById('ann-f-pinned'); if(pin) pin.checked=false;
   var act=document.getElementById('ann-f-active'); if(act) act.checked=true;
   var t=document.getElementById('ann-form-title'); if(t) t.textContent='새 공지 작성';
@@ -6668,7 +6668,7 @@ function adminAnnEdit(id){
   document.getElementById('ann-f-title-en').value = a.title_en || '';
   document.getElementById('ann-f-body-ko').value = a.body_ko || '';
   document.getElementById('ann-f-body-en').value = a.body_en || '';
-  document.getElementById('ann-f-cat').value = a.category || 'notice';
+  document.getElementById('ann-f-cat').value = a.category || 'plain';
   document.getElementById('ann-f-pinned').checked = !!a.pinned;
   document.getElementById('ann-f-active').checked = !!a.is_active;
   document.getElementById('ann-form-title').textContent = '공지 수정 (#'+a.id+')';
@@ -6717,7 +6717,7 @@ async function adminAnnToggleActive(id){
   try{
     await _annUpsert({
       p_id: a.id, p_title_ko: a.title_ko, p_title_en: a.title_en,
-      p_body_ko: a.body_ko, p_body_en: a.body_en, p_category: a.category || 'notice',
+      p_body_ko: a.body_ko, p_body_en: a.body_en, p_category: a.category || 'plain',
       p_pinned: !!a.pinned, p_is_active: !a.is_active
     });
     renderAdminAnnList();
