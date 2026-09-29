@@ -4486,9 +4486,25 @@ document.documentElement.classList.add('px-nocopy');
     var t=e.target; if(t&&t.nodeType===3) t=t.parentElement;
     if(!t||!t.closest) return;
     if(t.closest('input,textarea,[contenteditable="true"]')) return;
-    if(t.closest('.question-card,.explanation-card,#q-pills')) e.preventDefault();
+    if(t.closest('.question-card,.explanation-card,#q-pills')){
+      e.preventDefault();
+      pxLogCopyAttempt(e.type);
+    }
   });
 });
+// 복사 시도 기록: 문항·종류별로 세션당 1번만 서버에 보낸다. RPC 가 아직 없어도 조용히 넘어간다.
+var _PX_COPY_LOGGED = {};
+function pxLogCopyAttempt(kind){
+  try{
+    if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+    var b = document.getElementById('q-id-badge');
+    var qid = (b && b.textContent ? b.textContent.replace('#','').trim() : '');
+    var key = kind + '|' + qid;
+    if(_PX_COPY_LOGGED[key]) return;
+    _PX_COPY_LOGGED[key] = true;
+    sb.rpc('log_copy_attempt', { p_question_id: qid, p_kind: kind }).then(function(){}, function(){});
+  }catch(e){}
+}
 async function loadFromCloud(){
   if(!SB_USER) return;
   S.isAdminUser = !!(SB_USER && SB_USER.id === ADMIN_UID);
