@@ -4492,6 +4492,45 @@ document.documentElement.classList.add('px-nocopy');
     }
   });
 });
+// 선택이 막혀 있으면 브라우저가 selectstart 를 안 보내고, 선택 없는 Ctrl+C 는 target 이 body 라 위 검사를 못 지난다.
+// 그래서 (1) 학습 화면이 떠 있을 때의 복사·잘라내기, (2) Ctrl+C/X/A 키, (3) 문제 위 마우스 드래그를 따로 잡는다.
+function _pxStudyVisible(){
+  var c=document.querySelector('.question-card');
+  return !!(c && c.offsetParent!==null);
+}
+['copy','cut'].forEach(function(ev){
+  document.addEventListener(ev,function(e){
+    if(!document.documentElement.classList.contains('px-nocopy')) return;
+    var t=e.target; if(t&&t.nodeType===3) t=t.parentElement;
+    if(t&&t.closest&&t.closest('input,textarea,[contenteditable="true"]')) return;
+    if(!_pxStudyVisible()) return;
+    e.preventDefault();
+    pxLogCopyAttempt(ev);
+  },true);
+});
+document.addEventListener('keydown',function(e){
+  if(!document.documentElement.classList.contains('px-nocopy')) return;
+  if(!(e.ctrlKey||e.metaKey)) return;
+  var k=(e.key||'').toLowerCase();
+  if(k!=='c'&&k!=='x'&&k!=='a') return;
+  var t=e.target;
+  if(t&&t.closest&&t.closest('input,textarea,[contenteditable="true"]')) return;
+  if(!_pxStudyVisible()) return;
+  if(k==='a') e.preventDefault();
+  pxLogCopyAttempt('key_'+k);
+},true);
+(function(){
+  var down=null;
+  document.addEventListener('mousedown',function(e){
+    down=(e.button===0 && e.target.closest && e.target.closest('.question-card,.explanation-card'))?{x:e.clientX,y:e.clientY}:null;
+  },true);
+  document.addEventListener('mousemove',function(e){
+    if(!down||e.buttons!==1) return;
+    if(!document.documentElement.classList.contains('px-nocopy')){ down=null; return; }
+    if(Math.abs(e.clientX-down.x)+Math.abs(e.clientY-down.y)>25){ down=null; pxLogCopyAttempt('drag_select'); }
+  },true);
+  document.addEventListener('mouseup',function(){ down=null; },true);
+})();
 // 복사 시도 기록: 문항·종류별로 세션당 1번만 서버에 보낸다. RPC 가 아직 없어도 조용히 넘어간다.
 var _PX_COPY_LOGGED = {};
 function pxLogCopyAttempt(kind){
