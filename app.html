@@ -781,6 +781,9 @@ html, body {
   height:28px;padding:0 10px;font-family:inherit;font-size:12px;font-weight:600;
   display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;transition:all .15s;
 }
+/* 문제·보기·해설 복사 방지 (관리자 제외 — 관리자면 loadFromCloud 에서 px-nocopy 를 뗀다) */
+html.px-nocopy .question-card,html.px-nocopy .explanation-card,html.px-nocopy #q-pills{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.px-nocopy .explanation-card input,html.px-nocopy .explanation-card textarea{-webkit-user-select:text;user-select:text;}
 .q-copy-btn:hover{background:rgba(53,70,73,.08);border-color:rgba(53,70,73,.3);color:var(--teal);}
 .q-copy-btn.copied{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2);color:#4ade80;}
 
@@ -4475,9 +4478,21 @@ async function adminBackfillContent(){
   }
 }
 
+// 복사 방지: 기본은 잠금, 관리자로 확인되면 해제. 입력칸(피드백 등)은 그대로 복사·붙여넣기 가능.
+document.documentElement.classList.add('px-nocopy');
+['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){
+  document.addEventListener(ev,function(e){
+    if(!document.documentElement.classList.contains('px-nocopy')) return;
+    var t=e.target; if(t&&t.nodeType===3) t=t.parentElement;
+    if(!t||!t.closest) return;
+    if(t.closest('input,textarea,[contenteditable="true"]')) return;
+    if(t.closest('.question-card,.explanation-card,#q-pills')) e.preventDefault();
+  });
+});
 async function loadFromCloud(){
   if(!SB_USER) return;
   S.isAdminUser = !!(SB_USER && SB_USER.id === ADMIN_UID);
+  document.documentElement.classList.toggle('px-nocopy', !S.isAdminUser);
   var localAnsweredCount = Object.keys(S.answered).length;  // Phase 2-9: 클라우드 로드 전 로컬 카운트
   showToast('☁️ 클라우드에서 불러오는 중…');
   try{
