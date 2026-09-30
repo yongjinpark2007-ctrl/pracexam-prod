@@ -8148,6 +8148,15 @@ async function loadQuestion(){
     if(!_ok || !q.text){ showToast('⚠️ 문제 로드 실패 — 다시 시도해주세요.'); return; }
   }
 
+  // 문제를 바꾸면 항상 화면 맨 위로 (2026-09-29 고객 피드백 C1018-017 · 아이패드)
+  //   스크롤되는 요소는 window 가 아니라 .content 다. 긴 해설을 읽고 내려간 채로 다음을 누르면
+  //   새 문제가 더 짧아 스크롤 위치가 빈 영역에 남아 «빈 화면»만 보였다.
+  try{
+    var _sc = document.querySelector('.content'); if(_sc) _sc.scrollTop = 0;
+    window.scrollTo(0,0);
+    var _sq = document.getElementById('screen-quiz'); if(_sq) _sq.scrollTop = 0;
+  }catch(e){}
+
   const pct=Math.round(S.quizIdx/S.quizQueue.length*100);
   document.getElementById('q-bar').style.width=pct+'%';
   document.getElementById('q-progress-text').textContent=`Question ${S.quizIdx+1} of ${S.quizQueue.length}`;
