@@ -8483,7 +8483,13 @@ function _wrTitlesLoad(){
 function _wrTitleFor(code){
   var r = _WR_TITLES && _WR_TITLES[code];
   if(!r) return null;
-  return (LANG === 'en') ? (r.title_en || r.title_ko || null) : (r.title_ko || r.title_en || null);
+  // 🔴 2026-09-29(같은 날) 사장님 — 한글 화면에서 «한글 제목만» 떠서 안 된다.
+  // 시험이 영어이므로 배지는 두 언어 모두 «영문 제목»을 띄운다. 한글 제목은 마우스를 올리면(title) 보인다.
+  return r.title_en || r.title_ko || null;
+}
+function _wrTitleKo(code){
+  var r = _WR_TITLES && _WR_TITLES[code];
+  return (r && r.title_ko) ? r.title_ko : '';
 }
 async function showExplanation(q, isOk, timeout){
   const ec = document.getElementById('explanation-card'); ec.classList.add('visible');
@@ -8516,7 +8522,7 @@ async function showExplanation(q, isOk, timeout){
       //    새로고침·다음 세션이면 다시 켜져도 무방하다).
       var _saNow = S.sessionAnswers && S.sessionAnswers[S.quizIdx];
       topicBadge.classList.toggle('wr-glow', !(_saNow && _saNow.wrSeen));
-      topicBadge.title = (LANG === 'en') ? 'Open this topic in War Room' : 'War Room에서 이 주제 자세히 보기';
+      topicBadge.title = (LANG === 'en') ? 'Open this topic in War Room' : ((_wrTitleKo(_oc) ? _wrTitleKo(_oc) + ' — ' : '') + 'War Room에서 이 주제 자세히 보기');
       topicBadge.onclick = function(){
         if(_saNow) _saNow.wrSeen = true;
         topicBadge.classList.remove('wr-glow');
