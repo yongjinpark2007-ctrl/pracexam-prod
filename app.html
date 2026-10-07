@@ -4143,14 +4143,76 @@ function checkTrialAccess(){
       '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + (LANG === 'en' ? 'Your free trial has ended' : '무료 체험이 종료되었습니다') + '</div>' +
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
         (LANG === 'en'
-          ? 'Upgrade to unlock unlimited practice.<br>Your existing history and stats stay available.'
-          : '업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.<br>기존 학습 기록과 통계는 계속 보실 수 있습니다.') +
+          ? 'Upgrade to unlock unlimited practice.<br>Your stats stay available, but past questions are locked.'
+          : '업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.<br>통계는 계속 보실 수 있지만 푼 문제의 복습은 구독 중에만 가능합니다.') +
       '</div>' +
       '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
   return false;
+}
+
+// ── 만료 고객의 문제 열람 잠금 (2026-10-07 사장님 정책) ──
+// 한 달만 결제하고 푼 문제를 계속 복습하는 일을 막는다. 만료 = 유료 아님 + 체험 기간 끝.
+// 허용 = 통계·기록 숫자만. 막음 = 문제 본문·정답·해설을 여는 모든 길(Review·세션 다시 풀기·모의고사 복습).
+// ※ 체험 기간 중인 고객(trialExpired=false)과 유료·관리자는 영향 없음.
+// ※ 이 함수는 화면 안내용이다. 진짜 차단은 서버(get_review_payload / get_question_payload)가 해야 한다 — DB 쪽 별도 작업.
+function reviewLocked(){
+  return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid && !!S.trialExpired;
+}
+function showReviewLockedModal(){
+  var mc = document.getElementById('modal-content'), bg = document.getElementById('modal-bg');
+  if(!mc || !bg) return;
+  mc.innerHTML =
+    '<div style="text-align:center;padding:1rem 0;">' +
+      '<div style="font-size:36px;margin-bottom:.75rem;">🔒</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + (LANG === 'en' ? 'Your membership has ended' : '멤버십이 종료되었습니다') + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
+        (LANG === 'en'
+          ? 'Renew to review questions and explanations again.<br>Your stats and progress stay available.'
+          : '다시 구독하면 문제와 해설을 다시 볼 수 있습니다.<br>통계와 학습 기록은 계속 보실 수 있습니다.') +
+      '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
+    '</div>';
+  bg.classList.add('open');
+}
+// Review 화면: 만료 고객에게는 탭·목록을 숨기고 잠금 안내만 보여 준다. 다시 유료가 되면 복원한다.
+function applyReviewLock(){
+  var scr = document.getElementById('screen-bookmarks');
+  if(!scr) return false;
+  var locked = reviewLocked();
+  var box = document.getElementById('rev-locked');
+  if(locked && !box){
+    box = document.createElement('div');
+    box.id = 'rev-locked';
+    box.className = 'empty';
+    box.style.padding = '2rem 1rem';
+    scr.appendChild(box);
+  }
+  if(box){
+    box.style.display = locked ? '' : 'none';
+    if(locked){
+      box.innerHTML =
+        '<div class="empty-icon">🔒</div>' +
+        '<div class="empty-title">' + (LANG === 'en' ? 'Review is for active members' : '복습은 구독 중인 회원 전용입니다') + '</div>' +
+        '<div class="empty-sub" style="margin-bottom:12px;">' + (LANG === 'en'
+          ? 'Renew to open your past questions and explanations. Stats stay available.'
+          : '다시 구독하면 푼 문제와 해설을 볼 수 있습니다. 통계는 계속 확인하실 수 있습니다.') + '</div>' +
+        '<button class="btn-navy" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';
+    }
+  }
+  ['.review-tab-bar', '#rev-part-seg', '#rev-panel-flagged', '#rev-panel-sessions'].forEach(function(sel){
+    var n = scr.querySelector(sel);
+    if(n) n.style.display = locked ? 'none' : '';
+  });
+  if(!locked && scr.querySelector('.review-tab-bar')){
+    // 숨겼다 복원한 경우: 활성 탭에 맞춰 패널 표시를 다시 맞춘다
+    var onSessions = document.getElementById('rev-tab-sessions').classList.contains('active');
+    switchReviewTab(onSessions ? 'sessions' : 'flagged');
+  }
+  return locked;
 }
 
 // ══════════════════════════════════════════════════
@@ -5074,7 +5136,7 @@ var UI_TEXT = {
   // ── 무료 체험 / 멤버십 UI ──
   trial_banner:   {ko:'무료 체험 모드', en:'Free Trial'},
   trial_paid:     {ko:'✅ 유료 멤버십 — 모든 문제 무제한 이용 가능', en:'✅ Paid membership — unlimited access to all questions'},
-  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다. 기존 학습 기록·통계는 계속 확인 가능합니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice. Your existing history and stats stay available.'},
+  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다. 통계는 계속 확인할 수 있지만 푼 문제의 복습은 구독 중에만 가능합니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice. Your stats stay available, but reviewing past questions needs an active membership.'},
   quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
   quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 5 questions per day.<br>Upgrade now for unlimited practice.'},
   // ── 결제 / 업그레이드 (Phase 4) ──
@@ -5535,7 +5597,7 @@ function showScreen(name){
   // 모의고사 결과에서 War Room 으로 온 경우의 «돌아가기» 배지 (2026-08-21)
   if(name!=='warroom' && name!=='mock-result') window._mkReturn=false;
   try{ updateMockReturnBadge(); }catch(e){}
-  if(name==='bookmarks') renderBookmarks();
+  if(name==='bookmarks'){ if(!applyReviewLock()) renderBookmarks(); }
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
   if(name==='mock') renderMockHub();
@@ -7596,6 +7658,7 @@ function _findQ(id){ return S.questions.find(function(x){ return x.id === id; })
 // 본문(text, options)만 — 미제출 문제용. RPC: get_question_payload (최대 100/콜)
 async function prefetchPayloads(ids){
   if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(reviewLocked()){ showReviewLockedModal(); return false; }   // 만료 고객: 문제 본문 로드 금지
   var need = (ids||[]).filter(function(id){ var q=_findQ(id); return q && !q.text; });
   if(!need.length) return true;
   try{
@@ -7616,6 +7679,7 @@ async function prefetchPayloads(ids){
 var LAST_REVIEW_ERR = '';
 async function prefetchReview(ids){
   if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(reviewLocked()){ showReviewLockedModal(); return false; }   // 만료 고객: 정답·해설 로드 금지
   LAST_REVIEW_ERR = '';
   try{
     var groups = _chunk(ids||[], 200);
@@ -10173,6 +10237,7 @@ function updateMockReturnBadge(){
 
 // ── 복습(한 문항씩, get_review_payload 재사용) ──
 async function mockReviewItem(qid){
+  if(reviewLocked()){ showReviewLockedModal(); return; }   // 만료 고객: 모의고사 해설 복습 금지
   showToast(mL('불러오는 중…','Loading…'));
   try{
     var res=await sb.rpc('get_review_payload',{ p_ids:[qid] });
