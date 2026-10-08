@@ -1087,7 +1087,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
   box-shadow:var(--card-shadow);
 }
 .dash-hero-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1rem;}
-.dash-hero-label{font-size:14px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;}
+.dash-hero-label{font-size:14.5px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;}
 /* ⚠️ flex-wrap 을 쓰지 않는다 — 쓰면 아이콘과 글자가 한 줄에 안 들어갈 때 «글자 덩어리째»
    아래로 내려가, Part 마다(글자 길이마다) 줄 수가 달라진다 (2026-08-21).
    아이콘은 왼쪽에 두고, 글자는 min-width:0 인 자기 칸 안에서 접히게 한다. */
@@ -1110,7 +1110,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
       ⛔ 히어로를 34 로 내려 「통일」하지 말 것 — 한 번 그렇게 했다가 되돌린 자리다.
       ✅ 같아야 하는 것은 Part 카드 3개 ↔ 모의고사 ↔ War Room (전부 34/19/9 · 폰 30/17/8). */
 .dash-hero-title .dash-hero-ico svg{width:21px;height:21px;stroke:var(--navy);stroke-width:2;}
-.dash-hero-status{font-size:14px;font-weight:700;padding:6px 12px;border-radius:8px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;
+.dash-hero-status{font-size:14.5px;font-weight:700;padding:6px 12px;border-radius:8px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;
   background:rgba(245,158,11,.1);color:var(--flag-color);border:1px solid rgba(245,158,11,.25);}
 .dash-hero-status.ready{background:rgba(74,222,128,.1);color:var(--success-color);border-color:rgba(74,222,128,.3);}
 .dash-hero-status.neutral{background:var(--teal-glow);color:var(--teal);border-color:rgba(53,70,73,.18);}
@@ -1360,14 +1360,14 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 /* ── 대시보드 섹션 카드 (약점 보강 · 최근 학습) — 공지/프리미엄과 동일 문법:
      둥근 모서리 + 3px 좌측 포인트 선 + 제목 내장 (2026-07-27 통일) ── */
 .dash-sec-card{background:var(--card-bg);border:1px solid var(--border-clr);border-left:3px solid var(--silver);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
-.dash-sec-title{font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:12px;}
+.dash-sec-title{font-size:17.5px;font-weight:700;color:var(--text-main);margin-bottom:12px;}
 
 /* 약점 토픽 위젯 — 카드 안쪽 행 (공지 항목과 동일 톤) */
 .weak-row{
   display:flex;justify-content:space-between;align-items:center;
   padding:11px 13px;background:var(--ann-item-bg);
   border:1px solid rgba(53,70,73,.10);border-radius:10px;
-  margin-bottom:7px;font-size:14px;
+  margin-bottom:7px;font-size:15.5px;
   transition:border-color .2s,transform .15s;
   cursor:pointer;   /* COP 미니 세션 시작 (클릭) */
 }
@@ -1375,7 +1375,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 /* 전체 Part 행과 동일한 hover 강조 — 살짝 이동 (2026-07-05) */
 .weak-row:hover{border-color:var(--border-hover);transform:translateX(3px);}
 .weak-name{color:var(--text-main);}
-.weak-stat{font-size:13px;font-weight:600;}
+.weak-stat{font-size:14.5px;font-weight:600;}
 .weak-stat.crit{color:var(--danger-color);}
 .weak-stat.warn{color:var(--flag-color);}
 
@@ -1393,8 +1393,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 /* 복습 불가(구버전 세션) 행은 클릭·이동 강조 비활성 */
 .dash-recent-row.no-review{cursor:default;}
 .dash-recent-row.no-review:hover{transform:none;border-color:rgba(53,70,73,.10);}
-.dash-recent-date{font-weight:600;color:var(--text-main);font-size:13px;}
-.dash-recent-score{margin-left:auto;font-weight:700;font-size:14px;}
+.dash-recent-date{font-weight:600;color:var(--text-main);font-size:14.5px;}
+.dash-recent-meta{font-size:14px;}
+.dash-recent-score{margin-left:auto;font-weight:700;font-size:15.5px;}
 
 /* ========== END DASHBOARD V2 ========== */
 
@@ -1473,7 +1474,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-hero{padding:1.1rem 1.1rem 1rem;}
   .dash-hero-title{font-size:20px;}
   .dash-hero-sub{font-size:12.5px;}
-  .dash-hero-status{font-size:12px;padding:5px 10px;}
+  .dash-hero-status{font-size:13px;padding:5px 10px;}
   /* 🔴 2026-09-21 사장님 — 폰에서 주 버튼 셋의 두께가 갈렸다(실측 387px):
        학습 계속하기 39px (15px/11·18)  ↔  세션 시작 56px · 모의고사 57px (18px/17·24)
      까닭 = 히어로 CTA «만» 폰 전용 규칙이 있어 작아졌고, .setup-cta-btn 은 폰 규칙이 «아예 없어»
@@ -1498,12 +1499,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .dash-part-row-acc{display:none;}  /* 모바일: 진도만 표시, 정확도 숨김 */
 
   /* ── Dashboard v2 Weak topics & Recent ── */
-  .weak-row{padding:10px 11px;font-size:13px;}
-  .weak-stat{font-size:12px;}
+  .weak-row{padding:10px 11px;font-size:14.5px;}
+  .weak-stat{font-size:13.5px;}
   .dash-recent-row{padding:10px 11px;}
-  .dash-recent-date{font-size:12px;}
-  .dash-recent-meta{font-size:12px;}
-  .dash-recent-score{font-size:13px;}
+  .dash-recent-date{font-size:13.5px;}
+  .dash-recent-meta{font-size:13.5px;}
+  .dash-recent-score{font-size:14.5px;}
 
   /* ── Quiz Setup ── */
   .mode-grid{grid-template-columns:repeat(2,1fr);}
