@@ -9463,11 +9463,11 @@ async function renderBookmarks(){
                   'padding:12px 14px;margin-bottom:8px;border-radius:10px;' +
                   'background:var(--card-bg,#fff);border:1px solid var(--border-clr);" onclick="' + goCall + '">' +
                   '<div style="flex:1;min-width:0;">' +
-                    '<div style="font-size:14px;font-weight:600;color:var(--text-dark,#222);">' +
+                    '<div style="font-size:15.5px;font-weight:600;color:var(--text-dark,#222);">' +
                       t('bm_set') + ' ' + (bi + 1) +
-                      '<span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:7px;">' + rangeLbl + '</span>' +
+                      '<span style="font-size:13.5px;font-weight:500;color:var(--text-muted);margin-left:7px;">' + rangeLbl + '</span>' +
                     '</div>' +
-                    '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">' +
+                    '<div style="font-size:13.5px;color:var(--text-muted);margin-top:3px;">' +
                       uQ(slice.length) + ' · ' + t('bm_misses') + ' <span class="rev-miss" style="color:' + missCol + ';">' + wrongSum + '</span>' +
                     '</div>' +
                   '</div>' +
@@ -9479,7 +9479,7 @@ async function renderBookmarks(){
   }
 
   if(pendingCount > 0){
-    html += '<div style="font-size:12px;color:var(--text-muted);line-height:1.6;' +
+    html += '<div style="font-size:13.5px;color:var(--text-muted);line-height:1.6;' +
               'background:rgba(53,70,73,.05);border-radius:8px;padding:9px 12px;margin-top:4px;">' +
               (LANG==='en'
                 ? ('ℹ️ ' + pendingCount + ' flagged question(s) have no attempt yet — answer them once in Study to review here.')
@@ -9562,7 +9562,7 @@ function renderReviewSessions(){
     var hasIds = s.question_ids && s.question_ids.length > 0;
     var actionHtml = hasIds
       ? '<button class="sts-go-btn" type="button" onclick="event.stopPropagation();reviewSession(' + realIdx + ')">' + t('bm_retry') + '</button>'
-      : '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;opacity:.75;" title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않았습니다') + '">' + (LANG === 'en' ? 'History only' : '기록만 · 복습 불가') + '</span>';
+      : '<span style="font-size:12.5px;color:var(--text-muted);white-space:nowrap;opacity:.75;" title="' + (LANG === 'en' ? 'Question IDs were not saved for this session' : '이 세션은 문제 ID가 저장되지 않았습니다') + '">' + (LANG === 'en' ? 'History only' : '기록만 · 복습 불가') + '</span>';
     html += '<div class="rev-sess-row' + (hasIds ? ' rev-card' : '') + '"' + (hasIds ? ' onclick="reviewSession(' + realIdx + ')"' : '') + '>' +
       '<div class="rev-sess-info">' +
         '<div class="rev-sess-date">' + label + '</div>' +
@@ -9573,7 +9573,7 @@ function renderReviewSessions(){
     '</div>';
   }
   el.innerHTML = html + (ordered.length > shown.length
-    ? '<div style="text-align:center;padding-top:10px;"><button class="btn-ghost" style="font-size:13px;padding:8px 18px;" onclick="revMoreSessions()">' + t('rev_more') + ' (' + shown.length + ' / ' + ordered.length + ')</button></div>'
+    ? '<div style="text-align:center;padding-top:10px;"><button class="btn-ghost" style="font-size:14.5px;padding:8px 18px;" onclick="revMoreSessions()">' + t('rev_more') + ' (' + shown.length + ' / ' + ordered.length + ')</button></div>'
     : '');
 }
 
