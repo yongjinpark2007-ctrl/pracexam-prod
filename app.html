@@ -1126,7 +1126,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
    360px 에서 칸 하나가 약 93px 이라 88px 까지 키울 수 있지만, 320px 짜리 옛 기기에서는
    3개가 안 들어간다. min()·clamp() 로 두 경우를 한 번에 맞춘다 — 고정값으로 두면
    좁은 기기에서 링이 서로 겹친다. */
-.hr-ring{width:min(88px,24vw);height:min(88px,24vw);border-radius:50%;position:relative;flex:none;}
+.hr-ring{width:min(94px,25.5vw);height:min(94px,25.5vw);border-radius:50%;position:relative;flex:none;}
 .hr-ring::before{content:"";position:absolute;inset:9px;background:var(--hero-cream);border-radius:50%;z-index:2;}
 /* 링 마개 — 시작(12시)과 끝(호가 멈추는 자리) 둘 다 둥글게 (2026-08-22 사용자 결정).
    🔴 지름은 «띠 굵기와 같아야» 한다(=::before 의 inset). 작으면 어깨가 튀어나와 턱이 진다. */
@@ -1142,18 +1142,18 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .hr-tgt::before{content:"";position:absolute;top:-1px;left:50%;width:2.5px;height:10px;margin-left:-1.25px;
   background:var(--text-main);opacity:.5;border-radius:2px;}
 .hr-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;}
-.hr-n{font-size:clamp(17px,5.6vw,22px);font-weight:800;color:var(--text-main);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;}
-.hr-n i{font-style:normal;font-size:clamp(10px,3vw,12px);color:var(--text-muted);font-weight:700;}
-.hr-b{font-size:clamp(9px,2.6vw,10.5px);font-weight:700;color:var(--text-muted);letter-spacing:.01em;line-height:1;margin-top:3px;white-space:nowrap;}
-.hr-lab{font-size:clamp(9.5px,2.9vw,11.5px);color:var(--text-muted);letter-spacing:.04em;text-transform:uppercase;font-weight:700;margin-top:6px;}
+.hr-n{font-size:clamp(18px,5.8vw,23px);font-weight:800;color:var(--text-main);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;}
+.hr-n i{font-style:normal;font-size:clamp(11px,3.2vw,13px);color:var(--text-muted);font-weight:700;}
+.hr-b{font-size:clamp(10px,2.8vw,11.5px);font-weight:700;color:var(--text-muted);letter-spacing:.01em;line-height:1;margin-top:3px;white-space:nowrap;}
+.hr-lab{font-size:clamp(10.5px,3.1vw,12.5px);color:var(--text-muted);letter-spacing:.04em;text-transform:uppercase;font-weight:700;margin-top:6px;}
 /* ⚠️ .screen 의 overflow-wrap:anywhere 가 여기까지 미쳐 「포함」이 낱말 가운데서 갈렸다.
    이 줄만 낱말 경계에서 접히게 되돌린다 (2026-08-21). */
-.hr-sub{font-size:clamp(9px,2.7vw,10.5px);color:var(--text-muted);margin-top:2px;
+.hr-sub{font-size:clamp(10px,2.9vw,11.5px);color:var(--text-muted);margin-top:2px;
   font-variant-numeric:tabular-nums;line-height:1.4;overflow-wrap:normal;word-break:keep-all;}
 /* 「반복 풀이 포함」은 «늘» 아랫줄로 내린다 (2026-08-21 사용자 지시).
    흘려 두면 숫자 자릿수에 따라 끊기는 자리가 달라져 카드마다 모양이 달라진다
    (288 / 615 처럼 자리가 늘면 「포함」만 내려가 어그러졌다). */
-.hr-dim{display:block;font-size:clamp(8.5px,2.5vw,10px);opacity:.75;margin-top:1px;}
+.hr-dim{display:block;font-size:clamp(9.5px,2.7vw,11px);opacity:.75;margin-top:1px;}
 
 /* 휴대폰 = 링 셋 + 버튼 아래 / 데스크톱 = 링 왼쪽 + 버튼 오른쪽 */
 .dash-hero-split{margin:1.1rem 0 .2rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
@@ -1215,9 +1215,9 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
   .hr-n{font-size:27px;}
   .hr-n i{font-size:15px;}
   .hr-b{font-size:11px;margin-top:5px;}
-  .hr-lab{font-size:12px;margin-top:9px;}
-  .hr-sub{font-size:11.5px;}
-  .hr-dim{font-size:10px;}
+  .hr-lab{font-size:13px;margin-top:9px;}
+  .hr-sub{font-size:12.5px;}
+  .hr-dim{font-size:11px;}
 }
 
 /* Part 목록 — 3개 타일 한 줄 정렬 (tile grid) */
@@ -1239,9 +1239,9 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
   background:var(--card-bg);border:1px solid var(--border-clr);box-shadow:none;}
 .dash-hero-picker .dash-part-row-name{flex-direction:row;align-items:center;gap:7px;margin:0;}
 .dash-hero-picker .dash-part-txt{gap:0;}
-.dash-hero-picker .dash-part-key{font-size:13.5px;line-height:1.25;}
+.dash-hero-picker .dash-part-key{font-size:14.5px;line-height:1.25;}
 .dash-hero-picker .dash-part-sub{display:none;}   /* 「개인세」는 히어로 제목에 이미 있다 */
-.dash-hero-picker .dash-part-row-stats{font-size:11.5px;margin-top:5px;line-height:1.2;}
+.dash-hero-picker .dash-part-row-stats{font-size:12.5px;margin-top:5px;line-height:1.2;}
 .dash-hero-picker .dash-part-row-bar{height:3px;margin-top:5px;}
 .dash-hero-picker .dash-part-row-bar-fill{height:3px;}
 
@@ -1256,8 +1256,8 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
   .dash-hero-picker .dash-parts-list{grid-template-columns:repeat(3,1fr);gap:6px;}
   .dash-hero-picker .dash-part-row{padding:7px 7px;}
   .dash-hero-picker .dash-part-row.active{padding-left:6px;}
-  .dash-hero-picker .dash-part-key{font-size:12.5px;}
-  .dash-hero-picker .dash-part-row-stats{font-size:10.5px;margin-top:5px;}
+  .dash-hero-picker .dash-part-key{font-size:13.5px;}
+  .dash-hero-picker .dash-part-row-stats{font-size:11.5px;margin-top:5px;}
 }
 .dash-part-row{
   background:var(--card-bg);border:1px solid var(--border-clr);
@@ -1274,8 +1274,8 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 /* 이름은 두 칸으로 나눈다 — 「Part 1」과 「Individuals」. 글자 길이에 따라 아무 데서나
    접히지 않게 하려는 것이다(2026-08-21). ⚠️ span 이므로 display 를 반드시 준다. */
 .dash-part-txt{display:flex;flex-direction:column;gap:2px;min-width:0;}
-.dash-part-key{display:block;font-size:15px;font-weight:700;color:var(--text-main);line-height:1.2;}
-.dash-part-sub{display:block;font-size:12.5px;font-weight:600;color:var(--text-mid);line-height:1.25;word-break:normal;overflow-wrap:normal;}
+.dash-part-key{display:block;font-size:16px;font-weight:700;color:var(--text-main);line-height:1.2;}
+.dash-part-sub{display:block;font-size:13.5px;font-weight:600;color:var(--text-mid);line-height:1.25;word-break:normal;overflow-wrap:normal;}
 .dash-part-row.active .dash-part-key,.dash-part-row.active .dash-part-sub{color:var(--sel-text);}
 .dash-part-row.active .dash-part-row-name{color:var(--sel-text);}
 /* Part 타일·히어로 아이콘 = 모의고사/War Room 카드(.prem-ico)와 «같은 문법»으로 통일
@@ -1289,7 +1289,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .dash-part-row.active .dash-part-ico{background:rgba(53,70,73,.12);}
 .dash-part-row.active .dash-part-ico svg{stroke:var(--navy);}
 .dash-part-row-name svg{width:26px;height:26px;stroke:var(--teal);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
-.dash-part-row-stats{font-size:12.5px;color:var(--text-mid);margin-bottom:11px;}
+.dash-part-row-stats{font-size:13.5px;color:var(--text-mid);margin-bottom:11px;}
 .dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;margin-top:auto;}
 /* ── 공지사항 (Announcements) ── */
 .ann-card{background:var(--ann-bg);border:1px solid var(--ann-bd);border-left:3px solid var(--silver);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
@@ -1487,15 +1487,15 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   /* ── Dashboard v2 Parts list (모바일 타일 3열) ── */
   .dash-parts-list{gap:8px;}
   .dash-part-row{padding:12px 10px;border-radius:12px;}
-  .dash-part-row-name{font-size:12.5px;gap:7px;margin-bottom:7px;}
-  .dash-part-key{font-size:13px;}
-  .dash-part-sub{font-size:11px;}
+  .dash-part-row-name{font-size:13.5px;gap:7px;margin-bottom:7px;}
+  .dash-part-key{font-size:14px;}
+  .dash-part-sub{font-size:12px;}
   .dash-part-row-name svg{width:22px;height:22px;}
   .dash-part-ico{width:30px;height:30px;border-radius:8px;}
   .dash-part-row-name .dash-part-ico svg{width:17px;height:17px;}
   .dash-hero-ico{width:32px;height:32px;border-radius:9px;}   /* 히어로는 «한 급 위» — 위 주석 참조 */
   .dash-hero-title .dash-hero-ico svg{width:18px;height:18px;}
-  .dash-part-row-stats{font-size:11px;margin-bottom:9px;}
+  .dash-part-row-stats{font-size:12px;margin-bottom:9px;}
   .dash-part-row-acc{display:none;}  /* 모바일: 진도만 표시, 정확도 숨김 */
 
   /* ── Dashboard v2 Weak topics & Recent ── */
