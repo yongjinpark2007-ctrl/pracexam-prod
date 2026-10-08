@@ -2556,6 +2556,19 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-sect{font-size:15.5px;font-weight:800;color:var(--text-main);margin:22px 0 10px;}
   /* 토픽 정답률: 토픽명 넓게, 바는 짧게 (2026-07-17 피드백 6) */
   .mk-dom{display:grid;grid-template-columns:minmax(170px,2.3fr) 1fr 52px;gap:10px;align-items:center;font-size:14.5px;color:var(--text-mid);padding:5px 0;}
+  .mk-dd{border-bottom:1px solid var(--border-clr);}
+  .mk-dd>summary{cursor:pointer;list-style:none;padding:9px 0;}
+  .mk-dd>summary::-webkit-details-marker{display:none;}
+  .mk-dd>summary::before{content:'▸';position:absolute;margin-left:-14px;color:var(--text-muted);}
+  .mk-dd{position:relative;padding-left:14px;}
+  .mk-dd[open]>summary::before{content:'▾';}
+  .mk-dd-name{font-weight:700;color:var(--text-main);}
+  .mk-dd-sub{font-size:13.5px;color:var(--text-muted);margin:-2px 0 6px;}
+  .mk-dd-body{padding:2px 0 10px;}
+  .mk-dt{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--text-mid);padding:5px 0;border-top:1px dashed var(--border-clr);}
+  .mk-dt-n{min-width:0;}
+  .mk-dt-r{flex:none;font-weight:700;font-variant-numeric:tabular-nums;}
+  .mk-dt-r.o{color:var(--teal);} .mk-dt-r.x{color:var(--danger-color);} .mk-dt-r.m{color:var(--flag-color);}
   .mk-dom-track{height:14px;background:#edf1f2;border-radius:4px;overflow:hidden;}
   .mk-dom-fill{height:100%;border-radius:0 4px 4px 0;}
   .mk-dom-pct{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--text-main);}
@@ -9831,7 +9844,7 @@ function renderMockHub(){
       '• '+mL('회당 100문항의 실전적 문제 구성 (채점 85 + 실험 15)','100 questions per exam (85 scored + 15 experimental)')+'<br>'+
       '• '+mL('파트별 300문항(3세트 분량)의 매회 새로운 조합 테스트','300-question bank per part (three full exams) — a fresh test each attempt')+'<br>'+
       '• '+mL('시험당 최대 2회 휴식 지원 (휴식 중 시험 시계 정지)','Up to 2 breaks per exam — clock pauses during breaks')+'<br>'+
-      '• '+mL('시험 종료 후 문항별 해설과 약점 토픽 Top 3 분석 제공','Per-question explanations and Weak Topic Top 3 analysis after you finish')+
+      '• '+mL('시험 종료 후 문항별 해설, 도메인별 결과, 약점 토픽 Top 10 분석 제공','Per-question explanations, results by domain, and Weak Topics Top 10 after you finish')+
     '</div>'+
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
@@ -10120,14 +10133,31 @@ function renderMockResult(r){
   scored.forEach(function(x){ var k=x.outline_code||x.topic||'—'; if(!byT[k])byT[k]={code:k,topic:x.topic||k,c:0,n:0};
     byT[k].n++; if(x.is_correct)byT[k].c++; });
   var topics=Object.values(byT);
-  var weak=topics.slice().filter(function(t){return t.n>0;})
-    .sort(function(a,b){ return (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).slice(0,3);
-  // 2026-10-08 사장님 — «토픽별 정답률»은 문항 수 많은 10개만이 아니라 «전체 토픽»을 정답률 낮은 순으로 보인다.
-  var domHtml=topics.slice().filter(function(t){return t.n>0;}).sort(function(a,b){ return (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).map(function(t){
-    var p=Math.round(t.c/t.n*100);
-    return '<div class="mk-dom"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+mockEsc(t.topic)+'</span>'+
+  // 2026-10-08 사장님 — 약점 토픽 Top 10: 틀린(미응답 포함) 문항이 있는 토픽만, 틀린 수가 많은 순.
+  var weak=topics.slice().filter(function(t){return t.n>0 && t.c<t.n;})
+    .sort(function(a,b){ return (b.n-b.c)-(a.n-a.c) || (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).slice(0,10);
+  // 2026-10-08 사장님 — 실제 EA 성적표처럼 «도메인별»로 보이고, 도메인을 열면 그 밑의 토픽이 나온다.
+  //   (토픽 하나는 대개 1문항이라 토픽별 %는 0/100 뿐이다. 도메인 단위로 묶어야 비율이 뜻을 갖는다.)
+  var partKey=(String(part).indexOf('Part')===0)?String(part):('Part '+part);
+  var domMap={}, domOrder=[];
+  (EXAM_DOMAINS[partKey]||[]).forEach(function(d){ domOrder.push(d.name); });
+  topics.forEach(function(t){
+    var dn=domainOfCode(t.code, partKey) || mL('기타','Other');
+    if(!domMap[dn]){ domMap[dn]={name:dn,c:0,n:0,tops:[]}; if(domOrder.indexOf(dn)<0) domOrder.push(dn); }
+    domMap[dn].c+=t.c; domMap[dn].n+=t.n; domMap[dn].tops.push(t);
+  });
+  var domHtml=domOrder.filter(function(k){ return domMap[k] && domMap[k].n>0; }).map(function(k){
+    var d=domMap[k], p=Math.round(d.c/d.n*100);
+    var tops=d.tops.slice().sort(function(a,b){ return (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).map(function(t){
+      var ok=(t.c===t.n), bad=(t.c===0);
+      return '<div class="mk-dt"><span class="mk-dt-n">'+mockEsc(t.topic)+'</span>'+
+        '<span class="mk-dt-r '+(ok?'o':(bad?'x':'m'))+'">'+(t.n===1?(ok?mL('정답','Correct'):mL('오답','Wrong')):(t.c+' / '+t.n))+'</span></div>';
+    }).join('');
+    return '<details class="mk-dd"><summary class="mk-dom"><span class="mk-dd-name">'+mockEsc(d.name)+'</span>'+
       '<div class="mk-dom-track"><div class="mk-dom-fill" style="width:'+p+'%;background:'+accuracyColor(p)+';"></div></div>'+
-      '<span class="mk-dom-pct">'+p+'%</span></div>';
+      '<span class="mk-dom-pct">'+p+'%</span></summary>'+
+      '<div class="mk-dd-sub">'+d.c+' / '+d.n+' '+mL('정답','correct')+'</div>'+
+      '<div class="mk-dd-body">'+tops+'</div></details>';
   }).join('');
   // ⚑ 검토 표시 — grade_mock_exam 이 answers(jsonb)에 저장해 per_question 으로 돌려준다.
   //   그래서 이력에서 다시 열어도 남는다. 2026-08-21 SQL 패치 전에 친 응시는 값이 없어 안 뜬다(정상).
@@ -10188,8 +10218,8 @@ function renderMockResult(r){
     '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span>'+
     (flagN?'<span class="mk-kpi flag"><b>'+flagN+'</b>⚑ '+mL('검토 표시','Marked')+'</span>':'')+
     '</div></div></div>'+
-    (weakHtml?'<div class="mk-sect">'+mL('약점 토픽 Top 3','Weak Topic Top 3')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
-    (domHtml?'<div class="mk-sect">'+mL('토픽별 정답률','Accuracy by topic')+'</div><div>'+domHtml+'</div>':'')+
+    (weakHtml?'<div class="mk-sect">'+mL('약점 토픽 Top 10','Weak Topics Top 10')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
+    (domHtml?'<div class="mk-sect">'+mL('도메인별 결과 (눌러서 토픽 보기)','Results by domain (tap to see topics)')+'</div><div>'+domHtml+'</div>':'')+
     '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('각 문제를 클릭하셔서 해설을 확인하세요.','Click each question to see its explanation.')+'</span></div>'+
     '<div class="mk-qlist">'+rows+'</div>'+
     '<div style="margin-top:16px;display:flex;gap:8px;"><button class="btn-ghost" onclick="showScreen(\'mock\')">'+mL('모의고사 홈','Mock home')+'</button>'+
