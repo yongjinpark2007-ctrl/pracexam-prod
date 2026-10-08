@@ -2633,6 +2633,17 @@ textarea.ann-input{resize:vertical;min-height:60px;}
     .mk-cell{height:30px;font-size:12px;}
     .mk-navgrid{gap:4px;}
     .mk-weak{grid-template-columns:1fr;}
+    /* 2026-10-08 사장님 — 폰에서 약점 카드가 줄이 많아 길다. 한 카드를 두 줄로 줄인다:
+       1행 = 토픽 이름 + (맞힌/전체 · %)  2행 = 틀린 문항 칩 + War Room 단추. 안내 줄(「틀린 문항 — 눌러서…」)은 뺀다. */
+    .mk-weak{gap:8px;}
+    .mk-weak-c{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:9px 12px;}
+    .mk-weak-t{margin:0;font-size:14px;}
+    .mk-weak-s{font-size:13px;white-space:nowrap;}
+    .mk-weak-lab{display:none;}
+    .mk-weak-qs{margin-top:0;gap:4px;}
+    .mk-weak-q{padding:3px 6px;}
+    .mk-weak-wr{width:auto;margin-top:0;padding:6px 10px;font-size:12.5px;gap:5px;}
+    .mk-weak-wr svg{width:13px;height:13px;}
     .mk-dom{grid-template-columns:minmax(120px,1.8fr) 1fr 46px;}
     .mk-actions .btn-navy{order:-1;width:100%;}
     /* 상단 바 2행 정리 (2026-07-17): 1행=타이머+검토버튼, 2행=진행 텍스트 (모바일 겹침 수정) */
