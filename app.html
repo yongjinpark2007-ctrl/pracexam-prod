@@ -9844,7 +9844,7 @@ function renderMockHub(){
       '• '+mL('회당 100문항의 실전적 문제 구성 (채점 85 + 실험 15)','100 questions per exam (85 scored + 15 experimental)')+'<br>'+
       '• '+mL('파트별 300문항(3세트 분량)의 매회 새로운 조합 테스트','300-question bank per part (three full exams) — a fresh test each attempt')+'<br>'+
       '• '+mL('시험당 최대 2회 휴식 지원 (휴식 중 시험 시계 정지)','Up to 2 breaks per exam — clock pauses during breaks')+'<br>'+
-      '• '+mL('시험 종료 후 문항별 해설, 도메인별 결과, 약점 토픽 Top 10 분석 제공','Per-question explanations, results by domain, and Weak Topics Top 10 after you finish')+
+      '• '+mL('시험 종료 후 문항별 해설, 도메인별 결과, 약점 토픽 Top 5 분석 제공','Per-question explanations, results by domain, and Weak Topics Top 5 after you finish')+
     '</div>'+
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
@@ -10133,9 +10133,9 @@ function renderMockResult(r){
   scored.forEach(function(x){ var k=x.outline_code||x.topic||'—'; if(!byT[k])byT[k]={code:k,topic:x.topic||k,c:0,n:0};
     byT[k].n++; if(x.is_correct)byT[k].c++; });
   var topics=Object.values(byT);
-  // 2026-10-08 사장님 — 약점 토픽 Top 10: 틀린(미응답 포함) 문항이 있는 토픽만, 틀린 수가 많은 순.
+  // 2026-10-08 사장님 — 약점 토픽 Top 5: 틀린(미응답 포함) 문항이 있는 토픽만, 틀린 수가 많은 순.
   var weak=topics.slice().filter(function(t){return t.n>0 && t.c<t.n;})
-    .sort(function(a,b){ return (b.n-b.c)-(a.n-a.c) || (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).slice(0,10);
+    .sort(function(a,b){ return (b.n-b.c)-(a.n-a.c) || (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).slice(0,5);
   // 2026-10-08 사장님 — 실제 EA 성적표처럼 «도메인별»로 보이고, 도메인을 열면 그 밑의 토픽이 나온다.
   //   (토픽 하나는 대개 1문항이라 토픽별 %는 0/100 뿐이다. 도메인 단위로 묶어야 비율이 뜻을 갖는다.)
   var partKey=(String(part).indexOf('Part')===0)?String(part):('Part '+part);
@@ -10218,8 +10218,8 @@ function renderMockResult(r){
     '<span class="mk-kpi"><b>'+exper+'</b>'+mL('실험','Experimental')+'</span>'+
     (flagN?'<span class="mk-kpi flag"><b>'+flagN+'</b>⚑ '+mL('검토 표시','Marked')+'</span>':'')+
     '</div></div></div>'+
-    (weakHtml?'<div class="mk-sect">'+mL('약점 토픽 Top 10','Weak Topics Top 10')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
     (domHtml?'<div class="mk-sect">'+mL('도메인별 결과 (눌러서 토픽 보기)','Results by domain (tap to see topics)')+'</div><div>'+domHtml+'</div>':'')+
+    (weakHtml?'<div class="mk-sect">'+mL('약점 토픽 Top 5','Weak Topics Top 5')+'</div><div class="mk-weak">'+weakHtml+'</div>':'')+
     '<div class="mk-sect">'+mL('문항별 결과','Per-question')+' <span style="font-weight:400;color:var(--text-muted);">— '+mL('각 문제를 클릭하셔서 해설을 확인하세요.','Click each question to see its explanation.')+'</span></div>'+
     '<div class="mk-qlist">'+rows+'</div>'+
     '<div style="margin-top:16px;display:flex;gap:8px;"><button class="btn-ghost" onclick="showScreen(\'mock\')">'+mL('모의고사 홈','Mock home')+'</button>'+
