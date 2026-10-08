@@ -2575,6 +2575,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .mk-weak{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
   .mk-weak-c{border:1px solid var(--border-clr);border-radius:12px;padding:12px;background:var(--card-bg);}
   .mk-weak-t{font-size:14.5px;font-weight:700;color:var(--text-main);margin:4px 0 6px;line-height:1.4;}
+  button.mk-weak-t{display:block;width:100%;text-align:left;background:none;border:none;padding:0;font-family:inherit;cursor:pointer;}
+  .mk-weak-go{color:var(--text-muted);font-weight:800;}
+  @media(hover:hover){ button.mk-weak-t:hover{color:var(--teal);} }
   .mk-weak-s{font-size:13.5px;color:var(--text-muted);font-variant-numeric:tabular-nums;}
   .mk-qlist{margin-top:6px;border:1px solid var(--border-clr);border-radius:12px;overflow:hidden;}
   .mk-qrow{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card-bg);border-bottom:1px solid var(--border-clr);font-size:14.5px;color:var(--text-mid);cursor:pointer;}
@@ -2637,10 +2640,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
        1행 = 토픽 이름 + (맞힌/전체 · %)  2행 = 틀린 문항 칩 + War Room 단추. 안내 줄(「틀린 문항 — 눌러서…」)은 뺀다. */
     .mk-weak{gap:8px;}
     .mk-weak-c{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center;padding:9px 12px;}
-    .mk-weak-t{margin:0;font-size:14px;}
-    .mk-weak-s{font-size:13px;white-space:nowrap;}
-    .mk-weak-lab{display:none;}
-    .mk-weak-qs{margin-top:0;gap:4px;}
+    .mk-weak-t{margin:0;font-size:14px;grid-column:1;grid-row:1;}
+    .mk-weak-wr{grid-column:2;grid-row:1;}
+    .mk-weak-qs{margin-top:0;gap:4px;grid-column:1 / -1;grid-row:2;}
     .mk-weak-q{padding:3px 6px;}
     .mk-weak-wr{width:auto;margin-top:0;padding:6px 10px;font-size:12.5px;gap:5px;}
     .mk-weak-wr svg{width:13px;height:13px;}
@@ -10179,24 +10181,23 @@ function renderMockResult(r){
   //   코드(C2114)는 화면에서 뺐다 — 고객에게 뜻이 없고 바로 아래 토픽 이름이 있다.
   //   대신 값은 남겨 War Room 으로 가는 열쇠로 쓴다 (사용자 결정 2026-08-21).
   var weakHtml=weak.map(function(t){
-    var miss=[];
+    var miss=[], firstQ=null;
     pq.forEach(function(x,i){
       if(!x.is_scored) return;
       if((x.outline_code||x.topic||'—')!==t.code) return;
       if(x.is_correct) return;                       // 맞힌 것은 뺀다 — 다시 볼 것은 틀린 것
+      if(!firstQ) firstQ=x.question_id;
       miss.push('<button class="mk-weak-q'+(x.choice===-1?' un':'')+'" '+
         'onclick="mockReviewItem(\''+x.question_id+'\')" title="'+mL('해설 보기','See explanation')+'">'+
         'Q'+(i+1)+(isFlagged(x)?' ⚑':'')+'</button>');
     });
+    // 2026-10-08 사장님 — 토픽 이름을 누르면 (틀린 첫 문항의) 해설이 열린다. 「0/1 · 0%」 줄은 뺀다(토픽당 1문항이라 뜻이 없다).
+    //   틀린 문항이 «둘 이상»일 때만 Q 칩을 남긴다 — 이름은 첫 문항만 열기 때문이다.
     return '<div class="mk-weak-c">'+
-      '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div>'+
-      '<div class="mk-weak-s">'+t.c+' / '+t.n+' · '+Math.round(t.c/t.n*100)+'%</div>'+
-      // 🔴 숫자만 늘어놓으면 «이게 무엇인지» 안 보인다(사용자 지적 2026-08-21).
-      //    무엇인지 적어 주고, 칩도 Q12 처럼 문항 번호임이 드러나게 쓴다.
-      (miss.length
-        ? '<div class="mk-weak-lab">'+mL('틀린 문항 — 눌러서 해설 보기','Missed — tap to review')+'</div>'+
-          '<div class="mk-weak-qs">'+miss.join('')+'</div>'
-        : '')+
+      (firstQ
+        ? '<button class="mk-weak-t" onclick="mockReviewItem(\''+firstQ+'\')" title="'+mL('해설 보기','See explanation')+'">'+mockEsc(t.topic)+' <span class="mk-weak-go">›</span></button>'
+        : '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div>')+
+      (miss.length>1 ? '<div class="mk-weak-qs">'+miss.join('')+'</div>' : '')+
       (t.code && t.code!=='—'
         ? '<button class="mk-weak-wr" onclick="mockGoWarRoom(\''+t.code+'\')">'+
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
