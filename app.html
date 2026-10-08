@@ -10595,6 +10595,14 @@ function _wrNorm(s){
   try{ s=s.normalize('NFKC'); }catch(e){}
   return s.toLowerCase().replace(/[‘’]/g,"'").replace(/[“”]/g,'"');
 }
+// 🔴 2026-10-08 — 짧은 영문 약어(ECI·EIC·IRA·AMT 등 2~4자)는 «낱말 단위»로 찾는다.
+//    예전에는 글자 «조각»으로 찾아 ECI 를 넣으면 Depreciation·Decisions·Special 이 다 걸려 111건이 나왔다(진짜는 1건).
+//    복수형(IRAs)은 허용한다. 그 밖의 검색(긴 낱말·한글·숫자)은 예전 그대로 조각으로 찾는다.
+function _wrHas(hay,nq){
+  var h=_wrNorm(hay);
+  if(/^[a-z]{2,4}$/.test(nq)) return new RegExp('(^|[^a-z0-9])'+nq+'(s)?([^a-z0-9]|$)').test(h);
+  return h.indexOf(nq)>=0;
+}
 function _wrDomKo(p,key){ var s=WR_SKELETON[p]||[]; for(var i=0;i<s.length;i++){ if(s[i][0]===key) return s[i][1]; } return key; }
 function _wrSearchInput(){
   var inp=document.getElementById('wr-search'); if(!inp) return;
@@ -10641,9 +10649,9 @@ function _wrPaintSearch(nq){
     var buck=(WR.byPart&&WR.byPart[p])||{};
     (WR_SKELETON[p]||[]).forEach(function(row){
       var key=row[0], ko=row[1];
-      var domHit=_wrNorm(key).indexOf(nq)>=0 || _wrNorm(ko).indexOf(nq)>=0;
+      var domHit=_wrHas(key,nq) || _wrHas(ko,nq);
       (buck[key]||[]).forEach(function(r){
-        var titleHit=domHit || _wrNorm(r.title_en).indexOf(nq)>=0 || _wrNorm(r.title_ko).indexOf(nq)>=0 || _wrNorm(r.outline_code).indexOf(nq)>=0;
+        var titleHit=domHit || _wrHas(r.title_en,nq) || _wrHas(r.title_ko,nq) || _wrNorm(r.outline_code).indexOf(nq)>=0;
         var bodyHit=!!(body && body[r.outline_code]);
         if(!titleHit && !bodyHit) return;
         total++; codes.push(r.outline_code);
