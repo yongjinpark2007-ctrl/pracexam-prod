@@ -9783,8 +9783,8 @@ function mockPracticeGuardModal(){
   var rem=mockRemainingOf(live);
   document.getElementById('modal-content').innerHTML =
     '<div style="text-align:center;padding:1rem 0;"><div style="font-size:36px;margin-bottom:.6rem;">⏱</div>'+
-    '<div style="font-size:17px;font-weight:800;margin-bottom:.5rem;">'+mL('모의고사가 진행 중입니다','A mock exam is in progress')+'</div>'+
-    '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem;">'+
+    '<div style="font-size:18px;font-weight:800;margin-bottom:.5rem;">'+mL('모의고사가 진행 중입니다','A mock exam is in progress')+'</div>'+
+    '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem;">'+
     mL('남은 시간 <b>'+mockFmt(rem)+'</b> — 연습을 시작해도 모의고사 타이머는 멈추지 않고 계속 흐릅니다.',
        '<b>'+mockFmt(rem)+'</b> left — the mock timer keeps running while you practice.')+'</div>'+
     '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="closeModal();mockResume()">'+mL('모의고사 이어하기','Resume the mock exam')+'</button>'+
@@ -9801,18 +9801,18 @@ function renderMockHub(){
   var html =
     '<div style="margin-bottom:1.25rem;">'+
       '<div class="section-title">'+mL('실전 모의고사','Mock Exam')+'</div>'+
-      '<div style="font-size:14px;color:var(--text-muted);">'+mL('실제 시험과 동일한 조건으로 응시하세요.','Sit a full exam under real exam conditions.')+'</div>'+
+      '<div style="font-size:15.5px;color:var(--text-muted);">'+mL('실제 시험과 동일한 조건으로 응시하세요.','Sit a full exam under real exam conditions.')+'</div>'+
     '</div>';
   // 이어하기 배너 (진행 중) 또는 무료 안내 배너 — 학습의 trial-quota-banner 스타일
   if(live && live.attemptId){
     var rem=mockRemainingOf(live);
     var ans=Object.keys(live.answers||{}).length;
-    html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-main);line-height:1.6;">'+
+    html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">'+
       '⏱ <b>'+mL('진행 중인 모의고사','Mock exam in progress')+'</b> — Part '+live.part+' · '+ans+'/100 '+mL('응답','answered')+
       ' · <b>'+mL('남은','left')+' '+mockFmt(rem)+'</b> · '+mL('만료 시 자동 제출','auto-submits at expiry')+
-      '<div style="font-size:12px;color:var(--text-muted);margin-top:3px;">'+mL('일시정지가 아닙니다 — 자리를 비운 시간도 차감됩니다 · 아래 "이어하기"로 계속하세요','Not a pause — time away is deducted · use “Resume” below')+'</div></div>';
+      '<div style="font-size:13.5px;color:var(--text-muted);margin-top:3px;">'+mL('일시정지가 아닙니다 — 자리를 비운 시간도 차감됩니다 · 아래 "이어하기"로 계속하세요','Not a pause — time away is deducted · use “Resume” below')+'</div></div>';
   } else if(!paid){
-    html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-main);line-height:1.6;">'+
+    html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">'+
       '🔒 '+mL('모의고사는 유료 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.','Mock exams are for paid members. You can preview the setup below.')+'</div>';
   }
   // 파트 선택 (학습 part-picker 와 동일한 setup-icon-btn 스타일)
@@ -9826,7 +9826,7 @@ function renderMockHub(){
     '<div class="setup-section-label">'+mL('파트 선택','Choose a part')+'</div>'+
     '<div class="setup-icon-grid setup-icon-grid-3">'+parts+'</div>'+
     '<div class="setup-divider"></div>'+
-    '<div style="font-size:13px;color:var(--text-mid);line-height:1.95;">'+
+    '<div style="font-size:15px;color:var(--text-mid);line-height:1.85;">'+
       '• '+mL('실제 시험과 동일한 3시간 30분 제한 시간','Same 3-hour, 30-minute time limit as the real exam')+'<br>'+
       '• '+mL('회당 100문항의 실전적 문제 구성 (채점 85 + 실험 15)','100 questions per exam (85 scored + 15 experimental)')+'<br>'+
       '• '+mL('파트별 300문항(3세트 분량)의 매회 새로운 조합 테스트','300-question bank per part (three full exams) — a fresh test each attempt')+'<br>'+
@@ -9844,7 +9844,7 @@ function renderMockHub(){
       }
       return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">'+mL('새 모의고사 시작','Start new mock exam')+'</button>';
     })()+
-    '<div style="margin-top:12px;text-align:center;"><a href="#" onclick="showScreen(\'mock-history\');return false;" style="font-size:13px;color:var(--teal);font-weight:700;text-decoration:none;">'+
+    '<div style="margin-top:12px;text-align:center;"><a href="#" onclick="showScreen(\'mock-history\');return false;" style="font-size:14.5px;color:var(--teal);font-weight:700;text-decoration:none;">'+
       mL('모의고사 이력 보기 →','View history →')+'</a></div>'+
   '</div>';
   el.innerHTML=html;
@@ -9894,8 +9894,8 @@ async function mockStart(){
   if(live && live.attemptId){
     document.getElementById('modal-content').innerHTML =
       '<div style="text-align:center;padding:1rem 0;"><div style="font-size:36px;margin-bottom:.6rem;">⚠️</div>'+
-      '<div style="font-size:17px;font-weight:800;margin-bottom:.5rem;">'+mL('진행 중인 모의고사가 있습니다','A mock exam is in progress')+'</div>'+
-      '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem;">'+
+      '<div style="font-size:18px;font-weight:800;margin-bottom:.5rem;">'+mL('진행 중인 모의고사가 있습니다','A mock exam is in progress')+'</div>'+
+      '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1.2rem;">'+
       mL('새로 시작하면 진행 중인 응시는 버려집니다(채점되지 않음).','Starting a new one discards the in-progress attempt (it will not be graded).')+'</div>'+
       '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="closeModal();mockDiscard();_mockStartGo()">'+mL('새로 시작','Start new')+'</button>'+
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal();mockResume()">'+mL('이어하기','Resume')+'</button></div>';
@@ -10122,7 +10122,8 @@ function renderMockResult(r){
   var topics=Object.values(byT);
   var weak=topics.slice().filter(function(t){return t.n>0;})
     .sort(function(a,b){ return (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).slice(0,3);
-  var domHtml=topics.slice().sort(function(a,b){return b.n-a.n;}).slice(0,10).map(function(t){
+  // 2026-10-08 사장님 — «토픽별 정답률»은 문항 수 많은 10개만이 아니라 «전체 토픽»을 정답률 낮은 순으로 보인다.
+  var domHtml=topics.slice().filter(function(t){return t.n>0;}).sort(function(a,b){ return (a.c/a.n)-(b.c/b.n) || b.n-a.n; }).map(function(t){
     var p=Math.round(t.c/t.n*100);
     return '<div class="mk-dom"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+mockEsc(t.topic)+'</span>'+
       '<div class="mk-dom-track"><div class="mk-dom-fill" style="width:'+p+'%;background:'+accuracyColor(p)+';"></div></div>'+
