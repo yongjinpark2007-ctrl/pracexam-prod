@@ -8252,7 +8252,7 @@ async function loadQuestion(){
   document.getElementById('q-bar').style.width=pct+'%';
   document.getElementById('q-progress-text').textContent=`Question ${S.quizIdx+1} of ${S.quizQueue.length}`;
   document.getElementById('q-session-label').textContent = S.adminQcMode
-    ? 'ADMIN QC · 문제 검토'
+    ? ((LANG === 'en') ? 'PRACTICE QUESTIONS' : '문제 풀이')
     : (S.reviewMode
       ? ((LANG === 'en') ? 'REVIEW · Practice' : 'REVIEW · 풀기')
       : (S.mode.toUpperCase()+' SESSION · 2026 EA EXAM'));
