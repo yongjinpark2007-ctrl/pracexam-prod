@@ -2803,7 +2803,7 @@ function applyAdminVisibility(){
   var dataMgmt = document.getElementById('settings-data-mgmt');
   if(dataMgmt) dataMgmt.style.display = isAdmin ? '' : 'none';
   var copyBtn = document.getElementById('q-copy-btn');
-  if(copyBtn) copyBtn.style.display = isAdmin ? '' : 'none';
+  if(copyBtn) copyBtn.style.display = (isAdmin && !S.adminQcMode) ? '' : 'none';   // 문제 검토(QC) 중에는 숨김 유지
 
   // ── 관리자(이상탐지) 메뉴: Admin 전용 ── (ID 기반)
   var anoBtn = document.getElementById('nav-anomaly');
