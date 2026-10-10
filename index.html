@@ -220,7 +220,7 @@ section{padding:88px 0;}
   width:30px; height:30px; border-radius:8px; background:var(--navy); flex:0 0 auto;}
 .brand-mark svg{width:18px; height:18px; stroke:var(--white); fill:none;
   stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round;}
-.hero-note-icon{width:18px; height:18px; flex:none;}
+.hero-note-icon{width:34px; height:34px; flex:none; margin:-4px -8px -4px -6px; position:relative; top:-3px; mix-blend-mode:multiply;}
 
 /* ── nav ───────────────────────────────────────────────── */
 .nav{
@@ -347,8 +347,10 @@ section{padding:88px 0;}
 @media (max-width:600px){ .hero h1 em{font-size:.82em;} }
 .hero p.lead{font-size:18px; max-width:480px; margin-bottom:30px;}
 .hero-actions{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:22px;}
-.hero-note{font-size:13px; color:var(--text-muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
-.hero-note-link{font-weight:700; color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-border); padding-bottom:1px; white-space:nowrap;}
+.hero-note{font-size:15px; font-weight:600; color:var(--text-muted); display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+/* 2026-10-10 — icon-192.png 는 사방에 여백이 있어 18px 로 두면 체크가 «점»처럼 작고 글과 멀어 보였다(유튜브 촬영용 개선).
+   크게(34px) 키우고 음수 마진으로 그림 안쪽 여백만큼 글에 붙인다. mix-blend-mode 로 흰 배경이 히어로 색 위에서 튀지 않게 한다. */
+.hero-note-link{margin-left:14px; font-weight:700; color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-border); padding-bottom:1px; white-space:nowrap;}
 .hero-note-link:hover{color:var(--navy); border-bottom-color:var(--navy);}
 .hero-footnote{font-size:12px; color:var(--text-muted); margin-top:10px; line-height:1.4;}
 
@@ -1011,9 +1013,9 @@ html{scrollbar-gutter:stable;}
         </a>
       </div>
       <div class="hero-note">
-        <img class="hero-note-icon" src="icon-192.png" alt="" width="18" height="18">
-        <span class="ko">설치형 웹앱 — 어디서든, 언제든 학습</span>
-        <span class="en">Installable web app — study anywhere, anytime</span>
+        <img class="hero-note-icon" src="icon-192.png" alt="" width="34" height="34">
+        <span class="ko">모바일 앱으로 설치 — 어디서든, 언제든 학습</span>
+        <span class="en">Install as a mobile app — study anywhere, anytime</span>
         <a class="hero-note-link" href="install-guide.html">
           <span class="ko">설치 방법 →</span><span class="en">How to install →</span>
         </a>
