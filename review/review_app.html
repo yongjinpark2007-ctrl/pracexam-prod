@@ -687,15 +687,14 @@ const EXAMS = {
   're-nj': { label:'NJ',    parts:{1:'National'} },
   're-ny': { label:'NY',    parts:{1:'National'} },
 
-  /* ── NA = 검증 전용 가상 시험 (DB 에 이런 exam 값은 없습니다) ──────────────
-     national 문항은 업로드 시 4개 주로 복제됩니다:
-       RE-N-1042 → RE-CA-N-1042 / RE-TX-N-1042 / RE-NJ-N-1042 / RE-NY-N-1042
-       (내용 동일, exam·question_id 만 다름, source_qid = 원본 RE-N-####)
-     주별로 검토하면 같은 문항을 4번 읽게 되므로, 한 주(re-ca)만 읽어서
-     source_qid 기준으로 1번만 판정합니다. 그 판정이 4개 주 전부에 해당합니다. */
+  /* ── NA = National 뱅크 (DB exam 값 're-n') ──────────────────────────────
+     2026-10-12 사장님 승인 — National 은 주마다 복사하지 않고 한 벌(RE-N-####, exam='re-n')만 둡니다.
+     각 주 시험은 exam_banks 로 이 뱅크를 불러 씁니다. 판정 1건이 4개 주 전부에 해당합니다.
+     (옛 구조 = re-ca 의 RE-CA-N-#### 복사본을 읽었다 — 그 행은 삭제되었다)
+     판정 저장 exam 값은 예전처럼 're-national' 로 둡니다(이미 있는 판정과 이어지도록). */
   're-national': {
     label:'NA', parts:{1:'National'},
-    virtual:{ readExam:'re-ca', idPrefix:'RE-CA-N-' }
+    virtual:{ readExam:'re-n', idPrefix:'RE-N-' }
   }
 };
 const REVIEW_EXAMS = ['ea','re-national','re-ca','re-tx','re-nj','re-ny'];  // 헤더 노출 순서
@@ -1764,7 +1763,7 @@ function renderList(){
         (S.pool === 'mock'
           ? '<br><br>이 시험에는 모의고사 풀(pool=mock)이 적재되지 않았습니다.'
           : (EXAMS[S.exam].virtual
-              ? '<br><br>national 문항을 <code>--fanout all</code> 로 업로드하면 여기에 표시됩니다.'
+              ? '<br><br>National 뱅크(<code>exam=re-n</code>)에 문항이 없습니다.'
               : '<br><br>Supabase 업로드 후 다시 확인하세요.')) + '</div>';
     return;
   }
