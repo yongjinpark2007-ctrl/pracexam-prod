@@ -1,0 +1,11 @@
+name = "pracexam-youtube-sync"
+main = "worker.mjs"
+compatibility_date = "2026-10-01"
+
+# every hour, on the hour (UTC)
+[triggers]
+crons = ["0 * * * *"]
+
+# Secrets are NOT stored here. Set each one with:  npx wrangler secret put <NAME>
+#   YOUTUBE_API_KEY, YT_PLAYLIST_ID_EN, YT_PLAYLIST_ID_KO,
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SYNC_SECRET
