@@ -25,11 +25,13 @@
    - `wrangler.toml`의 cron(`0 * * * *`)이 매시간 실행합니다.
 5. **영상 설명란에 PX 줄 추가** (YouTube Studio 일괄 편집 가능, 새 영상은 올릴 때마다):
    ```
-   PX: key=ea1-filing-status-01; part=1; topic=Filing Status
+   PX: key=filing-status-for-year-of-death
    ```
-   - 영어판과 한국어판에 **같은 key**를 쓰면 한 카드로 묶입니다.
-   - `key`는 영문 소문자·숫자·`-` 3~80자, `part`는 1·2·3, `topic`에는 `;`를 쓰지 않습니다.
-   - PX 줄이 없거나 틀린 영상은 건너뜁니다(로그에 `skipped: no/invalid PX line`).
+   - **key 하나만** 적으면 됩니다. 영어판과 한국어판에 **같은 key**를 쓰면 한 카드로 묶입니다.
+   - `part`와 `topic`은 영상 제목에서 자동으로 읽습니다 ("Part 1" / "파트 1", "EA Exam:" 뒤의 주제). 제목에서 못 읽으면 그 영상은 건너뛰니(로그에 `skipped: no part/topic`) 그때만 `; part=1; topic=...` 을 직접 적습니다.
+   - key 만들기 도우미: `node workers/youtube-sync/px-line.mjs <영어 쇼츠 주소>` → 붙여넣을 줄을 출력합니다. 아무것도 쓰지 않습니다.
+   - `key`는 영문 소문자·숫자·`-` 3~80자, `topic`에는 `;`를 쓰지 않습니다.
+   - PX 줄이 없거나 key가 틀린 영상은 건너뜁니다(로그에 `skipped: no/invalid PX line`).
 6. **먼저 시험 실행(dry run)**, 문제없으면 실제 실행:
    ```
    curl -H "x-sync-secret: <SYNC_SECRET>" "https://<worker주소>/?dry=1"

@@ -25,12 +25,30 @@ export function parsePx(description) {
     pairs[chunk.slice(0, i).trim().toLowerCase()] = chunk.slice(i + 1).trim();
   }
   const key = pairs.key || '';
-  const part = Number(pairs.part);
-  const topic = pairs.topic || '';
   if (!KEY_RE.test(key)) return { ok: false, reason: 'invalid key', cleaned };
-  if (![1, 2, 3].includes(part)) return { ok: false, reason: 'invalid part', cleaned };
-  if (!topic) return { ok: false, reason: 'missing topic', cleaned };
+  // part and topic are optional: when missing they are read from the video title (see indexLanguage)
+  let part = null;
+  if (pairs.part !== undefined && pairs.part !== '') {
+    part = Number(pairs.part);
+    if (![1, 2, 3].includes(part)) return { ok: false, reason: 'invalid part', cleaned };
+  }
+  const topic = pairs.topic || null;
   return { ok: true, key, part, topic, cleaned };
+}
+
+// "... | Part 1 Practice Question #tags" / "... | 파트 1 실전 문제" -> 1
+export function partFromTitle(title) {
+  const m = /(?:\bPart|파트)\s*([123])\b/i.exec(String(title || ''));
+  return m ? Number(m[1]) : null;
+}
+
+// "Enrolled Agent EA Exam: Filing Status for Year of Death | Part 1 Question #eaexam" -> "Filing Status for Year of Death"
+export function topicFromTitle(title) {
+  let t = String(title || '').replace(/#\S+/g, ' ').split('|')[0];
+  const i = t.search(/(?:EA\s*Exam|EA\s*시험)\s*:/i);
+  if (i >= 0) t = t.slice(t.indexOf(':', i) + 1);
+  t = t.replace(/\s+/g, ' ').trim();
+  return t || null;
 }
 
 // videos: [{ id, title, description, publishedAt, privacyStatus }] for ONE language.
@@ -43,8 +61,11 @@ export function indexLanguage(videos, lang) {
     if (!v || v.privacyStatus !== 'public') continue;      // private / unlisted / deleted
     const px = parsePx(v.description);
     if (!px.ok) { skipped.push(`skipped: no/invalid PX line (${v.id})`); continue; }
+    const part = px.part ?? partFromTitle(v.title);
+    const topic = px.topic ?? topicFromTitle(v.title);
+    if (!part || !topic) { skipped.push(`skipped: no part/topic in PX line or title (${v.id})`); continue; }
     const entry = { id: v.id, title: v.title || null, description: px.cleaned || null,
-                    publishedAt: v.publishedAt, part: px.part, topic: px.topic };
+                    publishedAt: v.publishedAt, part, topic };
     const prev = byKey.get(px.key);
     if (!prev) { byKey.set(px.key, entry); continue; }
     // same key twice in the same language: keep the earlier one

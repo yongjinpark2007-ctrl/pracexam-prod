@@ -64,12 +64,13 @@
 
 /* ── landing: Featured Short band (option A) ──────────────── */
 .fs-section{
-  padding:64px 0;
+  padding:40px 0;
   background:var(--accent-tint);
   border-top:1px solid var(--accent-border); border-bottom:1px solid var(--accent-border);
 }
 .fs-grid{display:grid; grid-template-columns:auto 1fr; gap:clamp(32px,6vw,72px); align-items:center;}
-.fs-media{position:relative; width:clamp(260px,26vw,340px);}
+.fs-media{position:relative; width:168px;} /* 9:16 -> about 300px tall, so the band stays short */
+.fs-media .vx-frame{border-radius:20px;}
 .fs-media::before{
   content:""; position:absolute; inset:-14% -22%; z-index:0; pointer-events:none;
   background:radial-gradient(closest-side, rgba(111,163,158,.35), rgba(111,163,158,0));
@@ -88,9 +89,9 @@
 .fs-yt:hover{color:var(--navy);}
 .fs-skel-line{height:18px; border-radius:8px; margin-bottom:12px;}
 @media (max-width:767px){
-  .fs-section{padding:44px 0;}
-  .fs-grid{grid-template-columns:1fr; justify-items:center; text-align:center;}
-  .fs-media{width:min(78vw,320px);}
+  .fs-section{padding:32px 0;}
+  .fs-grid{grid-template-columns:1fr; justify-items:center; text-align:center; gap:22px;}
+  .fs-media{width:132px;}
   .fs-desc{margin-left:auto; margin-right:auto;}
   .fs-actions{justify-content:center; flex-direction:column; width:100%;}
   .fs-actions .btn{width:100%; max-width:340px;}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parsePx, indexLanguage, planSync, syncShorts } from '../syncShorts.mjs';
+import { parsePx, indexLanguage, planSync, syncShorts, partFromTitle, topicFromTitle } from '../syncShorts.mjs';
 
 const NOW = new Date('2026-10-16T12:00:00Z');
 const vid = (id, key, date, extra = {}) => ({
@@ -23,7 +23,23 @@ test('PX line: missing / malformed', () => {
   assert.equal(parsePx('nothing here').ok, false);
   assert.equal(parsePx('PX: key=Bad_Key; part=1; topic=x').ok, false);
   assert.equal(parsePx('PX: key=ok-key-1; part=9; topic=x').ok, false);
-  assert.equal(parsePx('PX: key=ok-key-1; part=1').ok, false);
+  assert.equal(parsePx('PX: key=ok-key-1; part=1').ok, true);        // topic is now optional (read from title)
+  assert.equal(parsePx('PX: part=1; topic=x').ok, false);             // key is required
+});
+
+test('key-only PX line: part and topic come from the title', () => {
+  assert.equal(partFromTitle('Enrolled Agent EA Exam: Filing Status for Year of Death | Part 1 Question #eaexam'), 1);
+  assert.equal(partFromTitle('미국 세무사 EA 시험: 배우자 사망 연도의 신고 지위 | 파트 1 실전 문제'), 1);
+  assert.equal(partFromTitle('no part here'), null);
+  assert.equal(topicFromTitle('Enrolled Agent EA Exam: Filing Status for Year of Death | Part 1 Question #eaexam #eaexamprep'), 'Filing Status for Year of Death');
+  const r = indexLanguage([{ id: 'EN000000001', publishedAt: '2026-01-01T00:00:00Z', privacyStatus: 'public',
+    title: 'Enrolled Agent EA Exam: Filing Status for Year of Death | Part 1 Question', description: 'PX: key=filing-status-death' }], 'en');
+  const e = r.byKey.get('filing-status-death');
+  assert.deepEqual([e.part, e.topic], [1, 'Filing Status for Year of Death']);
+  const bad = indexLanguage([{ id: 'EN000000002', publishedAt: '2026-01-01T00:00:00Z', privacyStatus: 'public',
+    title: 'Random title', description: 'PX: key=some-key' }], 'en');
+  assert.equal(bad.byKey.size, 0);                                    // no part in PX or title -> skipped, not guessed
+  assert.match(bad.skipped[0], /no part\/topic/);
 });
 
 test('videos without PX or not public are skipped', () => {
