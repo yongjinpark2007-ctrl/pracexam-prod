@@ -1,1 +1,8 @@
 _bak/
+
+# secrets / local env
+.env
+.env.*
+.dev.vars
+node_modules/
+.wrangler/

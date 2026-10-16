@@ -153,6 +153,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="videos.css">
 <style>
 :root{
   /* Harbor 팔레트 (2026-06-19) — 354649 / 6C7A89 / A3C6C4 / E0E7E9 */
@@ -1057,6 +1058,34 @@ html{scrollbar-gutter:stable;}
   </div>
 </section>
 
+<!-- ═══ FEATURED SHORT (2026-10-16) — 히어로 바로 아래. 최신 무료 쇼츠 1개. 0건/실패면 통째로 숨김. 데이터·재생은 videos.js 공용 ═══ -->
+<section class="fs-section" id="fs-section" aria-labelledby="fs-title">
+  <div class="wrap fs-grid">
+    <div class="fs-media">
+      <div class="vx-frame vx-skel" id="fs-frame"></div>
+    </div>
+    <div class="fs-text">
+      <span class="eyebrow"><span class="ko">최신 무료 문제풀이</span><span class="en">Latest free practice question</span></span>
+      <h2 id="fs-title" class="vx-skel fs-skel-line" style="height:34px;width:min(100%,420px);"></h2>
+      <div id="fs-pill-slot"></div>
+      <p class="fs-desc" id="fs-desc"></p>
+      <div id="fs-toggle-slot"></div>
+      <div class="fs-actions">
+        <button class="btn btn-primary btn-lg" onclick="startFree()">
+          <span class="ko">30일 무료로 시작하기</span><span class="en">Start free for 30 days</span>
+        </button>
+        <a href="/videos" class="btn btn-ghost btn-lg" id="fs-more">
+          <span class="ko">무료 영상 더 보기 →</span><span class="en">More free videos →</span>
+        </a>
+      </div>
+      <a class="fs-yt" id="fs-yt" href="https://www.youtube.com/@PracExam-channel" target="_blank" rel="noopener" hidden>
+        <span class="ko">YouTube에서 보기</span><span class="en">Watch on YouTube</span>
+      </a>
+    </div>
+  </div>
+</section>
+<noscript><style>.fs-section{display:none;}</style></noscript>
+
 <!-- ═══ STATS ═══ -->
 <section class="stats">
   <div class="wrap stats-grid">
@@ -1536,6 +1565,7 @@ html{scrollbar-gutter:stable;}
         <a href="terms.html"><span class="ko">이용약관</span><span class="en">Terms</span></a>
         <a href="privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
         <a href="refund.html"><span class="ko">환불정책</span><span class="en">Refunds</span></a>
+        <a href="/videos" id="footer-videos" hidden><span class="ko">무료 영상</span><span class="en">Free Videos</span></a>
       </div>
       <div class="footer-social">
         <a class="social-link" href="mailto:hello@pracexam.com" title="hello@pracexam.com" aria-label="Email PracExam — hello@pracexam.com">
@@ -2569,6 +2599,59 @@ function doWaitlist(){
     slides[i].classList.add('rot-active');
   }, 15000);
 })();
+</script>
+<script src="videos.js" defer></script>
+<script>
+// ── Featured Short (2026-10-16): 최신 쇼츠 1개. 실패/0건이면 섹션과 footer 링크를 숨긴다 ──
+window.addEventListener('DOMContentLoaded', function(){
+  var sec = document.getElementById('fs-section');
+  var footLink = document.getElementById('footer-videos');
+  function giveUp(){ if(sec) sec.hidden = true; if(footLink) footLink.hidden = true; }
+  if(!sec || !window.PXVideos){ giveUp(); return; }
+  PXVideos.init({ url: SUPABASE_URL, anon: SUPABASE_ANON });
+  PXVideos.fetchRows(1).then(function(rows){
+    if(!rows.length){ giveUp(); return; }
+    var row = rows[0];
+    var lang = PXVideos.usable(row, PXVideos.siteLang());
+    var frame = document.getElementById('fs-frame');
+    var titleEl = document.getElementById('fs-title');
+    var descEl = document.getElementById('fs-desc');
+    var pillSlot = document.getElementById('fs-pill-slot');
+    var tgSlot = document.getElementById('fs-toggle-slot');
+    var yt = document.getElementById('fs-yt');
+
+    // h2 was a skeleton placeholder; turn it into the real heading
+    titleEl.className = ''; titleEl.removeAttribute('style');
+    frame.classList.remove('vx-skel');
+
+    var pill = document.createElement('span');
+    pill.className = 'vx-pill';
+    pillSlot.appendChild(pill);
+
+    function draw(l){
+      lang = l;
+      PXVideos.stop();
+      PXVideos.mount(frame, row, l);
+      titleEl.textContent = PXVideos.titleOf(row, l);
+      descEl.textContent = PXVideos.descOf(row, l);
+      pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+      var id = PXVideos.idOf(row, l);
+      yt.href = 'https://www.youtube.com/shorts/' + id;
+      yt.hidden = false;
+    }
+    var tg = PXVideos.makeToggle(row, lang, draw);
+    tgSlot.appendChild(tg);
+    draw(lang);
+    PXVideos.injectLd([row], 'featured');
+    if(footLink) footLink.hidden = false;
+
+    // follow the site KO/EN switch
+    new MutationObserver(function(){
+      var want = PXVideos.usable(row, PXVideos.siteLang());
+      if(want && want !== lang){ PXVideos.setToggle(tg, want); draw(want); }
+    }).observe(document.getElementById('html-root'), { attributes:true, attributeFilter:['class'] });
+  }).catch(giveUp);
+});
 </script>
 </body>
 </html>
