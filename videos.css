@@ -107,7 +107,9 @@
 .vp-card{display:flex; flex-direction:column; gap:12px; min-width:0;}
 .vp-card .vx-frame{max-height:none;}
 .vp-card h3{font-size:16px; line-height:1.35; margin:0;}
-.vp-meta{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;}
+.vp-meta{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:flex-start;}
+/* the pill is narrow inside a card: keep it tidy when the topic wraps to a second line */
+.vp-meta .vx-pill{display:block; width:100%; text-align:center; line-height:1.35; padding:5px 12px; border-radius:16px; text-wrap:balance;}
 .vp-empty{padding:48px 0; text-align:center; color:var(--text-muted);}
 .vp-cta{margin:44px 0 64px; text-align:center;}
 @media (max-width:560px){ .vp-grid{grid-template-columns:1fr; justify-items:center;} .vp-card{width:min(78vw,320px);} }
