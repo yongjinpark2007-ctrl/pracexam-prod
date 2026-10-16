@@ -337,11 +337,6 @@ html{scrollbar-gutter:stable;}
         <button type="button" data-v="2" aria-pressed="false">2</button>
         <button type="button" data-v="3" aria-pressed="false">3</button>
       </span></div>
-    <div><label id="lbl-lang"><span class="ko">언어</span><span class="en">Language</span></label>
-      <span class="vx-toggle" id="f-lang" role="group" aria-labelledby="lbl-lang">
-        <button type="button" data-v="en" aria-pressed="true">EN</button>
-        <button type="button" data-v="ko" aria-pressed="false">한국어</button>
-      </span></div>
   </div>
 
   <div class="vp-grid" id="vp-grid" aria-live="polite">
@@ -415,7 +410,7 @@ document.addEventListener('keydown', function(e){
   if (p === '1' || p === '2' || p === '3') state.part = p;
 
   function syncButtons(){
-    ['part','lang'].forEach(function(k){
+    ['part'].forEach(function(k){
       Array.prototype.forEach.call(document.querySelectorAll('#f-' + k + ' button'), function(b){
         b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === state[k]));
       });
@@ -446,8 +441,7 @@ document.addEventListener('keydown', function(e){
       PXVideos.mount(frame, row, l);
       h.textContent = PXVideos.titleOf(row, l);
     }
-    var tg = PXVideos.makeToggle(row, cur, draw);
-    meta.appendChild(pill); meta.appendChild(tg);
+    meta.appendChild(pill);
     art.appendChild(frame); art.appendChild(h); art.appendChild(meta);
     draw(cur);
     return art;
@@ -456,7 +450,7 @@ document.addEventListener('keydown', function(e){
   function render(){
     PXVideos.stop();
     var list = rows.filter(function(r){
-      return (state.part === 'all' || String(r.ea_part) === state.part) && PXVideos.has(r, state.lang);
+      return (state.part === 'all' || String(r.ea_part) === state.part) && PXVideos.usable(r, state.lang);
     });
     grid.innerHTML = '';
     list.forEach(function(r){ grid.appendChild(card(r)); });
@@ -471,10 +465,6 @@ document.addEventListener('keydown', function(e){
   document.getElementById('f-part').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (!b) return;
     state.part = b.getAttribute('data-v'); syncButtons(); syncUrl(); render();
-  });
-  document.getElementById('f-lang').addEventListener('click', function(e){
-    var b = e.target.closest('button'); if (!b) return;
-    setLang(b.getAttribute('data-v'));   // the observer below updates state and re-renders
   });
   new MutationObserver(function(){
     var l = PXVideos.siteLang();

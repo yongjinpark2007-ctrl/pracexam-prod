@@ -1155,7 +1155,6 @@ html{scrollbar-gutter:stable;}
       <h2 id="fs-title" class="vx-skel fs-skel-line" style="height:34px;width:min(100%,420px);"></h2>
       <div id="fs-pill-slot"></div>
       <p class="fs-desc" id="fs-desc"></p>
-      <div id="fs-toggle-slot"></div>
       <div class="fs-actions">
         <a href="/videos" class="btn btn-primary btn-lg" id="fs-more">
           <span class="ko">무료 영상 더 보기 →</span><span class="en">More free videos →</span>
@@ -2614,7 +2613,6 @@ window.addEventListener('DOMContentLoaded', function(){
     var titleEl = document.getElementById('fs-title');
     var descEl = document.getElementById('fs-desc');
     var pillSlot = document.getElementById('fs-pill-slot');
-    var tgSlot = document.getElementById('fs-toggle-slot');
     var yt = document.getElementById('fs-yt');
 
     // h2 was a skeleton placeholder; turn it into the real heading
@@ -2636,8 +2634,6 @@ window.addEventListener('DOMContentLoaded', function(){
       yt.href = 'https://www.youtube.com/shorts/' + id;
       yt.hidden = false;
     }
-    var tg = PXVideos.makeToggle(row, lang, draw);
-    tgSlot.appendChild(tg);
     draw(lang);
     PXVideos.injectLd([row], 'featured');
     if(footLink) footLink.hidden = false;
@@ -2645,7 +2641,7 @@ window.addEventListener('DOMContentLoaded', function(){
     // follow the site KO/EN switch
     new MutationObserver(function(){
       var want = PXVideos.usable(row, PXVideos.siteLang());
-      if(want && want !== lang){ PXVideos.setToggle(tg, want); draw(want); }
+      if(want && want !== lang){ draw(want); }
     }).observe(document.getElementById('html-root'), { attributes:true, attributeFilter:['class'] });
   }).catch(giveUp);
 });

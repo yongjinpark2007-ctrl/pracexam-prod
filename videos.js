@@ -75,10 +75,7 @@
     btn.innerHTML = (imgHtml || fb) + playIcon();
     box.appendChild(btn);
 
-    var badge = document.createElement('span');
-    badge.className = 'vx-badge';
-    badge.textContent = UI[l].part + row.ea_part;
-    box.appendChild(badge);
+    // No text badge on the poster: the thumbnail already carries its own text, and the Part pill sits next to it.
 
     var img = btn.querySelector('img');
     if(img){
