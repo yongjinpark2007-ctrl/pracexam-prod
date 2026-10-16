@@ -26,7 +26,9 @@
   // The language we can really show: the wanted one if it has a video, otherwise the other one.
   function usable(row, want){ return has(row, want) ? want : (has(row, other(want)) ? other(want) : null); }
 
-  function titleOf(row, l){ return row['title_' + l] || row['title_' + other(l)] || row.topic; }
+  // YouTube titles carry "| Part 1 ..." and #hashtags; the page shows the badge separately, so show a clean title.
+  function cleanTitle(t){ return String(t || '').replace(/#\S+/g, ' ').split('|')[0].replace(/\s+/g, ' ').trim(); }
+  function titleOf(row, l){ return cleanTitle(row['title_' + l] || row['title_' + other(l)]) || row.topic; }
   function descOf(row, l){ return row['description_' + l] || row['description_' + other(l)] || ''; }
 
   // ── data ────────────────────────────────────────────────
