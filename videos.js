@@ -107,7 +107,7 @@
     if(current && current.box !== box){ stop(); }
     var f = document.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(idOf(row, l)) +
-            '?autoplay=1&rel=0&playsinline=1&modestbranding=1';
+            '?autoplay=1&rel=0&playsinline=1&modestbranding=1&cc_load_policy=0';   // captions off unless the viewer's own YouTube setting turns them on
     f.title = titleOf(row, l);
     f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
     f.setAttribute('allowfullscreen', '');

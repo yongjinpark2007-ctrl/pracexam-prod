@@ -288,7 +288,7 @@ table.na-tbl tr.hi td{background:var(--accent-tint)}
    배포된 목록 화면이 «맨몸»으로 나온다. 실제로 그럴 뻔했고 검사가 잡았다. */
 /* ═══ Study Tips 목록 «나»안 — 최신 하나 크게 + 나머지 줄 목록 ═══ */
 .nl-hero{padding:44px 0 8px}
-.nl-h1{font-family:var(--font-display);font-size:clamp(29px,4.2vw,42px);line-height:1.14;
+.nl-h1{font-family:var(--font-display);font-size:clamp(26px,2.6vw,32px);line-height:1.14;
   color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px}
 .nl-lede{font-size:16.5px;line-height:1.62;color:var(--text-mid);max-width:58ch;margin:0}
 
