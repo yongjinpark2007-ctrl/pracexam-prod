@@ -1696,6 +1696,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
       <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
+      <button class="nav-btn" id="nav-videos" onclick="showScreen('videos');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="nav_videos">동영상</span></button>
       <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
       <button class="nav-btn" id="nav-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="nav_admin">관리자</span></button>
     </div>
@@ -1717,6 +1718,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <button class="mobile-nav-item" id="mob-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
   <button class="mobile-nav-item" id="mob-review" onclick="showScreen('bookmarks');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="mob_review">Review</span></button>
   <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
+  <button class="mobile-nav-item" id="mob-videos" onclick="showScreen('videos');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="mob_videos">동영상</span></button>
   <button class="mobile-nav-item" id="mob-settings" onclick="showScreen('settings');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
   <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="nav_admin">관리자</span></button>
 </div>
@@ -1753,6 +1755,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
   <!-- Weak topics widget (Phase 2-5 에서 활성화) -->
   <div id="dash-weak-topics"></div>
+
+  <!-- 동영상 (2026-10-17) — 약점 보강 아래, 최근 세션 위. 이 회원이 «볼 수 있는» 가장 최신 영상 1개 + More videos -->
+  <div id="dash-videos"></div>
 
   <!-- Recent 2 sessions -->
   <div id="dash-recent-2"></div>
@@ -2145,6 +2150,30 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 </div>
 
 <!-- ═══ SETTINGS ═══ -->
+<!-- ═══ 동영상 (2026-10-17) ═══ 무료 + 가입자 전용. 가입자 전용은 결제·증정 회원만 재생, 나머지는 잠금 카드 -->
+<style>
+#dash-videos, #screen-videos{ --border-strong:var(--border-clr); --font-sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
+/* 대시보드 «최신 영상» — 랜딩 페이지의 Featured Short 띠와 같은 디자인(videos.css 의 .fs-* 를 그대로 쓴다) */
+.dv-card{background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:14px; padding:22px 24px; margin-bottom:1.25rem;}
+.dv-card .fs-grid{gap:clamp(20px,4vw,44px);}
+.dv-card .fs-media{width:200px;}
+.dv-eyebrow{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted);}
+.dv-card .fs-text h2{margin:8px 0 10px; font-size:clamp(18px,1.9vw,22px); line-height:1.35; color:var(--text-main);}
+.dv-card .fs-desc{margin-bottom:16px; font-size:13.5px; color:var(--text-mid); line-height:1.55;}
+.dv-locked-note{margin-top:12px; font-size:12.5px; color:var(--text-muted); cursor:pointer; text-decoration:underline;}
+#screen-videos .vp-filters{margin:6px 0 20px;}
+#screen-videos .vp-grid{margin-bottom:2rem;}
+@media (max-width:767px){
+  .dv-card{padding:20px 16px;}
+  .dv-card .fs-media{width:min(56vw,200px);}
+  .dv-card .fs-actions button{width:100%; max-width:340px;}
+}
+</style>
+<div id="screen-videos" class="screen">
+  <div class="section-title" data-i18n="vid_title">동영상 EA 문제 풀이</div>
+  <div id="vid-body"></div>
+</div>
+
 <div id="screen-settings" class="screen">
   <div class="section-title" id="settings-screen-title">Settings</div>
 
@@ -4981,6 +5010,9 @@ var UI_TEXT = {
   mob_review:    {ko:'복습',     en:'Review'},
   mob_statistics:{ko:'통계',     en:'Statistics'},
   mob_settings:  {ko:'설정',     en:'Settings'},
+  nav_videos:    {ko:'동영상',   en:'Videos'},
+  mob_videos:    {ko:'동영상',   en:'Videos'},
+  vid_title:     {ko:'동영상 EA 문제 풀이', en:'EA Practice Question Videos'},
   nav_account:   {ko:'내 계정',  en:'My Account'},
   nav_settings:  {ko:'설정',     en:'Settings'},
   nav_admin:     {ko:'관리자',   en:'Admin'},
@@ -5364,6 +5396,7 @@ function applyLang(){
   try{ if(typeof renderReviewSessions === 'function') renderReviewSessions(); }catch(e){}
   // 모의고사 화면(활성 시)도 선택 언어로 재렌더 (mL()로 그려지므로 토글 시 갱신 필요)
   try{ if(document.querySelector('#screen-mock.active') && typeof renderMockHub==='function') renderMockHub(); }catch(e){}
+  try{ if(document.querySelector('#screen-videos.active') && typeof renderVideosScreen==='function') renderVideosScreen(); }catch(e){}
   try{ if(document.querySelector('#screen-mock-history.active') && typeof renderMockHistory==='function') renderMockHistory(); }catch(e){}
   try{ if(document.querySelector('#screen-mock-result.active') && typeof renderMockResult==='function' && Mock.result) renderMockResult(Mock.result); }catch(e){}
   // 🔴 2026-09-14 — War Room 은 여기 없어서 안 바뀌고 있었다(사용자 실측 —
@@ -5637,14 +5670,15 @@ function resetData(){
 // NAVIGATION
 // ══════════════════════════════════════════════════════
 function showScreen(name){
+  try{ if(window.PXVideos) PXVideos.stop(); }catch(e){}   // 화면을 옮기면 재생 중이던 영상은 멈춘다
   // Admin 전용 화면 가드 (nav는 숨기지만 직접 호출도 차단)
   if(name==='anomaly' && !(SB_USER && SB_USER.id === ADMIN_UID)){ name='dashboard'; }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,settings:6,anomaly:7};  // Upload 메뉴 삭제(2026-08-25) — 인덱스 한 칸 당김
+  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,videos:6,settings:7,anomaly:8};  // Upload 메뉴 삭제(2026-08-25) — 인덱스 한 칸 당김
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
-  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',settings:'mob-settings',anomaly:'mob-anomaly'};
+  const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',videos:'mob-videos',settings:'mob-settings',anomaly:'mob-anomaly'};
   document.querySelectorAll('.mobile-nav-item').forEach(b=>b.classList.remove('active'));
   if(mobMap[name]) { const el=document.getElementById(mobMap[name]); if(el) el.classList.add('active'); }
   // 모의고사 하위 화면(exam/result/history)도 모의고사 메뉴를 활성 표시
@@ -5662,6 +5696,7 @@ function showScreen(name){
   if(name==='statistics') renderStatistics();
   if(name==='anomaly') openAdmin();
   if(name==='mock') renderMockHub();
+  if(name==='videos') renderVideosScreen();
   if(name==='mock-history') renderMockHistory();
   // 화면 전환 후에도 Resume 배지 상태 갱신
   updateResumeBadge();
@@ -5925,6 +5960,117 @@ function heroRing(pct, color, under, lab, sub, target, back, aria, big){
     '<div class="hr-sub">' + sub + '</div></div>';
 }
 
+// ══════════════════════════════════════════════════════
+// 동영상 (2026-10-17) — 대시보드 «최신 영상» 1개 + 「동영상」 화면
+//   · 목록은 서버 함수 get_videos_for_viewer() 가 준다(videos.js 가 부른다).
+//     결제·증정 회원·관리자 = 모든 영상 재생 / 그 외 = 가입자 전용은 번호 없는 «잠금 카드»
+//   · 잠금 카드를 누르면 요금제 안내창(showPricingModal)
+//   · 함수가 없거나 실패하면 영상 칸만 비워 둔다 — 앱의 다른 부분은 영향 없음
+// ══════════════════════════════════════════════════════
+var _VID = { rows:null, at:0, loading:null, ready:null, part:'all' };
+function vidT(ko, en){ return LANG === 'en' ? en : ko; }
+function ensureVideoLib(){
+  if(window.PXVideos){ _vidInit(); return Promise.resolve(); }
+  if(_VID.ready) return _VID.ready;
+  _VID.ready = new Promise(function(res, rej){
+    try{
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/videos.css?v=20261017'; document.head.appendChild(l);
+      var s = document.createElement('script'); s.src = '/videos.js?v=20261017';
+      s.onload = function(){ _vidInit(); res(); };
+      s.onerror = function(){ _VID.ready = null; rej(new Error('videos.js load failed')); };
+      document.head.appendChild(s);
+    }catch(e){ _VID.ready = null; rej(e); }
+  });
+  return _VID.ready;
+}
+function _vidInit(){
+  PXVideos.init({ url: SUPABASE_URL, anon: SUPABASE_ANON,
+    onLocked: function(){ try{ showPricingModal(); }catch(e){} } });
+}
+// 1분 동안은 같은 목록을 다시 쓴다(언어를 바꿀 때마다 서버를 부르지 않게). force 면 새로 받는다.
+function loadVideoRows(force){
+  if(!force && _VID.rows && (Date.now() - _VID.at) < 60000) return Promise.resolve(_VID.rows);
+  if(_VID.loading) return _VID.loading;
+  _VID.loading = ensureVideoLib().then(function(){ return PXVideos.fetchRows(); }).then(function(r){
+    _VID.rows = r; _VID.at = Date.now(); _VID.loading = null; return r;
+  }, function(e){ _VID.loading = null; throw e; });
+  return _VID.loading;
+}
+
+function renderDashVideos(){
+  var el = document.getElementById('dash-videos'); if(!el) return;
+  if(el.querySelector('iframe')) return;      // 재생 중이면 다른 갱신이 영상을 끊지 않게 둔다
+  loadVideoRows(false).then(function(rows){
+    if(el.querySelector('iframe')) return;
+    var play = rows.filter(function(r){ return !r.locked; });      // 목록은 최신순 — 첫 번째가 «볼 수 있는» 최신 영상
+    var nLocked = rows.length - play.length;
+    if(!play.length){ el.innerHTML = ''; return; }
+    var row = play[0];
+    var l = PXVideos.usable(row, LANG);
+    if(!l){ el.innerHTML = ''; return; }
+    el.innerHTML =
+      '<div class="dv-card">' +
+        '<div class="fs-grid">' +
+          '<div class="fs-media"><div class="vx-frame" id="dv-frame"></div></div>' +
+          '<div class="fs-text">' +
+            '<span class="dv-eyebrow">' + vidT('동영상 EA 문제 풀이', 'EA Practice Question Videos') + '</span>' +
+            '<h2 id="dv-title"></h2>' +
+            '<div><span class="vx-pill" id="dv-pill"></span></div>' +
+            '<p class="fs-desc" id="dv-desc" style="margin-top:12px;"></p>' +
+            '<div class="fs-actions"><button class="btn-navy" onclick="showScreen(\'videos\')">' +
+              vidT('더 많은 영상 보기 →', 'More videos →') + '</button></div>' +
+            (nLocked > 0 ? '<div class="dv-locked-note" onclick="showScreen(\'videos\')">🔒 ' +
+              vidT('가입자 전용 영상 ' + nLocked + '개 더 있어요', nLocked + ' more members-only video' + (nLocked > 1 ? 's' : '')) + '</div>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    document.getElementById('dv-pill').textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+    document.getElementById('dv-title').textContent = PXVideos.titleOf(row, l);
+    document.getElementById('dv-desc').textContent = PXVideos.descOf(row, l) || '';
+    PXVideos.mount(document.getElementById('dv-frame'), row, l);
+  }).catch(function(){ el.innerHTML = ''; });
+}
+
+function vidSetPart(v){ _VID.part = v; renderVideosScreen(true); }
+function renderVideosScreen(keepRows){
+  var host = document.getElementById('vid-body'); if(!host) return;
+  host.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">' + vidT('불러오는 중…', 'Loading…') + '</div>';
+  loadVideoRows(!keepRows).then(function(rows){
+    PXVideos.stop();
+    var list = rows.filter(function(r){
+      return (_VID.part === 'all' || String(r.ea_part) === _VID.part) && PXVideos.usable(r, LANG);
+    });
+    var f = '<div class="vp-filters"><div><label>' + vidT('파트', 'Part') + '</label><span class="vx-toggle" role="group">' +
+      ['all', '1', '2', '3'].map(function(v){
+        return '<button type="button" aria-pressed="' + (_VID.part === v) + '" onclick="vidSetPart(\'' + v + '\')">' +
+               (v === 'all' ? vidT('전체', 'All') : v) + '</button>';
+      }).join('') + '</span></div></div>';
+    host.innerHTML = f + (list.length
+      ? '<div class="vp-grid" id="vid-grid"></div>'
+      : '<div class="vp-empty">' + vidT('아직 영상이 없습니다.', 'No videos yet.') + '</div>');
+    var grid = document.getElementById('vid-grid'); if(!grid) return;
+    list.forEach(function(row){
+      var l = PXVideos.usable(row, LANG);
+      var art = document.createElement('article'); art.className = 'vp-card';
+      var frame = document.createElement('div'); frame.className = 'vx-frame';
+      var h = document.createElement('h3'); h.textContent = PXVideos.titleOf(row, l);
+      var meta = document.createElement('div'); meta.className = 'vp-meta';
+      var pill = document.createElement('span'); pill.className = 'vx-pill';
+      pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+      meta.appendChild(pill);
+      if(row.access === 'members' && !row.locked){
+        var tag = document.createElement('span'); tag.className = 'vx-pill';
+        tag.textContent = vidT('가입자 전용', 'Members'); meta.appendChild(tag);
+      }
+      art.appendChild(frame); art.appendChild(h); art.appendChild(meta);
+      grid.appendChild(art);
+      PXVideos.mount(frame, row, l);
+    });
+  }).catch(function(){
+    host.innerHTML = '<div class="vp-empty">' + vidT('영상을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.', 'Could not load videos. Please try again later.') + '</div>';
+  });
+}
+
 function renderDashboard(){
   if(!S.questions){ S.questions = []; }
 
@@ -5937,6 +6083,7 @@ function renderDashboard(){
   try{ renderMockDashCard(); }catch(e){}
   renderDashPartsGrid();
   renderDashWeakTopics();
+  try{ renderDashVideos(); }catch(e){}
   renderDashRecent2();
   renderAnnouncements();
 }
