@@ -5,15 +5,24 @@
 (function(){
   'use strict';
 
-  var cfg = { url:'', anon:'' };
+  // Members-only videos (2026-10-17): the list comes from the RPC get_videos_for_viewer(). For viewers who may not watch a
+  // video the server returns it with locked=true and NO YouTube id, so a lock card is all we can draw (nothing to leak).
+  var cfg = { url:'', anon:'', getToken:null, onLocked:null, lockedHref:'/app' };
   var current = null;   // the one player that is currently playing: { box, row, lang }
 
   var UI = {
-    en: { play:'Play video: ', part:'EA Part ', watch:'Watch on YouTube' },
-    ko: { play:'영상 재생: ',  part:'EA Part ', watch:'YouTube에서 보기' }
+    en: { play:'Play video: ', part:'EA Part ', watch:'Watch on YouTube', locked:'Members only', lockedCta:'Available with a paid membership', lockedLabel:'Members-only video: ' },
+    ko: { play:'영상 재생: ',  part:'EA Part ', watch:'YouTube에서 보기', locked:'가입자 전용', lockedCta:'유료 멤버십으로 볼 수 있어요', lockedLabel:'가입자 전용 영상: ' }
   };
 
-  function init(o){ cfg.url = o.url; cfg.anon = o.anon; }
+  // o.getToken()  -> the signed-in user's access token (optional; the page may know it better than localStorage)
+  // o.onLocked(row) -> what a click on a lock card does (default: go to o.lockedHref, '/app')
+  function init(o){
+    cfg.url = o.url; cfg.anon = o.anon;
+    if(o.getToken) cfg.getToken = o.getToken;
+    if(o.onLocked) cfg.onLocked = o.onLocked;
+    if(o.lockedHref) cfg.lockedHref = o.lockedHref;
+  }
 
   function siteLang(){
     var r = document.getElementById('html-root');
@@ -21,7 +30,8 @@
   }
   function other(l){ return l === 'ko' ? 'en' : 'ko'; }
   function idOf(row, l){ return row['youtube_id_' + l] || null; }
-  function has(row, l){ return !!idOf(row, l); }
+  function has(row, l){ return row.locked ? !!row['has_' + l] : !!idOf(row, l); }
+  function isLocked(row){ return !!(row && row.locked); }
 
   // The language we can really show: the wanted one if it has a video, otherwise the other one.
   function usable(row, want){ return has(row, want) ? want : (has(row, other(want)) ? other(want) : null); }
@@ -47,12 +57,44 @@
   function descOf(row, l){ return firstLine(row['description_' + l] || row['description_' + other(l)]); }
 
   // ── data ────────────────────────────────────────────────
-  function fetchRows(limit){
+  // The signed-in user's token, so a paying member sees unlocked videos on the public pages too.
+  // supabase-js keeps the session in localStorage under sb-<project-ref>-auth-token (same origin as the app).
+  function sessionToken(){
+    try{
+      if(cfg.getToken){ var t = cfg.getToken(); if(t) return t; }
+      var ref = String(cfg.url).replace(/^https?:\/\//, '').split('.')[0];
+      var s = JSON.parse(localStorage.getItem('sb-' + ref + '-auth-token') || 'null');
+      if(s && s.access_token && (!s.expires_at || s.expires_at * 1000 > Date.now() + 10000)) return s.access_token;
+    }catch(e){}
+    return null;
+  }
+  function rpcRows(token, limit){
+    return fetch(cfg.url + '/rest/v1/rpc/get_videos_for_viewer', {
+      method:'POST',
+      headers:{ apikey:cfg.anon, Authorization:'Bearer ' + (token || cfg.anon), 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_limit: limit || null })
+    }).then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  // The old direct table read (free rows only). Used if the RPC is not available - the site must never break.
+  function tableRows(limit){
     var q = cfg.url + '/rest/v1/shorts_videos?select=*&is_published=eq.true' +
             '&order=published_at.desc,sort_order.desc' + (limit ? '&limit=' + limit : '');
     return fetch(q, { headers:{ apikey:cfg.anon, Authorization:'Bearer ' + cfg.anon } })
-      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(rows){ return Array.isArray(rows) ? rows.filter(function(x){ return has(x,'en') || has(x,'ko'); }) : []; });
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  // opts.playableOnly: skip the lock cards (e.g. the landing "latest video" band wants a video you can actually play)
+  function fetchRows(limit, opts){
+    var playable = !!(opts && opts.playableOnly);
+    var want = playable ? null : limit;                       // with playableOnly we cut to `limit` after filtering
+    var tok = sessionToken();
+    var first = rpcRows(tok, want);
+    if(tok) first = first.catch(function(){ return rpcRows(null, want); });   // expired / rejected token -> anonymous
+    return first.catch(function(){ return tableRows(want); })
+      .then(function(rows){
+        rows = Array.isArray(rows) ? rows.filter(function(x){ return has(x,'en') || has(x,'ko'); }) : [];
+        if(playable){ rows = rows.filter(function(x){ return !x.locked; }); if(limit) rows = rows.slice(0, limit); }
+        return rows;
+      });
   }
 
   // ── poster / player ─────────────────────────────────────
@@ -76,6 +118,7 @@
     box.__row = row; box.__lang = l;
     if(!l){ return; }
     var title = titleOf(row, l);
+    if(row.locked){ mountLocked(box, row, l, title); return; }
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'vx-poster';
@@ -109,6 +152,28 @@
       });
     }
     btn.addEventListener('click', function(){ play(box); });
+  }
+
+  // Lock card: no YouTube id exists on the page for this video. Poster only if the server sent a safe one.
+  function mountLocked(box, row, l, title){
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'vx-poster vx-locked';
+    btn.setAttribute('aria-label', UI[l].lockedLabel + title);
+    var fb = '<span class="vx-fallback"><span>' + esc(UI[l].part + row.ea_part) + '</span><small>' + esc(row.topic) + '</small></span>';
+    var bg = row.poster_url
+      ? '<img alt="" width="360" height="640" loading="lazy" decoding="async" src="' + esc(row.poster_url) + '">'
+      : fb;
+    var lock = '<span class="vx-lock" aria-hidden="true">' +
+               '<span class="vx-lock-ico"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 8V7a3 3 0 1 1 6 0v3H9z"/></svg></span>' +
+               '<b>' + esc(UI[l].locked) + '</b><small>' + esc(UI[l].lockedCta) + '</small></span>';
+    btn.innerHTML = bg + lock;
+    var img = btn.querySelector('img');
+    if(img){ img.addEventListener('error', function(){ img.remove(); btn.insertAdjacentHTML('afterbegin', fb); }); }
+    btn.addEventListener('click', function(){
+      if(cfg.onLocked){ cfg.onLocked(row); } else { location.href = cfg.lockedHref; }
+    });
+    box.appendChild(btn);
   }
 
   function stop(){
@@ -212,7 +277,7 @@
 
   window.PXVideos = {
     init: init, siteLang: siteLang, other: other, has: has, usable: usable,
-    titleOf: titleOf, descOf: descOf, idOf: idOf,
+    titleOf: titleOf, descOf: descOf, idOf: idOf, isLocked: isLocked,
     fetchRows: fetchRows, mount: mount, stop: stop, play: play,
     makeToggle: makeToggle, setToggle: setToggle, injectLd: injectLd, esc: esc, UI: UI
   };

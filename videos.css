@@ -116,3 +116,19 @@
 @media (min-width:561px) and (max-width:900px){ .vp-grid{grid-template-columns:repeat(2, 1fr);} }
 
 [hidden]{display:none !important;}
+
+/* ── members-only lock card (2026-10-17) ─────────────────── */
+.vx-locked::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(35,46,48,.55), rgba(35,46,48,.82));}
+.vx-lock{
+  position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; padding:20px; text-align:center; color:#fff;
+}
+.vx-lock-ico{
+  width:52px; height:52px; border-radius:50%; background:var(--accent);
+  display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px rgba(0,0,0,.35);
+}
+.vx-lock-ico svg{width:24px; height:24px; fill:#fff;}
+.vx-lock b{font-size:16px; font-weight:800; letter-spacing:.01em;}
+.vx-lock small{font-size:12.5px; font-weight:600; opacity:.9; line-height:1.4; max-width:180px;}
+.vx-locked:hover .vx-lock-ico, .vx-locked:focus-visible .vx-lock-ico{transform:scale(1.08);}
+.vx-lock-ico{transition:transform .15s;}

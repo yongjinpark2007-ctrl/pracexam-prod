@@ -2605,7 +2605,7 @@ window.addEventListener('DOMContentLoaded', function(){
   function giveUp(){ if(sec) sec.hidden = true; if(footLink) footLink.hidden = true; }
   if(!sec || !window.PXVideos){ giveUp(); return; }
   PXVideos.init({ url: SUPABASE_URL, anon: SUPABASE_ANON });
-  PXVideos.fetchRows(1).then(function(rows){
+  PXVideos.fetchRows(1, { playableOnly: true }).then(function(rows){
     if(!rows.length){ giveUp(); return; }
     var row = rows[0];
     var lang = PXVideos.usable(row, PXVideos.siteLang());
