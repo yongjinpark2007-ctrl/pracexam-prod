@@ -6,6 +6,11 @@ compatibility_date = "2026-10-01"
 [triggers]
 crons = ["0 * * * *"]
 
-# Secrets are NOT stored here. Set each one with:  npx wrangler secret put <NAME>
-#   YOUTUBE_API_KEY, YT_PLAYLIST_ID_EN, YT_PLAYLIST_ID_KO,
-#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SYNC_SECRET
+# Public values (not secrets): the playlist IDs and the Supabase project URL are already visible in public pages.
+[vars]
+YT_PLAYLIST_ID_EN = "PLPr1-yXbj2eA"
+YT_PLAYLIST_ID_KO = "PLRgIwnpDX2g0"
+SUPABASE_URL = "https://ufrhvodruulpgnmudzwh.supabase.co"
+
+# The three real secrets are NOT stored here. Set each one with:  npx wrangler secret put <NAME>
+#   YOUTUBE_API_KEY, SUPABASE_SERVICE_ROLE_KEY, SYNC_SECRET

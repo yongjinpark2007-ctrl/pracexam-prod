@@ -29,7 +29,22 @@
   // YouTube titles carry "| Part 1 ..." and #hashtags; the page shows the badge separately, so show a clean title.
   function cleanTitle(t){ return String(t || '').replace(/#\S+/g, ' ').split('|')[0].replace(/\s+/g, ' ').trim(); }
   function titleOf(row, l){ return cleanTitle(row['title_' + l] || row['title_' + other(l)]) || row.topic; }
-  function descOf(row, l){ return row['description_' + l] || row['description_' + other(l)] || ''; }
+  // YouTube descriptions are long (question, answer, key terms, hashtags). Show only the first real line, without #hashtags.
+  function firstLine(d){
+    var lines = String(d || '').replace(/#\S+/g, ' ').split(/\r?\n/);
+    for (var i = 0; i < lines.length; i++){
+      var s = lines[i].replace(/\s+/g, ' ').trim();
+      if (s && !/^[━─=\-\s]+$/.test(s)) return s;
+    }
+    return '';
+  }
+  // Structured-data text: the readable start of the description, no hashtags or divider lines.
+  function plainDesc(d){
+    return String(d || '').replace(/#\S+/g, ' ').split(/\r?\n/)
+      .map(function(s){ return s.replace(/\s+/g, ' ').trim(); })
+      .filter(function(s){ return s && !/^[━─=\-\s]+$/.test(s); }).join(' ').slice(0, 300);
+  }
+  function descOf(row, l){ return firstLine(row['description_' + l] || row['description_' + other(l)]); }
 
   // ── data ────────────────────────────────────────────────
   function fetchRows(limit){
@@ -153,7 +168,7 @@
       out.push({
         '@context':'https://schema.org', '@type':'VideoObject',
         name: row['title_' + l] || row.topic,
-        description: row['description_' + l] || ('EA Part ' + row.ea_part + ' - ' + row.topic),
+        description: plainDesc(row['description_' + l]) || ('EA Part ' + row.ea_part + ' - ' + row.topic),
         thumbnailUrl: [row.poster_url || ytThumb(id, 'hqdefault')],
         uploadDate: row.published_at,
         embedUrl: 'https://www.youtube.com/embed/' + id,
