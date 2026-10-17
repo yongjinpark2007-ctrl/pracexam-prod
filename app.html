@@ -2154,7 +2154,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 <style>
 #dash-videos, #screen-videos{ --border-strong:var(--border-clr); --font-sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
 /* 대시보드 «최신 영상» — 랜딩 페이지의 Featured Short 띠와 같은 디자인(videos.css 의 .fs-* 를 그대로 쓴다) */
-.dv-card{background:var(--accent-tint); border:1px solid var(--accent-border); border-radius:14px; padding:22px 24px; margin-bottom:1.25rem;}
+/* 바탕은 다른 대시보드 카드(.dash-sec-card)와 같은 «흰 카드 + 회색 왼쪽 선». 대시보드에서 따뜻한 색을 걷은 2026-09-21 결정을 따른다. */
+.dv-card{background:var(--card-bg); border:1px solid var(--border-clr); border-left:3px solid var(--silver); border-radius:14px; padding:22px 24px; margin-bottom:1.25rem; box-shadow:var(--card-shadow);}
+#dash-videos .vx-pill, #screen-videos .vx-pill{background:var(--navy-light); border-color:var(--border-clr); color:var(--navy);}
 .dv-card .fs-grid{gap:clamp(20px,4vw,44px);}
 .dv-card .fs-media{width:200px;}
 .dv-eyebrow{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted);}
@@ -5999,9 +6001,11 @@ function loadVideoRows(force){
 
 function renderDashVideos(){
   var el = document.getElementById('dash-videos'); if(!el) return;
-  if(el.querySelector('iframe')) return;      // 재생 중이면 다른 갱신이 영상을 끊지 않게 둔다
+  // 재생 중(또는 일시정지)이면 다른 갱신이 영상을 끊지 않게 둔다. 단 «언어를 바꾼 경우»는 다시 그린다.
+  if(el.querySelector('iframe') && el.getAttribute('data-lang') === LANG) return;
   loadVideoRows(false).then(function(rows){
-    if(el.querySelector('iframe')) return;
+    if(el.querySelector('iframe') && el.getAttribute('data-lang') === LANG) return;
+    try{ PXVideos.stop(); }catch(e){}
     var play = rows.filter(function(r){ return !r.locked; });      // 목록은 최신순 — 첫 번째가 «볼 수 있는» 최신 영상
     var nLocked = rows.length - play.length;
     if(!play.length){ el.innerHTML = ''; return; }
@@ -6024,6 +6028,7 @@ function renderDashVideos(){
           '</div>' +
         '</div>' +
       '</div>';
+    el.setAttribute('data-lang', LANG);
     document.getElementById('dv-pill').textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
     document.getElementById('dv-title').textContent = PXVideos.titleOf(row, l);
     document.getElementById('dv-desc').textContent = PXVideos.descOf(row, l) || '';
