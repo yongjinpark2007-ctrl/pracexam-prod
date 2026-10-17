@@ -122,13 +122,32 @@
     if(current && current.box !== box){ stop(); }
     var f = document.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(idOf(row, l)) +
-            '?autoplay=1&rel=0&playsinline=1&modestbranding=1&cc_load_policy=0';   // captions off unless the viewer's own YouTube setting turns them on
+            '?autoplay=1&rel=0&playsinline=1&modestbranding=1&cc_load_policy=0' +   // captions off unless the viewer's own YouTube setting turns them on
+            '&enablejsapi=1&origin=' + encodeURIComponent(location.origin);          // enablejsapi: lets us send the "captions off" command below
     f.title = titleOf(row, l);
     f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
     f.setAttribute('allowfullscreen', '');
     box.innerHTML = '';
     box.appendChild(f);
     current = { box: box };
+    captionsOff(f);
+  }
+
+  // Our videos already have captions burned in, so turn the YouTube caption layer off, whatever the viewer's own setting is.
+  // Uses the player's postMessage command channel (undocumented unloadModule). If YouTube ever changes it, nothing breaks:
+  // the captions simply stay as the viewer's setting decides. Sent a few times because the player may not be ready at first.
+  function captionsOff(f){
+    var ORIGIN = 'https://www.youtube-nocookie.com';
+    function send(){
+      try{
+        var w = f.contentWindow; if(!w) return;
+        w.postMessage(JSON.stringify({ event:'listening', id:1, channel:'widget' }), ORIGIN);
+        w.postMessage(JSON.stringify({ event:'command', func:'unloadModule', args:['captions'] }), ORIGIN);
+        w.postMessage(JSON.stringify({ event:'command', func:'unloadModule', args:['cc'] }), ORIGIN);
+      }catch(e){}
+    }
+    f.addEventListener('load', send);
+    [400, 1200, 2500].forEach(function(ms){ setTimeout(send, ms); });
   }
 
   // ── EN | KO toggle (used per card and in the featured band) ─────────
