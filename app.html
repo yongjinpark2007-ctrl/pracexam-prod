@@ -2887,6 +2887,35 @@ function loadAdminUserDir(){
 function _dirName(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.name) || ''; }
 function _dirLang(uid){ var u = _ADMIN_DIR && _ADMIN_DIR[uid]; return (u && u.language) || ''; }
 
+// ── 관리자: 이용 상태 (2026-10-17) — 결제 / 증정 / 체험중 / 체험만료 ──
+//   admin/index.html 의 statusOf() 와 «같은 규칙·같은 용어». 읽기 전용 RPC admin_list_customers 를 재사용한다(새 SQL 없음).
+//   미배포/오류/명단에 없는 사람 → 맵에 없음 → 상태 칸은 예전처럼 유료/체험만 표시(앱 손상 없음).
+var _ADMIN_PLAN = null;          // { user_id: {is_paid, plan_code, trial_ends_at} }
+var _ADMIN_PLAN_PROMISE = null;
+function loadAdminPlans(){
+  if(!_ADMIN_PLAN_PROMISE){
+    _ADMIN_PLAN_PROMISE = (async function(){
+      _ADMIN_PLAN = {};
+      try{
+        var res = await sb.rpc('admin_list_customers', { p_limit: 2000, p_offset: 0 });
+        if(res.error) throw res.error;
+        (res.data || []).forEach(function(u){
+          _ADMIN_PLAN[u.user_id] = { is_paid: !!u.is_paid, plan_code: u.plan_code || '', trial_ends_at: u.trial_ends_at || null };
+        });
+      }catch(e){ /* 미배포/오류 → 빈 맵 유지 */ }
+      return _ADMIN_PLAN;
+    })();
+  }
+  return _ADMIN_PLAN_PROMISE;
+}
+function _planStatus(uid, isPaidFallback){
+  var u = _ADMIN_PLAN && _ADMIN_PLAN[uid];
+  if(!u) return isPaidFallback ? '유료' : '체험';           // 명단에 없으면 예전 표시 그대로
+  if(u.is_paid) return String(u.plan_code).slice(0,5) === 'comp_' ? '증정' : '결제';
+  var te = u.trial_ends_at ? new Date(u.trial_ends_at).getTime() : 0;
+  return (te && te > Date.now()) ? '체험중' : '체험만료';
+}
+
 // ── 관리자: 사는 곳(나라·우편번호) (2026-08-28) ──
 //   RPC: admin_user_locations() (SECURITY DEFINER · 관리자 대조 + REVOKE · 읽기 전용)
 //   값은 profiles.country/postal_code — 결제 웹훅이 Paddle 주소에서 받아 채운다.
@@ -3100,6 +3129,7 @@ async function renderAnomaly(){
 
   await loadAdminUserDir();   // 이름·언어 칼럼용 (미배포 시 '—')
   await loadAdminUserLoc();   // 나라 칼럼용 (미배포 시 '—')
+  await loadAdminPlans();     // 상태 칼럼용 (미배포 시 유료/체험 표시)
   // 🔴 2026-08-21 — 이 줄이 «빠져 있었다». War Room 칸(_wrCell)을 그리는 것은 이 화면인데
   //    부르는 곳은 엉뚱하게 모의고사 모니터였다(그 표엔 그 칸이 없다). 그래서 호출이 아예 안 되어
   //    _WR_USE_OK 가 처음 값 false 인 채로 「조회 실패(원인 미상)」이 찍혔다 — 서버 오류가 아니었다.
@@ -3145,7 +3175,7 @@ async function renderAnomaly(){
 
   rows.forEach(function(r, i){
     var t = _anomTier(r._score);
-    var stateTxt = r.is_paid ? '유료' : '체험';
+    var stateTxt = _planStatus(r.user_id, r.is_paid);
     html +=
       '<tr style="background:'+t.bg+';">'+
         '<td class="nw"><span class="risk" style="color:'+t.color+';">'+r._score+'</span><span class="risk-l" style="color:'+t.color+';">'+t.label+'</span></td>'+
