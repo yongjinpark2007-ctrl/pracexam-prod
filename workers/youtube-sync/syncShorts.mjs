@@ -53,19 +53,24 @@ export function topicFromTitle(title) {
 
 // videos: [{ id, title, description, publishedAt, privacyStatus }] for ONE language.
 // Returns { byKey: Map(key -> {id,title,description,publishedAt,part,topic}), skipped: [], warnings: [] }
-export function indexLanguage(videos, lang) {
+// opts.access        'free' (default) | 'members'  - tag stored on each entry
+// opts.allowUnlisted  members playlists hold UNLISTED videos on purpose; the free playlists stay public-only
+export function indexLanguage(videos, lang, opts = {}) {
+  const access = opts.access || 'free';
   const byKey = new Map();
   const skipped = [];
   const warnings = [];
   for (const v of videos) {
-    if (!v || v.privacyStatus !== 'public') continue;      // private / unlisted / deleted
+    if (!v) continue;
+    const okStatus = v.privacyStatus === 'public' || (opts.allowUnlisted && v.privacyStatus === 'unlisted');
+    if (!okStatus) continue;                                // private / deleted (and unlisted unless allowed)
     const px = parsePx(v.description);
     if (!px.ok) { skipped.push(`skipped: no/invalid PX line (${v.id})`); continue; }
     const part = px.part ?? partFromTitle(v.title);
     const topic = px.topic ?? topicFromTitle(v.title);
     if (!part || !topic) { skipped.push(`skipped: no part/topic in PX line or title (${v.id})`); continue; }
     const entry = { id: v.id, title: v.title || null, description: px.cleaned || null,
-                    publishedAt: v.publishedAt, part, topic };
+                    publishedAt: v.publishedAt, part, topic, access };
     const prev = byKey.get(px.key);
     if (!prev) { byKey.set(px.key, entry); continue; }
     // same key twice in the same language: keep the earlier one
@@ -81,9 +86,22 @@ export function indexLanguage(videos, lang) {
 
 const day = (iso) => String(iso).slice(0, 10);
 
+// Free playlist map + members playlist map -> one map for a language.
+// A key present in BOTH is an operator slip: keep it as 'members' (withholding is the safe side) and warn.
+export function mergeTiers(freeMap, membersMap, lang, warnings = []) {
+  if (!membersMap) return freeMap;
+  const out = new Map(freeMap || []);
+  for (const [k, v] of membersMap) {
+    if (out.has(k)) warnings.push(`${lang} key ${k} is in both the free and the members playlist: treated as members`);
+    out.set(k, { ...v, access: 'members' });
+  }
+  return out;
+}
+
 // existing: Map(slug -> row) of ALL rows. fetched: { en: Map|null, ko: Map|null } (null = fetch failed).
 // Returns { creates: [row], patches: [{slug, fields}], unpublished: n, warnings: [], errors: [] }
-export function planSync({ existing, fetched, now }) {
+// noRemove: Set of languages whose members playlist failed to load - never remove for them this run.
+export function planSync({ existing, fetched, now, noRemove = new Set() }) {
   const creates = [];
   const patches = [];
   const warnings = [];
@@ -120,6 +138,9 @@ export function planSync({ existing, fetched, now }) {
     fields.published_at = dates.sort()[0];
     fields.ea_part = base.part;
     fields.topic = base.topic;
+    const acc = [en, ko].filter(Boolean).map((v) => v.access || 'free');
+    if (new Set(acc).size > 1) warnings.push(`access differs between EN and KO for ${key}: using members`);
+    fields.access = acc.includes('members') ? 'members' : 'free';
     fields.last_synced_at = ts;
     if (ex) {
       patches.push({ slug: key, fields });     // is_published is never sent for existing rows
@@ -135,7 +156,7 @@ export function planSync({ existing, fetched, now }) {
     for (const l of LANGS) {
       if (!ex['youtube_id_' + l]) continue;
       const map = fetched[l];
-      if (!map) continue;                                  // fetch failed -> never remove
+      if (!map || noRemove.has(l)) continue;               // fetch failed -> never remove
       if (map.size === 0) {                                // empty playlist but DB has videos -> suspicious
         errors.push(`${l} playlist returned 0 videos but DB has some: removal skipped`);
         continue;
@@ -211,9 +232,12 @@ async function loadExisting(env, fetchFn) {
 
 // ── main ────────────────────────────────────────────────────────────────
 export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new Date() } = {}) {
-  const summary = { fetchedEn: 0, fetchedKo: 0, upserted: 0, unpublished: 0, skipped: 0, warnings: [], errors: [], dry };
+  const summary = { fetchedEn: 0, fetchedKo: 0, fetchedMembers: 0, upserted: 0, unpublished: 0, skipped: 0, warnings: [], errors: [], dry };
   const fetched = { en: null, ko: null };
   const lists = { en: env.YT_PLAYLIST_ID_EN, ko: env.YT_PLAYLIST_ID_KO };
+  // Optional members-only playlists (UNLISTED videos). Empty / unset = feature off, behaviour exactly as before.
+  const memberLists = { en: env.YT_PLAYLIST_ID_MEMBERS_EN, ko: env.YT_PLAYLIST_ID_MEMBERS_KO };
+  const noRemove = new Set();
 
   // both languages in parallel; a failure only disables removal for that language
   await Promise.all(LANGS.map(async (l) => {
@@ -227,6 +251,20 @@ export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new 
       summary.warnings.push(...idx.warnings);
     } catch (e) {
       summary.errors.push(`${l} fetch failed: ${e.message}`);
+      return;
+    }
+    if (!memberLists[l]) return;                           // members playlist not configured
+    try {
+      const mvids = await fetchPlaylistVideos(fetchFn, memberLists[l], env.YOUTUBE_API_KEY);
+      const midx = indexLanguage(mvids, l, { access: 'members', allowUnlisted: true });
+      fetched[l] = mergeTiers(fetched[l], midx.byKey, l, summary.warnings);
+      summary.fetchedMembers += mvids.length;
+      summary.skipped += midx.skipped.length;
+      for (const s of midx.skipped) console.log(s);
+      summary.warnings.push(...midx.warnings);
+    } catch (e) {
+      noRemove.add(l);                                     // free videos still sync; nothing is removed for this language
+      summary.errors.push(`${l} members fetch failed: ${e.message}`);
     }
   }));
 
@@ -239,7 +277,7 @@ export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new 
     return summary;
   }
 
-  const plan = planSync({ existing, fetched, now });
+  const plan = planSync({ existing, fetched, now, noRemove });
   summary.warnings.push(...plan.warnings);
   summary.errors.push(...plan.errors);
   summary.unpublished = plan.unpublished;

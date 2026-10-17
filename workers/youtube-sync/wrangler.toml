@@ -12,5 +12,9 @@ YT_PLAYLIST_ID_EN = "PLPr1-yXbj2eA"
 YT_PLAYLIST_ID_KO = "PLRgIwnpDX2g0"
 SUPABASE_URL = "https://ufrhvodruulpgnmudzwh.supabase.co"
 
+# Members-only playlists (UNLISTED videos, shown to paying/comp members only). Empty = feature off.
+YT_PLAYLIST_ID_MEMBERS_EN = ""
+YT_PLAYLIST_ID_MEMBERS_KO = ""
+
 # The three real secrets are NOT stored here. Set each one with:  npx wrangler secret put <NAME>
 #   YOUTUBE_API_KEY, SUPABASE_SERVICE_ROLE_KEY, SYNC_SECRET

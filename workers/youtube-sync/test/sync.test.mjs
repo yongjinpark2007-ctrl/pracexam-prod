@@ -123,3 +123,74 @@ test('idempotent: same input twice gives the same plan', () => {
   const f = maps([vid('EN000000001', 'k-new', '2026-02-01')], [vid('KO000000001', 'k-new', '2026-02-02')]);
   assert.deepEqual(planSync({ existing, fetched: f, now: NOW }), planSync({ existing, fetched: f, now: NOW }));
 });
+
+// ── members-only tier (2026-10-17) ─────────────────────────────────────────
+import { mergeTiers } from '../syncShorts.mjs';
+
+test('unlisted videos: skipped in the free tier, accepted (as members) only when allowed', () => {
+  const u = vid('EN0000000U1', 'secret-one', '2026-10-01', { privacyStatus: 'unlisted' });
+  assert.equal(indexLanguage([u], 'en').byKey.size, 0);                                   // free playlist: still public-only
+  const m = indexLanguage([u], 'en', { access: 'members', allowUnlisted: true });
+  assert.equal(m.byKey.get('secret-one').access, 'members');
+  const priv = vid('EN0000000P1', 'secret-two', '2026-10-01', { privacyStatus: 'private' });
+  assert.equal(indexLanguage([priv], 'en', { access: 'members', allowUnlisted: true }).byKey.size, 0);   // private never
+});
+
+test('free entries default to access=free; planSync writes access on create and patch', () => {
+  const f = maps([vid('EN000000001', 'k-free', '2026-10-01')], null);
+  const plan = planSync({ existing: new Map(), fetched: { en: f.en, ko: null }, now: NOW });
+  assert.equal(plan.creates[0].access, 'free');
+  const m = indexLanguage([vid('EN0000000M1', 'k-mem', '2026-10-02', { privacyStatus: 'unlisted' })], 'en', { access: 'members', allowUnlisted: true }).byKey;
+  const merged = mergeTiers(f.en, m, 'en');
+  const p2 = planSync({ existing: new Map(), fetched: { en: merged, ko: null }, now: NOW });
+  const bySlug = Object.fromEntries(p2.creates.map((r) => [r.slug, r.access]));
+  assert.deepEqual(bySlug, { 'k-free': 'free', 'k-mem': 'members' });
+});
+
+test('same key in both tiers: treated as members, with a warning; EN/KO disagreement -> members', () => {
+  const w = [];
+  const free = indexLanguage([vid('EN000000001', 'dup', '2026-10-01')], 'en').byKey;
+  const mem = indexLanguage([vid('EN0000000M2', 'dup', '2026-10-01', { privacyStatus: 'unlisted' })], 'en', { access: 'members', allowUnlisted: true }).byKey;
+  const merged = mergeTiers(free, mem, 'en', w);
+  assert.equal(merged.get('dup').access, 'members');
+  assert.equal(w.length, 1);
+  const ko = indexLanguage([vid('KO000000001', 'dup', '2026-10-01')], 'ko').byKey;   // KO says free
+  const plan = planSync({ existing: new Map(), fetched: { en: merged, ko }, now: NOW });
+  assert.equal(plan.creates[0].access, 'members');
+  assert.ok(plan.warnings.some((x) => /access differs/.test(x)));
+});
+
+test('noRemove: a failed members fetch blocks removals for that language only', () => {
+  const existing = new Map([['gone-1', { slug: 'gone-1', source: 'youtube-sync', is_published: true, youtube_id_en: 'EN000000099', youtube_id_ko: null, published_at: '2026-09-01' }]]);
+  const other = indexLanguage([vid('EN000000001', 'still-here', '2026-10-01')], 'en').byKey;
+  const blocked = planSync({ existing, fetched: { en: other, ko: null }, now: NOW, noRemove: new Set(['en']) });
+  assert.equal(blocked.patches.filter((p) => p.slug === 'gone-1').length, 0);
+  const normal = planSync({ existing, fetched: { en: other, ko: null }, now: NOW });
+  assert.equal(normal.patches.filter((p) => p.slug === 'gone-1').length, 1);
+});
+
+test('end to end: members playlist configured, unlisted video lands as access=members; unset env = old behaviour', async () => {
+  const mkFetch = () => async (url, opts) => {
+    const u = String(url);
+    if (u.includes('playlistItems')) {
+      const pl = new URL(u).searchParams.get('playlistId');
+      const id = { PLFREE: 'EN000000001', PLMEM: 'EN0000000M3' }[pl];
+      return { ok: true, json: async () => ({ items: id ? [{ contentDetails: { videoId: id } }] : [] }) };
+    }
+    if (u.includes('/videos?')) {
+      const ids = new URL(u).searchParams.get('id').split(',');
+      return { ok: true, json: async () => ({ items: ids.map((id) => ({ id,
+        snippet: { title: 'T-' + id, description: `PX: key=${id === 'EN000000001' ? 'free-a' : 'mem-a'}; part=1; topic=X`, publishedAt: '2026-10-01T00:00:00Z' },
+        status: { privacyStatus: id === 'EN000000001' ? 'public' : 'unlisted' } })) }) };
+    }
+    if (u.includes('/rest/v1/shorts_videos') && !(opts && opts.method)) return { ok: true, json: async () => [] };
+    return { ok: true, status: 200, json: async () => ({}) };
+  };
+  const base = { YOUTUBE_API_KEY: 'k', SUPABASE_URL: 'https://x.test', SUPABASE_SERVICE_ROLE_KEY: 's', YT_PLAYLIST_ID_EN: 'PLFREE', YT_PLAYLIST_ID_KO: 'PLNONE' };
+  const off = await syncShorts(base, { dry: true, fetchFn: mkFetch(), now: NOW });
+  assert.deepEqual(off.plan.creates.map((r) => r.slug), ['free-a']);                                   // members id unset: nothing from it
+  const on = await syncShorts({ ...base, YT_PLAYLIST_ID_MEMBERS_EN: 'PLMEM' }, { dry: true, fetchFn: mkFetch(), now: NOW });
+  const acc = Object.fromEntries(on.plan.creates.map((r) => [r.slug, r.access]));
+  assert.deepEqual(acc, { 'free-a': 'free', 'mem-a': 'members' });
+  assert.equal(on.fetchedMembers, 1);
+});
