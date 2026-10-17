@@ -4442,7 +4442,7 @@ async function fetchQuestionMetaRows(){
         ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock').eq('exam','ea').eq('is_active', true)
         : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
       // EA만 로드 — RE 등 타시험 차단 (2026-07-22). 비관리자 경로는 questions_meta 뷰가 exam='ea'로 필터(Jay).
-      return q.order('created_at', { ascending: true });
+      return q.order('created_at', { ascending: true }).order('question_id', { ascending: true });   // 2026-10-17: created_at tie-break (page-boundary rows were skipped)
     }
     const first = await pageQuery(true).range(0, CLOUD_PAGE_SIZE - 1);
     if (first.error) throw first.error;
@@ -4466,7 +4466,7 @@ async function fetchQuestionMetaRows(){
     return await _legacyPaginate(function(){
       var q = sb.from(Q_TABLE).select('*');
       if(S.isAdminUser) q = q.neq('pool','mock');   // 관리자 폴백도 mock 제외 (뷰 경로엔 pool 컬럼 없음)
-      return q.order('created_at', { ascending: true });
+      return q.order('created_at', { ascending: true }).order('question_id', { ascending: true });
     });
   }
 }
@@ -4543,6 +4543,7 @@ async function adminBackfillContent(){
         .eq('exam','ea')      // EA만 백필 — RE 등 타시험 차단 (2026-07-22)
         .eq('is_active', true)   // 내린 문항 제외 (2026-08-22) — 메타 로드와 같은 잣대
         .order('created_at', { ascending: true })
+        .order('question_id', { ascending: true })   // 2026-10-17: tie-break (C1076-005 body skipped)
         .range(offset, offset + CLOUD_PAGE_SIZE - 1);
       if (error) throw error;
       if (!data || data.length === 0) break;
