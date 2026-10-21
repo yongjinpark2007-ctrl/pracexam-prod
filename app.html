@@ -5561,6 +5561,7 @@ function saveLiveSessionToCloud(){
 }
 
 async function loadLiveSessionFromCloud(){
+  if(S.reExam) return null;   // RE mode: never resume the admin's EA live quiz
   if(!SB_USER) return null;
   try{
     const { data, error } = await sb.from('live_session').select('*').eq('user_id', SB_USER.id).maybeSingle();
@@ -5712,6 +5713,7 @@ function exportData(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ea-prep-data.json'; a.click();
 }
 function resetData(){
+  if(S.reExam){ showToast('Reset is off in RE test mode'); return; }   // RE mode: never wipe the admin's EA data
   localStorage.removeItem('ea_prep_v3');
   S.questions=JSON.parse(JSON.stringify(DEMO)); S.sessions=[]; S.flagged=new Set(); S.answered={}; S.progressDates=[];
   S.quizQueue=[]; S.quizIdx=0; S.reviewMode=false; S.adminQcMode=false; S.retryFlaggedMode=false; S.reviewFrom=null;
