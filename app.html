@@ -10136,7 +10136,7 @@ function renderMockHub(){
         '<div style="font-size:15px;color:var(--text-mid);line-height:1.85;">'+
           '• '+_rc.n+' '+mL('문항','questions')+'<br>'+
           '• '+_rcDur+'<br>'+
-          '• '+mL('시험당 최대 2회 휴식 지원 (휴식 중 시험 시계 정지)','Up to 2 breaks per exam — clock pauses during breaks')+
+          '• '+mL('휴식 중에도 시험 시계는 멈추지 않습니다 (실제 시험과 같음)','The clock keeps running during breaks, as in the real exam')+
         '</div>'
       : '<div class="setup-section-label">'+mL('파트 선택','Choose a part')+'</div>'+
     '<div class="setup-icon-grid setup-icon-grid-3">'+parts+'</div>'+
@@ -10293,6 +10293,7 @@ function mockGoto(idx){ mockBackToQ(); mockRenderQuestion(idx); }
 // ── 휴식 버튼 (2026-08-25) — 언제든 누를 수 있고, 최대 2회 · 각 10분 · 시계 멈춤 (횟수·길이는 PSI 예정 휴식 기준) ──
 function mockBreaksLeft(){ return Math.max(0, MOCK_BREAK_MAX - (Mock.breaksUsed||0)); }
 function mockPauseClick(){
+  if(S.reExam) return;   // RE mode: real RE exams have no clock-stopping break (Pearson VUE TX: "The exam clock will not stop")
   if(Mock.breakStart) return;
   if(!mockBreaksLeft()){ showToast(mL('휴식 ' + MOCK_BREAK_MAX + '회를 모두 썼습니다','You have used all ' + MOCK_BREAK_MAX + ' breaks')); return; }
   mockStartBreak();
@@ -10323,6 +10324,7 @@ function mockEndBreak(){
 // 시험 바의 휴식 버튼 — 남은 횟수를 보여 주고, 다 쓰면 흐리게
 function mockRenderPauseBtn(){
   var b = document.getElementById('mock-pause-btn'); if(!b) return;
+  if(S.reExam){ b.style.display = 'none'; return; }   // RE mode: no break button
   var left = mockBreaksLeft();
   b.innerHTML = '⏸ <span class="mk-pause-word">' + mL('휴식','Break') + '</span> ' + left + '/' + MOCK_BREAK_MAX;   // 폰에서는 낱말을 숨겨 「⏸ 2/2」
   b.disabled = !left || !!Mock.breakStart; b.style.opacity = (!left || Mock.breakStart) ? '.45' : '';
