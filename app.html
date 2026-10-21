@@ -10013,7 +10013,7 @@ var RE_MOCK_CFG = {
   're-ca': { name:'California', n:150, sec:3*60*60 },     // DRE RE 4: 3h
   're-tx': { name:'Texas',      n:135, sec:4*60*60 },     // Pearson VUE TX handbook "240 minutes"
   're-nj': { name:'New Jersey', n:110, sec:4*60*60 },     // PSI NJ bulletin: 4h
-  're-ny': { name:'New York',   n:75,  sec:90*60 }        // TODO verify NY exam length
+  're-ny': { name:'New York',   n:75,  sec:90*60 }        // NY DOS: "allowed 1 1/2 hours" (question count not published)
 };
 function reApplyMockConfig(){
   if(!S.reExam) return;
@@ -10432,17 +10432,29 @@ function renderMockResult(r){
   var unans=scored.filter(function(x){return x.choice===-1;}).length;
   var exper=pq.filter(function(x){return !x.is_scored;}).length;
   var pct=total?Math.round(correct/total*100):0;
-  // RE mode: pass line 70% (CA per spec; TODO verify the 70% pass line for TX, NJ and NY)
+  // RE mode pass rules (checked 2026-10-20):
+  //   TX  Pearson VUE handbook: 56 correct on National AND 28 on State (each portion passes on its own)
+  //   NJ  PSI bulletin: one passing score for the whole exam, 70% (77 of 110). Portions shown for study only
+  //   CA  DRE RE 4: at least 70 percent
+  //   NY  DOS: results are pass/fail only, no numerical score, no published pass mark
   var reScoreHtml='';
   if(S.reExam){
-    var _pl=function(c,n){ var q=n?Math.round(c/n*100):0; return q+'% ('+c+'/'+n+') · pass line 70% · '+(q>=70?'PASS':'below'); };
-    if(S.reExam==='re-tx' || S.reExam==='re-nj'){
-      var _nat=scored.filter(function(x){ return String(x.outline_code||'').indexOf('N-')===0; });
-      var _st=scored.filter(function(x){ return String(x.outline_code||'').indexOf('N-')!==0; });
-      var _ct=function(a){ return a.filter(function(x){return x.is_correct;}).length; };
-      reScoreHtml='<b>National</b> '+_pl(_ct(_nat),_nat.length)+'<br><b>State</b> '+_pl(_ct(_st),_st.length);
+    var _pc=function(c,n){ return (n?Math.round(c/n*100):0)+'% ('+c+'/'+n+')'; };
+    var _pass=function(c,need){ return c>=need ? ' · <b>PASS</b>' : ' · below'; };
+    var _nat=scored.filter(function(x){ return String(x.outline_code||'').indexOf('N-')===0; });
+    var _st=scored.filter(function(x){ return String(x.outline_code||'').indexOf('N-')!==0; });
+    var _ct=function(a){ return a.filter(function(x){return x.is_correct;}).length; };
+    if(S.reExam==='re-tx'){
+      reScoreHtml='<b>National</b> '+_pc(_ct(_nat),_nat.length)+' · pass 56'+_pass(_ct(_nat),56)+
+                  '<br><b>State</b> '+_pc(_ct(_st),_st.length)+' · pass 28'+_pass(_ct(_st),28)+
+                  '<br>Both portions must pass.';
+    } else if(S.reExam==='re-nj'){
+      reScoreHtml='<b>Total</b> '+_pc(correct,total)+' · pass 77'+_pass(correct,77)+
+                  '<br>National '+_pc(_ct(_nat),_nat.length)+' · State '+_pc(_ct(_st),_st.length);
+    } else if(S.reExam==='re-ca'){
+      reScoreHtml='<b>Score</b> '+_pc(correct,total)+' · pass 70% ('+Math.ceil(total*0.7)+')'+_pass(correct,Math.ceil(total*0.7));
     } else {
-      reScoreHtml='<b>Score</b> '+_pl(correct,total);
+      reScoreHtml='<b>Score</b> '+_pc(correct,total)+'<br>New York reports pass or fail only. The pass mark is not published.';
     }
   }
   // 토픽별(채점 대상)
