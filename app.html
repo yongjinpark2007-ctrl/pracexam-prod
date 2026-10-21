@@ -2782,6 +2782,14 @@ var _sessionHandled = false;  // 세션 중복 처리 방지 플래그
 //   Jay 계정 이메일 옆 UUID 복사 후 아래에 입력
 const ADMIN_UID = 'f80cf93f-066f-415d-8925-a2e848dccaa3';
 
+// ── RE TEST MODE (admin only) ── ?exam=re-ca|re-tx|re-nj|re-ny. Anything else → null (EA unchanged).
+const RE_EXAM_PARAM = (function(){
+  try{
+    var v = new URLSearchParams(location.search).get('exam');
+    return (v && /^re-(ca|tx|nj|ny)$/.test(v)) ? v : null;
+  }catch(e){ return null; }
+})();
+
 // ── PADDLE 결제 (LIVE) ──────────────────────────────
 // Live 기본 환경이므로 Paddle.Environment.set 호출 없음(sandbox일 때만 set('sandbox')).
 // ⚠️ 아래 CLIENT_TOKEN 은 반드시 live_ 클라토큰으로 채워야 결제창이 열림.
@@ -4492,6 +4500,16 @@ const CLOUD_PAGE_SIZE = 1000;
 const Q_META_COLS = 'question_id, part, topic, outline_code, difficulty, created_at';
 let ADMIN_BACKFILL = null;   // 관리자 본문 백필 Promise (ensure*/prefetch* 가 완료 대기)
 
+// RE test mode banner — fixed, so nobody mistakes it for EA
+function reShowBanner(){
+  if(document.getElementById('re-mode-banner')) return;
+  var d = document.createElement('div');
+  d.id = 're-mode-banner';
+  d.style.cssText = 'position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:99999;background:#b3261e;color:#fff;font:700 12px/1 sans-serif;padding:4px 14px;border-radius:0 0 8px 8px;pointer-events:none;letter-spacing:.04em';
+  d.textContent = 'RE TEST MODE: ' + S.reExam.replace('re-','').toUpperCase();
+  document.body.appendChild(d);
+}
+
 async function fetchQuestionMetaRows(){
   // 관리자도 부팅 시엔 메타 컸럼만 로드 (본문은 adminBackfillContent 가 채움)
   const Q_TABLE = S.isAdminUser ? 'questions' : 'questions_meta';
@@ -4499,6 +4517,12 @@ async function fetchQuestionMetaRows(){
     function pageQuery(withCount){
       // 관리자 raw 경로도 mock 제외 (2026-07-18): mock이 S.questions에 섞이면 연습(TPIQ) 큐 오염.
       // mock QC는 모의고사 화면에서. (questions_meta 뷰엔 pool 컬럼이 없어 관리자 분기에만 적용)
+      if(S.reExam){
+        // RE test mode: state bank + national bank, practice pool, inactive rows included
+        return sb.from('questions').select(Q_META_COLS + ', exam', withCount ? { count: 'exact' } : undefined)
+          .in('exam', [S.reExam, 're-n']).eq('pool','study')
+          .order('created_at', { ascending: true }).order('question_id', { ascending: true });
+      }
       var q = S.isAdminUser
         ? sb.from('questions').select(Q_META_COLS, withCount ? { count: 'exact' } : undefined).neq('pool','mock').eq('exam','ea').eq('is_active', true)
         : sb.from('questions_meta').select('*', withCount ? { count: 'exact' } : undefined);
@@ -4520,16 +4544,35 @@ async function fetchQuestionMetaRows(){
         rows = rows.concat(p.data || []);
       }
     }
+    if(S.reExam) rows = await _reDropMockSources(rows);
     return rows;
   }catch(e){
     // 폴백: 검증된 레거시 경로 (select * 순차 페이지네이션) — 부팅 보장
     console.warn('[Load] questions 빠른 경로 실패 → 레거시 폴백:', e && e.message);
-    return await _legacyPaginate(function(){
+    const _fb = await _legacyPaginate(function(){
       var q = sb.from(Q_TABLE).select('*');
-      if(S.isAdminUser) q = q.neq('pool','mock');   // 관리자 폴백도 mock 제외 (뷰 경로엔 pool 컬럼 없음)
+      if(S.reExam) q = q.in('exam', [S.reExam, 're-n']).eq('pool','study');   // RE mode: never fall through to EA rows
+      else if(S.isAdminUser) q = q.neq('pool','mock');   // 관리자 폴백도 mock 제외 (뷰 경로엔 pool 컬럼 없음)
       return q.order('created_at', { ascending: true }).order('question_id', { ascending: true });
     });
+    return S.reExam ? await _reDropMockSources(_fb) : _fb;
   }
+}
+
+// RE mode: hide re-n originals that this state's mock rows were copied from (source_qid)
+async function _reDropMockSources(rows){
+  const src = new Set();
+  for (let offset = 0; ; offset += CLOUD_PAGE_SIZE) {
+    const { data, error } = await sb.from('questions').select('question_id, source_qid')
+      .eq('exam', S.reExam).eq('pool','mock')
+      .order('question_id', { ascending: true })
+      .range(offset, offset + CLOUD_PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    data.forEach(function(r){ if(r.source_qid) src.add(r.source_qid); });
+    if (data.length < CLOUD_PAGE_SIZE) break;
+  }
+  return rows.filter(function(r){ return !(r.exam === 're-n' && src.has(r.question_id)); });
 }
 
 // 레거시 순차 페이지네이션 (기존 검증된 방식) — 폴백 전용
@@ -4597,12 +4640,16 @@ async function adminBackfillContent(){
     const byId = {};
     S.questions.forEach(function(q){ byId[q.id] = q; });
     for (let offset = 0; ; offset += CLOUD_PAGE_SIZE) {
-      const { data, error } = await sb
-        .from('questions')
-        .select('*')
+      let _bq = sb.from('questions').select('*');
+      if(S.reExam){
+        _bq = _bq.in('exam', [S.reExam, 're-n']).eq('pool','study');   // RE mode: both banks, no is_active filter
+      } else {
+        _bq = _bq
         .neq('pool','mock')   // 백필도 mock 제외 (2026-07-18) — S.questions와 정합 + 대역폭 절약
         .eq('exam','ea')      // EA만 백필 — RE 등 타시험 차단 (2026-07-22)
-        .eq('is_active', true)   // 내린 문항 제외 (2026-08-22) — 메타 로드와 같은 잣대
+        .eq('is_active', true);   // 내린 문항 제외 (2026-08-22) — 메타 로드와 같은 잣대
+      }
+      const { data, error } = await _bq
         .order('created_at', { ascending: true })
         .order('question_id', { ascending: true })   // 2026-10-17: tie-break (C1076-005 body skipped)
         .range(offset, offset + CLOUD_PAGE_SIZE - 1);
@@ -4698,6 +4745,8 @@ function pxLogCopyAttempt(kind){
 async function loadFromCloud(){
   if(!SB_USER) return;
   S.isAdminUser = !!(SB_USER && SB_USER.id === ADMIN_UID);
+  S.reExam = S.isAdminUser ? RE_EXAM_PARAM : null;
+  if(S.reExam){ reShowBanner(); reApplyMockConfig(); }
   document.documentElement.classList.toggle('px-nocopy', !S.isAdminUser);
   var localAnsweredCount = Object.keys(S.answered).length;  // Phase 2-9: 클라우드 로드 전 로컬 카운트
   showToast('☁️ 클라우드에서 불러오는 중…');
@@ -4726,7 +4775,7 @@ async function loadFromCloud(){
         taxUpdate2025: r.taxupdate2025 || '',
         examTip: r.examtip || '',
         examTipEn: r.examtip_en || r.exam_tip_en || '',
-        part: r.part ? ('Part ' + r.part) : 'Part 1',
+        part: r.part ? ('Part ' + r.part) : 'Part 1',   // RE mode: part 4 = "Real Estate" (see rePartLabel)
         topic: r.topic || 'General',
         outlineCode: r.outline_code || '',
         difficulty: r.difficulty != null ? r.difficulty : null,
@@ -4855,6 +4904,7 @@ async function loadFromCloud(){
 }
 
 async function saveProgressToCloud(questionId, isCorrect, isFlagged){
+  if(S.reExam) return;   // RE mode: never write user_progress
   if(!SB_USER) return;
   const existing = S.answered[questionId] || { times:0, correct:0, wrong:0 };
   await sb.from('user_progress').upsert({
@@ -4869,6 +4919,7 @@ async function saveProgressToCloud(questionId, isCorrect, isFlagged){
 }
 
 async function saveSessionToCloud(count, correct, pct, questionIds){
+  if(S.reExam) return null;   // RE mode: never write sessions
   if(!SB_USER) return null;
   const { data, error } = await sb.from('sessions').insert({
     user_id: SB_USER.id,
@@ -5444,6 +5495,7 @@ function init(){
 }
 
 function save(){
+  if(S.reExam){ updateResumeBadge(); return; }   // RE mode: no ea_prep_v3 write, no cloud live save
   try{
     // QC 검토(adminQcMode)는 일회성 — live 세션으로 저장하지 않음 (resume 배지·클라우드 미반영)
     const liveQuiz = (!S.adminQcMode && S.quizQueue && S.quizQueue.length > 0 && S.quizIdx < S.quizQueue.length) ? {
@@ -5476,6 +5528,7 @@ function _liveNotSynced(){
 }
 let _liveSaveTimer = null;
 function saveLiveSessionToCloud(){
+  if(S.reExam) return;   // RE mode: no live_session sync
   if(!SB_USER) return;
   clearTimeout(_liveSaveTimer);
   // 올리기 «전»에 못 올린 상태로 표시한다 — 여기서 브라우저가 닫히거나 오프라인이면
@@ -5800,7 +5853,7 @@ const PART_META = {
   'Part 3': { ko: 'Part 3 — 대리인', en: 'Part 3 — Representation', icon: '<svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
 };
 // Part 라벨 — 선택 언어로 반환 (없으면 Part 키 그대로)
-function partLabel(pk){ var m = PART_META[pk]; if(!m) return pk; return (LANG === 'en') ? m.en : m.ko; }
+function partLabel(pk){ if(S.reExam && pk === 'Part 4') return 'Real Estate'; var m = PART_META[pk]; if(!m) return pk; return (LANG === 'en') ? m.en : m.ko; }
 
 // 응시 권장 정답률 임계값 (Phase 2 design decision)
 // 🔴 2026-08-21 90 → 85 (사용자 결정). 히어로 정답률 원의 «권장 눈금»이 이 값을 그대로 쓰므로,
@@ -7635,6 +7688,10 @@ function _setupDefaultPart(){
 }
 // part-row UI 동기화 — 예전 설정에 남아 있던 'all' 도 여기서 걸러진다
 function syncPartIconUI(){
+  if(S.reExam){   // RE mode: no Part 1/2/3 picker, never force part1
+    document.querySelectorAll('#part-row .setup-icon-btn').forEach(function(b){ b.classList.remove('selected'); });
+    return;
+  }
   if(!SETUP_PART_KEY[S.part]) S.part = _setupDefaultPart();
   var btns = document.querySelectorAll('#part-row .setup-icon-btn');
   var vals = ['part1','part2','part3'];   // ⚠️ #part-row 버튼 순서와 «짝»
@@ -7685,6 +7742,7 @@ var SETUP_PART_KEY = { part1:'Part 1', part2:'Part 2', part3:'Part 3' };
 function domainOfCode(code, partKey){
   code = ((code || '') + '').trim();
   if(!code) return null;
+  if(S.reExam) return code.indexOf('N-') === 0 ? 'National' : 'State';   // RE mode: two buckets
   var ref = (S.copRef && S.copRef[code]) ? S.copRef[code] : null;
   if(ref && ref.domain) return ref.domain;
   var list = EXAM_DOMAINS[partKey] || [];
@@ -7722,7 +7780,7 @@ function domainTopicCounts(partKey){
 function renderTopicPicker(){
   var el = document.getElementById('topic-pick');
   if(!el) return;
-  var partKey = SETUP_PART_KEY[S.part];
+  var partKey = S.reExam ? 'RE' : SETUP_PART_KEY[S.part];
 
   // Part 를 안 고르면(All Parts) 주제 고르기를 열지 않는다 — 13개를 한 번에 늘어놓으면
   // 고르기 어렵고, 파트별 배점 뜻도 흐려진다.
@@ -7735,13 +7793,15 @@ function renderTopicPicker(){
   // 주제 고르기는 «무료 체험도» 쓸 수 있다 (2026-08-21 사용자 결정).
   //   문제 수 5개·반복 잠금은 그대로이므로 무료로 새는 양은 늘지 않고,
   //   처음 온 사람이 원하는 주제를 골라 볼 수 있어 첫인상이 낫다.
-  var tcounts = domainTopicCounts(partKey);
-  var list = EXAM_DOMAINS[partKey] || [];
+  var tcounts = S.reExam ? {} : domainTopicCounts(partKey);
+  var list = S.reExam ? [{ name:'National', q:0 }, { name:'State', q:0 }] : (EXAM_DOMAINS[partKey] || []);
   var chosen = S.domains || [];
 
   var rows = list.map(function(d){
     var nt = tcounts[d.name] || 0;                 // 그 주제의 토픽(COP) 수
-    var meta = nt
+    var meta = S.reExam
+      ? S.questions.filter(function(q){ return domainOfQ(q) === d.name; }).length + (LANG === 'en' ? ' questions' : '문제')
+      : nt
       ? (LANG === 'en' ? (nt + (nt === 1 ? ' topic' : ' topics') + ' · ' + d.q + ' ' + t('topic_onexam'))
                        : ('토픽 ' + nt + '개 · ' + t('topic_onexam') + ' ' + d.q + '문제'))
       : (LANG === 'en' ? (d.q + ' ' + t('topic_onexam'))
@@ -7834,7 +7894,8 @@ function updateAvailCount(){
 
 function getPool(){
   let p=S.questions.filter(function(q){ return !q._qcOnly; });   // QC 임시 주입분(mock 등) 연습 제외
-  if(S.part==='part1') p=p.filter(q=>q.part==='Part 1');
+  if(S.reExam){ /* RE mode: all questions are part 4, no Part 1/2/3 filter */ }
+  else if(S.part==='part1') p=p.filter(q=>q.part==='Part 1');
   else if(S.part==='part2') p=p.filter(q=>q.part==='Part 2');
   else if(S.part==='part3') p=p.filter(q=>q.part==='Part 3');
 
@@ -8554,10 +8615,16 @@ async function autoTimeout(){
   // 서버 채점(오답 처리: 선택 -1 → 절대 일치 안 함). 정답 인덱스/해설도 함께 받음.
   let resp;
   try{
+    if(S.reExam){   // RE mode: grade locally from the admin backfill, no check_answer (it writes user_progress)
+      if(ADMIN_BACKFILL) await ADMIN_BACKFILL;
+      if(q.correct == null) throw new Error('RE_NO_ANSWER_DATA');
+      resp = { correct_index:q.correct, is_correct:false };
+    } else {
     const { data, error } = await sb.rpc('check_answer', { p_question_id:q.id, p_choice:-1 });
     if(error) throw error;
     resp = Array.isArray(data) ? data[0] : data;
     if(!resp) throw new Error('EMPTY_RESPONSE');
+    }
   }catch(e){
     const msg=(e&&e.message)?e.message:'';
     if(msg.indexOf('DAILY_LIMIT')>=0 || msg.indexOf('TRIAL_EXPIRED')>=0){ showDailyQuotaModal(); return; }
@@ -8650,7 +8717,15 @@ async function submitAnswer(){
     //    · 800ms↑ 반복 → 서버(RPC 실행)·네트워크(리전 RTT)·free-tier 콜드 이슈
     //    · 150~300ms인데 체감 느림 → 렌더/다른 경로 (여기선 해당 없음)
     var _gT0 = (window.performance && performance.now) ? performance.now() : Date.now();
-    const { data, error } = await sb.rpc('check_answer', { p_question_id:q.id, p_choice:chosen });
+    var data = null, error = null;
+    if(S.reExam){   // RE mode: grade locally from the admin backfill, no check_answer (it writes user_progress)
+      if(ADMIN_BACKFILL) await ADMIN_BACKFILL;
+      if(q.correct == null) throw new Error('RE_NO_ANSWER_DATA');
+      data = { correct_index:q.correct, is_correct:(chosen === q.correct) };
+    } else {
+      var _r = await sb.rpc('check_answer', { p_question_id:q.id, p_choice:chosen });
+      data = _r.data; error = _r.error;
+    }
     var _gT1 = (window.performance && performance.now) ? performance.now() : Date.now();
     var _gMs = Math.round(_gT1 - _gT0);
     if(_gMs >= 800) console.warn('[grade] check_answer 왕복 ' + _gMs + 'ms (느림 — 서버/네트워크 확인)');
@@ -8886,7 +8961,7 @@ function openFeedbackModal(){
 
   var code = String(q.question_id || q.id || '').trim();
   var meta = [];
-  if(q.part) meta.push('Part ' + String(q.part).replace(/^Part\s*/i, ''));
+  if(q.part) meta.push(S.reExam && /4$/.test(String(q.part)) ? 'Real Estate' : 'Part ' + String(q.part).replace(/^Part\s*/i, ''));
   if(q.topic) meta.push(q.topic);
   var excerpt = String(q.text || '');
   if(excerpt.length > 140) excerpt = excerpt.slice(0, 140) + '…';
@@ -9931,6 +10006,19 @@ function showToast(msg){
 // ══════════════════════════════════════════════════════
 var MOCK_DURATION_SEC = 3.5*60*60;   // 12600초
 var MOCK_LS_BASE = 'ea_mock_live';
+// RE test mode config (applied only when S.reExam is set, see reApplyMockConfig)
+var RE_MOCK_CFG = {
+  're-ca': { name:'California', n:150, sec:3*60*60 },     // DRE RE 4: 3h
+  're-tx': { name:'Texas',      n:135, sec:4*60*60 },     // Pearson VUE TX handbook "240 minutes"
+  're-nj': { name:'New Jersey', n:110, sec:4*60*60 },     // PSI NJ bulletin: 4h
+  're-ny': { name:'New York',   n:75,  sec:90*60 }        // TODO verify NY exam length
+};
+function reApplyMockConfig(){
+  if(!S.reExam) return;
+  MOCK_DURATION_SEC = RE_MOCK_CFG[S.reExam].sec;
+  MOCK_LS_BASE = 're_mock_live_' + S.reExam;
+}
+function mockPartLabel(part){ return S.reExam ? RE_MOCK_CFG[S.reExam].name : ('Part ' + part); }
 // LS 키는 사용자별 스코프 — 공용 브라우저에서 타인의 진행 중 응시가 보이는 것 방지 (2026-07-17 수정)
 function mockLsKey(){ return MOCK_LS_BASE + '_' + ((typeof SB_USER!=='undefined' && SB_USER && SB_USER.id) ? SB_USER.id : 'anon'); }
 var MOCK_PARTMETA = { 1:{l:'Individuals'}, 2:{l:'Businesses'}, 3:{l:'Representation'} };
@@ -9984,8 +10072,8 @@ function mockGlobalBannerTick(){
   var rem=mockRemainingOf(live);
   var ans=Object.keys(live.answers||{}).length;
   var tx=document.getElementById('mock-global-banner-text');
-  if(tx) tx.innerHTML = '⏱ <b>'+mL('모의고사 진행 중','Mock exam in progress')+'</b> — Part '+live.part+
-    ' · '+ans+'/100 '+mL('응답','answered')+' · <b>'+mL('남은','left')+' '+mockFmt(rem)+'</b> · '+
+  if(tx) tx.innerHTML = '⏱ <b>'+mL('모의고사 진행 중','Mock exam in progress')+'</b> — '+mockPartLabel(live.part)+
+    ' · '+ans+'/'+((live.ids&&live.ids.length)||100)+' '+mL('응답','answered')+' · <b>'+mL('남은','left')+' '+mockFmt(rem)+'</b> · '+
     (rem>0 ? mL('만료 시 자동 제출','auto-submits at expiry') : mL('시간 종료 — 이어하기를 누르면 채점됩니다','time up — Resume to grade'));
   el.style.display='block';
 }
@@ -10022,7 +10110,7 @@ function renderMockHub(){
     var rem=mockRemainingOf(live);
     var ans=Object.keys(live.answers||{}).length;
     html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">'+
-      '⏱ <b>'+mL('진행 중인 모의고사','Mock exam in progress')+'</b> — Part '+live.part+' · '+ans+'/100 '+mL('응답','answered')+
+      '⏱ <b>'+mL('진행 중인 모의고사','Mock exam in progress')+'</b> — '+mockPartLabel(live.part)+' · '+ans+'/'+((live.ids&&live.ids.length)||100)+' '+mL('응답','answered')+
       ' · <b>'+mL('남은','left')+' '+mockFmt(rem)+'</b> · '+mL('만료 시 자동 제출','auto-submits at expiry')+
       '<div style="font-size:13.5px;color:var(--text-muted);margin-top:3px;">'+mL('일시정지가 아닙니다 — 자리를 비운 시간도 차감됩니다 · 아래 "이어하기"로 계속하세요','Not a pause — time away is deducted · use “Resume” below')+'</div></div>';
   } else if(!paid){
@@ -10036,8 +10124,19 @@ function renderMockHub(){
       '<div class="setup-icon-circle">'+PART_META['Part '+p].icon+'</div>'+
       '<div class="setup-icon-label">Part '+p+'</div></button>';
   }
+  var _rc = S.reExam ? RE_MOCK_CFG[S.reExam] : null;
+  var _rcMin = _rc ? _rc.sec/60 : 0;
+  var _rcDur = _rc ? ((_rcMin%60===0) ? (_rcMin/60)+'h' : _rcMin+' min') : '';
   html += '<div class="start-card">'+
-    '<div class="setup-section-label">'+mL('파트 선택','Choose a part')+'</div>'+
+    (_rc
+      ? '<div class="setup-section-label">'+_rc.name+' Real Estate</div>'+
+        '<div class="setup-divider"></div>'+
+        '<div style="font-size:15px;color:var(--text-mid);line-height:1.85;">'+
+          '• '+_rc.n+' '+mL('문항','questions')+'<br>'+
+          '• '+_rcDur+'<br>'+
+          '• '+mL('시험당 최대 2회 휴식 지원 (휴식 중 시험 시계 정지)','Up to 2 breaks per exam — clock pauses during breaks')+
+        '</div>'
+      : '<div class="setup-section-label">'+mL('파트 선택','Choose a part')+'</div>'+
     '<div class="setup-icon-grid setup-icon-grid-3">'+parts+'</div>'+
     '<div class="setup-divider"></div>'+
     '<div style="font-size:15px;color:var(--text-mid);line-height:1.85;">'+
@@ -10046,7 +10145,7 @@ function renderMockHub(){
       '• '+mL('파트별 300문항(3세트 분량)의 매회 새로운 조합 테스트','300-question bank per part (three full exams) — a fresh test each attempt')+'<br>'+
       '• '+mL('시험당 최대 2회 휴식 지원 (휴식 중 시험 시계 정지)','Up to 2 breaks per exam — clock pauses during breaks')+'<br>'+
       '• '+mL('시험 종료 후 문항별 해설, 도메인별 결과, 약점 토픽 Top 5 분석 제공','Per-question explanations, results by domain, and Weak Topics Top 5 after you finish')+
-    '</div>'+
+    '</div>')+
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
       if(!paid){
@@ -10068,7 +10167,7 @@ async function mockFillLastScores(){
   var box=document.getElementById('mock-lastscores'); if(!box) return;
   try{
     var res=await sb.from('mock_attempts').select('part,score_correct,score_total,started_at')
-      .eq('status','graded').eq('part',Mock.selPart).order('started_at',{ascending:false}).limit(20);
+      .eq('status','graded').eq('exam',S.reExam||'ea').eq('part',S.reExam?4:Mock.selPart).order('started_at',{ascending:false}).limit(20);
     if(res.error||!res.data||!res.data.length){ box.innerHTML=''; return; }
     var last=res.data[0], best=res.data.reduce(function(a,b){return (b.score_correct>a.score_correct)?b:a;});
     box.innerHTML='<span class="mk-chip">'+mL('최근','Last')+': <b>'+last.score_correct+'/'+last.score_total+'</b></span>'+
@@ -10085,7 +10184,7 @@ function renderMockDashCard(){
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
-    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
+    : (S.reExam ? (RE_MOCK_CFG[S.reExam].n+' questions · '+RE_MOCK_CFG[S.reExam].name) : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions'));
   el.innerHTML =
     '<div class="prem-row">'+
     '<div class="prem-card" onclick="showScreen(\'mock\')">'+
@@ -10119,12 +10218,12 @@ async function mockStart(){
   _mockStartGo();
 }
 async function _mockStartGo(){
-  var part=Mock.selPart;
+  var part=S.reExam ? 4 : Mock.selPart;   // RE mock attempts are part=4
   // 이전 응시의 타이머가 살아있으면 정리 (버려진 attempt 자동제출 방지)
   if(Mock.timerInt){ clearInterval(Mock.timerInt); Mock.timerInt=null; }
   showToast(mL('모의고사 준비 중…','Preparing mock exam…'));
   try{
-    var res=await sb.rpc('start_mock_exam',{ p_part:part });
+    var res=S.reExam ? await sb.rpc('start_re_mock_exam',{ p_exam:S.reExam }) : await sb.rpc('start_mock_exam',{ p_part:part });
     if(res.error) throw res.error;
     var row=Array.isArray(res.data)?res.data[0]:res.data;
     if(!row||!row.question_ids||!row.question_ids.length) throw new Error('EMPTY');
@@ -10169,13 +10268,13 @@ function mockRenderQuestion(idx){
       '<span class="mk-opt-l">'+String.fromCharCode(65+i)+'</span><span class="mk-opt-t">'+mockEsc(opts[i])+'</span></button>';
   }
   document.getElementById('mock-q-wrap').innerHTML =
-    '<div class="mk-qcard"><div class="mk-qmeta"><span class="mk-badge">Part '+Mock.part+'</span>'+
-    '<span class="q-badge-gray" style="font-size:11.5px;color:var(--text-muted);border:1px solid var(--border-clr);border-radius:6px;padding:3px 9px;">Q'+(idx+1)+' / 100</span>'+
+    '<div class="mk-qcard"><div class="mk-qmeta"><span class="mk-badge">'+mockPartLabel(Mock.part)+'</span>'+
+    '<span class="q-badge-gray" style="font-size:11.5px;color:var(--text-muted);border:1px solid var(--border-clr);border-radius:6px;padding:3px 9px;">Q'+(idx+1)+' / '+Mock.ids.length+'</span>'+
     '<button class="mk-flagbtn'+(flagged?' on':'')+'" onclick="mockToggleFlag()">⚑ '+mL('검토 표시','Mark for review')+'</button></div>'+
     '<div class="mk-qtext">'+mockEsc(q.text||mL('불러오는 중…','Loading…'))+'</div>'+
     '<div class="mk-opts">'+optHtml+'</div>'+
     '<div class="mk-actions"><button class="btn-ghost" onclick="mockPrev()"'+(idx===0?' disabled style="opacity:.4;"':'')+'>← '+mL('이전','Prev')+'</button>'+
-    '<span class="sp"></span><button class="btn-ghost" onclick="mockNext()">'+(idx===99?mL('검토·제출','Review & submit'):mL('다음','Next')+' →')+'</button></div></div>';
+    '<span class="sp"></span><button class="btn-ghost" onclick="mockNext()">'+(idx===Mock.ids.length-1?mL('검토·제출','Review & submit'):mL('다음','Next')+' →')+'</button></div></div>';
   mockUpdateProgress();
 }
 function mockEsc(s){ s=(s==null?'':''+s); return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -10186,7 +10285,7 @@ function mockToggleFlag(){ var id=Mock.ids[Mock.curIdx]; Mock.flags[id]=!Mock.fl
   var b=document.querySelector('#mock-q-wrap .mk-flagbtn'); if(b) b.classList.toggle('on', !!Mock.flags[id]);
   mockUpdateProgress(); }
 function mockPrev(){ if(Mock.curIdx>0) mockRenderQuestion(Mock.curIdx-1); }
-function mockNext(){ if(Mock.curIdx<99) mockRenderQuestion(Mock.curIdx+1); else mockOpenReview(); }
+function mockNext(){ if(Mock.curIdx<Mock.ids.length-1) mockRenderQuestion(Mock.curIdx+1); else mockOpenReview(); }
 function mockGoto(idx){ mockBackToQ(); mockRenderQuestion(idx); }
 
 // ── 휴식 버튼 (2026-08-25) — 언제든 누를 수 있고, 최대 2회 · 각 10분 · 시계 멈춤 (횟수·길이는 PSI 예정 휴식 기준) ──
@@ -10229,9 +10328,9 @@ function mockRenderPauseBtn(){
 function mockUpdateProgress(){
   var ans=Object.keys(Mock.answers).length, fl=Object.values(Mock.flags).filter(Boolean).length;
   var pt=document.getElementById('mock-progtext');
-  if(pt) pt.innerHTML='Question <b>'+(Mock.curIdx+1)+'</b> of 100 · '+mL('응답','answered')+' '+ans+' · '+mL('플래그','flagged')+' '+fl;
+  if(pt) pt.innerHTML='Question <b>'+(Mock.curIdx+1)+'</b> of '+Mock.ids.length+' · '+mL('응답','answered')+' '+ans+' · '+mL('플래그','flagged')+' '+fl;
   mockRenderPauseBtn();
-  var pf=document.getElementById('mock-prog-fill'); if(pf) pf.style.width=(ans)+'%';
+  var pf=document.getElementById('mock-prog-fill'); if(pf) pf.style.width=(ans*100/Mock.ids.length)+'%';
 }
 
 // ── 검토 화면(별도) ──
@@ -10240,7 +10339,7 @@ function mockOpenReview(){
   document.getElementById('mock-review-panel').style.display='block';
   mockRenderNavGrid();
   var ans=Object.keys(Mock.answers).length;
-  document.getElementById('mock-submit-note').textContent=mL('미응답 '+(100-ans)+'문항은 오답 처리됩니다','Unanswered ('+(100-ans)+') count as wrong');
+  document.getElementById('mock-submit-note').textContent=mL('미응답 '+(Mock.ids.length-ans)+'문항은 오답 처리됩니다','Unanswered ('+(Mock.ids.length-ans)+') count as wrong');
 }
 function mockBackToQ(){
   document.getElementById('mock-review-panel').style.display='none';
@@ -10248,7 +10347,7 @@ function mockBackToQ(){
 }
 function mockRenderNavGrid(){
   var g=document.getElementById('mock-navgrid'); var h='';
-  for(var i=0;i<100;i++){
+  for(var i=0;i<Mock.ids.length;i++){
     var id=Mock.ids[i]; var done=(Mock.answers[id]!==undefined); var fl=!!Mock.flags[id]; var cur=(i===Mock.curIdx);
     h += '<button class="mk-cell'+(done?' done':'')+(fl?' flag':'')+(cur?' cur':'')+'" onclick="mockGoto('+i+')">'+(i+1)+'</button>';
   }
@@ -10256,7 +10355,7 @@ function mockRenderNavGrid(){
   var ans=Object.keys(Mock.answers).length, fl=Object.values(Mock.flags).filter(Boolean).length;
   document.getElementById('mock-legend').innerHTML=
     '<span><i style="background:var(--sel-bg);border:1px solid var(--sel-border);"></i>'+mL('응답','Answered')+' '+ans+'</span>'+
-    '<span><i style="background:var(--card-bg);border:1px solid var(--border-clr);"></i>'+mL('미응답','Unanswered')+' '+(100-ans)+'</span>'+
+    '<span><i style="background:var(--card-bg);border:1px solid var(--border-clr);"></i>'+mL('미응답','Unanswered')+' '+(Mock.ids.length-ans)+'</span>'+
     '<span><i style="background:#fef8ec;border:1px solid var(--flag-color);"></i>'+mL('검토표시','Flagged')+' '+fl+'</span>'+
     '<span><i style="background:var(--card-bg);border:2px solid var(--teal);"></i>'+mL('현재','Current')+'</span>';
 }
@@ -10281,7 +10380,7 @@ function mockTickTimer(){
 
 // ── 제출/채점 ──
 function mockConfirmSubmit(){
-  var ans=Object.keys(Mock.answers).length, un=100-ans, fl=Object.values(Mock.flags).filter(Boolean).length;
+  var ans=Object.keys(Mock.answers).length, un=Mock.ids.length-ans, fl=Object.values(Mock.flags).filter(Boolean).length;
   document.getElementById('modal-content').innerHTML =
     '<div style="padding:.5rem 0;"><div style="font-size:17px;font-weight:800;margin-bottom:.5rem;">'+mL('모의고사를 제출할까요?','Submit the mock exam?')+'</div>'+
     '<div style="font-size:14px;color:var(--text-mid);line-height:1.6;">'+mL('제출하면 채점되며 응시 화면으로 돌아올 수 없습니다.','Once submitted it is graded and you cannot return to the exam.')+'</div>'+
@@ -10324,11 +10423,24 @@ async function mockSubmit(){
 function renderMockResult(r){
   var pq=(r.per_question)||[]; var part=r.part||Mock.part||'';
   var scored=pq.filter(function(x){return x.is_scored;});
-  var correct=r.score_correct, total=r.score_total||scored.length||85;
+  var correct=r.score_correct, total=S.reExam ? scored.length : (r.score_total||scored.length||85);
   var wrong=scored.filter(function(x){return !x.is_correct && x.choice!==-1;}).length;
   var unans=scored.filter(function(x){return x.choice===-1;}).length;
   var exper=pq.filter(function(x){return !x.is_scored;}).length;
   var pct=total?Math.round(correct/total*100):0;
+  // RE mode: pass line 70% (CA per spec; TODO verify the 70% pass line for TX, NJ and NY)
+  var reScoreHtml='';
+  if(S.reExam){
+    var _pl=function(c,n){ var q=n?Math.round(c/n*100):0; return q+'% ('+c+'/'+n+') · pass line 70% · '+(q>=70?'PASS':'below'); };
+    if(S.reExam==='re-tx' || S.reExam==='re-nj'){
+      var _nat=scored.filter(function(x){ return String(x.outline_code||'').indexOf('N-')===0; });
+      var _st=scored.filter(function(x){ return String(x.outline_code||'').indexOf('N-')!==0; });
+      var _ct=function(a){ return a.filter(function(x){return x.is_correct;}).length; };
+      reScoreHtml='<b>National</b> '+_pl(_ct(_nat),_nat.length)+'<br><b>State</b> '+_pl(_ct(_st),_st.length);
+    } else {
+      reScoreHtml='<b>Score</b> '+_pl(correct,total);
+    }
+  }
   // 토픽별(채점 대상)
   var byT={};
   scored.forEach(function(x){ var k=x.outline_code||x.topic||'—'; if(!byT[k])byT[k]={code:k,topic:x.topic||k,c:0,n:0};
@@ -10386,7 +10498,7 @@ function renderMockResult(r){
         ? '<button class="mk-weak-t" onclick="mockReviewItem(\''+firstQ+'\')" title="'+mL('해설 보기','See explanation')+'">'+mockEsc(t.topic)+' <span class="mk-weak-go">›</span></button>'
         : '<div class="mk-weak-t">'+mockEsc(t.topic)+'</div>')+
       (miss.length>1 ? '<div class="mk-weak-qs">'+miss.join('')+'</div>' : '')+
-      (t.code && t.code!=='—'
+      (t.code && t.code!=='—' && !S.reExam
         ? '<button class="mk-weak-wr" onclick="mockGoWarRoom(\''+t.code+'\')">'+
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
           '<span><b>War Room</b> · '+mL('이 주제 보기','Open topic')+'</span><span style="opacity:.7;">↗</span></button>' : '')+
@@ -10403,15 +10515,19 @@ function renderMockResult(r){
       '<span style="color:var(--text-muted);font-size:12px;">'+mL('해설','Review')+' →</span></div>';
   }).join('');
   document.getElementById('mock-result-wrap').innerHTML =
-    '<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 결과','Mock Exam Result')+' — Part '+part+'</h2>'+
+    '<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 결과','Mock Exam Result')+' — '+(S.reExam ? RE_MOCK_CFG[S.reExam].name+' Real Estate' : 'Part '+part)+'</h2>'+
     '<div class="card"><div class="mk-result-hero">'+
     // 🔴 이 원은 «정답률»이다(원 안 글자도 「정답률 N%」). 예전엔 진도색(--progress-bar)을 쓰고
     //    있어서, 바로 아래 토픽별 정답률 막대(accuracyColor)와 한 화면에서 색 규칙이 갈렸다.
     '<div class="mk-ring" style="background:conic-gradient('+accuracyColor(pct)+' 0 '+pct+'%, var(--ring-track) '+pct+'% 100%);" role="img" aria-label="'+correct+' / '+total+'">'+
     '<div class="mk-ring-in"><div class="mk-ring-n">'+correct+'<span style="font-size:17px;color:var(--text-muted);">/'+total+'</span></div>'+
     '<div class="mk-ring-d">'+mL('정답률','Accuracy')+' '+pct+'%</div></div></div>'+
-    '<div style="flex:1;min-width:230px;"><div class="mk-eyebrow">'+mL('채점 대상 85문항 기준','Based on 85 scored items')+'</div>'+
-    '<div style="font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.6;">'+mL('실험 문항 15개는 점수에 반영되지 않습니다. 실제 SEE는 환산점수제라 백분율과 1:1 대응하지 않습니다.','15 experimental items do not count. The real SEE uses a scaled score, not a raw percentage.')+'</div>'+
+    '<div style="flex:1;min-width:230px;">'+
+    (S.reExam
+      ? '<div class="mk-eyebrow">'+total+' scored items</div>'+
+        '<div style="font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.6;">'+(exper?exper+' unscored items do not count. ':'')+reScoreHtml+'</div>'
+      : '<div class="mk-eyebrow">'+mL('채점 대상 85문항 기준','Based on 85 scored items')+'</div>'+
+    '<div style="font-size:12.5px;color:var(--text-muted);margin-top:6px;line-height:1.6;">'+mL('실험 문항 15개는 점수에 반영되지 않습니다. 실제 SEE는 환산점수제라 백분율과 1:1 대응하지 않습니다.','15 experimental items do not count. The real SEE uses a scaled score, not a raw percentage.')+'</div>')+
     '<div class="mk-kpis'+(flagN?' k5':'')+'"><span class="mk-kpi"><b>'+correct+'</b>'+mL('정답','Correct')+'</span>'+
     '<span class="mk-kpi"><b>'+wrong+'</b>'+mL('오답','Wrong')+'</span>'+
     '<span class="mk-kpi"><b>'+unans+'</b>'+mL('미응답','Unanswered')+'</span>'+
@@ -10517,7 +10633,7 @@ async function mockReviewItem(qid){
     var _woc=((mine&&mine.outline_code)||'').trim();
     var _wtn=(mine&&(mine.topic||mine.outline_code))||'';
     window._mkWrQ = _woc ? { topic:(mine&&mine.topic)||'', text:(q.text||''), question_id:qid } : null;
-    var wrBtn = _woc
+    var wrBtn = (_woc && !S.reExam)
       ? ('<button class="mk-wr-link" onclick="mockGoWarRoom(\''+_woc+'\', window._mkWrQ)" '+
          'title="'+mL('War Room에서 이 주제 자세히 보기','Open this topic in War Room')+'">'+
          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>'+
@@ -10528,7 +10644,7 @@ async function mockReviewItem(qid){
       '<div style="font-size:15.5px;color:var(--text-main);line-height:1.65;margin-bottom:12px;">'+mockEsc(q.text||'')+'</div>'+oh+
       '<div style="font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;margin:14px 0 6px;">'+mL('해설','Explanation')+'</div>'+
       '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;">'+mockEsc(expl)+'</div>'+
-      (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+mL('EA 시험 팁','EA Exam Tip')+'</b> · '+mockEsc(tip)+'</div>':'')+
+      (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+(S.reExam?'Exam Tip':mL('EA 시험 팁','EA Exam Tip'))+'</b> · '+mockEsc(tip)+'</div>':'')+
       (wrBtn?'<div style="margin-top:14px;">'+wrBtn+'</div>':'')+
       '<div style="margin-top:16px;text-align:right;"><button class="btn-ghost" onclick="closeModal()">'+mL('닫기','Close')+'</button></div></div>';
     // copy guard — War Room(.wr-protected)과 동일: 우클릭·복사·잘라내기·드래그·선택 차단 (박스 스코프, 다른 모달 무영향)
@@ -10565,7 +10681,7 @@ async function renderMockHistory(){
     '<div class="card"><div style="font-size:13px;color:var(--text-muted);">'+mL('불러오는 중…','Loading…')+'</div></div>';
   try{
     var res=await sb.from('mock_attempts').select('id,part,score_correct,score_total,status,started_at,finished_at')
-      .order('started_at',{ascending:false}).limit(50);
+      .eq('exam',S.reExam||'ea').order('started_at',{ascending:false}).limit(50);
     if(res.error) throw res.error;
     var data=res.data||[];
     if(!data.length){ el.innerHTML='<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 이력','Mock Exam History')+'</h2>'+
@@ -10575,7 +10691,7 @@ async function renderMockHistory(){
       var d=(a.started_at||'').slice(5,10); var graded=(a.status==='graded');
       var sc=graded?('<b>'+a.score_correct+'/'+a.score_total+'</b> ('+Math.round(a.score_correct/a.score_total*100)+'%)'):mL('미완료','Incomplete');
       var act=graded?('<a href="#" onclick="mockOpenPastResult(\''+a.id+'\');return false;" style="color:var(--teal);font-weight:700;text-decoration:none;">'+mL('결과 보기','View')+' →</a>'):'';
-      return '<tr><td>'+d+'</td><td>Part '+a.part+'</td><td>'+sc+'</td><td>'+act+'</td></tr>';
+      return '<tr><td>'+d+'</td><td>'+mockPartLabel(a.part)+'</td><td>'+sc+'</td><td>'+act+'</td></tr>';
     }).join('');
     el.innerHTML='<h2 style="font-size:20px;font-weight:800;color:var(--text-main);margin:2px 0 14px;">'+mL('모의고사 이력','Mock Exam History')+'</h2>'+
       '<div class="card"><table class="mk-hist-tb"><thead><tr><th>'+mL('날짜','Date')+'</th><th>'+mL('파트','Part')+'</th><th>'+mL('점수','Score')+'</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
@@ -10585,7 +10701,7 @@ async function renderMockHistory(){
 }
 async function mockOpenPastResult(id){
   try{
-    var res=await sb.from('mock_attempts').select('*').eq('id',id).single();
+    var res=await sb.from('mock_attempts').select('*').eq('id',id).eq('exam',S.reExam||'ea').single();
     if(res.error||!res.data) throw res.error||new Error('none');
     var a=res.data;
     Mock.result={ score_correct:a.score_correct, score_total:a.score_total, per_question:a.answers||[], part:a.part };
