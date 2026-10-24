@@ -90,3 +90,18 @@ Boss 2026-10-24: «현재까지의 전체 디자인으로 1차 정하고 기록�
 - The test site uses the REAL Supabase. For confirm and reset e-mails to return to test.dxdgroup.com, Jay must add it to the Supabase redirect URLs. Paddle stays sandbox-only there.
 - When testing ends: merge re-site → main (the gate stays dormant on pracexam.com), then remove the test.dxdgroup.com custom domain.
 - Boss 2026-10-24: leave sign-up as is on the test site, so no Supabase redirect change. Confirm and reset e-mail links from the test site land on pracexam.com, and that is accepted.
+
+## RE app phase 1 + War Room (2026-10-24, boss tested: questions OK, California War Room OK)
+- `/re/app` is built from `/app.html` by `docs/re_site/build_re_app.py` (re-run it after any app.html change). It is admin only.
+  - Part 1 = National (re-n). Part 2 = the chosen state (re-<st>). There is a State switcher on the dashboard.
+  - Mock exam and videos are hidden. The EA live_session is untouched. The colours are the RE navy palette.
+- War Room: all 152 RE sheets (National 114 + CA 38) are in `war_room_topics` with **status='draft'**.
+  - The EA RPCs only serve 'published', so EA customers never see them. Verified: the EA list stays 372 rows with 0 RE.
+  - Upload tool: scratchpad `re_wr_upload.py`. Titles: `re_wr_titles.json` (KO by GPT, then the Gemini final check).
+  - The RE app reads the table directly as admin. Body search is off in phase 1.
+- Missing: War Room sheets for TX, NJ and NY (the state tab says there are none yet).
+- Phase 2 (for customers):
+  - an RE question path + War Room RPCs filtered by exam (Jay), then status → published for RE in a way the EA RPCs still exclude
+  - state-format mock exams
+  - state choice at sign-up
+  - Smart mode and payment
