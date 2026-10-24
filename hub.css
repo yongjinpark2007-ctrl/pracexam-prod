@@ -203,3 +203,6 @@ header.nav .logo img{height:28px;width:auto}
 .hub-card .btn{margin-top:auto;align-self:flex-start}
 .hub-card ul{margin-bottom:20px}
 @media (max-width:760px){.hub-text{grid-template-columns:1fr;gap:24px}}
+
+/* state labels on the RE door: shown, not selectable (boss 2026-10-24) */
+.chip-static{cursor:default;background:var(--re-tint);border-color:transparent;color:var(--ink-mid)}

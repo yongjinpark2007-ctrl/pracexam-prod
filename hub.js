@@ -16,27 +16,15 @@
   document.getElementById('l-ko').onclick = function(){ setLang('ko'); };
   try { if (localStorage.getItem('ea_lang') === 'ko') setLang('ko'); } catch(e){}
 
-  // RE door: chips come from /re-states.js; the chosen state rides on the link (?state=ca) and is remembered.
+  // RE door: the covered states are shown as plain labels from /re-states.js — not selectable (boss 2026-10-24).
+  // The state is chosen at RE sign-up instead.
   var box = document.getElementById('re-chips');
-  function setState(st){
-    var href = '/re/?state=' + st;
-    document.getElementById('re-go').href = href;
-    document.getElementById('re-photo').href = href;
-  }
   if (box && window.PE_RE_STATES){
-    var cur = PE_RE_STATE.get();
     PE_RE_STATES.forEach(function(s){
-      var c = document.createElement('button');
-      c.type = 'button'; c.className = 'chip'; c.setAttribute('data-st', s.id); c.textContent = s.name;
-      c.setAttribute('aria-pressed', s.id === cur ? 'true' : 'false');
-      c.addEventListener('click', function(){
-        Array.prototype.forEach.call(box.children, function(o){ o.setAttribute('aria-pressed', 'false'); });
-        c.setAttribute('aria-pressed', 'true');
-        PE_RE_STATE.set(s.id); setState(s.id);
-      });
+      var c = document.createElement('span');
+      c.className = 'chip chip-static'; c.textContent = s.name;
       box.appendChild(c);
     });
-    setState(cur);
   }
 
   // Login card in the hero: header and member-strip «Log in» links scroll to it and focus the email box.
