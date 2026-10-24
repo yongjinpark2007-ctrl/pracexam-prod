@@ -195,3 +195,11 @@ header.nav .logo img{height:28px;width:auto}
 .hub-hero h1 em{font-size:clamp(30px,4.6vw,50px)}
 .hub-hero .lede{font-size:19.5px}
 @media (max-width:600px){.hub-hero h1 em{font-size:.8em}.hub-hero .lede{font-size:17px}}
+
+/* ---- 2026-10-24 boss: the EA / RE text cards sit side by side, lined up with the photo doors above ---- */
+.hub-text{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:stretch}
+.hub-text > #about{grid-column:1 / -1}
+.hub-card{margin-bottom:0;display:flex;flex-direction:column;border-left:0;border-top:5px solid var(--acc);border-radius:16px;padding:26px 26px 24px;box-shadow:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(16,48,76,.08)}
+.hub-card .btn{margin-top:auto;align-self:flex-start}
+.hub-card ul{margin-bottom:20px}
+@media (max-width:760px){.hub-text{grid-template-columns:1fr;gap:24px}}
