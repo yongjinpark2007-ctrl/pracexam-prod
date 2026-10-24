@@ -1829,7 +1829,7 @@ function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e)
         <div class="setup-icon-grid" style="grid-template-columns:repeat(3,1fr);gap:12px;" id="part-row">
           <button class="setup-icon-btn" onclick="selectPart('part1',this)">
             <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><path d="M2.2 6.2 7.5 6.6 12.5 7 16 7.3 17.3 6.2 18.6 7.2 20.6 5.6 22.2 6.4 21.6 7.6 20.2 9.2 19.4 11.2 18.9 13.1 18.6 14.6 19.6 17.4 18.7 18 17.2 15.6 14.3 15.5 12.3 18.1 10.6 15.6 8.2 15 5.2 14.1 3.3 12.3 2.4 9.5Z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M4 22V3"/><rect x="4" y="4" width="16" height="11" rx="1"/><path d="M4 9.5h6.5V4"/><path d="M10.5 6.8H20M10.5 9.5H20M4 12.3h16"/></svg>
             </div>
             <div class="setup-icon-label">National</div>
           </button>
@@ -5838,7 +5838,7 @@ function progressColor(){ return progressBarColor(); }
 
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
-  'Part 1': { ko: 'National — 공통', en: 'National',    icon: '<svg viewBox="0 0 24 24"><path d="M2.2 6.2 7.5 6.6 12.5 7 16 7.3 17.3 6.2 18.6 7.2 20.6 5.6 22.2 6.4 21.6 7.6 20.2 9.2 19.4 11.2 18.9 13.1 18.6 14.6 19.6 17.4 18.7 18 17.2 15.6 14.3 15.5 12.3 18.1 10.6 15.6 8.2 15 5.2 14.1 3.3 12.3 2.4 9.5Z"/></svg>' },
+  'Part 1': { ko: 'National — 공통', en: 'National',    icon: '<svg viewBox="0 0 24 24"><path d="M4 22V3"/><rect x="4" y="4" width="16" height="11" rx="1"/><path d="M4 9.5h6.5V4"/><path d="M10.5 6.8H20M10.5 9.5H20M4 12.3h16"/></svg>' },
   'Part 2': { ko: RE_STATE_KO[RE_STATE] + ' — 주 시험', en: RE_STATES[RE_STATE] + ' — State',     icon: '<svg viewBox="0 0 24 24"><path d="M12 21.5s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11.2-6.5 11.2z"/><circle cx="12" cy="10.3" r="2.4"/></svg>' },
   'Part 3': { ko: 'Part 3 — 대리인', en: 'Part 3 — Representation', icon: '<svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
 };
