@@ -124,11 +124,49 @@ one("function saveLiveSessionToCloud(){", "function saveLiveSessionToCloud(){ re
 one("async function loadLiveSessionFromCloud(){", "async function loadLiveSessionFromCloud(){ return null; /* RE app phase 1 */ }\nasync function _eaLoadLiveSessionFromCloud_unused(){", "live-load")
 one("  if(SB_USER){ sb.from('live_session').delete().eq('user_id', SB_USER.id); }", "  /* RE app phase 1: never delete the EA live session */", "live-del")
 
+# ── War Room: RE sheets are in war_room_topics with status='draft' (hidden from the EA RPCs on purpose).
+#    The RE app (admin) reads the table directly: National + the chosen state's sheets. ──
+import json as _json
+_codes = _json.load(io.open(r"C:/Users/Yongj/OneDrive/1_DXD Computer/0_PracExam/Real Estate Agent/war_room/codes.json", encoding="utf-8"))
+from collections import Counter as _C
+_cnt = _C("-".join(c["code"].split("-")[:2]) for c in _codes)
+WR_LIST = ("sb.from('war_room_topics').select('outline_code,part,domain,title_ko,title_en,is_free,sort_order')"
+           ".eq('status','draft').or('outline_code.like.N-*,outline_code.like.' + RE_STATE.toUpperCase() + '-*').order('sort_order')")
+one("sb.rpc('list_war_room_topics')", WR_LIST, "wr-list", n=2)
+one("sb.rpc('get_war_room_topic',{p_code:code})", "sb.from('war_room_topics').select('*').eq('outline_code',code).eq('status','draft')", "wr-get")
+one("sb.rpc('get_war_room_preview',{p_code:code})", "sb.from('war_room_topics').select('*').eq('outline_code',code).eq('status','draft')", "wr-preview")
+one("return sb.rpc('search_war_room',{p_q:nq})", "return Promise.resolve({ data:null, error:'RE phase 1: no body search' })", "wr-search")
+one("""  var tabs=''; [1,2,3].forEach(function(p){ tabs+='<button class="wr-ptab'+(p===WR.curPart?' active':'')+'" onclick="_wrSetPart('+p+')">Part '+p+'</button>'; });""",
+    """  var tabs=''; [1,2].forEach(function(p){ tabs+='<button class="wr-ptab'+(p===WR.curPart?' active':'')+'" onclick="_wrSetPart('+p+')">'+(p===1?'National':RE_STATES[RE_STATE])+'</button>'; });""", "wr-tabs")
+one("  [1,2,3].forEach(function(p){", "  [1,2].forEach(function(p){", "wr-parts-loop")
+i = h.index("var WR_SKELETON={"); j = h.index("\n};\n", i) + 4
+st = "' + RE_STATE.toUpperCase() + '"
+h = h[:i] + """var WR_SKELETON={
+ 1:[['Property, Land Use and Legal Descriptions','물권·토지 이용·법적 기술',%d],['Ownership, Transfer and Recording','소유·이전·등기',%d],
+    ['Value and Appraisal','가치와 감정평가',%d],['Contracts','계약',%d],['Agency','대리',%d],['Real Estate Practice','부동산 실무',%d],
+    ['Disclosures and Environmental','공시와 환경',%d],['Financing and Settlement','금융과 정산',%d],['Real Estate Math','부동산 계산',%d],['Federal Law','연방법',%d]],
+ 2:[['State-only rules','주에만 있는 규칙',0],['Where your state differs','주마다 다른 규칙',0]]
+};
+""" % tuple(_cnt[p] for p in ("N-PROP", "N-OWN", "N-VAL", "N-CON", "N-AGY", "N-PRAC", "N-DISC", "N-FIN", "N-MATH", "N-FED")) + h[j:]
+h = h.replace("#nav-mock, #nav-warroom, #nav-videos { display:none !important; }", "#nav-mock, #nav-videos { display:none !important; }")
+one("""inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>';""",
+    """inner='<div class="wr-dom-empty">'+(lang==='en'?'No sheets for this state yet':'이 주의 시트는 아직 없습니다')+'</div>';""", "wr-empty")
+
 # ── visible EA labels ──
 one('<div class="lg-title">EA Exam Practice</div>', '<div class="lg-title">Real Estate Exam Practice</div>', "lg-title")
 one('<div class="lg-sub">PracExam.com · 2026 EA EXAM</div>', '<div class="lg-sub">PracExam.com · Real Estate License Exam</div>', "lg-sub")
 one('<div class="header-title">EA Exam Practice</div>', '<div class="header-title">Real Estate Exam Practice</div>', "header-title")
 one("' SESSION · 2026 EA EXAM'", "' SESSION · ' + RE_STATES[RE_STATE].toUpperCase() + ' REAL ESTATE'", "session-label")
+
+one('<div class="header-sub">Enrolled Agent · 2026 Exam</div>',
+    '<div class="header-sub"><script>document.write(RE_STATES[RE_STATE] + \' · Real Estate\')</script></div>', "header-sub")
+
+# ── RE palette (boss 2026-10-24): EA Harbor teal → RE navy / steel blue (same values as exam-palettes.css) ──
+for a, b in [("#354649", "#10304C"), ("#4d6164", "#2F5F8F"), ("#6FA39E", "#4F7CAC"), ("#E0E7E9", "#E3E9F0"),
+             ("#EDF4F3", "#E8EFF7"), ("#d9ebe9", "#DCE7F3"), ("#e9eeee", "#E8EFF7"), ("#A3C6C4", "#A9C2DE"),
+             ("#C9DEDB", "#A9C2DE"), ("#5D8F8A", "#3F6A96"), ("#232e30", "#16283A"), ("#4b5759", "#3E4C5A"),
+             ("111,163,158", "79,124,172"), ("53,70,73", "16,48,76"), ("163,198,196", "169,194,222")]:
+    h = h.replace(a, b).replace(a.lower(), b).replace(a.upper(), b)
 
 # ── per-app keys (EA and RE apps share an origin) ──
 for k in ("ea_focus_part", "ea_prep_v3"):
