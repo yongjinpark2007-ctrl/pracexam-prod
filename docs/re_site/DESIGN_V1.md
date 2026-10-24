@@ -77,3 +77,15 @@ Boss 2026-10-24: «현재까지의 전체 디자인으로 1차 정하고 기록�
    - Gemini final KO, then review_app, then publish under /re/tips/ and /re/tips/ko/.
 3. Boss decision pending: give /re/ the same «premium» look as the hub? I recommended keeping /ea/ as is because of existing customers.
 4. Before merge to main: normalise the app.html line endings (only 4 real changes; the rest is CRLF churn). Then follow SEARCH_UPDATE.md.
+
+## Live test domain (added 2026-10-24, boss)
+- **https://test.dxdgroup.com** serves the `re-site` branch. It was set up by the boss as follows:
+  - a custom domain on Cloudflare Pages project **pracexam-prod** (subdomain pracexam-teaser)
+  - the DNS CNAME `test` pointed at `re-site.pracexam-teaser.pages.dev`
+- The apex dxdgroup.com stays the company site (repo dxdgroup-web), on purpose.
+- Gate code lives in `functions/_middleware.js`, the `testGate()` function. It applies ONLY when the host matches `*.dxdgroup.com`.
+  - Password: `pracexam`. Only the SHA-256 is in the repo, and the env var `GATE_PASSWORD_SHA256` overrides it. After entry, a cookie lasts 30 days.
+  - Every response on that host gets `X-Robots-Tag: noindex, nofollow`, and `/robots.txt` returns Disallow all.
+- Verified: the gate works (wrong password → 401), and /, /ea/, /re/, /re/popquiz and /app all show the re-site build. pracexam.com is unchanged.
+- The test site uses the REAL Supabase. For confirm and reset e-mails to return to test.dxdgroup.com, Jay must add it to the Supabase redirect URLs. Paddle stays sandbox-only there.
+- When testing ends: merge re-site → main (the gate stays dormant on pracexam.com), then remove the test.dxdgroup.com custom domain.
