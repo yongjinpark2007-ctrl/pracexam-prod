@@ -105,3 +105,12 @@ Boss 2026-10-24: «현재까지의 전체 디자인으로 1차 정하고 기록�
   - state-format mock exams
   - state choice at sign-up
   - Smart mode and payment
+
+## EA/RE separation inside the shared account (2026-10-24, boss)
+- Stats: `user_progress` and `sessions` are shared tables. In app.html, `_isMyExamId(id)` keeps non-RE ids for EA, and the RE copy flips it.
+  EA stats no longer count RE answers, and RE stats no longer show EA sessions.
+- Announcements: in app.html, `_isMyExamAnn(a)` treats a row as EA unless `a.exam === 're'`. The RE copy flips it.
+  Today every row is EA, so the RE app shows none.
+  - **Jay (DB) to finish:** add `exam text not null default 'ea'` to `announcements`, return it from `get_announcements` / `admin_list_announcements`, and accept `p_exam` in `upsert_announcement`.
+  - Then an RE announcements editor (in an RE admin screen) can post `exam='re'`.
+- Admin menu: the RE app hides the EA admin screen (`#nav-anomaly`). An RE admin screen is phase 2 work.
