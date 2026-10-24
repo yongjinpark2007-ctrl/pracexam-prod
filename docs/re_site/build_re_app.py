@@ -161,6 +161,11 @@ h = h.replace("#nav-mock, #nav-warroom, #nav-videos { display:none !important; }
 one("""inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>';""",
     """inner='<div class="wr-dom-empty">'+(lang==='en'?'No sheets for this state yet':'이 주의 시트는 아직 없습니다')+'</div>';""", "wr-empty")
 
+# ── Mock exams: per-state numbered sets (re/re-mock.js replaces renderMockHub). Unhide the menu again. ──
+h = h.replace("#nav-mock, #nav-videos, #nav-anomaly { display:none !important; }", "#nav-videos, #nav-anomaly { display:none !important; }")
+one("var MOCK_LS_BASE = 'ea_mock_live';", "var MOCK_LS_BASE = 're_ea_mock_unused';   // EA mock resume state must not show in the RE app", "mock-ls")
+one("</body>", '<script src="/re/re-mock.js"></script>\n</body>', "mock-js")
+
 # ── visible EA labels ──
 one('<div class="lg-title">EA Exam Practice</div>', '<div class="lg-title">Real Estate Exam Practice</div>', "lg-title")
 one('<div class="lg-sub">PracExam.com · 2026 EA EXAM</div>', '<div class="lg-sub">PracExam.com · Real Estate License Exam</div>', "lg-sub")

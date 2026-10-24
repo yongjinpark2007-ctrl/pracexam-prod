@@ -1572,7 +1572,7 @@ function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e)
 </script>
 <style>
 /* phase 1: EA-only features hidden */
-#nav-mock, #nav-videos, #nav-anomaly { display:none !important; }
+#nav-videos, #nav-anomaly { display:none !important; }
 #part-row { grid-template-columns:repeat(2,1fr) !important; }
 #part-row > button:nth-child(3), button[data-p="Part 3"] { display:none !important; }
 .re-statebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:0 0 12px}
@@ -9973,7 +9973,7 @@ function showToast(msg){
 //   설계: 100문항 / 3.5h 벽시계 / 영어 전용 / 동적추출 / 대시보드와 분리
 // ══════════════════════════════════════════════════════
 var MOCK_DURATION_SEC = 3.5*60*60;   // 12600초
-var MOCK_LS_BASE = 'ea_mock_live';
+var MOCK_LS_BASE = 're_ea_mock_unused';   // EA mock resume state must not show in the RE app
 // LS 키는 사용자별 스코프 — 공용 브라우저에서 타인의 진행 중 응시가 보이는 것 방지 (2026-07-17 수정)
 function mockLsKey(){ return MOCK_LS_BASE + '_' + ((typeof SB_USER!=='undefined' && SB_USER && SB_USER.id) ? SB_USER.id : 'anon'); }
 var MOCK_PARTMETA = { 1:{l:'Individuals'}, 2:{l:'Businesses'}, 3:{l:'Representation'} };
@@ -11350,5 +11350,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
+<script src="/re/re-mock.js"></script>
 </body>
 </html>
