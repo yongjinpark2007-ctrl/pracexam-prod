@@ -41,7 +41,7 @@ function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e)
 <style>
 /* phase 1: EA-only features hidden */
 #nav-mock, #nav-warroom, #nav-videos { display:none !important; }
-#part-row { grid-template-columns:repeat(2,1fr) !important; }
+#part-row, .dash-parts-list, .dash-hero-picker .dash-parts-list { grid-template-columns:repeat(2,1fr) !important; }   /* RE: National + state, two tiles fill the row */
 #part-row > button:nth-child(3), button[data-p="Part 3"] { display:none !important; }
 .re-statebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:0 0 12px}
 .re-statebar select{font:inherit;padding:5px 8px;border-radius:8px;border:1px solid var(--border-clr,#ccc);background:var(--card-bg,#fff);color:inherit}
