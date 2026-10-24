@@ -2,7 +2,7 @@
 
 Boss feedback on the preview: «랜딩은 이전에 사진을 넣은 화면을 이미 디자인 하였는데 그것을 반영안하고 새로 만들었습니다.»
 The hub at `/` (index.html) was written from scratch. It must instead use the design the boss already approved:
-**`docs/re_site/drafts/pracexam_landing_draft.html`**, the chooser with the two photo doors, «Which exam are you preparing for?»,
+**`docs/re_site/drafts/pracexam_landing_draft.html`** (the latest approved version, from the boss-reviewed artifact of 2026-10-20), the chooser with the two photo doors, «Which exam are you preparing for?»,
 the EA door and the Real Estate door, and the login.
 
 ## Do
