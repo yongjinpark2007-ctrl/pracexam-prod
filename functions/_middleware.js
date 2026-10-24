@@ -15,6 +15,22 @@
 const KO_TITLE = "미국세무사(EA) 문제은행 · 한글해설 5,000문항 | PracExam";                                   // 40자
 const KO_DESC  = "미국세무사(EA) 시험 실전 문제 5,000+. Part 1·2·3 전 영역, 전 문항 한국어·영어 해설. 최신 세법 기준 온라인 문제은행.";  // 78자
 
+// 🆕 2026-10-24 — 루트가 «중립 허브»가 되고 EA 는 /ea/ 로 옮겼다. 위 EA 제목·설명은 /ea/ 가 그대로 이어받고(순위 신호 유지),
+//    허브(/)와 부동산(/re/)은 아래 자기 제목을 쓴다. 글자 수 기준(제목 40자 · 설명 80자)은 같다.
+const KO_HUB_TITLE = "PracExam | 미국 세무사·부동산 중개사 시험 문제은행";
+const KO_HUB_DESC  = "미국 세무사(EA)와 부동산 중개사 시험 실전 문제은행. 시험을 고르고 바로 연습하세요.";
+const KO_RE_TITLE  = "미국 부동산 중개사 시험 문제은행 | PracExam";
+const KO_RE_DESC   = "미국 부동산 중개사 시험 National·주(州) 실전 문제. 캘리포니아·뉴욕·텍사스·뉴저지, 문항별 해설과 시험 팁.";
+
+// 경로 → 한글 제목·설명
+function koCopy(url) {
+  const p = url.pathname;
+  if (p === "/" || p === "/index.html")           return { title: KO_HUB_TITLE, desc: KO_HUB_DESC };
+  if (p === "/ea/" || p === "/ea/index.html")     return { title: KO_TITLE,     desc: KO_DESC };
+  if (p === "/re/" || p === "/re/index.html")     return { title: KO_RE_TITLE,  desc: KO_RE_DESC };
+  return null;
+}
+
 // 한국 노출면인지 판별
 function wantsKorean(request) {
   const ua = (request.headers.get("user-agent") || "").toLowerCase();
@@ -39,7 +55,8 @@ class MetaRewriter {
 
 // <title>...</title> 내부 텍스트 교체용 핸들러
 class TitleRewriter {
-  element(el) { el.setInnerContent(KO_TITLE); }
+  constructor(value) { this.value = value; }
+  element(el) { el.setInnerContent(this.value); }
 }
 
 // 🔴 2026-08-31 — 이 바꿔치기는 «루트 한 장»에만 건다.
@@ -58,9 +75,9 @@ class TitleRewriter {
 // [고침] 경로가 루트일 때만 건다. 다른 페이지는 «자기 제목»을 그대로 쓴다
 //        (그 페이지들은 이미 안에 KO/EN 두 벌을 다 갖고 있다).
 // 🔴 새 페이지를 만들 때 이 목록에 더하지 말 것 — 루트만이 맞다.
+// 🆕 2026-10-24 — «랜딩 세 장»(/ · /ea/ · /re/)에만 건다. 나머지는 여전히 손대지 않는다.
 function isRoot(url) {
-  const p = url.pathname;
-  return p === "/" || p === "/index.html";
+  return koCopy(url) !== null;
 }
 
 export async function onRequest(context) {
@@ -87,17 +104,18 @@ export async function onRequest(context) {
 
   // 영어권이면 원본 그대로 반환
   if (!wantsKorean(request)) return response;
+  const copy = koCopy(new URL(request.url));
 
   // UA/언어별로 응답이 달라지므로 캐시가 뒤섞이지 않도록 Vary 지정
   const rewritten = new HTMLRewriter()
-    .on("title",                            new TitleRewriter())
-    .on('meta[name="description"]',         new MetaRewriter(KO_DESC))
-    .on('meta[property="og:title"]',        new MetaRewriter(KO_TITLE))
-    .on('meta[property="og:description"]',  new MetaRewriter(KO_DESC))
+    .on("title",                            new TitleRewriter(copy.title))
+    .on('meta[name="description"]',         new MetaRewriter(copy.desc))
+    .on('meta[property="og:title"]',        new MetaRewriter(copy.title))
+    .on('meta[property="og:description"]',  new MetaRewriter(copy.desc))
     .on('meta[property="og:locale"]',       new MetaRewriter("ko_KR"))
     .on('meta[property="og:locale:alternate"]', new MetaRewriter("en_US"))
-    .on('meta[name="twitter:title"]',       new MetaRewriter(KO_TITLE))
-    .on('meta[name="twitter:description"]', new MetaRewriter(KO_DESC))
+    .on('meta[name="twitter:title"]',       new MetaRewriter(copy.title))
+    .on('meta[name="twitter:description"]', new MetaRewriter(copy.desc))
     .transform(response);
 
   const out = new Response(rewritten.body, rewritten);

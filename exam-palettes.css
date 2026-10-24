@@ -1,0 +1,68 @@
+/* Per-exam palettes (2026-10-24). A new exam adds ONE block here.
+   Pages set <body data-exam="…">. The -rgb triplets feed rgba(var(--x-rgb), .n) in landing.css. */
+body[data-exam="ea"]{   /* teal / slate — do not change */
+  --page-bg:     #E0E7E9;
+  --border-clr:  rgba(53,70,73,.12);
+  --border-strong: rgba(53,70,73,.22);
+  --text-main:   #232e30;
+  --text-mid:    #4b5759;
+  --text-muted:  #4E5C66;
+  --navy:        #354649;
+  --navy-mid:    #4d6164;
+  --navy-light:  #d9ebe9;
+  --accent:      #6FA39E;
+  --accent-tint: #EDF4F3;
+  --accent-border: #C9DEDB;
+  --navy-rgb:    53,70,73;
+  --navy-mid-rgb:77,97,100;
+  --accent-rgb:  111,163,158;
+  --terracotta:  #DD8F75;
+  --terracotta-tint:   #FBF1EC;
+  --terracotta-border: #EFD0C1;
+  --terracotta-deep:   #b85f3f;
+  --muted-gold:  #C6A15B;
+}
+body[data-exam="re"]{   /* navy / steel blue (agreed in drafts/pracexam_re_landing_draft.html) */
+  --page-bg:     #E3E9F0;
+  --border-clr:  rgba(16,48,76,.12);
+  --border-strong: rgba(16,48,76,.22);
+  --text-main:   #16283A;
+  --text-mid:    #3E4C5A;
+  --text-muted:  #4E5C66;
+  --navy:        #10304C;
+  --navy-mid:    #2F5F8F;
+  --navy-light:  #DCE7F3;
+  --accent:      #4F7CAC;
+  --accent-tint: #E8EFF7;
+  --accent-border: #A9C2DE;
+  --navy-rgb:    16,48,76;
+  --navy-mid-rgb:47,95,143;
+  --accent-rgb:  79,124,172;
+  --terracotta:  #DD8F75;
+  --terracotta-tint:   #FBF1EC;
+  --terracotta-border: #EFD0C1;
+  --terracotta-deep:   #b85f3f;
+  --muted-gold:  #C6A15B;
+}
+body[data-exam="hub"]{  /* neutral root: ink navy that sits between the two exam palettes */
+  --page-bg:     #E4E9EE;
+  --border-clr:  rgba(27,47,63,.12);
+  --border-strong: rgba(27,47,63,.22);
+  --text-main:   #1b2a36;
+  --text-mid:    #46535e;
+  --text-muted:  #4E5C66;
+  --navy:        #1B2F3F;
+  --navy-mid:    #3F647F;
+  --navy-light:  #DAE5EC;
+  --accent:      #5A8DA6;
+  --accent-tint: #EAF1F5;
+  --accent-border: #B5CDDA;
+  --navy-rgb:    27,47,63;
+  --navy-mid-rgb:63,100,127;
+  --accent-rgb:  90,141,166;
+  --terracotta:  #DD8F75;
+  --terracotta-tint:   #FBF1EC;
+  --terracotta-border: #EFD0C1;
+  --terracotta-deep:   #b85f3f;
+  --muted-gold:  #C6A15B;
+}

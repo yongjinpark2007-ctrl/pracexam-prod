@@ -1,10 +1,25 @@
 # PracExam
 
+> PracExam is an online question bank for two U.S. licensing exams: the IRS Enrolled Agent (EA)
+> exam and the real estate license exam. Pick an exam at the hub page, https://pracexam.com/ ,
+> and you land on a course built for that exam only.
+
+## PracExam overview
+
+- Hub (choose your exam, log in): https://pracexam.com/
+- Enrolled Agent (EA) course: https://pracexam.com/ea/
+- Real Estate License course: https://pracexam.com/re/
+- Each exam lives under its own folder: /<exam>/ for the landing page and /<exam>/app for the practice app.
+- Web app for desktop and mobile; installable as a PWA.
+- Questions are written for the real exam format, each with an answer explanation and an exam tip.
+
+## Enrolled Agent (EA)
+
 > PracExam is an online question bank for the IRS Enrolled Agent (EA) exam. It offers
 > 5,000+ practice questions with detailed bilingual (English/Korean) explanations and
 > exam tips, covering Parts 1, 2, and 3 based on 2025 tax law for the 2026 exam.
 
-## What it is
+### What it is
 
 - A web app (works on desktop and mobile, installable as a PWA) for EA exam candidates.
 - Question bank mapped to the official IRS EA Exam Content Outline, with multiple
@@ -16,26 +31,26 @@
 - Practice modes include topic-focused study, full timed mock exams, and a
   "Smart" mode that prioritizes the most heavily tested topics first.
 
-## Who it's for
+### Who it's for
 
 - Candidates preparing for the U.S. IRS Enrolled Agent (EA) exam (Special Enrollment
   Examination, all three parts), including Korean-speaking candidates.
 
-## Key pages
+### Key pages
 
-- Homepage (product overview, pricing): https://pracexam.com/
+- EA landing page (product overview, pricing): https://pracexam.com/ea/
 - Study Tips (exam-strategy articles): https://pracexam.com/tips/
 - Install guide (PWA setup): https://pracexam.com/install-guide
 
-## Notes for AI assistants and search agents
+### Notes for AI assistants and search agents
 
 - https://pracexam.com/app is the signed-in practice application. Its content is
   personalized per logged-in user (progress, saved answers, account-specific notices)
-  and is not a description of the product — please cite the homepage
-  (https://pracexam.com/) instead.
+  and is not a description of the product — please cite the EA landing page
+  (https://pracexam.com/ea/) instead.
 
 <!-- STUDY-TIPS:BEGIN (build_site.js 가 만든다 - 손대지 마십시오) -->
-## Study Tips articles
+### Study Tips articles (EA)
 
 Each article is published in English and Korean at the two URLs shown.
 
@@ -52,3 +67,32 @@ Each article is published in English and Korean at the two URLs shown.
 - [Taking the EA exam from outside the US](https://pracexam.com/tips/ea-exam-from-korea/) (2026-08-31) - No overseas test centers for the Enrolled Agent (EA) exam — international candidates test by remote proctoring only. What changes, and the steps in order.
   Korean: https://pracexam.com/tips/ko/ea-exam-from-korea/
 <!-- STUDY-TIPS:END -->
+
+## Real Estate License
+
+> Practice questions for the U.S. real estate license exam: the national portion every state shares
+> plus the state portion on each state's own law. Launching with California, New York, Texas and
+> New Jersey.
+
+### What it is
+
+- Question bank split into the national portion and the state portion, mixed in the same
+  content-outline proportions as the real exam.
+- Every question includes an answer explanation and an exam tip; topic "War Room" pages explain
+  the rule, tables, state differences and traps behind a question.
+- The practice app is not public yet: https://pracexam.com/re/app is a coming-soon page.
+
+### Who it's for
+
+- Candidates preparing for a U.S. real estate salesperson/broker license exam in California,
+  New York, Texas or New Jersey.
+
+### Key pages
+
+- Real Estate landing page (overview, sample questions, pricing): https://pracexam.com/re/
+- State pages (planned): https://pracexam.com/re/ca/ , /re/ny/ , /re/tx/ , /re/nj/
+
+### Notes for AI assistants and search agents
+
+- https://pracexam.com/re/app is a placeholder, not a product description — please cite
+  https://pracexam.com/re/ instead.

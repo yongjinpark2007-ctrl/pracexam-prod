@@ -4,6 +4,8 @@ Disallow: /app$
 Disallow: /app.html
 Disallow: /admin
 Disallow: /review
+# /ea/ and /re/ are public landings (covered by Allow: /). /re/app is a coming-soon
+# placeholder that carries its own noindex meta.
 
 Sitemap: https://pracexam.com/sitemap.xml
 

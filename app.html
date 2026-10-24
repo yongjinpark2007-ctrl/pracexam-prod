@@ -1626,7 +1626,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
       <div class="lg-status" id="lg-status">🔄 Signing in…</div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowReset()">Forgot password?</a></div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowResend()">Didn't get the confirmation email?</a></div>
-      <div class="lg-newhere">First time here? <a href="index.html?signup=1">Join us at PracExam.com</a>.</div>
+      <div class="lg-newhere">First time here? <a href="/ea/?signup=1">Join us at PracExam.com</a>.</div>
     </div>
 
     <!-- View 2: 비밀번호 재설정 메일 요청 -->
@@ -1671,7 +1671,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   <!-- LOGIN FOOTER — 법인/DBA 명시 (주소·연락처 제외) -->
   <footer class="lg-footer">
     © 2026 PracExam. All rights reserved.
-    <span class="app-footer-sep">·</span><a href="index.html#about">About</a>
+    <span class="app-footer-sep">·</span><a href="/ea/#about">About</a>
     <span class="app-footer-sep">·</span><a href="privacy.html">Privacy</a>
     <span class="app-footer-sep">·</span><a href="mailto:hello@pracexam.com">Contact</a>
   </footer>
@@ -2750,7 +2750,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 <footer class="app-footer">
   © 2026 PracExam. All rights reserved.
   <div class="app-footer-links">
-    <a href="index.html#about" data-i18n="ft_about">About</a>
+    <a href="/ea/#about" data-i18n="ft_about">About</a>
     <span class="app-footer-sep">·</span><a href="terms.html" data-i18n="ft_terms">Terms</a>
     <span class="app-footer-sep">·</span><a href="privacy.html" data-i18n="ft_privacy">Privacy</a>
     <span class="app-footer-sep">·</span><a href="refund.html" data-i18n="ft_refunds">Refunds</a>
@@ -3695,7 +3695,7 @@ async function confirmLogout(){
   }catch(e){ console.warn('signOut 실패, 강제 로그아웃 진행:', e); }
   SB_USER = null;
   // 로그아웃 후 랜딩 페이지로 이동 (무료 유저 가입 유도). 랜딩이 없으면 앱 리로드로 폴백.
-  try{ location.href = 'index.html'; }
+  try{ location.href = '/ea/'; }
   catch(e){ location.reload(); }
 }
 
