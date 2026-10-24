@@ -71,8 +71,8 @@ Each article is published in English and Korean at the two URLs shown.
 ## Real Estate License
 
 > Practice questions for the U.S. real estate license exam: the national portion every state shares
-> plus the state portion on each state's own law. Covers California, New York, Texas and
-> New Jersey.
+> plus the state portion on each state's own law. Covers California, Texas, New Jersey and
+> New York.
 
 ### What it is
 
@@ -85,7 +85,7 @@ Each article is published in English and Korean at the two URLs shown.
 ### Who it's for
 
 - Candidates preparing for a U.S. real estate salesperson/broker license exam in California,
-  New York, Texas or New Jersey.
+  Texas, New Jersey or New York.
 
 ### Key pages
 

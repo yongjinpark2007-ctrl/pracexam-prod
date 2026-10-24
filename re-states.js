@@ -3,10 +3,10 @@
    Adding a state = one entry here (+ its /re/<id>/ page later). The choice is remembered in localStorage. */
 (function(){
   var STATES = [
-    { id:'ca', name:'California' },
-    { id:'ny', name:'New York' },
+    { id:'ca', name:'California' },   // west to east (boss 2026-10-24)
     { id:'tx', name:'Texas' },
-    { id:'nj', name:'New Jersey' }
+    { id:'nj', name:'New Jersey' },
+    { id:'ny', name:'New York' }
   ];
   var KEY = 'pe_re_state';
   function valid(id){ return STATES.some(function(s){ return s.id === id; }); }

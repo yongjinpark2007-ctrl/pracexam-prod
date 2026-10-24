@@ -20,7 +20,7 @@ const KO_DESC  = "미국세무사(EA) 시험 실전 문제 5,000+. Part 1·2·3 
 const KO_HUB_TITLE = "PracExam | 미국 세무사·부동산 중개사 시험 문제은행";
 const KO_HUB_DESC  = "미국 세무사(EA)와 부동산 중개사 시험 실전 문제은행. 시험을 고르고 바로 연습하세요.";
 const KO_RE_TITLE  = "미국 부동산 중개사 시험 문제은행 | PracExam";
-const KO_RE_DESC   = "미국 부동산 중개사 시험 National·주(州) 실전 문제. 캘리포니아·뉴욕·텍사스·뉴저지, 문항별 해설과 시험 팁.";
+const KO_RE_DESC   = "미국 부동산 중개사 시험 National·주(州) 실전 문제. 캘리포니아·텍사스·뉴저지·뉴욕, 문항별 해설과 시험 팁.";
 
 // 경로 → 한글 제목·설명
 function koCopy(url) {

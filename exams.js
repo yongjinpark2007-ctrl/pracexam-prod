@@ -19,7 +19,7 @@
     { id:'re', url:'/re/', app:'/re/app', color:'#4F7CAC',
       name:{ ko:'부동산', en:'Real Estate' },
       full:{ ko:'미국 부동산 중개사 Real Estate Agent', en:'Real Estate License' },
-      blurb:{ ko:'National + 주(州) 시험 — 캘리포니아·뉴욕·텍사스·뉴저지', en:'National + state exams — CA, NY, TX, NJ' } }
+      blurb:{ ko:'National + 주(州) 시험 — 캘리포니아·텍사스·뉴저지·뉴욕', en:'National + state exams — CA, TX, NJ, NY' } }
   ];
 
   function bi(o){ return '<span class="ko">' + o.ko + '</span><span class="en">' + o.en + '</span>'; }
