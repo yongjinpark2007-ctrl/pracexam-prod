@@ -36,6 +36,7 @@ Already safe, so keep exactly as is (verified in repo):
 - `manifest.json` `start_url` = `/app.html`. Installed phone/desktop apps open the app, not the root. ⛔ Don't change it.
 - Supabase auth redirects (`emailRedirectTo`, password reset `redirectTo`) = `/app.html`. ⛔ Don't change them.
 - `/app`, `/app.html`, `/tips/*`, `/popquiz`, `/videos`, `/install-guide.html`, privacy/terms: same URLs.
+- **The EA app stays at `/app`** (boss asked 2026-10-24). Add an alias in `_redirects`: `/ea/app  /app  301` (and `/ea/app.html`), so the pattern `/<exam>/app` also works for EA. ⛔ Don't move the app itself.
 
 Must add:
 - **Returning visitors on `/`.** If a Supabase session exists in the browser, show a prominent «Go to my EA practice → /app» button at the top of the hub. Do NOT auto-redirect; crawlers must still see the hub. Logged-out returning customers use the hub login, which sends them to `/app.html`, the same as today.
