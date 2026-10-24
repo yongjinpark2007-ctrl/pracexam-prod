@@ -164,7 +164,9 @@ one("""inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가
 # ── Mock exams: per-state numbered sets (re/re-mock.js replaces renderMockHub). Unhide the menu again. ──
 h = h.replace("#nav-mock, #nav-videos, #nav-anomaly { display:none !important; }", "#nav-videos, #nav-anomaly { display:none !important; }")
 one("var MOCK_LS_BASE = 'ea_mock_live';", "var MOCK_LS_BASE = 're_ea_mock_unused';   // EA mock resume state must not show in the RE app", "mock-ls")
-one("</body>", '<script src="/re/re-mock.js"></script>\n</body>', "mock-js")
+import hashlib as _hl
+_mv = _hl.md5(io.open(R + "re/re-mock.js", "rb").read()).hexdigest()[:10]   # cache-buster: browsers keep JS up to 4 h
+one("</body>", '<script src="/re/re-mock.js?v=%s"></script>\n</body>' % _mv, "mock-js")
 # boss 2026-10-24: «EA의 모의고사 시험 화면과 문제 해설, 통계등을 그대로 사용» — keep the EA mock UI, swap the data side.
 # The EA screens hard-code 100 questions and «Part N»; RE sets are 75–150 questions and are labelled by state + set.
 for a, b, n in [
