@@ -31,6 +31,13 @@ Boss: «부동산이 시장이 더 큽니다» · «중립으로 양쪽을 다 �
 6. **Header on all three landings:** an exam switch «EA | Real Estate», and a PracExam logo that goes to `/`.
 7. **Language:** keep the current EN/KO toggle behaviour on `/ea/`, and give `/` and `/re/` the same toggle.
 
+## Build for more exams later (boss asked 2026-10-24)
+- Use the URL pattern `/<exam>/` for each landing and `/<exam>/app` for each app (`/ea/`, `/re/`, a future `/cpa/` …).
+- The hub's exam doors and the header exam switch render from ONE small list, e.g. `exams.js`: `[{id:'ea', name, url, color}, …]`.
+  Adding an exam = one entry plus its landing folder. Write the switch so it can become a dropdown when there are more than 2 exams.
+- RE state pages later at `/re/ca/`, `/re/ny/`, `/re/tx/`, `/re/nj/`. Do not build them now, but leave the RE landing's state links and sitemap ready for them.
+- Shared CSS: put common styles in one file, and the exam palette in a small per-exam file or a `data-exam` attribute on `<body>`, so a new exam only adds colors.
+
 ## RE palette (agreed; from drafts/pracexam_re_landing_draft.html)
 ```
 --navy #10304C  --navy-mid #2F5F8F  --navy-light #DCE7F3
