@@ -31,6 +31,22 @@ Boss: «부동산이 시장이 더 큽니다» · «중립으로 양쪽을 다 �
 6. **Header on all three landings:** an exam switch «EA | Real Estate», and a PracExam logo that goes to `/`.
 7. **Language:** keep the current EN/KO toggle behaviour on `/ea/`, and give `/` and `/re/` the same toggle.
 
+## Existing EA customers: do not break them (boss 2026-10-24 «기존 사용고객이 있으므로 /ea 전환은 조심해서»)
+Already safe, so keep exactly as is (verified in repo):
+- `manifest.json` `start_url` = `/app.html`. Installed phone/desktop apps open the app, not the root. ⛔ Don't change it.
+- Supabase auth redirects (`emailRedirectTo`, password reset `redirectTo`) = `/app.html`. ⛔ Don't change them.
+- `/app`, `/app.html`, `/tips/*`, `/popquiz`, `/videos`, `/install-guide.html`, privacy/terms: same URLs.
+
+Must add:
+- **Returning visitors on `/`.** If a Supabase session exists in the browser, show a prominent «Go to my EA practice → /app» button at the top of the hub. Do NOT auto-redirect; crawlers must still see the hub. Logged-out returning customers use the hub login, which sends them to `/app.html`, the same as today.
+- **Old root links keep working.** Emails, social posts and bookmarks that point to `https://pracexam.com/` land on the hub, which shows the EA door clearly above the fold. Old EA section anchors (e.g. `/#pricing`, `/#faq`): if `/` is opened with an EA anchor, forward it to `/ea/#anchor` in JS. List the anchors you found in CHANGES.md.
+- **Search for every place that links to `/` meaning «the EA page»** (app.html nav/logo, tips pages, popquiz, videos, 404.html, email templates in `email/`) and decide for each: hub `/`, or `/ea/`. List them in CHANGES.md.
+- **Rollback.** The merge must be one commit that can be reverted cleanly. Note the revert command in CHANGES.md.
+
+Outside the repo (for the boss/Jay; list in SEARCH_UPDATE.md):
+- Supabase Auth «Site URL» stays `https://pracexam.com`, which is the fallback only. Brevo email templates and Paddle success/cancel URLs: check whether any point to `/` meaning EA.
+- Merge at a low-traffic hour, then test immediately: log in, open the app, open the installed PWA, test a password-reset email, and test a Paddle sandbox checkout return.
+
 ## Build for more exams later (boss asked 2026-10-24)
 - Use the URL pattern `/<exam>/` for each landing and `/<exam>/app` for each app (`/ea/`, `/re/`, a future `/cpa/` …).
 - The hub's exam doors and the header exam switch render from ONE small list, e.g. `exams.js`: `[{id:'ea', name, url, color}, …]`.
