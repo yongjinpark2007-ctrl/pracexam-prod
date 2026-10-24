@@ -36,6 +36,8 @@ The boss pointed at the RE landing's state chips («어느 주에서 시험을 �
 and said a dropdown saves space.
 - On `/re/`, replace the chip row with one compact dropdown: label «Which state are you testing in? / 어느 주에서 시험을 보세요?» and a select-style control.
 - Options come from ONE list (put it next to `exams.js`, e.g. `re-states.js`): `[{id:'ca', name:'California', ready:true}, …]`, so adding a state is one entry.
-- A not-ready state shows «(coming soon / 준비 중)» and is disabled, the same as now.
+- ⛔ NO «coming soon / 준비 중» anywhere (boss 2026-10-24: «준비 중은 쓰지 마세요. 론칭할때는 준비가 다 될것이므로 준비된것 기준으로 합니다»).
+  All four states (California, New York, Texas, New Jersey) are listed as normal, selectable options. Remove the `ready`/«soon» styling and any dashed «soon» chips.
 - Keep the current behaviour after selection (whatever the chip did). Remember the choice in localStorage, wrapped in try/catch.
-- Status of each state: leave as in the draft for now. The boss decides the launch list separately.
+- Also remove «coming soon / 준비 중» wording from the rest of `/re/` and the hub (state chips, facts, FAQ, JSON-LD), and write as if all four states are live.
+  `/re/app` stays a placeholder page, but its copy should not say «coming soon» either. Use a neutral «Practice app opens here».
