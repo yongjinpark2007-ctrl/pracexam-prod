@@ -50,3 +50,9 @@ Boss: «EA의 탑메뉴가 많아서 RE와 맞지 않습니다. Sample Questions
   Resulting RE top menu: Features · Pricing, plus the same right side.
 - The tips/videos/popquiz pages' nav anchors to `/ea/#samples` may stay, since the section still exists. Update them only if they list «Sample Questions» as a top-menu item; then remove it there too, for a consistent menu.
 - No other EA change (SEO head untouched).
+
+## RE hero subtitle (boss 2026-10-24, option 1)
+- On `/re/`, change the h1 `<em>` subtitle from «National and State, Side by Side» to **«Your Ultimate State Exam Finisher»**, in BOTH the `.ko` and `.en` spans, as English like EA.
+- Keep the same `<em>` styling and size rules as EA, so it reads as the RE twin of «Your Ultimate PSI-style Exam Finisher».
+- Do not write «PSI» anywhere on `/re/`: the exam vendors differ by state (CA/NJ PSI, TX Pearson VUE, NY state-run).
+- Update the `/re/` og:title/twitter:title only if they quote the old subtitle.
