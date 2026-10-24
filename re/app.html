@@ -1829,13 +1829,13 @@ function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e)
         <div class="setup-icon-grid" style="grid-template-columns:repeat(3,1fr);gap:12px;" id="part-row">
           <button class="setup-icon-btn" onclick="selectPart('part1',this)">
             <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M5 21V3.5"/><path d="M5 4h13l-3 4.5 3 4.5H5"/></svg>
             </div>
             <div class="setup-icon-label">National</div>
           </button>
           <button class="setup-icon-btn" onclick="selectPart('part2',this)">
             <div class="setup-icon-circle">
-              <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 21.5s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11.2-6.5 11.2z"/><circle cx="12" cy="10.3" r="2.4"/></svg>
             </div>
             <div class="setup-icon-label"><script>document.write(RE_STATES[RE_STATE])</script></div>
           </button>
@@ -5838,8 +5838,8 @@ function progressColor(){ return progressBarColor(); }
 
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
-  'Part 1': { ko: 'National — 공통', en: 'National',    icon: '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
-  'Part 2': { ko: RE_STATE_KO[RE_STATE] + ' — 주 시험', en: RE_STATES[RE_STATE] + ' — State',     icon: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>' },
+  'Part 1': { ko: 'National — 공통', en: 'National',    icon: '<svg viewBox="0 0 24 24"><path d="M5 21V3.5"/><path d="M5 4h13l-3 4.5 3 4.5H5"/></svg>' },
+  'Part 2': { ko: RE_STATE_KO[RE_STATE] + ' — 주 시험', en: RE_STATES[RE_STATE] + ' — State',     icon: '<svg viewBox="0 0 24 24"><path d="M12 21.5s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11.2-6.5 11.2z"/><circle cx="12" cy="10.3" r="2.4"/></svg>' },
   'Part 3': { ko: 'Part 3 — 대리인', en: 'Part 3 — Representation', icon: '<svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
 };
 // Part 라벨 — 선택 언어로 반환 (없으면 Part 키 그대로)

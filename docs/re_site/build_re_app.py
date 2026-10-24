@@ -84,6 +84,21 @@ one("  var parts = ['Part 1','Part 2','Part 3'];", "  var parts = ['Part 1','Par
 one("  ['Part 1','Part 2','Part 3'].forEach(function(p){", "  ['Part 1','Part 2'].forEach(function(p){", "parts-3")
 h = h.replace('<div class="setup-icon-label">Part 1</div>', '<div class="setup-icon-label">National</div>', 1)
 h = h.replace('<div class="setup-icon-label">Part 2</div>', '<div class="setup-icon-label"><script>document.write(RE_STATES[RE_STATE])</script></div>', 1)
+# icons (boss 2026-10-24): National = flag, State = map pin (same line style as the EA icons)
+EA_P1_ICO = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+EA_P2_ICO = '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>'
+NAT_ICO = '<svg viewBox="0 0 24 24"><path d="M5 21V3.5"/><path d="M5 4h13l-3 4.5 3 4.5H5"/></svg>'
+ST_ICO = '<svg viewBox="0 0 24 24"><path d="M12 21.5s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11.2-6.5 11.2z"/><circle cx="12" cy="10.3" r="2.4"/></svg>'
+for lead, old_ico, new_ico in [("  'Part 1': { ko: 'National — 공통'", EA_P1_ICO, NAT_ICO), ("  'Part 2': { ko: RE_STATE_KO", EA_P2_ICO, ST_ICO)]:
+    i = h.index(lead); j = h.index("\n", i)
+    line = h[i:j]
+    if line.count(old_ico) != 1: sys.exit("PART_META icon anchor " + lead)
+    h = h[:i] + line.replace(old_ico, new_ico) + h[j:]
+i = h.index('id="part-row"'); j = h.index('id="topic-pick"', i)
+blk = h[i:j]
+p1 = '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+if blk.count(p1) != 1 or blk.count(EA_P2_ICO) != 1: sys.exit("part-row icon anchors")
+h = h[:i] + blk.replace(p1, NAT_ICO).replace(EA_P2_ICO, ST_ICO) + h[j:]
 
 # ── domains (topic picker): RE outline-code ranges; q = null → the picker shows topic counts only ──
 i = h.index("var EXAM_DOMAINS = {"); j = h.index("\n};\n", i) + 4
