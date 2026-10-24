@@ -183,3 +183,9 @@ header.nav .logo img{height:28px;width:auto}
 .hub-text{padding-top:24px}
 @media (max-width:900px){.hub-hero{padding-block:36px 44px}.choose{padding-top:40px}}
 @media (max-width:760px){.doors{gap:24px}}
+
+/* ---- 2026-10-24 boss: hub hero type = exactly the EA/RE landing hero (landing.css) ---- */
+.hub-hero .eyebrow{font-weight:700}
+.hub-hero h1{font-size:clamp(34px,5.5vw,58px);line-height:1.12;letter-spacing:-.02em;font-weight:700}
+.hub-hero h1 em{font-size:clamp(27px,4.4vw,40px);margin-top:5px;text-shadow:0 2px 8px rgba(79,124,172,.15)}
+@media (max-width:600px){.hub-hero h1 em{font-size:.82em}}
