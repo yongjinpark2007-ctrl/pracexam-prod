@@ -30,3 +30,12 @@ Boss: «이 메뉴를 드랍다운 형식으로 하는 것이 공간 운영에 �
 - Keyboard and a11y: a `<button aria-expanded>` plus a list of links. Esc closes, a click outside closes, and focus is visible.
 - Mobile: it lives inside the hamburger menu as a simple list.
 - Same on `/`, `/ea/` and `/re/`.
+
+## RE state picker: a dropdown (boss 2026-10-24)
+The boss pointed at the RE landing's state chips («어느 주에서 시험을 보세요? California / Texas / New Jersey / New York (준비 중)»)
+and said a dropdown saves space.
+- On `/re/`, replace the chip row with one compact dropdown: label «Which state are you testing in? / 어느 주에서 시험을 보세요?» and a select-style control.
+- Options come from ONE list (put it next to `exams.js`, e.g. `re-states.js`): `[{id:'ca', name:'California', ready:true}, …]`, so adding a state is one entry.
+- A not-ready state shows «(coming soon / 준비 중)» and is disabled, the same as now.
+- Keep the current behaviour after selection (whatever the chip did). Remember the choice in localStorage, wrapped in try/catch.
+- Status of each state: leave as in the draft for now. The boss decides the launch list separately.
