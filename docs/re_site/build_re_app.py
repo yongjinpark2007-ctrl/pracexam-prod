@@ -210,6 +210,8 @@ for a, b, n in [
     one(a, b, "mock:" + a[:30], n)
 one('<span class="mk-progtext" id="mock-progtext">Question 1 of 100</span>', '<span class="mk-progtext" id="mock-progtext">Question 1</span>', "mock-progtext-html")
 
+one('<a class="header-brand" href="/ea/"', '<a class="header-brand" href="/re/"', "logo-link")
+
 # ── visible EA labels ──
 one('<div class="lg-title">EA Exam Practice</div>', '<div class="lg-title">Real Estate Exam Practice</div>', "lg-title")
 one('<div class="lg-sub">PracExam.com · 2026 EA EXAM</div>', '<div class="lg-sub">PracExam.com · Real Estate License Exam</div>', "lg-sub")
