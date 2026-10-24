@@ -251,3 +251,11 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .about-strip{border-top:1px solid var(--line);margin-top:56px;padding-top:40px}
 .hero-cta{margin-top:28px;padding:13px 26px;font-size:15px}
 @media (max-width:600px){.hero-cta{width:100%;justify-content:center}}
+
+/* ---- 2026-10-24 boss: rounded corners like the rest of the site (EA/RE landings, app) ---- */
+.btn-primary,.login-card .btn,.hero-cta{border-radius:10px}
+.btn-ghost{border-radius:8px}
+.lang-toggle{border-radius:8px}
+.login-card{border-radius:14px}
+.login-card input{border-radius:9px}
+.photo{border-radius:16px}
