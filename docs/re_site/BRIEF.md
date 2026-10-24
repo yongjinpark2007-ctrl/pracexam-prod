@@ -3,25 +3,33 @@
 Work ONLY on branch `re-site`. Never push to `main`; the boss reviews the Cloudflare preview first.
 Reference drafts: `docs/re_site/drafts/` (chooser draft, RE landing draft, decisions README).
 
-## Boss requirements
-1. **Entry flow.** A returning customer logs in directly. A new visitor picks one of two exams:
-   - **EA** goes to the current EA landing (`/index.html`), unchanged.
-   - **RE** goes to the new Real Estate landing.
-2. **RE landing.** It uses the SAME structure as the current EA `index.html`: same menu, sections, components and fonts (Poppins 700 headings, Inter body, Pretendard for Korean). It uses the RE palette agreed earlier, below.
-3. **SEO / AEO (overriding rule).** Do NOT disturb the EA SEO/AEO. RE gets its own, separate SEO/AEO.
-   - ⛔ Do NOT move EA off `/`. The root URL, its `<title>`, canonical (`https://pracexam.com/`), JSON-LD and meta stay byte-identical except for one small «EA / Real Estate» exam switch link in the header.
-     The 10-19 draft idea «EA moves to /ea» is CANCELLED for this reason.
-   - ⛔ No interstitial or full-page chooser that hides EA content from crawlers on `/`.
-   - ✅ The chooser lives at **`/start`**, with `noindex`. Root CTAs for new visitors ("Get started") link to `/start`.
-     `/start` shows: a login form for existing customers (reuse the current Supabase login code), plus two doors, EA → `/` and Real Estate → `/re/`.
-   - ✅ RE landing at **`/re/`** (`re/index.html`):
-     - its own `<title>`, meta description, canonical `https://pracexam.com/re/`, and Open Graph tags
-     - JSON-LD: `Course` / `FAQPage` for real-estate license exam prep (CA, NY, TX, NJ + national)
-     - hreflang only if a KO page exists
-   - ✅ `sitemap.xml`: ADD `/re/` entries. Do not change the EA entries.
-   - ✅ `llms.txt`: ADD a separate «Real Estate» section. Leave the EA text as is.
-   - ✅ `robots.txt`: no change, except allowing `/re/` if needed.
-4. **RE app link.** The RE landing CTAs point to `/re/app` (`re/app.html`). For now that page may be a «coming soon» placeholder, like `app_comingsoon.html`. The RE question bank is not public yet (all RE rows inactive).
+## Boss requirements (updated 2026-10-24: NEUTRAL ROOT)
+Boss: «부동산이 시장이 더 큽니다» · «중립으로 양쪽을 다 커버 해야 합니다» · «지금 부터 라도 검색엔진을 업데이트 하여야 합니다».
+⟹ The root becomes a NEUTRAL hub for both exams. EA moves to `/ea/`. RE lives at `/re/`. Search engines get updated now.
+
+1. **`/` (root): neutral brand hub, indexable.**
+   - Title along the lines of «PracExam | EA & Real Estate License Exam Practice Questions». The meta description names both exams.
+   - Canonical `https://pracexam.com/`. JSON-LD: `Organization` + `WebSite`, plus an `ItemList` of the two courses linking `/ea/` and `/re/`.
+   - Above the fold: a login for returning customers (reuse the current Supabase login code; the login gate is English-only) and two equal doors, **EA → `/ea/`** and **Real Estate → `/re/`**.
+   - Below: short crawlable sections for each exam, with real text that links to each landing. ⛔ No JS-only content.
+2. **`/ea/`: the current EA landing, moved.**
+   - Copy today's `index.html` content to `ea/index.html` unchanged, except canonical → `https://pracexam.com/ea/`, Open Graph URL → `/ea/`, and JSON-LD URLs → `/ea/`.
+   - Keep the EA `<title>`, description, FAQ and Course JSON-LD text identical, so the ranking signals carry over.
+   - Fix relative asset paths after the move (images, CSS, JS) and check every link works from `/ea/`.
+   - ⛔ Do NOT move or rename any other EA URL: `/tips/*`, `/popquiz`, `/videos`, `/app`, `/install-guide.html`, privacy, etc. Those already rank, and they stay put.
+   - Update internal links that pointed at `/` as «the EA page» so they point to `/ea/` where they mean EA.
+3. **`/re/`: the RE landing.** Same structure as the EA landing, RE palette below, its own title, description, canonical `https://pracexam.com/re/`, Open Graph, and `Course` + `FAQPage` JSON-LD (CA, NY, TX, NJ + national).
+4. **`/re/app`:** a «coming soon» placeholder for now. The RE bank isn't public yet.
+5. **Search-engine update files (do these now, in this branch):**
+   - `sitemap.xml`: `/` (hub), ADD `/ea/` and `/re/`, keep every existing EA URL, and set `<lastmod>` to today.
+   - `llms.txt`: restructure into «PracExam overview» + «Enrolled Agent (EA)», with the existing text moved under it unchanged, + a NEW «Real Estate License» section with its URLs.
+   - `robots.txt`: keep. Make sure `/ea/` and `/re/` are allowed and the sitemap line is present.
+   - Add `docs/re_site/SEARCH_UPDATE.md`: the exact steps for the boss after merge.
+     - Google Search Console: submit the sitemap; URL Inspection → Request Indexing for `/`, `/ea/` and `/re/`.
+     - Bing Webmaster: sitemap plus IndexNow (BingSiteAuth.xml already exists).
+     - IndexNow ping URLs for `/`, `/ea/` and `/re/`.
+6. **Header on all three landings:** an exam switch «EA | Real Estate», and a PracExam logo that goes to `/`.
+7. **Language:** keep the current EN/KO toggle behaviour on `/ea/`, and give `/` and `/re/` the same toggle.
 
 ## RE palette (agreed; from drafts/pracexam_re_landing_draft.html)
 ```
@@ -41,14 +49,15 @@ Reference drafts: `docs/re_site/drafts/` (chooser draft, RE landing draft, decis
 ## Site rules (from CLAUDE.md)
 - Screen titles use `.section-title`. Don't invent new heading sizes.
 - The login gate is English-only.
-- Static HTML/CSS/JS, deployed by Cloudflare Pages from GitHub. Check `/re` and `/start` work without `.html`, matching the existing `_redirects` style.
+- Static HTML/CSS/JS, deployed by Cloudflare Pages from GitHub. Check `/ea/` and `/re/` work, with and without the trailing slash, matching the existing `_redirects` style.
 - No new external script hosts beyond those already used by `index.html`.
 
 ## Deliverables
-1. `start.html` (chooser + login)
-2. `re/index.html` (RE landing)
-3. `re/app.html` (placeholder)
-4. Header exam-switch link added to `index.html`. This is the ONLY EA change.
-5. `sitemap.xml` + `llms.txt` additions
-6. A short `docs/re_site/CHANGES.md` listing every file touched, and confirming the EA root `<head>` is unchanged (diff it).
+1. New `index.html`, the neutral hub
+2. `ea/index.html`, the moved EA landing
+3. `re/index.html`, the RE landing
+4. `re/app.html`, a placeholder
+5. `sitemap.xml`, `llms.txt`, `robots.txt` (if needed), `_redirects` (only `/ea` → `/ea/` and `/re` → `/re/` if Cloudflare needs it)
+6. `docs/re_site/SEARCH_UPDATE.md` (the boss's steps after merge)
+7. `docs/re_site/CHANGES.md`: every file touched, a diff of the EA `<head>` (old root vs new `/ea/`) showing that only URL fields changed, and a list of links checked
 Commit on `re-site` and push. Do not merge.
