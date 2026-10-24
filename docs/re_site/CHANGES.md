@@ -113,3 +113,17 @@ Every place that linked to `/` (or `index.html`) and what I decided:
 6. `.re-chip` state picker only changes the `?state=` on the Start Free link for now. NY is shown as «soon».
 7. IndexNow needs a key file that does not exist yet (see `SEARCH_UPDATE.md`).
 8. `manifest.json` still says «PracExam — EA Exam Prep» (the installed PWA is the EA app).
+
+## Hub fix (docs/re_site/HUB_FIX.md)
+
+`/` (index.html) was rebuilt from the approved chooser draft `drafts/pracexam_landing_draft.html` instead of the from-scratch hub.
+
+- **Looks like the draft:** «Which exam are you preparing for?», the two photo doors (EA, Real Estate) with the same copy, facts, state chips, orange buttons, «Already a member? Log in» strip, footer, fonts (Poppins / Inter / Pretendard) and colors, including its dark mode. Reviewer-only parts of the draft (draft banner, notes card, demo login options, toast) were removed.
+- **Photos and logos out of the HTML:** `img/door-ea.webp` (23 KB), `img/door-re.webp` (36 KB), both 1000×667 with width/height and alt text (the first is `fetchpriority=high`, the second lazy); `img/logo-dark.png` and `img/logo-white.png` from the draft. No base64 left in `index.html` (about 19 KB).
+- **Doors:** EA → `/ea/`, Real Estate → `/re/`. The RE state chips (CA, TX, NJ; NY «soon») put `?state=xx` on the RE link (`/re/?state=ca`), ready for the state pages; the draft's reviewer-only path text («/ea», «/re?state=ca») is hidden.
+- **Login:** the draft's login modal is wired to the real Supabase login (`hub-login.js`, unchanged logic); English only. Header «Log in» and the member strip open it; `/#login` opens it too.
+- **Kept:** the «Go to my EA practice → /app» bar for signed-in browsers (above the heading), old-anchor forwarding (`/#pricing` etc. → `/ea/#…`), header exam switch from `exams.js` (below 560px it drops to its own row), and the EN / 한국어 toggle (same `ea_lang` key as the other pages).
+- **SEO parts kept:** title, meta description, canonical `/`, OG/Twitter, Organization + WebSite + ItemList JSON-LD, the KO copy in `functions/_middleware.js`, and the crawlable EA and Real Estate text sections plus About, now **below** the chooser (the chooser is the first screen).
+- **New/changed files:** `index.html`, `hub.css` (now the draft's CSS plus a few additions), `hub.js` (language, chips, modal), `img/*`, `exams.js` (the hub doors are the approved static design, so the old door renderer was removed; the switch still comes from the list; a new exam adds a door card in `index.html`), `exam-palettes.css` (unused `hub` block removed). `/ea/`, `/re/`, `/app` and everything else untouched.
+- **`app.html` line endings:** restored from `main` (CRLF, with its one LF-only line kept as is). `git diff main -- app.html` now shows only the 4 link changes (`/ea/?signup=1`, `/ea/#about` ×2, logout `/ea/`).
+- **Checked (local Pages-style server, Playwright):** 85 refs / 47 targets all 200; no console or network errors; login success → `/app.html#access_token…` and failure message (mocked Supabase); signed-in bar shows only with a stored session; `/#pricing`, `/#features`, `/#faq` forward to `/ea/`; KO toggle works (`<html lang>` follows); at 375px wide the page does not scroll sideways and the two doors stack.

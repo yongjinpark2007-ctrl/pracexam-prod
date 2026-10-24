@@ -1,7 +1,8 @@
 /* PracExam — the ONE exam list (2026-10-24).
-   The hub's doors and every landing's header switch are drawn from this list.
-   Adding an exam = one entry here + its landing folder (/<id>/index.html) + one block in
-   exam-palettes.css. Nothing else needs to change.
+   Every landing's header switch is drawn from this list (pills for 2 exams, a dropdown for more).
+   The hub's two photo doors are the approved chooser design and are written in index.html;
+   a new exam adds a door card there. Adding an exam = one entry here + its landing folder
+   (/<id>/index.html) + one block in exam-palettes.css.
      id    : URL folder and the value of <body data-exam="…">
      name  : short label for the header switch   {ko, en}
      full  : full exam name                       {ko, en}
@@ -43,23 +44,11 @@
     el.setAttribute('aria-label', 'Exam');
   }
 
-  // Hub doors: one card per exam.
-  function renderDoors(el){
-    if(!el) return;
-    el.innerHTML = EXAMS.map(function(e){
-      return '<a class="exam-door" href="' + e.url + '" style="--door:' + e.color + '">' +
-        '<span class="exam-door-name">' + bi(e.full) + '</span>' +
-        '<span class="exam-door-blurb">' + bi(e.blurb) + '</span>' +
-        '<span class="exam-door-go">' + bi({ko:'시작하기 →', en:'Start here →'}) + '</span></a>';
-    }).join('');
-  }
-
   window.PE_EXAMS = EXAMS;
   function init(){
     var cur = document.body.getAttribute('data-exam');
     var sw = document.querySelectorAll('[data-exam-switch]');
     for(var i = 0; i < sw.length; i++) renderSwitch(sw[i], cur);
-    renderDoors(document.querySelector('[data-exam-doors]'));
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
