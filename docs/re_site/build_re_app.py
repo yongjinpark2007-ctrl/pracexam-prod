@@ -165,6 +165,33 @@ one("""inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가
 h = h.replace("#nav-mock, #nav-videos, #nav-anomaly { display:none !important; }", "#nav-videos, #nav-anomaly { display:none !important; }")
 one("var MOCK_LS_BASE = 'ea_mock_live';", "var MOCK_LS_BASE = 're_ea_mock_unused';   // EA mock resume state must not show in the RE app", "mock-ls")
 one("</body>", '<script src="/re/re-mock.js"></script>\n</body>', "mock-js")
+# boss 2026-10-24: «EA의 모의고사 시험 화면과 문제 해설, 통계등을 그대로 사용» — keep the EA mock UI, swap the data side.
+# The EA screens hard-code 100 questions and «Part N»; RE sets are 75–150 questions and are labelled by state + set.
+for a, b, n in [
+    ("Q'+(idx+1)+' / 100</span>'", "Q'+(idx+1)+' / '+Mock.ids.length+'</span>'", 1),
+    ("idx===99?", "idx===Mock.ids.length-1?", 1),
+    ("Mock.curIdx<99", "Mock.curIdx<Mock.ids.length-1", 1),
+    ("'</b> of 100 · '", "'</b> of '+Mock.ids.length+' · '", 1),
+    ("for(var i=0;i<100;i++){", "for(var i=0;i<Mock.ids.length;i++){", 1),
+    ("(100-ans)", "(Mock.ids.length-ans)", 3),
+    ("100-ans, fl=", "Mock.ids.length-ans, fl=", 1),
+    ("'/100 '+mL('응답','answered')", "'/'+((live.ids||[]).length||100)+' '+mL('응답','answered')", 2),
+    ("pf.style.width=(ans)+'%'", "pf.style.width=(ans*100/Mock.ids.length)+'%'", 1),
+    ("<span class=\"mk-badge\">Part '+Mock.part+'</span>'", "<span class=\"mk-badge\">'+reMockLabel(Mock.part)+'</span>'", 1),
+    ("— Part '+live.part+", "— '+reMockLabel(live.part)+", 2),
+    ("' — Part '+part+'</h2>'", "' — '+reMockLabel(part)+'</h2>'", 1),
+    ("<td>Part '+a.part+'</td>", "<td>'+reMockLabel(a.part)+'</td>", 1),
+    ("var dn=domainOfCode(t.code, partKey)", "var dn=domainOfCode(t.code, 'Part 1') || domainOfCode(t.code, 'Part 2')", 1),
+    ("(EXAM_DOMAINS[partKey]||[]).forEach(function(d){ domOrder.push(d.name); });",
+     "(EXAM_DOMAINS['Part 1']||[]).concat(EXAM_DOMAINS['Part 2']||[]).forEach(function(d){ domOrder.push(d.name); });", 1),
+    ("sb.rpc('get_review_payload',{ p_ids:[qid] })",
+     "sb.from('questions').select('question_id,text,options,correct,explanation,explanation_en,examtip,examtip_en').in('question_id',[qid])", 1),
+    ("mL('채점 대상 85문항 기준','Based on 85 scored items')", "mL('전 문항 채점','All items scored')", 1),
+    ("mL('실험 문항 15개는 점수에 반영되지 않습니다. 실제 SEE는 환산점수제라 백분율과 1:1 대응하지 않습니다.','15 experimental items do not count. The real SEE uses a scaled score, not a raw percentage.')",
+     "reMockNote()", 1),
+]:
+    one(a, b, "mock:" + a[:30], n)
+one('<span class="mk-progtext" id="mock-progtext">Question 1 of 100</span>', '<span class="mk-progtext" id="mock-progtext">Question 1</span>', "mock-progtext-html")
 
 # ── visible EA labels ──
 one('<div class="lg-title">EA Exam Practice</div>', '<div class="lg-title">Real Estate Exam Practice</div>', "lg-title")
