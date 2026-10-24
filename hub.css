@@ -173,3 +173,13 @@ header.nav .logo img{height:28px;width:auto}
 .login-foot{margin:14px 0 0;font-size:13px;color:var(--ink-mid);text-align:center}
 @media (max-width:900px){.hub-grid{grid-template-columns:1fr;gap:26px}.hub-hero{padding-block:32px 24px}}
 @media (max-width:560px){.hub-grid{padding:0 16px}}
+
+/* ---- 2026-10-24 boss: more air between hero and doors; doors are for choosing only ---- */
+.hub-hero{padding-block:56px 64px}
+.choose{padding-top:56px;padding-bottom:40px}
+.choose-h{font-family:var(--f-display);font-weight:700;letter-spacing:-.02em;font-size:clamp(24px,3vw,32px);text-align:center;margin:0 0 28px}
+.doors{gap:32px;padding-block:0}
+.body{padding:24px 26px 26px;gap:14px}
+.hub-text{padding-top:24px}
+@media (max-width:900px){.hub-hero{padding-block:36px 44px}.choose{padding-top:40px}}
+@media (max-width:760px){.doors{gap:24px}}
