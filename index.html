@@ -188,13 +188,17 @@
 <main id="top">
   <section class="hero hub-hero"><div class="hub-grid">
     <div class="hub-left">
-      <!-- Shown by hub-login.js only when a Supabase session exists in this browser. Never an auto-redirect. -->
-      <a class="resume-bar" id="resume-bar" href="/app" hidden data-ko="내 EA 연습으로 이동 →" data-en="Go to my EA practice →">Go to my EA practice →</a>
       <div class="eyebrow" data-ko="미국 자격시험 실전 문제은행" data-en="U.S. License Exam Practice">U.S. License Exam Practice</div>
       <h1>Pass your U.S. license exam<br><em>Pick your exam and start practicing</em></h1>
       <p class="lede" data-ko="PracExam은 실제 시험처럼 풀어 보는 문제은행입니다. 시험을 고르면 그 시험만을 위한 문제와 해설로 바로 이어집니다." data-en="PracExam is an online question bank that trains you the way the real exam tests you. Choose your exam and go straight to questions and explanations built for it.">PracExam is an online question bank that trains you the way the real exam tests you. Choose your exam and go straight to questions and explanations built for it.</p>
     </div>
     <div class="login-wrap" id="login">
+      <!-- Shown by hub-login.js instead of the form when a Supabase session exists in this browser. Never an auto-redirect. -->
+      <div class="login-card resume-card" id="resume-card" hidden>
+        <h2 data-ko="다시 오셨네요" data-en="Welcome back">Welcome back</h2>
+        <p class="sub" data-ko="이 브라우저에 로그인되어 있습니다." data-en="You're signed in on this browser.">You're signed in on this browser.</p>
+        <a class="btn btn-primary" id="resume-bar" href="/app" data-ko="내 EA 연습으로 이동 →" data-en="Go to my EA practice →">Go to my EA practice →</a>
+      </div>
       <!-- English only: the login gate has no Korean (CLAUDE.md). -->
       <form class="login-card" id="hub-login" novalidate>
         <h2>Log In</h2>

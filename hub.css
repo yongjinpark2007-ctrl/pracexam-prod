@@ -206,3 +206,7 @@ header.nav .logo img{height:28px;width:auto}
 
 /* state labels on the RE door: shown, not selectable (boss 2026-10-24) */
 .chip-static{cursor:default;background:var(--re-tint);border-color:transparent;color:var(--ink-mid)}
+
+/* signed-in visitor: the login card turns into a «Welcome back» card (boss 2026-10-24) */
+.resume-card[hidden],#hub-login[hidden]{display:none}
+.resume-card .btn{width:100%;justify-content:center;margin-top:18px;padding:12px 18px}

@@ -11,7 +11,10 @@
     var raw = localStorage.getItem('sb-ufrhvodruulpgnmudzwh-auth-token');
     var sess = raw && JSON.parse(raw);
     var bar = document.getElementById('resume-bar');
-    if (bar && sess && (sess.access_token || sess.refresh_token)) bar.hidden = false;
+    if (bar && sess && (sess.access_token || sess.refresh_token)){
+      var card = document.getElementById('resume-card'), f = document.getElementById('hub-login');
+      if (card){ card.hidden = false; if (f) f.hidden = true; } else bar.hidden = false;
+    }
   }catch(e){}
   var form = document.getElementById('hub-login');
   if (!form) return;
