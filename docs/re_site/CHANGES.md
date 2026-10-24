@@ -135,3 +135,7 @@ Every place that linked to `/` (or `index.html`) and what I decided:
 - **No «coming soon» / «준비 중» anywhere:** the dashed NY chip, its CSS and the «being built / launching with / planned / not public yet» wording are gone from `/re/` (FAQ text and JSON-LD), the hub, `llms.txt` and the RE placeholder. `/re/app` is still a placeholder page, titled «Practice app opens here». I removed the «State pages (planned)» line from `llms.txt` because those URLs do not exist yet; add it when `/re/ca/` etc. are built.
 - **Top menu:** «Sample Questions» removed from `/ea/` and `/re/` (desktop and hamburger) and from `popquiz.html`, `videos.html` and the 14 `tips/**` pages, which listed it too. The sections keep `id="samples"`, so `/ea/#samples`, `/#samples` (forwarded) and the hero «Try Sample Questions» button still work. Menus now: EA = Features · Pop Quiz · Study Tips · Pricing; RE = Features · Pricing.
 - Checked (Playwright): dropdown open/close/Esc/outside click on all four pages; menu items; state select values, `?state=` preselect, stored choice; hub chips; no page errors; 89 refs / 50 targets all 200; EA hamburger and the hub header at 375px have no sideways scroll.
+
+### RE hero subtitle (HUB_FIX.md)
+
+`/re/` h1 `<em>` is now «Your Ultimate State Exam Finisher» in both the `.ko` and `.en` spans (English in both, like EA), with the same `<em>` styling as EA. No «PSI» anywhere on `/re/` (checked). og:title and twitter:title did not quote the old subtitle, so they are unchanged.
