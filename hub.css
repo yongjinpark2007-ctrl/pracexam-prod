@@ -189,3 +189,9 @@ header.nav .logo img{height:28px;width:auto}
 .hub-hero h1{font-size:clamp(34px,5.5vw,58px);line-height:1.12;letter-spacing:-.02em;font-weight:700}
 .hub-hero h1 em{font-size:clamp(27px,4.4vw,40px);margin-top:5px;text-shadow:0 2px 8px rgba(79,124,172,.15)}
 @media (max-width:600px){.hub-hero h1 em{font-size:.82em}}
+
+/* ---- 2026-10-24 boss (correction): the hub hero has no photo, so its type is LARGER than the landings ---- */
+.hub-hero h1{font-size:clamp(40px,6.2vw,74px);line-height:1.08}
+.hub-hero h1 em{font-size:clamp(30px,4.6vw,50px)}
+.hub-hero .lede{font-size:19.5px}
+@media (max-width:600px){.hub-hero h1 em{font-size:.8em}.hub-hero .lede{font-size:17px}}
