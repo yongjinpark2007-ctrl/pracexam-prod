@@ -80,9 +80,78 @@ function isRoot(url) {
   return koCopy(url) !== null;
 }
 
+
+// ---------------------------------------------------------------------------
+// 🆕 2026-10-24 — TEST DOMAIN GATE (boss: dxdgroup.com 에 몇 주 올려 라이브 테스트, 비밀번호 하나로 잠금)
+//  - Runs ONLY when the host is dxdgroup.com or a subdomain of it. pracexam.com and *.pages.dev are untouched,
+//    so this file can move to pracexam.com as is.
+//  - One password -> a cookie for 30 days. Every response on the test host also gets «noindex» so search
+//    engines never list a copy of pracexam.com (duplicate content would hurt pracexam.com SEO).
+//  - Only the SHA-256 of the password is in this public repo. A Cloudflare env var GATE_PASSWORD_SHA256 overrides it.
+// ---------------------------------------------------------------------------
+const GATE_HOST_RE = /(^|\.)dxdgroup\.com$/i;
+const GATE_DEFAULT_SHA256 = "bdff1fb817fce0908117140656e4c3ee1077ba44c4d4fa41679996f328424b0e";
+const GATE_COOKIE = "pe_test_gate";
+
+async function sha256hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+}
+function gateCookie(request) {
+  const m = (request.headers.get("cookie") || "").match(new RegExp("(?:^|;\\s*)" + GATE_COOKIE + "=([a-f0-9]{64})"));
+  return m ? m[1] : "";
+}
+function gatePage(wrong) {
+  const html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    + '<meta name="robots" content="noindex,nofollow"><title>PracExam test site</title>'
+    + '<style>:root{--bg:#FBFAF7;--ink:#1C2326;--mid:#5A6468;--line:#E6E3DC}'
+    + '@media (prefers-color-scheme:dark){:root{--bg:#121A1C;--ink:#E4EBEC;--mid:#A9B6B8;--line:#2E3B3E}}'
+    + 'body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;padding:16px}'
+    + 'form{width:100%;max-width:340px;border:1px solid var(--line);border-radius:14px;padding:28px 24px;background:rgba(255,255,255,.03)}'
+    + 'h1{font-size:20px;margin:0 0 6px}p{margin:0 0 16px;color:var(--mid);font-size:14px}'
+    + 'input{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:transparent;color:inherit}'
+    + 'button{width:100%;margin-top:12px;padding:12px;border:0;border-radius:10px;background:var(--ink);color:var(--bg);font:600 15px Inter,system-ui,sans-serif;cursor:pointer}'
+    + '.e{color:#dc2626;font-size:13px;margin:10px 0 0}</style></head><body>'
+    + '<form method="post" action="/__gate"><h1>PracExam test site</h1><p>Enter the password to continue.</p>'
+    + '<input type="password" name="pw" autocomplete="current-password" autofocus aria-label="Password">'
+    + '<input type="hidden" name="next" value="">'
+    + '<button type="submit">Enter</button>' + (wrong ? '<p class="e">Wrong password.</p>' : '') + '</form>'
+    + '<script>document.querySelector("[name=next]").value=location.pathname+location.search+location.hash;</script></body></html>';
+  return new Response(html, { status: wrong ? 401 : 200, headers: {
+    "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "X-Robots-Tag": "noindex, nofollow" } });
+}
+async function testGate(context) {
+  const { request, env } = context;
+  const url = new URL(request.url);
+  if (!GATE_HOST_RE.test(url.hostname)) return null;                       // not the test domain: no gate
+  if (url.pathname === "/robots.txt")
+    return new Response("User-agent: *\nDisallow: /\n", { headers: { "content-type": "text/plain", "X-Robots-Tag": "noindex" } });
+  const want = (env && env.GATE_PASSWORD_SHA256) || GATE_DEFAULT_SHA256;
+  if (url.pathname === "/__gate" && request.method === "POST") {
+    const form = await request.formData();
+    const ok = (await sha256hex(String(form.get("pw") || ""))) === want;
+    if (!ok) return gatePage(true);
+    let next = String(form.get("next") || "/");
+    if (!next.startsWith("/") || next.startsWith("//")) next = "/";
+    return new Response(null, { status: 303, headers: {
+      "location": next, "cache-control": "no-store",
+      "set-cookie": GATE_COOKIE + "=" + want + "; Path=/; Max-Age=2592000; HttpOnly; Secure; SameSite=Lax" } });
+  }
+  if (gateCookie(request) !== want) return gatePage(false);
+  return "pass";
+}
+async function withNoindex(next) {
+  const r = await next();
+  const out = new Response(r.body, r);
+  out.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return out;
+}
+
 export async function onRequest(context) {
   const { request, next } = context;
-  const response = await next();
+  const gate = await testGate(context);
+  if (gate && gate !== "pass") return gate;
+  const response = gate === "pass" ? await withNoindex(next) : await next();
   
     const _url = new URL(request.url);
 
