@@ -89,3 +89,4 @@ Boss 2026-10-24: «현재까지의 전체 디자인으로 1차 정하고 기록�
 - Verified: the gate works (wrong password → 401), and /, /ea/, /re/, /re/popquiz and /app all show the re-site build. pracexam.com is unchanged.
 - The test site uses the REAL Supabase. For confirm and reset e-mails to return to test.dxdgroup.com, Jay must add it to the Supabase redirect URLs. Paddle stays sandbox-only there.
 - When testing ends: merge re-site → main (the gate stays dormant on pracexam.com), then remove the test.dxdgroup.com custom domain.
+- Boss 2026-10-24: leave sign-up as is on the test site, so no Supabase redirect change. Confirm and reset e-mail links from the test site land on pracexam.com, and that is accepted.
