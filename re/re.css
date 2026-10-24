@@ -10,12 +10,16 @@
 .re-select:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px;}
 
 /* Founder's Message (boss 2026-10-24) — replaces the Killer Questions cards; keeps the navy section */
-.founder-grid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:48px;align-items:start;}
-.founder-photo img{display:block;width:100%;height:auto;border-radius:18px;box-shadow:0 24px 50px -20px rgba(0,0,0,.55);}
+.founder-grid{display:grid;grid-template-columns:240px minmax(0,1fr);gap:44px;align-items:start;justify-content:start;}
+.founder-photo{width:240px;}
+.founder-photo img{display:block;width:240px;height:auto;border-radius:18px;overflow:hidden;box-shadow:0 24px 50px -20px rgba(0,0,0,.55);}
 .founder-text h2{font-family:var(--font-serif);color:#fff;font-weight:700;font-size:clamp(24px,3.2vw,34px);line-height:1.25;letter-spacing:-.02em;margin:0 0 20px;}
 .founder-body p{font-size:16px;line-height:1.85;color:rgba(255,255,255,.80);margin:0 0 14px;}
 .founder-sign{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);}
 .founder-name{font-weight:700;color:#fff;font-size:15.5px;}
 .founder-dre{font-size:13px;color:rgba(255,255,255,.60);margin-top:4px;letter-spacing:.02em;}
-@media (max-width:860px){.founder-grid{grid-template-columns:1fr;gap:28px;}.founder-photo{max-width:300px;margin:0 auto;}}
+@media (max-width:860px){.founder-grid{grid-template-columns:1fr;gap:24px;}.founder-photo,.founder-photo img{width:200px;}}
 @media (min-width:861px){.founder-photo{position:sticky;top:88px;}}
+
+.founder-section .founder-text, .founder-section .founder-body p{color:rgba(255,255,255,.85) !important;}
+.founder-section h2{color:#fff !important;}
