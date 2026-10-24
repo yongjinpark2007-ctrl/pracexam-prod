@@ -8,7 +8,3 @@
 }
 .re-select-wrap::after{content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none;}
 .re-select:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px;}
-
-/* Killer Questions section: navy to steel-blue gradient (boss chose option A, 2026-10-24) */
-.killer-section{background:linear-gradient(135deg,#10304C 0%,#1E4A72 55%,#2F5F8F 100%);}
-.killer-eyebrow,.killer-num{color:#A9C2DE;}
