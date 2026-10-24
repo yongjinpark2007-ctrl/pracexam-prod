@@ -210,3 +210,44 @@ header.nav .logo img{height:28px;width:auto}
 /* signed-in visitor: the login card turns into a «Welcome back» card (boss 2026-10-24) */
 .resume-card[hidden],#hub-login[hidden]{display:none}
 .resume-card .btn{width:100%;justify-content:center;margin-top:18px;padding:12px 18px}
+
+/* ---- 2026-10-24 boss approved the premium study (site fonts): one ink, one accent, hairlines, more air ---- */
+/* premium study: one ink colour, one accent, serif display, hairlines instead of shadows/stripes */
+:root{--bg:#FBFAF7;--surface:#FFFFFF;--ink:#1C2326;--ink-mid:#5A6468;--line:#E6E3DC;--accent:#1F4E5A}
+body{background:var(--bg)}
+header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
+.nav-links{font-weight:500;color:var(--ink-mid);gap:34px}
+.nav-links a:hover{color:var(--ink)}
+.btn-ghost{border:1px solid var(--ink);color:var(--ink);border-radius:999px;padding:7px 16px}
+.lang-toggle{border:1px solid var(--line);border-radius:999px}
+.lang-toggle button.active{background:var(--ink)}
+.hub-hero{background:none;padding-block:88px 96px}
+.hub-hero .eyebrow{color:var(--accent);font-weight:600;letter-spacing:.2em}
+.hub-hero h1{font-family:var(--f-display);font-weight:600;letter-spacing:-.03em;line-height:1.06;font-size:clamp(42px,6vw,76px);color:var(--ink)}
+.hub-hero h1 em{display:block;font-family:var(--f-display);font-style:normal;font-weight:400;color:var(--ink-mid);text-shadow:none;font-size:clamp(26px,3.2vw,38px);margin-top:14px;letter-spacing:-.01em}
+.hub-hero .lede{color:var(--ink-mid);font-size:18px;line-height:1.7;margin-top:22px;max-width:520px}
+.login-card{border:1px solid var(--line);box-shadow:none;border-radius:4px;padding:30px 28px}
+.login-card h2{font-family:var(--f-display);font-weight:600;font-size:26px}
+.login-card input{border:1px solid var(--line);border-radius:2px;background:#fff}
+.btn-primary,.login-card .btn{background:var(--ink);color:#fff;border-radius:2px;letter-spacing:.02em}
+.btn-primary:hover{background:var(--accent)}
+.choose{border-top:1px solid var(--line);padding-top:88px}
+.choose-h{font-family:var(--f-display);font-weight:600;font-size:clamp(28px,3.4vw,40px);margin-bottom:48px}
+.doors{gap:48px}
+.door{background:none;box-shadow:none;border-radius:0}
+.door:hover,.door:focus-within{transform:none;box-shadow:none}
+.photo{border-radius:4px}
+.body{border-top:0;padding:26px 0 0;gap:12px}
+.door h2{font-family:var(--f-display);font-weight:600;font-size:30px;color:var(--ink)!important}
+.door p{font-size:16px;line-height:1.65}
+.chip-static{background:none;border:1px solid var(--line);color:var(--ink-mid);font-weight:500}
+.go{justify-content:flex-start;padding-top:8px}
+.go .btn-cta{background:none;color:var(--ink);padding:0 0 3px;border-radius:0;border-bottom:1px solid var(--ink);font-weight:600}
+.go .btn-cta:hover{background:none;color:var(--accent);border-color:var(--accent)}
+.hub-text{padding-top:88px;gap:48px}
+.hub-card{background:none;box-shadow:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:32px 0 0}
+.hub-card h2{font-family:var(--f-display);font-weight:600}
+.hub-card .eyebrow{color:var(--accent)}
+.about-strip{border-top:1px solid var(--line);margin-top:56px;padding-top:40px}
+.hero-cta{margin-top:28px;padding:13px 26px;font-size:15px}
+@media (max-width:600px){.hero-cta{width:100%;justify-content:center}}
