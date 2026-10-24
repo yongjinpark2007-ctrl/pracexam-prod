@@ -24,6 +24,7 @@
 
   function bi(o){ return '<span class="ko">' + o.ko + '</span><span class="en">' + o.en + '</span>'; }
 
+  // Header switch: English labels in BOTH languages (boss 2026-10-24: Korean labels were too long and read oddly).
   // Header switch: ALWAYS a dropdown (button + list of links), also with only two exams.
   // Closed: the current exam's name and a caret (on the hub: «Exams»). Open: every exam in the list, current one marked.
   // Esc and a click outside close it. Inside the mobile hamburger menu the CSS shows the list flat (no button).
@@ -33,11 +34,11 @@
     el.className = (el.className.replace(/\bexam-dd\b/, '') + ' exam-dd').trim();
     el.innerHTML =
       '<button type="button" class="exam-dd-btn" aria-expanded="false" aria-haspopup="true" aria-controls="exam-dd-list">' +
-        '<span class="exam-dd-label">' + bi(cur ? cur.name : {ko:'시험', en:'Exams'}) + '</span><span class="exam-dd-caret" aria-hidden="true">▾</span></button>' +
+        '<span class="exam-dd-label">' + (cur ? cur.name.en : 'Exams') + '</span><span class="exam-dd-caret" aria-hidden="true">▾</span></button>' +
       '<ul class="exam-dd-list" id="exam-dd-list">' +
         EXAMS.map(function(e){
           var on = e.id === currentId;
-          return '<li><a href="' + e.url + '"' + (on ? ' aria-current="page"' : '') + '>' + bi(e.full) + (on ? '<span class="exam-dd-check" aria-hidden="true">✓</span>' : '') + '</a></li>';
+          return '<li><a href="' + e.url + '"' + (on ? ' aria-current="page"' : '') + '>' + e.full.en + (on ? '<span class="exam-dd-check" aria-hidden="true">✓</span>' : '') + '</a></li>';
         }).join('') + '</ul>';
     var btn = el.querySelector('.exam-dd-btn');
     function setOpen(v){ el.classList.toggle('open', v); btn.setAttribute('aria-expanded', v ? 'true' : 'false'); }
