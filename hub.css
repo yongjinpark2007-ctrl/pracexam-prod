@@ -64,7 +64,6 @@ html[lang=en] .ko-only{display:none}
 .states span.lbl{font-size:13px;color:var(--ink-mid);margin-right:2px}
 .chip{font:600 13px var(--f-body);border:1.5px solid var(--re-acc);color:var(--ink);background:none;border-radius:999px;padding:4px 12px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--re-acc);color:#fff}
-.chip.soon{border-style:dashed;opacity:.7;cursor:default}
 .go{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px}
 .go .path{font:500 12px ui-monospace,Consolas,monospace;color:var(--ink-mid)}
 .member{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:28px;text-align:center}
@@ -93,8 +92,7 @@ body{margin:0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .resume-bar{background:var(--ea-acc);color:#10201F}}
 /* header exam switch (exams.js + exam-switch.css) borrows the draft's colors, also in dark mode */
 body[data-exam="hub"]{--white:var(--surface);--navy:var(--ink);--border-strong:var(--line);--text-mid:var(--ink-mid);--text-main:var(--ink);--accent:var(--ea-acc);--accent-tint:var(--ea-tint);--terracotta:var(--cta);--navy-rgb:16,48,76;--border-clr:var(--line)}
-.nav-inner .exam-switch{margin-left:6px}
-.exam-switch-pills a[aria-current="page"]{color:var(--bg)}
+.nav-inner .exam-switch{margin-left:12px}
 /* text sections below the chooser (crawlable) */
 .hub-text{padding-block:8px 8px}
 .hub-card{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:14px;padding:26px 28px;margin-bottom:20px}
@@ -118,4 +116,4 @@ footer a{color:var(--ink-mid)}
 html[lang="en"] .exam-switch .ko, html[lang="ko"] .exam-switch .en{display:none !important}
 
 /* header on narrow phones: switch gets its own row (rules in exam-switch.css) */
-@media (max-width:560px){header .wrap.nav-inner{padding-block:12px;gap:8px}.nav-inner .exam-switch{margin-left:0}.logo img{height:32px}.hdr-r{gap:8px}.lang button{padding:6px 9px;font-size:12px}header .btn{padding:8px 12px;font-size:14px}}
+@media (max-width:560px){header .wrap.nav-inner{padding-block:12px;gap:8px;flex-wrap:wrap}header .nav-brand{display:contents}.logo{order:1}.nav-right{order:2}.nav-inner .exam-switch{margin-left:0;order:3;flex:1 0 100%}.logo img{height:32px}.hdr-r{gap:8px}.lang button{padding:6px 9px;font-size:12px}header .btn{padding:8px 12px;font-size:14px}}

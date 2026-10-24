@@ -1,34 +1,32 @@
-/* Header exam switch «EA | Real Estate» (2026-10-24). Drawn by exams.js. */
-.nav-brand{display:flex; align-items:center; gap:14px; flex:0 1 auto; min-width:0;}
-.exam-switch{flex:0 0 auto;}
-.exam-switch-pills{display:inline-flex; border:1.5px solid var(--border-strong); border-radius:999px; padding:2px; background:var(--white);}
-.exam-switch-pills a{
-  font-size:13px; font-weight:700; line-height:1; text-decoration:none; color:var(--text-mid);
-  padding:7px 12px; border-radius:999px; white-space:nowrap;
+/* Header exam switch: always a dropdown (2026-10-24). Drawn by exams.js from its one list. */
+.nav-brand{display:flex; align-items:center; flex:0 1 auto; min-width:0;}
+.exam-dd{position:relative; flex:0 0 auto;}
+.exam-dd-btn{
+  display:inline-flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;
+  font:700 13px var(--font-sans, inherit); line-height:1; color:var(--navy);
+  background:var(--white); border:1.5px solid var(--border-strong); border-radius:999px; padding:8px 12px;
 }
-.exam-switch-pills a:hover{color:var(--navy);}
-.exam-switch-pills a[aria-current="page"]{background:var(--navy); color:var(--white);}
-.exam-switch-pills a:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px;}
-.exam-switch-menu-wrap{position:relative;}
-.exam-switch-menu-wrap summary{
-  list-style:none; cursor:pointer; font-size:13px; font-weight:700; color:var(--navy);
-  border:1.5px solid var(--border-strong); border-radius:999px; padding:7px 14px; background:var(--white);
+.exam-dd-btn:hover{border-color:var(--navy);}
+.exam-dd-btn:focus-visible, .exam-dd-list a:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px;}
+.exam-dd-caret{font-size:11px; transition:transform .15s;}
+.exam-dd.open .exam-dd-caret{transform:rotate(180deg);}
+.exam-dd-list{
+  display:none; list-style:none; margin:0; padding:6px; position:absolute; top:calc(100% + 6px); left:0; z-index:70; min-width:250px;
+  background:var(--white); border:1px solid var(--border-strong); border-radius:12px;
+  box-shadow:0 14px 30px -14px rgba(var(--navy-rgb),.35);
 }
-.exam-switch-menu-wrap summary::-webkit-details-marker{display:none;}
-.exam-switch-menu{
-  position:absolute; top:calc(100% + 6px); left:0; z-index:60; min-width:220px;
-  background:var(--white); border:1px solid var(--border-strong); border-radius:12px; padding:6px;
-  box-shadow:0 14px 30px -14px rgba(var(--navy-rgb),.30);
+.exam-dd.open .exam-dd-list{display:block;}
+.exam-dd-list a{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:8px;
+  font-size:14px; font-weight:600; color:var(--text-main); text-decoration:none; white-space:nowrap;
 }
-.exam-switch-menu a{display:block; padding:9px 12px; border-radius:8px; font-size:14px; font-weight:600; color:var(--text-main); text-decoration:none;}
-.exam-switch-menu a:hover{background:var(--accent-tint);}
-.exam-switch-menu a[aria-current="page"]{color:var(--accent);}
-/* Narrow phones: the switch drops to its own full-width row under the logo row. */
-@media (max-width:560px){
-  .nav-brand{display:contents;}
-  .nav-inner{flex-wrap:wrap; row-gap:8px; padding-top:10px; padding-bottom:10px;}
-  .logo{order:1;} .nav-right{order:2;}
-  .exam-switch{order:3; flex:1 0 100%;}
-  .exam-switch-pills{display:flex; width:100%;}
-  .exam-switch-pills a{flex:1; text-align:center; padding:8px 10px;}
+.exam-dd-list a:hover{background:var(--accent-tint);}
+.exam-dd-list a[aria-current="page"]{color:var(--accent);}
+.exam-dd-check{font-weight:700;}
+/* Inside the hamburger menu (phones/tablets): a plain list, no button */
+@media (max-width:860px){
+  .nav-menu .exam-dd{width:100%; border-bottom:1px solid var(--border-clr);}
+  .nav-menu .exam-dd-btn{display:none;}
+  .nav-menu .exam-dd-list{display:block; position:static; min-width:0; border:0; box-shadow:none; padding:6px 0 8px; background:none;}
+  .nav-menu .exam-dd-list a{padding:11px 2px;}
 }

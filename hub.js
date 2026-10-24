@@ -14,20 +14,28 @@
   document.getElementById('l-ko').onclick = function(){ setLang('ko'); };
   try { if (localStorage.getItem('ea_lang') === 'ko') setLang('ko'); } catch(e){}
 
-  // RE door: the chosen state rides on the link (?state=ca). /re/state pages will use it later.
-  var chips = document.querySelectorAll('.chip[data-st]');
+  // RE door: chips come from /re-states.js; the chosen state rides on the link (?state=ca) and is remembered.
+  var box = document.getElementById('re-chips');
   function setState(st){
     var href = '/re/?state=' + st;
     document.getElementById('re-go').href = href;
     document.getElementById('re-photo').href = href;
   }
-  Array.prototype.forEach.call(chips, function(c){
-    c.addEventListener('click', function(){
-      Array.prototype.forEach.call(chips, function(o){ o.setAttribute('aria-pressed', 'false'); });
-      c.setAttribute('aria-pressed', 'true');
-      setState(c.getAttribute('data-st'));
+  if (box && window.PE_RE_STATES){
+    var cur = PE_RE_STATE.get();
+    PE_RE_STATES.forEach(function(s){
+      var c = document.createElement('button');
+      c.type = 'button'; c.className = 'chip'; c.setAttribute('data-st', s.id); c.textContent = s.name;
+      c.setAttribute('aria-pressed', s.id === cur ? 'true' : 'false');
+      c.addEventListener('click', function(){
+        Array.prototype.forEach.call(box.children, function(o){ o.setAttribute('aria-pressed', 'false'); });
+        c.setAttribute('aria-pressed', 'true');
+        PE_RE_STATE.set(s.id); setState(s.id);
+      });
+      box.appendChild(c);
     });
-  });
+    setState(cur);
+  }
 
   // Login modal
   var scrim = document.getElementById('scrim');

@@ -1,8 +1,10 @@
-/* /re/ only — state picker (2026-10-24). Palette comes from exam-palettes.css (data-exam="re"). */
+/* /re/ only — state dropdown (2026-10-24). Palette comes from exam-palettes.css (data-exam="re"). */
 .re-picker{background:var(--white); border:1px solid var(--border-strong); border-radius:14px; padding:12px 14px; margin:0 0 18px; max-width:520px;}
-.re-picker-q{font:600 14px var(--font-sans); color:var(--navy); margin-bottom:8px;}
-.re-chips{display:flex; flex-wrap:wrap; gap:8px;}
-.re-chip{font:600 13.5px var(--font-sans); border:1.5px solid var(--accent); color:var(--navy); background:none; border-radius:999px; padding:5px 13px; cursor:pointer;}
-.re-chip[aria-pressed="true"]{background:var(--accent); color:var(--white);}
-.re-chip.soon{border-style:dashed; opacity:.65; cursor:default;}
-.re-chip:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px;}
+.re-picker-q{display:block; font:600 14px var(--font-sans); color:var(--navy); margin-bottom:8px;}
+.re-select-wrap{position:relative;}
+.re-select{
+  -webkit-appearance:none; appearance:none; width:100%; font:600 15px var(--font-sans); color:var(--navy);
+  background:var(--white); border:1.5px solid var(--accent); border-radius:10px; padding:10px 40px 10px 12px; cursor:pointer;
+}
+.re-select-wrap::after{content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none;}
+.re-select:focus-visible{outline:3px solid var(--terracotta); outline-offset:2px;}

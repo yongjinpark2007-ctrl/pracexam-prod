@@ -10,7 +10,7 @@ New
 | `index.html` | **Rewritten**: neutral hub. Title «PracExam \| EA & Real Estate License Exam Practice Questions», canonical `/`, JSON-LD Organization + WebSite + ItemList (links `/ea/`, `/re/`), English-only Supabase login, two doors, crawlable text sections for both exams. |
 | `ea/index.html` | The old root EA landing, moved (see head diff below). |
 | `re/index.html` | RE landing, from `drafts/pracexam_re_landing_draft.html` with the draft/demo parts removed. Own title, description, canonical `/re/`, OG, `Course` + `FAQPage` JSON-LD. |
-| `re/app.html` | «Coming soon» placeholder (`noindex`). Served at `/re/app`. |
+| `re/app.html` | Placeholder page «Practice app opens here» (`noindex`). Served at `/re/app`. |
 | `re/re.css`, `re/img/hero-re.jpg`, `re/img/killer-re.jpg` | RE-only CSS and the two Gemini photos (extracted from base64 in the draft). |
 | `exams.js` | **The one exam list** (`id, name, full, blurb, url, app, color`). Draws the header switch on every landing and the hub doors. Switch renders pills for 2 exams and a `<details>` dropdown for more than 2. |
 | `exam-palettes.css` | One `body[data-exam="…"]` block per exam (`ea`, `re`, `hub`). A new exam adds one block. |
@@ -106,11 +106,11 @@ Every place that linked to `/` (or `index.html`) and what I decided:
 ## Things to know / decide
 
 1. **`sync_nav.js` / `build_site.js`** (not in this repo) stamp the header into `popquiz.html`, `videos.html` and `tips/**`, using the old `index.html`. I edited the generated files by hand; if those scripts run again they will put `/#features` back. Point them at `ea/index.html`, or ask me to.
-2. **RE sign-up is off.** The RE bank is not public, so every «Start Free / Log In / Subscribe» on `/re/` goes to `/re/app` (coming soon). The draft's sign-up modal and Supabase code were not carried over. `Pop Quiz` and `Study Tips` nav items are not on `/re/` (EA only).
+2. **RE sign-up is off.** The RE bank is not public, so every «Start Free / Log In / Subscribe» on `/re/` goes to `/re/app` (placeholder page). The draft's sign-up modal and Supabase code were not carried over. `Pop Quiz` and `Study Tips` nav items are not on `/re/` (EA only).
 3. **Hub login** signs in EA accounts only (the only app that exists).
 4. Hub Korean «About» sentence is the owner's EA-only text (unchanged); only the English sentence was widened to both exams.
 5. RE «5,000+» and `$29` are on the page as decided; TX needs +74 and NJ +376 questions before launch. I left the count out of RE meta/JSON-LD.
-6. `.re-chip` state picker only changes the `?state=` on the Start Free link for now. NY is shown as «soon».
+6. The RE state dropdown only changes the `?state=` on the Start Free link for now (all four states are normal options).
 7. IndexNow needs a key file that does not exist yet (see `SEARCH_UPDATE.md`).
 8. `manifest.json` still says «PracExam — EA Exam Prep» (the installed PWA is the EA app).
 
@@ -120,10 +120,18 @@ Every place that linked to `/` (or `index.html`) and what I decided:
 
 - **Looks like the draft:** «Which exam are you preparing for?», the two photo doors (EA, Real Estate) with the same copy, facts, state chips, orange buttons, «Already a member? Log in» strip, footer, fonts (Poppins / Inter / Pretendard) and colors, including its dark mode. Reviewer-only parts of the draft (draft banner, notes card, demo login options, toast) were removed.
 - **Photos and logos out of the HTML:** `img/door-ea.webp` (23 KB), `img/door-re.webp` (36 KB), both 1000×667 with width/height and alt text (the first is `fetchpriority=high`, the second lazy); `img/logo-dark.png` and `img/logo-white.png` from the draft. No base64 left in `index.html` (about 19 KB).
-- **Doors:** EA → `/ea/`, Real Estate → `/re/`. The RE state chips (CA, TX, NJ; NY «soon») put `?state=xx` on the RE link (`/re/?state=ca`), ready for the state pages; the draft's reviewer-only path text («/ea», «/re?state=ca») is hidden.
+- **Doors:** EA → `/ea/`, Real Estate → `/re/`. The RE state chips (CA, NY, TX, NJ, drawn from `re-states.js`) put `?state=xx` on the RE link (`/re/?state=ca`), ready for the state pages; the draft's reviewer-only path text («/ea», «/re?state=ca») is hidden.
 - **Login:** the draft's login modal is wired to the real Supabase login (`hub-login.js`, unchanged logic); English only. Header «Log in» and the member strip open it; `/#login` opens it too.
 - **Kept:** the «Go to my EA practice → /app» bar for signed-in browsers (above the heading), old-anchor forwarding (`/#pricing` etc. → `/ea/#…`), header exam switch from `exams.js` (below 560px it drops to its own row), and the EN / 한국어 toggle (same `ea_lang` key as the other pages).
 - **SEO parts kept:** title, meta description, canonical `/`, OG/Twitter, Organization + WebSite + ItemList JSON-LD, the KO copy in `functions/_middleware.js`, and the crawlable EA and Real Estate text sections plus About, now **below** the chooser (the chooser is the first screen).
 - **New/changed files:** `index.html`, `hub.css` (now the draft's CSS plus a few additions), `hub.js` (language, chips, modal), `img/*`, `exams.js` (the hub doors are the approved static design, so the old door renderer was removed; the switch still comes from the list; a new exam adds a door card in `index.html`), `exam-palettes.css` (unused `hub` block removed). `/ea/`, `/re/`, `/app` and everything else untouched.
 - **`app.html` line endings:** restored from `main` (CRLF, with its one LF-only line kept as is). `git diff main -- app.html` now shows only the 4 link changes (`/ea/?signup=1`, `/ea/#about` ×2, logout `/ea/`).
 - **Checked (local Pages-style server, Playwright):** 85 refs / 47 targets all 200; no console or network errors; login success → `/app.html#access_token…` and failure message (mocked Supabase); signed-in bar shows only with a stored session; `/#pricing`, `/#features`, `/#faq` forward to `/ea/`; KO toggle works (`<html lang>` follows); at 375px wide the page does not scroll sideways and the two doors stack.
+
+### Hub fix, follow-up requests in HUB_FIX.md (exam switch, state picker, top menu)
+
+- **Exam switch is always a dropdown** (`exams.js` + `exam-switch.css`) on `/`, `/ea/`, `/re/`, `/re/app`: a `<button aria-expanded>` with the current exam name and ▾ (hub: «Exams ▾»), and a list of links for every exam in the list with the current one marked ✓ (`aria-current`). Esc closes (focus returns to the button), a click outside closes, ArrowDown opens and focuses the first item, focus ring visible. On `/ea/` and `/re/` the switch sits inside the hamburger menu, where phones/tablets (≤860px) show it as a plain list with no button; on the hub it stays a compact button (own row on narrow phones).
+- **RE state picker is a dropdown** (`<select>`) on `/re/`; the options and the hub's state chips both come from **`re-states.js`** (`[{id, name}]`, California, New York, Texas, New Jersey; adding a state is one entry). After selecting, the Start Free button carries `?state=xx` to `/re/app`, as the chips did. The choice is stored in `localStorage` (`pe_re_state`, in try/catch) and `/re/?state=xx` preselects it. The hub chips behave the same way (link `/re/?state=xx`).
+- **No «coming soon» / «준비 중» anywhere:** the dashed NY chip, its CSS and the «being built / launching with / planned / not public yet» wording are gone from `/re/` (FAQ text and JSON-LD), the hub, `llms.txt` and the RE placeholder. `/re/app` is still a placeholder page, titled «Practice app opens here». I removed the «State pages (planned)» line from `llms.txt` because those URLs do not exist yet; add it when `/re/ca/` etc. are built.
+- **Top menu:** «Sample Questions» removed from `/ea/` and `/re/` (desktop and hamburger) and from `popquiz.html`, `videos.html` and the 14 `tips/**` pages, which listed it too. The sections keep `id="samples"`, so `/ea/#samples`, `/#samples` (forwarded) and the hero «Try Sample Questions» button still work. Menus now: EA = Features · Pop Quiz · Study Tips · Pricing; RE = Features · Pricing.
+- Checked (Playwright): dropdown open/close/Esc/outside click on all four pages; menu items; state select values, `?state=` preselect, stored choice; hub chips; no page errors; 89 refs / 50 targets all 200; EA hamburger and the hub header at 375px have no sideways scroll.

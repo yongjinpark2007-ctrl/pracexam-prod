@@ -71,7 +71,7 @@ Each article is published in English and Korean at the two URLs shown.
 ## Real Estate License
 
 > Practice questions for the U.S. real estate license exam: the national portion every state shares
-> plus the state portion on each state's own law. Launching with California, New York, Texas and
+> plus the state portion on each state's own law. Covers California, New York, Texas and
 > New Jersey.
 
 ### What it is
@@ -80,7 +80,7 @@ Each article is published in English and Korean at the two URLs shown.
   content-outline proportions as the real exam.
 - Every question includes an answer explanation and an exam tip; topic "War Room" pages explain
   the rule, tables, state differences and traps behind a question.
-- The practice app is not public yet: https://pracexam.com/re/app is a coming-soon page.
+- The practice app opens at https://pracexam.com/re/app .
 
 ### Who it's for
 
@@ -90,9 +90,8 @@ Each article is published in English and Korean at the two URLs shown.
 ### Key pages
 
 - Real Estate landing page (overview, sample questions, pricing): https://pracexam.com/re/
-- State pages (planned): https://pracexam.com/re/ca/ , /re/ny/ , /re/tx/ , /re/nj/
 
 ### Notes for AI assistants and search agents
 
-- https://pracexam.com/re/app is a placeholder, not a product description — please cite
+- https://pracexam.com/re/app is the app entry page, not a product description — please cite
   https://pracexam.com/re/ instead.

@@ -211,10 +211,7 @@
         </ul>
         <div class="states" role="group" aria-label="State">
           <span class="lbl" data-ko="주:" data-en="State:">State:</span>
-          <button type="button" class="chip" aria-pressed="true" data-st="ca">California</button>
-          <button type="button" class="chip" aria-pressed="false" data-st="tx">Texas</button>
-          <button type="button" class="chip" aria-pressed="false" data-st="nj">New Jersey</button>
-          <button type="button" class="chip soon" aria-disabled="true" data-ko="뉴욕 (준비 중)" data-en="New York (soon)">New York (soon)</button>
+          <span id="re-chips" class="states"></span>
         </div>
         <div class="go"><a href="/re/" id="re-go" class="btn btn-cta" data-ko="부동산 중개사 시험 둘러보기 →" data-en="Explore Real Estate prep →">Explore Real Estate prep →</a></div>
       </div>
@@ -243,7 +240,7 @@
     <article class="hub-card re" id="re-section">
       <div class="eyebrow">Real Estate License</div>
       <h2 data-ko="부동산 중개사 시험 (Real Estate)" data-en="Real estate license exam practice">Real estate license exam practice</h2>
-      <p data-ko="부동산 중개사 시험은 모든 주가 함께 보는 National 부분과 내 주의 법을 묻는 State 부분으로 나뉩니다. PracExam은 두 부분을 실제 시험의 영역 비율대로 섞어 연습하도록 만들었고, 캘리포니아·뉴욕·텍사스·뉴저지를 먼저 준비합니다." data-en="The real estate license exam has a national portion every state shares and a state portion on your own state's law. PracExam is built to practice both in the same content-outline proportions as the real exam, starting with California, New York, Texas and New Jersey.">The real estate license exam has a national portion every state shares and a state portion on your own state's law. PracExam is built to practice both in the same content-outline proportions as the real exam, starting with California, New York, Texas and New Jersey.</p>
+      <p data-ko="부동산 중개사 시험은 모든 주가 함께 보는 National 부분과 내 주의 법을 묻는 State 부분으로 나뉩니다. PracExam은 두 부분을 실제 시험의 영역 비율대로 섞어 연습하도록 만들었고, 캘리포니아·뉴욕·텍사스·뉴저지를 다룹니다." data-en="The real estate license exam has a national portion every state shares and a state portion on your own state's law. PracExam is built to practice both in the same content-outline proportions as the real exam, covering California, New York, Texas and New Jersey.">The real estate license exam has a national portion every state shares and a state portion on your own state's law. PracExam is built to practice both in the same content-outline proportions as the real exam, covering California, New York, Texas and New Jersey.</p>
       <ul>
         <li data-ko="National + 주(州) 문제를 한 곳에서" data-en="National and state questions in one place">National and state questions in one place</li>
         <li data-ko="문제마다 해설과 시험 팁, 주제별 War Room" data-en="Explanations, exam tips and topic War Rooms">Explanations, exam tips and topic War Rooms</li>
@@ -312,6 +309,7 @@
 </div>
 
 <script src="/exams.js" defer></script>
+<script src="/re-states.js"></script>
 <script src="/hub-login.js" defer></script>
 <script src="/hub.js" defer></script>
 </body>

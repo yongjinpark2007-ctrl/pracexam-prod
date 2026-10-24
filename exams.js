@@ -13,7 +13,7 @@
 (function(){
   var EXAMS = [
     { id:'ea', url:'/ea/', app:'/app', color:'#6FA39E',
-      name:{ ko:'EA', en:'EA' },
+      name:{ ko:'EA', en:'Enrolled Agent' },
       full:{ ko:'미국 세무사 Enrolled Agent (EA)', en:'Enrolled Agent (EA)' },
       blurb:{ ko:'IRS EA 시험 Part 1·2·3 — 5,000개+ 실전 문제', en:'IRS Enrolled Agent exam, Parts 1–3 — 5,000+ practice questions' } },
     { id:'re', url:'/re/', app:'/re/app', color:'#4F7CAC',
@@ -24,22 +24,31 @@
 
   function bi(o){ return '<span class="ko">' + o.ko + '</span><span class="en">' + o.en + '</span>'; }
 
-  // Header switch. Two exams = side-by-side pills; more than two = a dropdown (<details>).
+  // Header switch: ALWAYS a dropdown (button + list of links), also with only two exams.
+  // Closed: the current exam's name and a caret (on the hub: «Exams»). Open: every exam in the list, current one marked.
+  // Esc and a click outside close it. Inside the mobile hamburger menu the CSS shows the list flat (no button).
   function renderSwitch(el, currentId){
     if(!el) return;
     var cur = EXAMS.filter(function(e){ return e.id === currentId; })[0];
-    if(EXAMS.length <= 2){
-      el.innerHTML = EXAMS.map(function(e){
-        return '<a href="' + e.url + '"' + (e.id === currentId ? ' aria-current="page"' : '') + '>' + bi(e.name) + '</a>';
-      }).join('');
-      el.classList.add('exam-switch-pills');
-    } else {
-      el.innerHTML = '<details><summary>' + (cur ? bi(cur.name) : bi({ko:'시험 선택', en:'Exam'})) + '</summary><div class="exam-switch-menu">' +
+    el.className = (el.className.replace(/\bexam-dd\b/, '') + ' exam-dd').trim();
+    el.innerHTML =
+      '<button type="button" class="exam-dd-btn" aria-expanded="false" aria-haspopup="true" aria-controls="exam-dd-list">' +
+        '<span class="exam-dd-label">' + bi(cur ? cur.name : {ko:'시험', en:'Exams'}) + '</span><span class="exam-dd-caret" aria-hidden="true">▾</span></button>' +
+      '<ul class="exam-dd-list" id="exam-dd-list">' +
         EXAMS.map(function(e){
-          return '<a href="' + e.url + '"' + (e.id === currentId ? ' aria-current="page"' : '') + '>' + bi(e.full) + '</a>';
-        }).join('') + '</div></details>';
-      el.classList.add('exam-switch-menu-wrap');
-    }
+          var on = e.id === currentId;
+          return '<li><a href="' + e.url + '"' + (on ? ' aria-current="page"' : '') + '>' + bi(e.full) + (on ? '<span class="exam-dd-check" aria-hidden="true">✓</span>' : '') + '</a></li>';
+        }).join('') + '</ul>';
+    var btn = el.querySelector('.exam-dd-btn');
+    function setOpen(v){ el.classList.toggle('open', v); btn.setAttribute('aria-expanded', v ? 'true' : 'false'); }
+    btn.addEventListener('click', function(ev){ ev.stopPropagation(); setOpen(!el.classList.contains('open')); });
+    btn.addEventListener('keydown', function(ev){
+      if(ev.key === 'ArrowDown'){ ev.preventDefault(); setOpen(true); var a = el.querySelector('.exam-dd-list a'); if(a) a.focus(); }
+    });
+    el.addEventListener('keydown', function(ev){
+      if(ev.key === 'Escape' && el.classList.contains('open')){ ev.stopPropagation(); setOpen(false); btn.focus(); }
+    });
+    document.addEventListener('click', function(ev){ if(!el.contains(ev.target)) setOpen(false); });
     el.setAttribute('role', 'navigation');
     el.setAttribute('aria-label', 'Exam');
   }
