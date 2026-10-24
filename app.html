@@ -4557,6 +4557,11 @@ async function fetchCopRows(){
   }
 }
 
+// 2026-10-24 — EA and RE apps share user_progress and sessions (one account). Each app keeps only its own
+// exam's rows, so EA stats never count RE answers and the RE app never shows EA sessions.
+// RE ids start with «RE-» or «MOCK-RE-». The RE copy (/re/app, build_re_app.py) flips this test.
+function _isMyExamId(id){ return !/^(MOCK-)?RE-/i.test(id || ''); }
+
 async function fetchProgressRows(){
   try{
     return await _legacyPaginate(function(){
@@ -4794,6 +4799,7 @@ async function loadFromCloud(){
     //    자취(user_progress.updated_at)를 따로 모아 둔다.
     S.progressDates = [];
     (pRows || []).forEach(r => {
+      if(!_isMyExamId(r.question_id)) return;   // other exam's row (EA ↔ RE share the table)
       S.answered[r.question_id] = { times: r.times, correct: r.correct_count, wrong: r.wrong_count };
       if(r.flagged) S.flagged.add(r.question_id);
       if(r.updated_at) S.progressDates.push(r.updated_at);
@@ -4807,7 +4813,7 @@ async function loadFromCloud(){
     }
 
     // ── sessions (fetchSessionRows 에서 병렬 취득 완료) ──
-    S.sessions = (sRows || []).map(r => ({
+    S.sessions = (sRows || []).filter(r => _isMyExamId((r.question_ids || [])[0] || '')).map(r => ({
       id: r.id,
       created_at: r.created_at,
       date: new Date(r.created_at).toLocaleDateString('ko-KR',{month:'short',day:'numeric',year:'numeric'}),

@@ -119,6 +119,10 @@ h = h.replace("""      ? (LANG === 'en' ? (nt + (nt === 1 ? ' topic' : ' topics'
       : (d.q == null ? '' : (LANG === 'en' ? (d.q + ' ' + t('topic_onexam'))
                        : (t('topic_onexam') + ' ' + d.q + '문제')));""")
 
+# ── shared user_progress / sessions: the RE copy keeps only RE rows (the EA app keeps only non-RE rows) ──
+one("function _isMyExamId(id){ return !/^(MOCK-)?RE-/i.test(id || ''); }",
+    "function _isMyExamId(id){ return /^(MOCK-)?RE-/i.test(id || ''); }", "my-exam")
+
 # ── live_session is ONE row per user: the RE app must not overwrite/delete the EA app's resumable session ──
 one("function saveLiveSessionToCloud(){", "function saveLiveSessionToCloud(){ return; /* RE app phase 1: keep the EA live session intact */ }\nfunction _eaSaveLiveSessionToCloud_unused(){", "live-save")
 one("async function loadLiveSessionFromCloud(){", "async function loadLiveSessionFromCloud(){ return null; /* RE app phase 1 */ }\nasync function _eaLoadLiveSessionFromCloud_unused(){", "live-load")
