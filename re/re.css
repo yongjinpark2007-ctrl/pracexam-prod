@@ -19,7 +19,9 @@
 .founder-name{font-weight:700;color:#fff;font-size:15.5px;}
 .founder-dre{font-size:13px;color:rgba(255,255,255,.60);margin-top:4px;letter-spacing:.02em;}
 @media (max-width:860px){.founder-grid{grid-template-columns:1fr;gap:24px;}.founder-photo,.founder-photo img{width:200px;}}
-@media (min-width:861px){.founder-photo{position:sticky;top:88px;}}
+
 
 .founder-section .founder-text, .founder-section .founder-body p{color:rgba(255,255,255,.85) !important;}
 .founder-section h2{color:#fff !important;}
+
+.founder-grid{align-items:center !important;}   /* short message: photo centred beside the text */
