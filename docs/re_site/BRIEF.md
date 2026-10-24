@@ -50,5 +50,5 @@ Reference drafts: `docs/re_site/drafts/` (chooser draft, RE landing draft, decis
 3. `re/app.html` (placeholder)
 4. Header exam-switch link added to `index.html`. This is the ONLY EA change.
 5. `sitemap.xml` + `llms.txt` additions
-6. A short `docs/re_site/CHANGES.md` listing every file touched, and confirming the EA root `<head>` is unchanged apart from nothing (diff it).
+6. A short `docs/re_site/CHANGES.md` listing every file touched, and confirming the EA root `<head>` is unchanged (diff it).
 Commit on `re-site` and push. Do not merge.
