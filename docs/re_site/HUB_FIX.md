@@ -21,3 +21,12 @@ the EA door and the Real Estate door, and the login.
 5. Don't touch `/ea/`, `/re/`, `/app` or anything else.
 6. Also restore `app.html` line endings to match `main` (CRLF). Only the 4 real link changes should show in `git diff main -- app.html`.
 7. Update `docs/re_site/CHANGES.md` with a «Hub fix» section. Commit and push to `re-site`. Do not merge.
+
+## Exam switch: ALWAYS a dropdown (boss 2026-10-24)
+Boss: «이 메뉴를 드랍다운 형식으로 하는 것이 공간 운영에 좋을 것 같습니다.»
+- The header exam switch (`exams.js` + `exam-switch.css`) shows a dropdown even with 2 exams, not pills.
+- Closed state: one compact button with the current exam name and a ▾ caret (e.g. «Enrolled Agent ▾» / «Real Estate ▾»; on the hub, «Exams ▾»).
+- Open: a list of all exams from `exams.js`, with the current one marked.
+- Keyboard and a11y: a `<button aria-expanded>` plus a list of links. Esc closes, a click outside closes, and focus is visible.
+- Mobile: it lives inside the hamburger menu as a simple list.
+- Same on `/`, `/ea/` and `/re/`.
