@@ -1,10 +1,12 @@
-/* Hub (/) page script: language toggle, RE state chips, login modal open/close (2026-10-24).
+/* Hub (/) page script: language toggle, RE state chips, login card scroll, mobile menu (2026-10-24).
    Login itself is in hub-login.js. Language is stored under the same 'ea_lang' key as /ea/, /re/ and the app. */
 (function(){
   function setLang(l){
     document.querySelectorAll('[data-en]').forEach(function(el){ el.textContent = el.getAttribute('data-' + l); });
     document.getElementById('l-en').setAttribute('aria-pressed', l === 'en');
     document.getElementById('l-ko').setAttribute('aria-pressed', l === 'ko');
+    document.getElementById('l-en').classList.toggle('active', l === 'en');
+    document.getElementById('l-ko').classList.toggle('active', l === 'ko');
     document.documentElement.lang = l;
     try { localStorage.setItem('ea_lang', l); } catch(e){}
     // Study Tips has one URL per language
@@ -37,14 +39,26 @@
     setState(cur);
   }
 
-  // Login modal
-  var scrim = document.getElementById('scrim');
-  function open(){ scrim.hidden = false; document.getElementById('login-email').focus(); }
-  function close(){ scrim.hidden = true; }
-  document.getElementById('open-login').onclick = open;
-  document.getElementById('open-login2').onclick = open;
-  document.getElementById('m-cancel').onclick = close;
-  scrim.addEventListener('click', function(e){ if (e.target === scrim) close(); });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
-  if (location.hash === '#login') open();
+  // Login card in the hero: header and member-strip «Log in» links scroll to it and focus the email box.
+  function goLogin(e){
+    if (e) e.preventDefault();
+    var card = document.getElementById('login');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(function(){ document.getElementById('login-email').focus({ preventScroll: true }); }, 450);
+  }
+  document.querySelectorAll('a[href="#login"]').forEach(function(a){ a.addEventListener('click', function(e){ closeMenu(); goLogin(e); }); });
+  if (location.hash === '#login') goLogin();
+
+  // Mobile menu (hamburger)
+  var menu = document.getElementById('nav-menu'), tog = document.getElementById('nav-toggle');
+  function closeMenu(){ menu.classList.remove('open'); tog.classList.remove('open'); tog.setAttribute('aria-expanded', 'false'); }
+  tog.addEventListener('click', function(e){
+    e.stopPropagation();
+    var o = !menu.classList.contains('open');
+    menu.classList.toggle('open', o); tog.classList.toggle('open', o); tog.setAttribute('aria-expanded', o);
+  });
+  menu.querySelectorAll('.nav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+  document.addEventListener('click', function(e){ if (!menu.contains(e.target)) closeMenu(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMenu(); });
+  window.addEventListener('resize', function(){ if (window.innerWidth > 860) closeMenu(); });
 })();

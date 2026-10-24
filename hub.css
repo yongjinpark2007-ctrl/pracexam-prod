@@ -115,5 +115,61 @@ footer a{color:var(--ink-mid)}
 /* ko/en spans inside the header switch (drawn by exams.js) follow <html lang> */
 html[lang="en"] .exam-switch .ko, html[lang="ko"] .exam-switch .en{display:none !important}
 
-/* header on narrow phones: switch gets its own row (rules in exam-switch.css) */
-@media (max-width:560px){header .wrap.nav-inner{padding-block:12px;gap:8px;flex-wrap:wrap}header .nav-brand{display:contents}.logo{order:1}.nav-right{order:2}.nav-inner .exam-switch{margin-left:0;order:3;flex:1 0 100%}.logo img{height:32px}.hdr-r{gap:8px}.lang button{padding:6px 9px;font-size:12px}header .btn{padding:8px 12px;font-size:14px}}
+
+/* ---- 2026-10-24 boss: old EA-style top menu + hero message with a big login card ---- */
+header.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header.nav .nav-inner{max-width:1120px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+header.nav .logo img{height:28px;width:auto}
+.nav-right{display:flex;align-items:center;gap:20px;flex:0 1 auto;min-width:0}
+.nav-menu{display:contents}
+.nav-links{display:flex;align-items:center;gap:28px;font-size:14px;font-weight:600;color:var(--ink-mid)}
+.nav-links a{text-decoration:none;color:inherit}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.hi{color:var(--ea-acc);font-weight:700}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-ghost:hover{background:var(--ea-tint)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:8px}
+.btn-primary{background:var(--ink);color:var(--bg)}
+.btn-primary:hover{background:var(--re)}
+.lang-toggle{display:flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;flex:0 0 auto}
+.lang-toggle button{font:700 12px var(--f-body);letter-spacing:.05em;padding:6px 11px;border:0;background:var(--surface);color:var(--ink-mid);cursor:pointer}
+.lang-toggle button.active{background:var(--ink);color:var(--bg)}
+.nav-toggle{display:none;flex:0 0 auto;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:0;background:none;cursor:pointer}
+.nav-toggle svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:2.2;stroke-linecap:round}
+.nav-toggle .icon-close{display:none}
+.nav-toggle.open .icon-bars{display:none}
+.nav-toggle.open .icon-close{display:block}
+@media (max-width:860px){
+  .nav-right{gap:10px}
+  .nav-toggle{display:flex}
+  .nav-menu{display:none;flex-direction:column;align-items:stretch;position:absolute;top:100%;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--line);padding:4px 24px 20px;box-shadow:0 16px 30px -14px rgba(16,48,76,.25)}
+  .nav-menu.open{display:flex}
+  .nav-links{flex-direction:column;align-items:stretch;gap:0;width:100%}
+  .nav-links a{display:block;padding:13px 2px;border-bottom:1px solid var(--line)}
+  .nav-actions{flex-direction:column;align-items:stretch;width:100%;padding-top:14px}
+  .nav-actions .btn{width:100%;justify-content:center;padding:13px 18px;font-size:14px}
+}
+@media (max-width:560px){
+  header.nav .nav-inner{padding:12px 16px;gap:8px;flex-wrap:wrap}
+  header.nav .nav-brand{display:contents}
+  header.nav .logo{order:1}
+  .nav-right{order:2}
+  .nav-inner .exam-switch{margin-left:0;order:3;flex:1 0 100%}
+  .nav-menu{padding:4px 16px 18px}
+}
+.hub-hero{padding-block:48px 34px;background:linear-gradient(135deg,var(--surface) 0%,var(--surface) 55%,var(--re-tint) 100%)}
+.hub-grid{max-width:1120px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:44px;align-items:center}
+.hub-hero h1{max-width:none;margin:12px 0 16px}
+.hub-hero h1 em{display:inline-block;margin-top:6px;font-style:italic;font-weight:800;font-size:clamp(24px,3.6vw,36px);letter-spacing:0;color:var(--re-acc)}
+.hub-hero .lede{font-size:18px;max-width:560px}
+.login-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 22px;box-shadow:0 16px 36px -22px rgba(16,48,76,.4)}
+.login-card h2{font-family:var(--f-display);font-weight:700;font-size:24px;margin:0 0 4px}
+.login-card .sub{font-size:13.5px;color:var(--ink-mid);margin:0 0 6px}
+.login-card label{display:block;font-size:13px;font-weight:600;color:var(--ink-mid);margin:12px 0 5px}
+.login-card input{width:100%;padding:11px 12px;font:15px var(--f-body);color:var(--ink);border:1.5px solid var(--line);border-radius:9px;background:var(--bg)}
+.login-card input:focus-visible{outline:3px solid var(--cta);outline-offset:1px}
+.login-card .btn{width:100%;justify-content:center;margin-top:16px;padding:12px 18px}
+.login-foot{margin:14px 0 0;font-size:13px;color:var(--ink-mid);text-align:center}
+@media (max-width:900px){.hub-grid{grid-template-columns:1fr;gap:26px}.hub-hero{padding-block:32px 24px}}
+@media (max-width:560px){.hub-grid{padding:0 16px}}

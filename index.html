@@ -162,27 +162,53 @@
 </head>
 <body data-exam="hub">
 
-<header><div class="wrap nav-inner">
+<header class="nav"><div class="nav-inner">
   <div class="nav-brand">
     <a class="logo" href="/" aria-label="PracExam home"><img class="d" src="/img/logo-dark.png" width="520" height="110" alt="PracExam"><img class="w" src="/img/logo-white.png" width="520" height="110" alt="PracExam"></a>
     <div class="exam-switch" data-exam-switch></div>
     <noscript><a href="/ea/">EA</a> | <a href="/re/">Real Estate</a></noscript>
   </div>
-  <div class="hdr-r nav-right">
-    <div class="lang" role="group" aria-label="Language">
-      <button id="l-en" aria-pressed="true">EN</button><button id="l-ko" aria-pressed="false">한국어</button>
+  <div class="nav-right">
+    <div class="nav-menu" id="nav-menu">
+      <nav class="nav-links">
+        <a href="#ea-section" data-ko="EA 시험" data-en="EA Exam">EA Exam</a>
+        <a href="#re-section" data-ko="부동산 시험" data-en="Real Estate Exam">Real Estate Exam</a>
+        <a href="/tips/" id="nav-notes" class="hi" data-ko="Study Tips" data-en="Study Tips">Study Tips</a>
+        <a href="#about" data-ko="회사 소개" data-en="About">About</a>
+      </nav>
+      <div class="nav-actions"><a href="#login" class="btn btn-ghost btn-sm" data-ko="로그인" data-en="Log In">Log In</a></div>
     </div>
-    <button class="btn btn-line" id="open-login" data-ko="로그인" data-en="Log in">Log in</button>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button id="l-ko" aria-pressed="false">KO</button><button id="l-en" class="active" aria-pressed="true">EN</button>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-menu">
+      <svg class="icon-bars" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg class="icon-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
+    </button>
   </div>
 </div></header>
 
 <main id="top">
-  <section class="hero"><div class="wrap">
-    <!-- Shown by hub-login.js only when a Supabase session exists in this browser. Never an auto-redirect. -->
-    <a class="resume-bar" id="resume-bar" href="/app" hidden data-ko="내 EA 연습으로 이동 →" data-en="Go to my EA practice →">Go to my EA practice →</a>
-    <div class="eyebrow" data-ko="미국 자격시험 연습문제" data-en="US licensing exam practice">US licensing exam practice</div>
-    <h1 data-ko="어떤 시험을 준비하세요?" data-en="Which exam are you preparing for?">Which exam are you preparing for?</h1>
-    <p class="lede" data-ko="시험을 고르면 그 시험 전용 페이지로 갑니다. 회원이시면 로그인만 하세요. 준비하시던 시험이 바로 열립니다." data-en="Pick your exam to see its practice program. Members can just log in and we open the exam you're studying for.">Pick your exam to see its practice program. Members can just log in and we open the exam you're studying for.</p>
+  <section class="hero hub-hero"><div class="hub-grid">
+    <div class="hub-left">
+      <!-- Shown by hub-login.js only when a Supabase session exists in this browser. Never an auto-redirect. -->
+      <a class="resume-bar" id="resume-bar" href="/app" hidden data-ko="내 EA 연습으로 이동 →" data-en="Go to my EA practice →">Go to my EA practice →</a>
+      <div class="eyebrow" data-ko="미국 자격시험 실전 문제은행" data-en="U.S. License Exam Practice">U.S. License Exam Practice</div>
+      <h1>Pass your U.S. license exam<br><em>Pick your exam and start practicing</em></h1>
+      <p class="lede" data-ko="PracExam은 실제 시험처럼 풀어 보는 문제은행입니다. 시험을 고르면 그 시험만을 위한 문제와 해설로 바로 이어집니다." data-en="PracExam is an online question bank that trains you the way the real exam tests you. Choose your exam and go straight to questions and explanations built for it.">PracExam is an online question bank that trains you the way the real exam tests you. Choose your exam and go straight to questions and explanations built for it.</p>
+    </div>
+    <div class="login-wrap" id="login">
+      <!-- English only: the login gate has no Korean (CLAUDE.md). -->
+      <form class="login-card" id="hub-login" novalidate>
+        <h2>Log In</h2>
+        <p class="sub">Returning customers: sign in to continue your practice.</p>
+        <label for="login-email">Email</label><input id="login-email" type="email" autocomplete="email" placeholder="you@example.com">
+        <label for="login-pw">Password</label><input id="login-pw" type="password" autocomplete="current-password" placeholder="••••••••">
+        <button type="submit" class="btn btn-primary" id="login-btn">Log In</button>
+        <div class="login-msg" id="login-msg" role="alert"></div>
+        <p class="login-foot">New here? Pick an exam below to start free.</p>
+      </form>
+    </div>
   </div></section>
   <section class="wrap"><div class="doors">
     <div class="door ea">
@@ -220,7 +246,7 @@
 
   <div class="member">
     <p data-ko="이미 회원이세요? 로그인하시면 준비하시던 시험으로 바로 갑니다." data-en="Already a member? Log in and we'll take you straight to your exam.">Already a member? Log in and we'll take you straight to your exam.</p>
-    <button class="btn btn-line" id="open-login2" data-ko="로그인" data-en="Log in">Log in</button>
+    <a class="btn btn-line" href="#login" data-ko="로그인" data-en="Log in">Log in</a>
   </div>
   </section>
 
@@ -293,20 +319,6 @@
 <footer><div class="wrap">© 2026 PracExam
   <div class="links"><a href="/tips/" id="nav-notes">Study Tips</a><a href="mailto:hello@pracexam.com">Contact</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a><a href="/refund.html">Refunds</a></div>
 </div></footer>
-
-<div class="scrim" id="scrim" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
-    <!-- English only: the login gate has no Korean (CLAUDE.md). -->
-    <form id="hub-login" novalidate>
-      <h3 id="m-title">Log in</h3>
-      <p class="sub">Returning customers: sign in to continue your practice.</p>
-      <label for="login-email">Email</label><input id="login-email" type="email" autocomplete="email" placeholder="you@example.com">
-      <label for="login-pw">Password</label><input id="login-pw" type="password" autocomplete="current-password" placeholder="••••••••">
-      <div class="login-msg" id="login-msg" role="alert"></div>
-      <div class="mrow"><button type="button" class="btn btn-line" id="m-cancel">Close</button><button type="submit" class="btn btn-cta" id="login-btn">Log in</button></div>
-    </form>
-  </div>
-</div>
 
 <script src="/exams.js" defer></script>
 <script src="/re-states.js"></script>
