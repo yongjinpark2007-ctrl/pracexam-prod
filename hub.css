@@ -259,3 +259,8 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .login-card{border-radius:14px}
 .login-card input{border-radius:9px}
 .photo{border-radius:16px}
+
+/* ---- 2026-10-24 boss: less space above «Choose your license» ---- */
+.hub-hero{padding-bottom:64px}
+.choose{padding-top:56px}
+@media (max-width:900px){.hub-hero{padding-bottom:40px}.choose{padding-top:36px}}
