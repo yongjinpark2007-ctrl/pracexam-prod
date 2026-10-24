@@ -4,3 +4,6 @@
 # 2026-08-23  Exam Notes -> Study Tips 개명. 같은 날 sitemap 에 넣었던 옛 주소를 넘겨 준다.
 /notes/*      /tips/:splat   301
 /notes.css    /tips.css      301
+# 2026-10-24  /<exam>/app 패턴이 EA 에도 통하게 한다. 앱 자체는 /app 그대로 (옮기지 말 것).
+/ea/app       /app  301
+/ea/app.html  /app  301

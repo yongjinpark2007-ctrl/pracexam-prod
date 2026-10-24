@@ -26,13 +26,14 @@ Changed
 | `sitemap.xml` | `/` lastmod → 2026-10-24; added `/ea/`, `/re/` (2026-10-24). All existing URLs kept. |
 | `llms.txt` | Restructured: «PracExam overview» + «Enrolled Agent (EA)» (old text moved under it; two homepage URLs → `/ea/`; Study Tips block kept between its markers) + new «Real Estate License». |
 | `robots.txt` | Kept; added a comment. `Allow: /` already covers `/ea/` and `/re/`; Sitemap line present. |
+| `_redirects` | `/ea/app`, `/ea/app.html` → `/app` (301). |
 | `functions/_middleware.js` | Korean title/description swap now applies to `/` (new hub copy), `/ea/` (the **same** EA Korean copy as before) and `/re/` (new). Other pages untouched. |
 | `app.html` | `index.html?signup=1`, `index.html#about`, logout redirect `index.html` → `/ea/…`. |
 | `popquiz.html` | Sign-up / home links → `/ea/…`; nav anchors `/#features` etc. → `/ea/#features` etc. |
 | `videos.html`, `tips/**/index.html` (14 files) | Nav anchors `/#features`, `/#samples`, `/#pricing` → `/ea/#…`. Logo `/` still goes to the hub. |
 | `terms.html`, `privacy.html`, `refund.html`, `install-guide.html` | `href="index.html"` → `/` (hub). |
 
-`_redirects`: **not changed.** Cloudflare Pages redirects a folder without the slash (`/ea` → `/ea/`, `/re` → `/re/`) by itself, as it already does for `/tips`. Verified the same behaviour on a local Pages-style server.
+`_redirects`: added `/ea/app` and `/ea/app.html` → `/app` (301), so the `/<exam>/app` pattern also works for EA; the app itself stays at `/app`. No entries for `/ea` and `/re`: Cloudflare Pages redirects a folder without the slash (`/ea` → `/ea/`, `/re` → `/re/`) by itself, as it already does for `/tips`. Verified on a local Pages-style server.
 
 ## EA `<head>`: old root vs new `/ea/` (SEO fields only changed in URL fields)
 
@@ -100,7 +101,7 @@ Every place that linked to `/` (or `index.html`) and what I decided:
 | `email/` | none | folder holds only logo images; no links |
 | `functions/_middleware.js` | root-only Korean swap | now `/` (hub copy), `/ea/` (old EA copy), `/re/` |
 
-**Rollback.** The whole change is one commit. Revert with `git revert <commit>` (if it is merged with a merge commit: `git revert -m 1 <merge-commit>`), then push; Cloudflare redeploys the old root EA landing and removes `/ea/`, `/re/`.
+**Rollback.** The build is two commits on `re-site` (the build, then the `/ea/app` alias); merge it as a **squash** so it lands on `main` as one commit, then revert that with `git revert <commit>` (if merged with a merge commit instead: `git revert -m 1 <merge-commit>`), then push; Cloudflare redeploys the old root EA landing and removes `/ea/`, `/re/`.
 
 ## Things to know / decide
 
