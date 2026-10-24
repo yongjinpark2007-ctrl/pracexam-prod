@@ -160,8 +160,8 @@ header.nav .logo img{height:28px;width:auto}
 }
 .hub-hero{padding-block:48px 34px;background:linear-gradient(135deg,var(--surface) 0%,var(--surface) 55%,var(--re-tint) 100%)}
 .hub-grid{max-width:1120px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:44px;align-items:center}
-.hub-hero h1{max-width:none;margin:12px 0 16px}
-.hub-hero h1 em{display:inline-block;margin-top:6px;font-style:italic;font-weight:800;font-size:clamp(24px,3.6vw,36px);letter-spacing:0;color:var(--re-acc)}
+.hub-hero h1{max-width:none;margin:12px 0 16px;font-size:clamp(38px,5.6vw,64px)}
+.hub-hero h1 em{display:inline-block;margin-top:6px;font-style:italic;font-weight:800;font-size:clamp(27px,4.2vw,44px);letter-spacing:0;color:var(--re-acc)}
 .hub-hero .lede{font-size:18px;max-width:560px}
 .login-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 22px;box-shadow:0 16px 36px -22px rgba(16,48,76,.4)}
 .login-card h2{font-family:var(--f-display);font-weight:700;font-size:24px;margin:0 0 4px}
