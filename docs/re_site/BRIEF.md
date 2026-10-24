@@ -85,3 +85,10 @@ Outside the repo (for the boss/Jay; list in SEARCH_UPDATE.md):
 6. `docs/re_site/SEARCH_UPDATE.md` (the boss's steps after merge)
 7. `docs/re_site/CHANGES.md`: every file touched, a diff of the EA `<head>` (old root vs new `/ea/`) showing that only URL fields changed, and a list of links checked
 Commit on `re-site` and push. Do not merge.
+
+## RE state is asked at SIGN-UP, not on the landing (boss 2026-10-24)
+Boss: «Which state are you testing in? 이것을 꼭 부동산 랜딩페이지에서 물어야 하나요? Sign up할때 선택하면 안되나요? 박스 메뉴가 디자인과 잘 안맞습니다.»
+- The state box was removed from the `/re/` hero. «Start Free» goes to `/re/app` with no state.
+- When the RE app sign-up is built: a required «Which state are you testing in?» field (list from `/re-states.js`).
+  Pre-select it from `localStorage pe_re_state` if the hub chips set it, and save it on the profile.
+- The hub's RE door chips stay (boss removed only the «State:» label there).
