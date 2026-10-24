@@ -4561,6 +4561,8 @@ async function fetchCopRows(){
 // exam's rows, so EA stats never count RE answers and the RE app never shows EA sessions.
 // RE ids start with «RE-» or «MOCK-RE-». The RE copy (/re/app, build_re_app.py) flips this test.
 function _isMyExamId(id){ return !/^(MOCK-)?RE-/i.test(id || ''); }
+// Announcements: EA unless the row says exam='re' (column to be added by Jay; until then every row is EA).
+function _isMyExamAnn(a){ return ((a && a.exam) || 'ea') !== 're'; }
 
 async function fetchProgressRows(){
   try{
@@ -6154,7 +6156,7 @@ async function loadAnnouncements(){
   try{
     var res = await sb.rpc('get_announcements');
     if(res.error) throw res.error;
-    _ANN = res.data || [];
+    _ANN = (res.data || []).filter(_isMyExamAnn);   // 2026-10-24: EA / RE announcements kept apart
   }catch(e){
     // 미배포(42883/PGRST202)·오류 시 조용히 숨김
     _ANN = [];

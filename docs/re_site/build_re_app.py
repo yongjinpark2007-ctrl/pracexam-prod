@@ -123,6 +123,11 @@ h = h.replace("""      ? (LANG === 'en' ? (nt + (nt === 1 ? ' topic' : ' topics'
 one("function _isMyExamId(id){ return !/^(MOCK-)?RE-/i.test(id || ''); }",
     "function _isMyExamId(id){ return /^(MOCK-)?RE-/i.test(id || ''); }", "my-exam")
 
+one("function _isMyExamAnn(a){ return ((a && a.exam) || 'ea') !== 're'; }",
+    "function _isMyExamAnn(a){ return !!(a && a.exam === 're'); }", "my-ann")
+# ── admin menu: the EA admin screen (users, payments, daily quiz, War Room stats, announcements editor) is EA-only.
+#    Hidden in the RE app until an RE admin screen exists (boss 2026-10-24 «관리자 메뉴도 분리»). ──
+
 # ── live_session is ONE row per user: the RE app must not overwrite/delete the EA app's resumable session ──
 one("function saveLiveSessionToCloud(){", "function saveLiveSessionToCloud(){ return; /* RE app phase 1: keep the EA live session intact */ }\nfunction _eaSaveLiveSessionToCloud_unused(){", "live-save")
 one("async function loadLiveSessionFromCloud(){", "async function loadLiveSessionFromCloud(){ return null; /* RE app phase 1 */ }\nasync function _eaLoadLiveSessionFromCloud_unused(){", "live-load")
@@ -152,7 +157,7 @@ h = h[:i] + """var WR_SKELETON={
  2:[['State-only rules','주에만 있는 규칙',0],['Where your state differs','주마다 다른 규칙',0]]
 };
 """ % tuple(_cnt[p] for p in ("N-PROP", "N-OWN", "N-VAL", "N-CON", "N-AGY", "N-PRAC", "N-DISC", "N-FIN", "N-MATH", "N-FED")) + h[j:]
-h = h.replace("#nav-mock, #nav-warroom, #nav-videos { display:none !important; }", "#nav-mock, #nav-videos { display:none !important; }")
+h = h.replace("#nav-mock, #nav-warroom, #nav-videos { display:none !important; }", "#nav-mock, #nav-videos, #nav-anomaly { display:none !important; }")
 one("""inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>';""",
     """inner='<div class="wr-dom-empty">'+(lang==='en'?'No sheets for this state yet':'이 주의 시트는 아직 없습니다')+'</div>';""", "wr-empty")
 

@@ -1572,7 +1572,7 @@ function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e)
 </script>
 <style>
 /* phase 1: EA-only features hidden */
-#nav-mock, #nav-videos { display:none !important; }
+#nav-mock, #nav-videos, #nav-anomaly { display:none !important; }
 #part-row { grid-template-columns:repeat(2,1fr) !important; }
 #part-row > button:nth-child(3), button[data-p="Part 3"] { display:none !important; }
 .re-statebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:0 0 12px}
@@ -4595,6 +4595,8 @@ async function _eaFetchCopRows_unused(){
 // exam's rows, so EA stats never count RE answers and the RE app never shows EA sessions.
 // RE ids start with «RE-» or «MOCK-RE-». The RE copy (/re/app, build_re_app.py) flips this test.
 function _isMyExamId(id){ return /^(MOCK-)?RE-/i.test(id || ''); }
+// Announcements: EA unless the row says exam='re' (column to be added by Jay; until then every row is EA).
+function _isMyExamAnn(a){ return !!(a && a.exam === 're'); }
 
 async function fetchProgressRows(){
   try{
@@ -6189,7 +6191,7 @@ async function loadAnnouncements(){
   try{
     var res = await sb.rpc('get_announcements');
     if(res.error) throw res.error;
-    _ANN = res.data || [];
+    _ANN = (res.data || []).filter(_isMyExamAnn);   // 2026-10-24: EA / RE announcements kept apart
   }catch(e){
     // 미배포(42883/PGRST202)·오류 시 조용히 숨김
     _ANN = [];
