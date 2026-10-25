@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>War Room highlight options</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+/* Boss 2026-10-24: preview of War Room badge highlight options (EA + RE palettes). Delete after the choice. */
+:root{--page:#E0E7E9;--card:#FAFDFD;--ink:#232e30;--mid:#5b6a6d;--acc:#DD8F75}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:'Pretendard Variable',-apple-system,'Segoe UI',sans-serif}
+main{max-width:980px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}
+.lead{color:var(--mid);margin:0 0 22px;font-size:15px;line-height:1.6}
+.opt{background:var(--card);border-radius:14px;padding:18px 18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.opt h2{font-size:17px;margin:0 0 4px}
+.opt p{margin:0 0 14px;color:var(--mid);font-size:14px;line-height:1.55}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.pair{grid-template-columns:1fr}}
+.tag{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--mid);margin-bottom:6px}
+.ea{--t:#354649;--td:#e9eeee;--tr:53,70,73}
+.re{--t:#10304C;--td:#E8EFF7;--tr:16,48,76}
+.badge{position:relative;display:flex;align-items:center;gap:8px;padding:11px 14px;border-radius:10px;font-size:15px;font-weight:500;
+  background:var(--td);color:var(--t);border:1px solid rgba(var(--tr),.18);cursor:pointer;overflow:hidden;line-height:1.45}
+.badge svg{width:15px;height:15px;flex:none}
+.badge .txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge .arr{flex:none;opacity:.7;font-weight:600}
+.badge.seen{animation:none!important}
+.badge.seen::after,.badge.seen .dot{display:none!important}
+
+/* 0 now */
+@keyframes p0{0%,100%{border-color:rgba(var(--tr),.18);box-shadow:0 0 0 0 rgba(var(--tr),0)}50%{border-color:rgba(var(--tr),.40);box-shadow:0 0 0 2px rgba(var(--tr),.08),0 0 13px 2px rgba(var(--tr),.18)}}
+.o0{animation:p0 6s ease-in-out infinite}
+/* A stronger, faster breathing in the brand accent */
+@keyframes pA{0%,100%{border-color:rgba(221,143,117,.35);box-shadow:0 0 0 0 rgba(221,143,117,0)}50%{border-color:rgba(221,143,117,.9);box-shadow:0 0 0 3px rgba(221,143,117,.18),0 0 16px 3px rgba(221,143,117,.28)}}
+.oA{animation:pA 3.5s ease-in-out infinite}
+/* B unread dot */
+.oB{border-color:rgba(221,143,117,.55)}
+.oB .dot{position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--acc)}
+.oB .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--acc);animation:ping 2.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes ping{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.6);opacity:0}}
+.oB .arr{margin-right:10px}
+/* C light sweep */
+.oC{border-color:rgba(var(--tr),.35)}
+.oC::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:35%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);transform:skewX(-15deg);animation:sweep 4.5s ease-in-out infinite}
+@keyframes sweep{0%,55%{left:-40%}100%{left:120%}}
+/* D arrow nudge + accent arrow */
+.oD{border-color:rgba(221,143,117,.6)}
+.oD .arr{color:#C4704F;opacity:1;animation:nudge 2.4s ease-in-out infinite}
+@keyframes nudge{0%,60%,100%{transform:translate(0,0)}70%{transform:translate(3px,-3px)}80%{transform:translate(0,0)}90%{transform:translate(3px,-3px)}}
+.note{font-size:13px;color:var(--mid);margin-top:18px}
+</style></head>
+<body><main>
+<h1>War Room 버튼 강조 — 시안</h1>
+<p class="lead">각 버튼을 한 번 누르면 «이미 본 상태»(강조가 꺼진 모습)로 바뀝니다. 왼쪽 = EA 앱 색, 오른쪽 = 부동산 앱 색.</p>
+<div id="opts"></div>
+<p class="note">새로고침하면 다시 켜집니다.</p>
+</main>
+<script>
+var OPTS=[
+ ["o0","지금 (비교용)","청회색 테두리가 6초에 한 번 은은하게 숨쉽니다."],
+ ["oA","A. 살구색으로 조금 더 진하게","같은 숨쉬기를 브랜드 살구색으로, 3.5초마다 조금 더 또렷하게."],
+ ["oB","B. 알림 점","오른쪽 위에 살구색 점 하나가 «안 읽은 알림»처럼 퍼집니다. 버튼 자체는 차분합니다."],
+ ["oC","C. 빛 스치기","4~5초마다 버튼 위로 빛이 한 번 스쳐 지나갑니다."],
+ ["oD","D. 화살표 손짓","↗ 화살표가 살구색으로 바뀌고 몇 초마다 «눌러 보세요» 하듯 살짝 움직입니다."]];
+var BOLT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>';
+function badge(cls,ex,topic){return '<div class="'+ex+'"><div class="tag">'+(ex=="ea"?"EA":"REAL ESTATE")+'</div><div class="badge '+cls+'" role="button" tabindex="0">'+BOLT+'<span class="txt"><b>War Room</b> · '+topic+'</span><span class="arr">↗</span><span class="dot"></span></div></div>'}
+document.getElementById('opts').innerHTML=OPTS.map(function(o){return '<section class="opt"><h2>'+o[1]+'</h2><p>'+o[2]+'</p><div class="pair">'+badge(o[0],"ea","Filing Status")+badge(o[0],"re","Agency Relationships")+'</div></section>'}).join('');
+document.querySelectorAll('.badge').forEach(function(b){b.onclick=function(){b.classList.add('seen')}});
+</script>
+</body></html>
