@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<!-- ===== 확인메일 링크 착지 보정 (2026-07-27) =====
+     Supabase 확인 메일의 링크가 사이트 루트(index.html)로 떨어지면, 세션 토큰(#access_token=…)이
+     여기서 그냥 버려진다 → 사용자는 로그인 안 된 랜딩페이지를 보고, 앱(app.html)이 실행되지 않아
+     가입 환영 메일(send-signup-welcome)도 영영 발송되지 않는다. (2026-07-24~27 16명 누락 원인)
+     → 토큰 해시를 달고 들어오면 그대로 app.html 로 넘겨 앱이 세션을 잡게 한다. -->
+<script>
+(function(){
+  try{
+    var h = window.location.hash || '';
+    var s = window.location.search || '';
+    // 성공: 세션 토큰을 달고 왔다 → 앱이 세션을 잡도록 그대로 넘긴다.
+    if(h.indexOf('access_token=') > -1){
+      window.location.replace('/app.html' + s + h);
+      return;
+    }
+    // 실패: 링크가 만료됐거나 이미 사용됐다(#error=access_denied&error_code=otp_expired).
+    // 예전엔 이 경우 아무 처리가 없어서, 사용자는 설명 없는 랜딩/로그인 화면만 보고 이탈했다.
+    // → 앱으로 넘겨 "만료 안내 + 확인메일 재발송" 화면을 띄운다. (2026-07-27 §10-D)
+    if(h.indexOf('error_code=') > -1 || h.indexOf('error=') > -1 ||
+       s.indexOf('error_code=') > -1 || s.indexOf('error=') > -1){
+      window.location.replace('/app.html' + s + h);
+    }
+  }catch(e){}
+})();
+</script>
+
+<!-- ===== 유입 출처 갈무리 (UTM·gclid) — «우리 것» ===== 
+     2026-08-29: Google Ads 태그(gtag)를 걷어냈다 — 광고 종료(사용자 지시).
+     그래서 이제 제3자 광고 쿠키를 심지 않는다 = privacy.html §4 의 약속과 다시 맞는다.
+     🔴 아래 pe_attrib 는 남긴다 — Google 것이 아니라 우리 localStorage 에 담아
+        우리 서버로 보내는 자체 기록이다(가입 때 refAttrib 으로 쓴다).
+     ↩ 광고를 다시 켜면 태그와 «동의 받는 장치» 를 함께 넣는다. -->
+<script>
+  (function(){ try{ var p=new URLSearchParams(location.search),keep={};
+    ['gclid','utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){ if(p.get(k)) keep[k]=p.get(k); });
+    if(Object.keys(keep).length){ keep._ts=Date.now(); localStorage.setItem('pe_attrib', JSON.stringify(keep)); }
+  }catch(e){} })();
+</script>
+<!-- ===== /유입 출처 갈무리 ===== -->
+
+
+<!-- Old root links: before 2026-10-24 «/» was the EA landing. Emails, posts and bookmarks like /#pricing
+     are forwarded to the same section on /ea/. Hub-own anchors (#about, #login, #ea-section, #re-section) stay here.
+     Only a URL with one of these hashes moves, and only in the browser, so crawlers still get the hub. -->
+<script>
+(function(){
+  try{
+    var EA_ANCHORS = ['features','samples','pricing','faq','fs-section'];
+    var h = (window.location.hash || '').replace('#','');
+    if(EA_ANCHORS.indexOf(h) > -1) window.location.replace('/ea/' + window.location.search + '#' + h);
+  }catch(e){}
+})();
+</script>
+<meta name="msvalidate.01"            content="69755E41A5C3F4B3F142BD9EF014FD1D">
+<meta name="naver-site-verification"  content="REPLACE_WITH_YOUR_NAVER_VERIFICATION_CODE">
+
+<!-- ===== Favicon ===== -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>PracExam | EA &amp; Real Estate License Exam Practice Questions</title>
+<meta name="description" content="PracExam is an online question bank for two U.S. licensing exams: the IRS Enrolled Agent (EA) exam and the real estate license exam (national plus state). Pick your exam and start practicing.">
+<link rel="canonical" href="https://pracexam.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PracExam">
+<meta property="og:url" content="https://pracexam.com/">
+<meta property="og:title" content="PracExam | EA &amp; Real Estate License Exam Practice Questions">
+<meta property="og:description" content="PracExam is an online question bank for two U.S. licensing exams: the IRS Enrolled Agent (EA) exam and the real estate license exam (national plus state). Pick your exam and start practicing.">
+<meta property="og:image" content="https://pracexam.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PracExam | EA &amp; Real Estate License Exam Practice Questions">
+<meta name="twitter:description" content="PracExam is an online question bank for two U.S. licensing exams: the IRS Enrolled Agent (EA) exam and the real estate license exam (national plus state). Pick your exam and start practicing.">
+<meta name="twitter:image" content="https://pracexam.com/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://pracexam.com/#org",
+  "name": "PracExam",
+  "url": "https://pracexam.com/",
+  "logo": "https://pracexam.com/icon-512.png",
+  "email": "hello@pracexam.com",
+  "sameAs": [
+    "https://www.facebook.com/profile.php?id=61554538887813",
+    "https://www.instagram.com/pracexam/",
+    "https://www.youtube.com/@PracExam-channel",
+    "https://cafe.naver.com/pracexam"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://pracexam.com/#website",
+  "name": "PracExam",
+  "url": "https://pracexam.com/",
+  "inLanguage": [
+    "en",
+    "ko"
+  ],
+  "publisher": {
+    "@id": "https://pracexam.com/#org"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "PracExam courses",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "Course",
+        "name": "Enrolled Agent (EA) Exam Practice Questions",
+        "description": "5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 & 3.",
+        "url": "https://pracexam.com/ea/",
+        "provider": {
+          "@id": "https://pracexam.com/#org"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "Course",
+        "name": "Real Estate License Exam Practice Questions",
+        "description": "Real estate license exam practice for the national portion and state portions (California, Texas, New Jersey, New York).",
+        "url": "https://pracexam.com/re/",
+        "provider": {
+          "@id": "https://pracexam.com/#org"
+        }
+      }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="/exam-switch.css?v=013782badc">
+<link rel="stylesheet" href="/hub.css?v=11a8232d0e">
+<meta name="robots" content="noindex"><style>.hub-hero{background:linear-gradient(135deg,#10304C 0%,#1E3A4F 60%,#354649 100%) !important}.hub-hero h1{color:#fff}.hub-hero h1 em{color:#BFD3E6}.hub-hero .lede{color:rgba(255,255,255,.78)}.hub-hero .eyebrow{color:#8EC1F0}.hero-cta{background:#8EC1F0 !important;color:#0E2438 !important}.login-card{border-color:transparent;box-shadow:0 24px 50px -20px rgba(0,0,0,.45)}.hub-card .eyebrow{color:#2F5F8F}</style></head>
+<body data-exam="hub">
+
+<header class="nav"><div class="nav-inner">
+  <div class="nav-brand">
+    <a class="logo" href="/" aria-label="PracExam home"><img class="d" src="/img/logo-dark.png" width="520" height="110" alt="PracExam"><img class="w" src="/img/logo-white.png" width="520" height="110" alt="PracExam"></a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-menu" id="nav-menu">
+      <nav class="nav-links">
+        <a href="/ea/" data-ko="EA 시험" data-en="EA Exam">EA Exam</a>
+        <a href="/re/" data-ko="부동산 시험" data-en="Real Estate Exam">Real Estate Exam</a>
+        <a href="#about" data-ko="회사 소개" data-en="About">About</a>
+      </nav>
+      <div class="nav-actions"><a href="#login" class="btn btn-ghost btn-sm" data-ko="로그인" data-en="Log In">Log In</a></div>
+    </div>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button id="l-ko" aria-pressed="false">KO</button><button id="l-en" class="active" aria-pressed="true">EN</button>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-menu">
+      <svg class="icon-bars" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      <svg class="icon-close" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
+    </button>
+  </div>
+</div></header>
+
+<main id="top">
+  <section class="hero hub-hero"><div class="hub-grid">
+    <div class="hub-left">
+      <div class="eyebrow" data-ko="미국 자격시험 실전 문제은행" data-en="U.S. License Exam Practice">U.S. License Exam Practice</div>
+      <h1>Master Your U.S. License Exam<br><em>Tailored practice for Enrolled Agent and Real Estate candidates</em></h1>
+      <p class="lede" data-ko="실전형 시험대비 학습으로 확실한 합격을 경험하십시오. PracExam은 실제 시험 환경을 완벽히 구현한 최고 수준의 문제은행과 심층적인 해설을 제공합니다." data-en="Stop guessing and start passing. PracExam gives you exam-style question banks with detailed explanations, built to match how your real test asks questions.">Stop guessing and start passing. PracExam gives you exam-style question banks with detailed explanations, built to match how your real test asks questions.</p>
+      <a class="btn btn-primary hero-cta" href="#choose" data-ko="시험 선택 ↓" data-en="Select Your Exam ↓">Select Your Exam ↓</a>
+    </div>
+    <div class="login-wrap" id="login">
+      <!-- Shown by hub-login.js instead of the form when a Supabase session exists in this browser. Never an auto-redirect. -->
+      <div class="login-card resume-card" id="resume-card" hidden>
+        <h2 data-ko="환영합니다" data-en="Welcome back">Welcome back</h2>
+        <p class="sub" data-ko="이 브라우저에 로그인되어 있습니다." data-en="You're signed in on this browser.">You're signed in on this browser.</p>
+        <a class="btn btn-primary" id="resume-bar" href="/app" data-ko="내 EA 연습으로 이동 →" data-en="Go to my EA practice →">Go to my EA practice →</a>
+      </div>
+      <!-- English only: the login gate has no Korean (CLAUDE.md). -->
+      <form class="login-card" id="hub-login" novalidate>
+        <h2>Log In</h2>
+        <p class="sub">Returning customers: sign in to continue your practice.</p>
+        <label for="login-email">Email</label><input id="login-email" type="email" autocomplete="email" placeholder="you@example.com">
+        <label for="login-pw">Password</label><input id="login-pw" type="password" autocomplete="current-password" placeholder="••••••••">
+        <button type="submit" class="btn btn-primary" id="login-btn">Log In</button>
+        <div class="login-msg" id="login-msg" role="alert"></div>
+        <p class="login-foot">New here? Pick an exam below to start free.</p>
+      </form>
+    </div>
+  </div></section>
+  <section class="wrap choose" id="choose">
+  <h2 class="choose-h" data-ko="자격증을 고르세요" data-en="Choose your license">Choose your license</h2>
+  <div class="doors">
+    <div class="door ea">
+      <a class="photo" href="/ea/" aria-label="Enrolled Agent (EA)"><img src="/img/door-ea.webp" width="1000" height="667" alt="Tax professional working at a desk" fetchpriority="high"></a>
+      <div class="body">
+        <h2 data-ko="미국 세무사, EA" data-en="Enrolled Agent, EA">Enrolled Agent, EA</h2>
+        <p data-ko="IRS 특별등록시험(SEE) Part 1·2·3. 2025 세법 기준으로 한글·영어 해설을 함께 드립니다." data-en="IRS Special Enrollment Exam, Parts 1, 2 and 3. Built on 2025 tax law.">IRS Special Enrollment Exam, Parts 1, 2 and 3. Built on 2025 tax law.</p>
+        <div class="go"><a href="/ea/" class="btn btn-cta" data-ko="세무사 시험 준비 무료로 시작하기 →" data-en="Start EA prep for free →">Start EA prep for free →</a></div>
+      </div>
+    </div>
+
+    <div class="door re">
+      <a class="photo" href="/re/" id="re-photo" aria-label="Real Estate Agent"><img src="/img/door-re.webp" width="1000" height="667" alt="Real estate agent welcoming buyers into a home" loading="lazy"></a>
+      <div class="body">
+        <h2 data-ko="미국 부동산 중개사" data-en="Real Estate Agent">Real Estate Agent</h2>
+        <p data-ko="모든 주가 공유하는 National 문제에 해당 주의 법률을 더했습니다." data-en="National questions every state shares, plus the law of your state.">National questions every state shares, plus the law of your state.</p>
+        <div class="states" role="group" aria-label="State">
+          <span id="re-chips" class="states"></span>
+        </div>
+        <div class="go"><a href="/re/" id="re-go" class="btn btn-cta" data-ko="부동산 중개사 시험 준비 무료로 시작하기 →" data-en="Start Real Estate prep for free →">Start Real Estate prep for free →</a></div>
+      </div>
+    </div>
+  </div>
+
+  </section>
+
+  <!-- ═══ Crawlable text (plain HTML; Korean swaps in with the language toggle) ═══ -->
+  <section class="wrap hub-text">
+    <article class="hub-card ea" id="ea-section">
+      <div class="eyebrow" data-ko="미국 세무사, EA" data-en="Enrolled Agent, EA">Enrolled Agent, EA</div>
+      <h2 data-ko="미국 세무사 시험" data-en="Enrolled Agent Exam">Enrolled Agent Exam</h2>
+      <p data-ko="EA(Enrolled Agent)는 IRS가 인정하는 미국 세무 전문가 자격입니다. PracExam은 Part 1(개인)·Part 2(법인·사업체)·Part 3(대리·실무·절차) 전 영역에 걸쳐 5,000개 이상의 실전 문제를 제공하며, 모든 문제에 한국어·영어 해설과 시험 팁이 붙어 있습니다. 2025 세법 기준, 2026 시험 대비." data-en="The Enrolled Agent (EA) credential lets tax professionals represent taxpayers before the IRS. PracExam offers 5,000+ practice questions across all three exam parts: Part 1 (Individuals), Part 2 (Businesses) and Part 3 (Representation, Practices and Procedures). Every question comes with a detailed explanation and an exam tip, in English and Korean, based on 2025 tax law for the 2026 exam.">The Enrolled Agent (EA) credential lets tax professionals represent taxpayers before the IRS. PracExam offers 5,000+ practice questions across all three exam parts: Part 1 (Individuals), Part 2 (Businesses) and Part 3 (Representation, Practices and Procedures). Every question comes with a detailed explanation and an exam tip, in English and Korean, based on 2025 tax law for the 2026 exam.</p>
+      <ul>
+        <li data-ko="PSI 스타일의 긴 지문과 복합 시나리오 문제" data-en="PSI-style long scenarios and multi-layered case questions">PSI-style long scenarios and multi-layered case questions</li>
+        <li data-ko="주제별 학습, 모의고사, 중요도 순 Smart 모드" data-en="Topic practice, full mock exams and a Smart mode">Topic practice, full mock exams and a Smart mode</li>
+        <li data-ko="Study Tips 글과 무료 영상" data-en="Study Tips articles and free practice videos">Study Tips articles and free practice videos</li>
+      </ul>
+    </article>
+    <article class="hub-card re" id="re-section">
+      <div class="eyebrow" data-ko="미국 부동산 중개사" data-en="Real Estate Agent">Real Estate Agent</div>
+      <h2 data-ko="부동산 중개사 시험" data-en="Real Estate Agent Exam">Real Estate Agent Exam</h2>
+      <p data-ko="부동산 중개사 시험은 모든 주가 공통으로 치르는 National 부분과 본인 주의 법을 다루는 State 부분으로 나뉩니다. PracExam은 실제 시험의 출제 범위 비율과 동일하게 두 부분을 연습할 수 있도록 설계되었으며, California, Texas, New Jersey, New York를 다룹니다." data-en="The real estate license exam has a national portion every state shares and a state portion on your own state's law. PracExam is built to practice both in the same content-outline proportions as the real exam, covering California, Texas, New Jersey and New York.">The real estate license exam has a national portion every state shares and a state portion on your own state's law. PracExam is built to practice both in the same content-outline proportions as the real exam, covering California, Texas, New Jersey and New York.</p>
+      <ul>
+        <li data-ko="National 및 State 문제를 한 곳에서" data-en="National and state questions in one place">National and state questions in one place</li>
+        <li data-ko="문제마다 해설과 시험 팁, 주제별 War Room" data-en="Explanations, exam tips and topic War Rooms">Explanations, exam tips and topic War Rooms</li>
+        <li data-ko="California, Texas, New Jersey, New York" data-en="California, Texas, New Jersey and New York">California, Texas, New Jersey and New York</li>
+      </ul>
+    </article>
+    <!-- ═══ ABOUT (사업자 정보 고지 — 광고 심사용, 강조 최소화) ═══ -->
+<section id="about"><div>
+    <div class="about-strip">
+      <h2><span data-ko="PracExam 소개" data-en="About PracExam">About PracExam</span></h2>
+      <p>
+        <!-- 🔴 이 국문은 사장님이 «직접 써 주신» 문장이다(2026-08-31 채팅).
+             모델 검수로 되돌리지 말 것. 「PracExam이 무슨 뜻인가」를 한국 방문자에게
+             알려 주려고 앞의 두 문장을 더하셨다 —
+             *"영어권에서는 친숙하겠지만 한국에서는 익숙치 않은 말인데"* -->
+        <span data-ko="영어권에서 중요한 시험을 앞두고 실전 감각을 익히기 위해 치르는 연습문제, 모의고사를 ‘Practice Exam’, 줄여서 ‘PracExam’이라고 부릅니다. 이 이름 그대로 PracExam은 미국 IRS 공인 세무사, EA (Enrolled Agent) 자격증을 준비하는 여러분이 실전 스타일의 문제를 연습하고 자신 있게 합격할 수 있도록 돕는 온라인 학습 공간입니다." data-en="PracExam is an online exam-preparation platform for U.S. professional exams: the IRS Enrolled Agent (EA) exam and the real estate license exam.">PracExam is an online exam-preparation platform for U.S. professional exams: the IRS Enrolled Agent (EA) exam and the real estate license exam.</span>
+      </p>
+
+      <dl class="about-facts">
+        <div>
+          <dt><span data-ko="운영 법인" data-en="Legal entity">Legal entity</span></dt>
+          <dd>dxd investment group LLC</dd>
+        </div>
+        <div>
+          <dt><span data-ko="사업자명 (DBA / FBN)" data-en="DBA / FBN">DBA / FBN</span></dt>
+          <dd>PracExam</dd>
+        </div>
+        <div>
+          <dt><span data-ko="등록지" data-en="Registered">Registered</span></dt>
+          <dd>San Diego County, California, USA</dd>
+        </div>
+        <div>
+          <dt><span data-ko="사업장 주소" data-en="Business address">Business address</span></dt>
+          <dd>1401 Air Wing Rd, San Diego, CA 92154, USA</dd>
+        </div>
+        <div>
+          <dt><span data-ko="문의" data-en="Contact">Contact</span></dt>
+          <dd><a href="mailto:hello@pracexam.com">hello@pracexam.com</a></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+
+  </section>
+</main>
+
+<footer><div class="wrap">© 2026 PracExam
+  <div class="links"><a href="/tips/" id="nav-notes">Study Tips</a><a href="mailto:hello@pracexam.com">Contact</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a><a href="/refund.html">Refunds</a></div>
+</div></footer>
+
+<script src="/exams.js?v=1f67a91240" defer></script>
+<script src="/re-states.js?v=3c045d8bc7"></script>
+<script src="/hub-login.js?v=7a2c75f146" defer></script>
+<script src="/hub.js?v=a46b481b8b" defer></script>
+</body>
+</html>
