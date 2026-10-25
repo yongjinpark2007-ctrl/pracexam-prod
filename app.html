@@ -8307,8 +8307,8 @@ async function startQuiz(){
     var tpiq = buildTPIQQueue(pool, S.count);
     S.quizQueue = tpiq.queue;
     showToast(LANG === 'en'
-      ? ('🧠 TPIQ session — ' + tpiq.copCount + ' COPs interleaved by weight · ' + S.quizQueue.length + ' questions')
-      : ('🧠 TPIQ 세션 — COP ' + tpiq.copCount + '개 비중순 인터리빙 · ' + S.quizQueue.length + '문제'));
+      ? ('🧠 Smart mode — ' + S.quizQueue.length + ' questions, most-tested topics first')
+      : ('🧠 스마트 모드 — 자주 나오는 주제부터 ' + S.quizQueue.length + '문제'));   /* 2026-10-24 boss: no COP/interleaving jargon */
   } else {
     pool.sort((a,b)=>{const ta=S.answered[a.id]?.times||0,tb=S.answered[b.id]?.times||0;return ta-tb||Math.random()-.5;});
     S.quizQueue=pool.slice(0,S.count).map(q=>q.id);

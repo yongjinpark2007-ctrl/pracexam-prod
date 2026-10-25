@@ -4874,7 +4874,10 @@ async function loadFromCloud(){
       S.reviewFrom = liveCloud.review_from || null;   // RPC 미포함 → null (돌아갈 탭은 _reviewBackTab 이 짐작)
       S.sessionAnswers = liveCloud.session_answers || new Array(S.quizQueue.length).fill(null);
       try{ localStorage.setItem(LIVE_SYNC_KEY, '1'); }catch(e){}
-    } else if(S.quizQueue && S.quizQueue.length > 0 && !_liveNotSynced()){
+    } else if(false && S.quizQueue && S.quizQueue.length > 0 && !_liveNotSynced()){
+      // 🔴 RE app phase 1 (2026-10-24 boss: «이어 풀기가 나왔다가 사라짐»): RE never uploads its live session
+      // (saveLiveSessionToCloud / loadLiveSessionFromCloud are stubs), so «not in the cloud» does NOT mean
+      // «finished on another device». Keep the local session. Re-enable when RE gets its own cloud live session.
       // 2026-08-22: 클라우드에 진행 중 세션이 «없는데» 로컬에만 남아 있는 경우.
       // 이 로컬 세션은 클라우드에 올라가 있던 것이므로(LIVE_SYNC_KEY 가 '0' 이 아니다),
       // 클라우드에서 사라졌다는 것은 «다른 기기에서 마쳤다»는 뜻이다 → 로컬도 비운다.
@@ -8342,8 +8345,8 @@ async function startQuiz(){
     var tpiq = buildTPIQQueue(pool, S.count);
     S.quizQueue = tpiq.queue;
     showToast(LANG === 'en'
-      ? ('🧠 TPIQ session — ' + tpiq.copCount + ' COPs interleaved by weight · ' + S.quizQueue.length + ' questions')
-      : ('🧠 TPIQ 세션 — COP ' + tpiq.copCount + '개 비중순 인터리빙 · ' + S.quizQueue.length + '문제'));
+      ? ('🧠 Smart mode — ' + S.quizQueue.length + ' questions, most-tested topics first')
+      : ('🧠 스마트 모드 — 자주 나오는 주제부터 ' + S.quizQueue.length + '문제'));   /* 2026-10-24 boss: no COP/interleaving jargon */
   } else {
     pool.sort((a,b)=>{const ta=S.answered[a.id]?.times||0,tb=S.answered[b.id]?.times||0;return ta-tb||Math.random()-.5;});
     S.quizQueue=pool.slice(0,S.count).map(q=>q.id);
