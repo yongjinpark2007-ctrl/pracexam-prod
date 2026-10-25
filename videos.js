@@ -244,6 +244,11 @@
   }
 
   // ── JSON-LD VideoObject (every available language, regardless of the current selection) ──
+  // Google wants an ISO 8601 datetime with a timezone; the table stores a plain date (2026-10-21).
+  function isoDate(d){
+    if(!d) return undefined;
+    return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d + 'T00:00:00-07:00' : d;
+  }
   function ldFor(row){
     var out = [];
     ['en','ko'].forEach(function(l){
@@ -254,7 +259,7 @@
         name: row['title_' + l] || row.topic,
         description: plainDesc(row['description_' + l]) || ('EA Part ' + row.ea_part + ' - ' + row.topic),
         thumbnailUrl: [row.poster_url || ytThumb(id, 'hqdefault')],
-        uploadDate: row.published_at,
+        uploadDate: isoDate(row.published_at),
         embedUrl: 'https://www.youtube.com/embed/' + id,
         contentUrl: 'https://www.youtube.com/shorts/' + id,
         inLanguage: l
