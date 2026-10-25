@@ -275,3 +275,6 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .hero-cta{background:#DD8F75;color:#2A1A14}
 .hero-cta:hover{background:#E9A58D;color:#2A1A14}
 .login-card{border-color:transparent;box-shadow:0 24px 50px -20px rgba(0,0,0,.45)}
+
+/* ---- 2026-10-24 boss: smaller «Which exam are you preparing for?» ---- */
+.choose-h{font-size:clamp(23px,2.7vw,32px)}
