@@ -909,9 +909,9 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 /* 2026-10-24 boss — option B «알림 점»: the badge stays still (accent border), only a dot pings until clicked. */
 .exp-head #exp-topic-badge.exp-topic-link{position:relative;}
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow{border-color:rgba(221,143,117,.55);}
-.exp-head #exp-topic-badge.exp-topic-link.wr-glow .wr-arrow{margin-right:10px;}
+.exp-head #exp-topic-badge .wr-arrow{display:none;}  /* 2026-10-24 boss: the dot replaces the arrow */
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow::before,
-.exp-head #exp-topic-badge.exp-topic-link.wr-glow::after{content:"";position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;background:#DD8F75;}
+.exp-head #exp-topic-badge.exp-topic-link.wr-glow::after{content:"";position:absolute;top:calc(50% - 4.5px);right:14px;width:9px;height:9px;border-radius:50%;background:#DD8F75;}
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow::before{animation:wrDotPing 2.2s cubic-bezier(0,0,.2,1) infinite;}
 @keyframes wrDotPing{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.6);opacity:0}}
 @media(min-width:641px){
