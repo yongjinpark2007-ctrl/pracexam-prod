@@ -302,3 +302,8 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .door-list{list-style:none;margin:16px 0 8px;padding:0;display:grid;gap:10px}
 .door-list li{position:relative;padding-left:30px;color:var(--ink-mid);font-size:15px;line-height:1.5}
 .door-list li::before{content:"";position:absolute;left:0;top:1px;width:20px;height:20px;background:url(/img/check-mark.png) center/contain no-repeat}
+
+/* ---- 2026-10-24 boss: «More states on the way» under the RE states line ---- */
+.door-list li.door-note{margin-top:-6px;font-size:13px;font-style:italic;color:var(--ink-mid);opacity:.8}
+.door-list li.door-note::before{content:none}
+.door-list{align-content:start}

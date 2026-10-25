@@ -16,7 +16,7 @@
   // Keep the two doors level side by side: the title and the one-line intro get the taller side's height,
   // so the check lists and the start links start on the same row (boss 2026-10-24). Stacked (≤760px): no fix.
   function levelDoors(){
-    ['.door .body > h2', '.door .body > p'].forEach(function(sel){
+    ['.door .body > h2', '.door .body > p', '.door .body > .door-list'].forEach(function(sel){
       var els = document.querySelectorAll(sel), m = 0;
       els.forEach(function(e){ e.style.minHeight = ''; });
       if (window.innerWidth <= 760 || els.length < 2) return;
