@@ -11,7 +11,22 @@
     try { localStorage.setItem('ea_lang', l); } catch(e){}
     // Study Tips has one URL per language
     var n = document.getElementById('nav-notes'); if (n) n.href = (l === 'ko') ? '/tips/ko/' : '/tips/';
+    levelDoors();
   }
+  // Keep the two doors level side by side: the title and the one-line intro get the taller side's height,
+  // so the check lists and the start links start on the same row (boss 2026-10-24). Stacked (≤760px): no fix.
+  function levelDoors(){
+    ['.door .body > h2', '.door .body > p'].forEach(function(sel){
+      var els = document.querySelectorAll(sel), m = 0;
+      els.forEach(function(e){ e.style.minHeight = ''; });
+      if (window.innerWidth <= 760 || els.length < 2) return;
+      els.forEach(function(e){ m = Math.max(m, e.getBoundingClientRect().height); });
+      els.forEach(function(e){ e.style.minHeight = m + 'px'; });
+    });
+  }
+  window.addEventListener('resize', levelDoors);
+  window.addEventListener('load', levelDoors);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(levelDoors);
   document.getElementById('l-en').onclick = function(){ setLang('en'); };
   document.getElementById('l-ko').onclick = function(){ setLang('ko'); };
   try { if (localStorage.getItem('ea_lang') === 'ko') setLang('ko'); } catch(e){}
