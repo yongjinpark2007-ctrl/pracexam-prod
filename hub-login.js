@@ -15,6 +15,12 @@
       var card = document.getElementById('resume-card'), f = document.getElementById('hub-login');
       if (card){ card.hidden = false; if (f) f.hidden = true; } else bar.hidden = false;
     }
+    // «Log in with a different account» (and /?login for a direct look): show the login form instead.
+    var sw = document.getElementById('resume-switch');
+    function toLogin(){ var c = document.getElementById('resume-card'), f2 = document.getElementById('hub-login');
+      if (c) c.hidden = true; if (f2){ f2.hidden = false; var em = document.getElementById('login-email'); if (em) em.focus({preventScroll:true}); } }
+    if (sw) sw.addEventListener('click', function(e){ e.preventDefault(); toLogin(); });
+    if (/[?&]login\b/.test(location.search)) toLogin();
   }catch(e){}
   var form = document.getElementById('hub-login');
   if (!form) return;

@@ -278,3 +278,7 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 
 /* ---- 2026-10-24 boss: smaller «Which exam are you preparing for?» ---- */
 .choose-h{font-size:clamp(23px,2.7vw,32px)}
+
+/* ---- 2026-10-24 boss: way back to the login form from the welcome card ---- */
+.resume-switch{display:block;margin-top:14px;text-align:center;font-size:13.5px;color:var(--ink-mid);text-decoration:underline;text-underline-offset:3px}
+.resume-switch:hover{color:var(--ink)}
