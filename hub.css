@@ -264,3 +264,14 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .hub-hero{padding-bottom:64px}
 .choose{padding-top:56px}
 @media (max-width:900px){.hub-hero{padding-bottom:40px}.choose{padding-top:36px}}
+
+/* ---- 2026-10-24 boss: hero colour = D3 (navy band, soft glow) + smaller hero text ---- */
+.hub-hero{background:radial-gradient(circle at 85% 15%,rgba(120,170,220,.38) 0%,rgba(120,170,220,0) 45%),radial-gradient(circle at 10% 100%,rgba(221,143,117,.18) 0%,rgba(221,143,117,0) 40%),linear-gradient(135deg,#0E2A45 0%,#1E3A4F 60%,#354649 100%)}
+.hub-hero h1{color:#fff;font-size:clamp(32px,4.6vw,56px)}
+.hub-hero h1 em{color:#BFD3E6;font-size:clamp(21px,2.5vw,30px);margin-top:10px}
+.hub-hero .lede{color:rgba(255,255,255,.8);font-size:16.5px}
+@media (max-width:600px){.hub-hero .lede{font-size:15.5px}}
+.hub-hero .eyebrow{color:#DD8F75}
+.hero-cta{background:#DD8F75;color:#2A1A14}
+.hero-cta:hover{background:#E9A58D;color:#2A1A14}
+.login-card{border-color:transparent;box-shadow:0 24px 50px -20px rgba(0,0,0,.45)}
