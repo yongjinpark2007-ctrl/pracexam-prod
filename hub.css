@@ -335,3 +335,6 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 :root[data-theme="light"] .lang-toggle button.active{background:#10304C;color:#fff}
 /* 2026-10-26 boss: the photo must not move when the mouse is only over the card — no photo zoom on hover */
 .door:hover .photo img{transform:none}
+/* 2026-10-26 boss: one button colour for both doors (navy), so the hub has only salmon (hero) + navy (login, doors) */
+.door.ea .go .btn-cta{background:#10304C}
+.door.ea .go .btn-cta:hover{background:#2F5F8F}
