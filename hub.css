@@ -338,3 +338,6 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 /* 2026-10-26 boss: one button colour for both doors (navy), so the hub has only salmon (hero) + navy (login, doors) */
 .door.ea .go .btn-cta{background:#10304C}
 .door.ea .go .btn-cta:hover{background:#2F5F8F}
+/* 2026-10-26 boss: door buttons in salmon, the same as the hero «Select Your Exam» button — salmon = start here, navy = log in */
+.door.ea .go .btn-cta,.door.re .go .btn-cta{background:#DD8F75;color:#2A1A14}
+.door.ea .go .btn-cta:hover,.door.re .go .btn-cta:hover{background:#B85F3F;color:#fff}
