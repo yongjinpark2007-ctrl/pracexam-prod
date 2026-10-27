@@ -307,3 +307,16 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .door-list li.door-note{margin-top:-6px;font-size:13px;font-style:italic;color:var(--ink-mid);opacity:.8}
 .door-list li.door-note::before{content:none}
 .door-list{align-content:start}
+
+/* ---- 2026-10-26 boss: door links become real buttons (each exam's own colour) + the whole card is clickable ---- */
+.door{position:relative;cursor:pointer}
+.door .go .btn-cta{display:inline-flex;align-items:center;gap:6px;padding:13px 24px;border:0;border-radius:10px;font-weight:600;font-size:15px;letter-spacing:.01em;color:#fff;box-shadow:0 6px 16px -8px rgba(0,0,0,.35);transition:background .15s,transform .15s}
+.door.ea .go .btn-cta{background:#3E716C}          /* EA teal, dark enough for white text */
+.door.ea .go .btn-cta:hover{background:#2F5A56;color:#fff;transform:translateY(-1px)}
+.door.re .go .btn-cta{background:#10304C}          /* RE navy */
+.door.re .go .btn-cta:hover{background:#2F5F8F;color:#fff;transform:translateY(-1px)}
+.door .go .btn-cta::after{content:"";position:absolute;inset:0;z-index:1}   /* stretched link: click anywhere on the card */
+.photo img{transition:transform .35s}
+.door:hover .photo img{transform:scale(1.03)}
+@media (max-width:600px){.door .go .btn-cta{width:100%;justify-content:center}}
+@media (prefers-reduced-motion:reduce){.door:hover .photo img,.door .go .btn-cta:hover{transform:none}}
