@@ -919,6 +919,13 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow{border-color:var(--accent);}
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow::before,
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow::after{background:var(--accent);}
+/* 2026-10-27 boss: salmon border + fast ping distracted from study. Back to the grey pulse border (wrPulse, 6s, slow),
+   and the dot is grey too, fading slowly in step with the border. */
+.exp-head #exp-topic-badge.exp-topic-link.wr-glow{border-color:rgba(53,70,73,.18);animation:wrPulse 6s ease-in-out infinite;}
+.exp-head #exp-topic-badge.exp-topic-link.wr-glow::before{display:none;animation:none;}
+.exp-head #exp-topic-badge.exp-topic-link.wr-glow::after{background:rgba(77,97,100,.55);animation:wrDotFade 6s ease-in-out infinite;}
+@keyframes wrDotFade{0%,100%{opacity:.25}50%{opacity:.9}}
+
 
 @media(min-width:641px){
   .exp-head{flex-direction:row;align-items:stretch;}
