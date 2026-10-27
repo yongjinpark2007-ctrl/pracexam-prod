@@ -926,6 +926,8 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow::before{display:none;animation:none;}
 .exp-head #exp-topic-badge.exp-topic-link.wr-glow::after{background:rgba(77,97,100,.55);animation:wrDotFade 6s ease-in-out infinite;}
 @keyframes wrDotFade{0%,100%{opacity:.08;transform:scale(.15)}50%{opacity:.85;transform:scale(.9)}}
+/* 2026-10-27 boss: long War Room titles ran under the dot. Smaller dot, moved to the top-right corner. */
+.exp-head #exp-topic-badge.exp-topic-link.wr-glow::after{width:7px;height:7px;top:7px;right:7px;}
 
 
 @media(min-width:641px){
