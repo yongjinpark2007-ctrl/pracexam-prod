@@ -320,3 +320,16 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .door:hover .photo img{transform:scale(1.03)}
 @media (max-width:600px){.door .go .btn-cta{width:100%;justify-content:center}}
 @media (prefers-reduced-motion:reduce){.door:hover .photo img,.door .go .btn-cta:hover{transform:none}}
+
+/* ---- 2026-10-26 boss: hub colour review — match the new logo (navy #10304C + salmon #DD8F75 on warm cream) ----
+   Before: ink #1C2326 (green-black) + accent #1F4E5A (dark teal) from the EA family → login button black, hover green.
+   Light theme only; the dark theme keeps its own values. EA teal / RE navy stay on their own door buttons. */
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--ink:#16283A;--ink-mid:#4A5866;--accent:#2F5F8F}}
+:root[data-theme="light"]{--ink:#16283A;--ink-mid:#4A5866;--accent:#2F5F8F}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .login-card .btn{background:#10304C;color:#fff}
+  :root:not([data-theme="dark"]) .login-card .btn:hover{background:#2F5F8F}
+  :root:not([data-theme="dark"]) .btn-ghost:hover{background:#E8EFF7}
+  :root:not([data-theme="dark"]) .lang-toggle button.active{background:#10304C;color:#fff}}
+:root[data-theme="light"] .login-card .btn{background:#10304C;color:#fff}
+:root[data-theme="light"] .login-card .btn:hover{background:#2F5F8F}
+:root[data-theme="light"] .lang-toggle button.active{background:#10304C;color:#fff}
