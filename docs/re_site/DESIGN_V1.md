@@ -114,3 +114,7 @@ Boss 2026-10-24: «현재까지의 전체 디자인으로 1차 정하고 기록�
   - **Jay (DB) to finish:** add `exam text not null default 'ea'` to `announcements`, return it from `get_announcements` / `admin_list_announcements`, and accept `p_exam` in `upsert_announcement`.
   - Then an RE announcements editor (in an RE admin screen) can post `exam='re'`.
 - Admin menu: the RE app hides the EA admin screen (`#nav-anomaly`). An RE admin screen is phase 2 work.
+
+## 2026-10-26 — boss: RE Study Tips removed from the RE menu
+- Removed the Study Tips link from re/index.html and re/popquiz.html (not enough content, no time). EA Study Tips stay as they are.
+- The leftover nav-notes JS in popquiz.html is guarded (if the element is missing it does nothing).
