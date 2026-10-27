@@ -356,3 +356,5 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.door .photo:hover{transform:none}}
 /* 2026-10-26 boss: the lifted photo was clipped at the card top (the card had overflow:hidden), so the top corners looked square */
 .door{overflow:visible}
+/* 2026-10-26 boss: Korean words were split across lines (자/신). Break Korean only between words. */
+body{word-break:keep-all;overflow-wrap:break-word}
