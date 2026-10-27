@@ -333,3 +333,5 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 :root[data-theme="light"] .login-card .btn{background:#10304C;color:#fff}
 :root[data-theme="light"] .login-card .btn:hover{background:#2F5F8F}
 :root[data-theme="light"] .lang-toggle button.active{background:#10304C;color:#fff}
+/* 2026-10-26 boss: the photo must not move when the mouse is only over the card — no photo zoom on hover */
+.door:hover .photo img{transform:none}
