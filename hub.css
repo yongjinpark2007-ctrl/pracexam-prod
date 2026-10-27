@@ -341,3 +341,9 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 /* 2026-10-26 boss: door buttons in salmon, the same as the hero «Select Your Exam» button — salmon = start here, navy = log in */
 .door.ea .go .btn-cta,.door.re .go .btn-cta{background:#DD8F75;color:#2A1A14}
 .door.ea .go .btn-cta:hover,.door.re .go .btn-cta:hover{background:#B85F3F;color:#fff}
+/* 2026-10-26 boss: text blinked when the mouse was NEXT to the button. Cause: the stretched-link ::after made the whole card
+   count as «hovering the button», and the hover translateY turned the button into the containing block, shrinking ::after
+   back to the button → hover off → back on → loop. Fix: drop the stretched link and the hover lift. The photo stays a link. */
+.door .go .btn-cta::after{content:none}
+.door{cursor:auto}
+.door.ea .go .btn-cta:hover,.door.re .go .btn-cta:hover{transform:none}
