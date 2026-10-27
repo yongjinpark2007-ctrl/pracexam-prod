@@ -25,3 +25,7 @@
 .founder-section h2{color:#fff !important;}
 
 .founder-grid{align-items:center !important;}   /* short message: photo centred beside the text */
+
+/* 2026-10-26 (boss): founder message now sits ABOVE Smart Study Mode. The shared .tpiq-section gradient ends in EA teal (#cde3e1),
+   which clashes with the navy founder band right above it on RE. Use the RE steel-blue family instead. */
+body[data-exam="re"] .tpiq-section{background:linear-gradient(180deg,#DCE7F3 0%,#C7D7EA 100%);}
