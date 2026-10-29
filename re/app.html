@@ -1696,7 +1696,7 @@ async function reEnforceState(){
       <div class="lg-status" id="lg-status">🔄 Signing in…</div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowReset()">Forgot password?</a></div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowResend()">Didn't get the confirmation email?</a></div>
-      <div class="lg-newhere">First time here? <a href="/ea/?signup=1">Join us at PracExam.com</a>.</div>
+      <div class="lg-newhere">First time here? <a class="lg-link" style="display:inline" onclick="lgShowSignup()">Create a free account</a> &mdash; 30 days free.</div>
     </div>
 
     <!-- View 2: 비밀번호 재설정 메일 요청 -->
@@ -1735,6 +1735,29 @@ async function reEnforceState(){
       <div class="lg-err" id="lg-resend-err"></div>
       <div class="lg-ok" id="lg-resend-ok"></div>
       <div style="text-align:center;"><a class="lg-link" id="lg-resend-back" onclick="lgShowLogin()">← Back to login</a></div>
+    </div>
+    <!-- View 5: RE sign-up with state (plan item 5 · 2026-10-29). The state goes into user_metadata.re_state;
+         after the first login the app calls start_re_trial(state) → entitlements re-<state> with 30 days free. -->
+    <div id="lg-view-signup" style="display:none;">
+      <div style="font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:4px;">Create your free account</div>
+      <div style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:14px;">30 days of full access, free. No card needed.</div>
+      <div class="lg-label">Your exam state</div>
+      <select class="lg-input" id="su-state"></select>
+      <div style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:-4px 0 12px;">Your account covers this state only. To change it later, email hello@pracexam.com.</div>
+      <div class="lg-label">First name</div>
+      <input class="lg-input" type="text" id="su-fname" autocomplete="given-name"/>
+      <div class="lg-label">Last name</div>
+      <input class="lg-input" type="text" id="su-lname" autocomplete="family-name"/>
+      <div class="lg-label">Email</div>
+      <input class="lg-input" type="email" id="su-email" autocomplete="email"/>
+      <div class="lg-label">Password</div>
+      <input class="lg-input" type="password" id="su-pw" autocomplete="new-password" onkeydown="if(event.key==='Enter')doReSignup()"/>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--text-mid);line-height:1.5;margin:4px 0 8px;"><input type="checkbox" id="su-terms" style="margin-top:3px"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>
+      <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--text-mid);line-height:1.5;margin:0 0 12px;"><input type="checkbox" id="su-mkt" style="margin-top:3px"/> <span>Email me exam news and study tips (optional).</span></label>
+      <button class="lg-btn" id="su-btn" onclick="doReSignup()">Create account</button>
+      <div class="lg-err" id="su-err"></div>
+      <div class="lg-ok" id="su-ok"></div>
+      <div style="text-align:center;"><a class="lg-link" onclick="lgShowLogin()">&larr; Back to login</a></div>
     </div>
   </div>
 
@@ -2858,10 +2881,13 @@ const ADMIN_UID = 'f80cf93f-066f-415d-8925-a2e848dccaa3';
 // ── PADDLE 결제 (LIVE) ──────────────────────────────
 // Live 기본 환경이므로 Paddle.Environment.set 호출 없음(sandbox일 때만 set('sandbox')).
 // ⚠️ 아래 CLIENT_TOKEN 은 반드시 live_ 클라토큰으로 채워야 결제창이 열림.
-const PADDLE_CLIENT_TOKEN  = 'live_13e12161088dff9b5cd055f1aba';    // Live 클라이언트 토큰 (공개돼도 안전)
-const PADDLE_PRICE_MONTHLY = 'pri_01kxdeyzxqyph78xpzt81w2qxb';      // Live $29/월 · 수량1고정 (웹훅 PRICE_TO_PLAN·서버 상수와 동일)
+// RE (2026-10-29 plan item 4): Paddle SANDBOX until the live RE price exists (boss: «샌드박스로 안전하게»).
+// Go-live = live client token + live RE price, and remove Paddle.Environment.set('sandbox') below.
+const PADDLE_CLIENT_TOKEN  = 'test_f81df2e864654e4420e5a5206e1';    // Sandbox client token (public, safe)
+const PADDLE_PRICE_MONTHLY = 'pri_01m64j9ceysvkzndh174wdxryj';      // RE sandbox $29/month (webhook PRICE_TO_FAMILY → re)
 try{
   if(window.Paddle){
+    Paddle.Environment.set('sandbox');   // RE test phase only — see the note above
     Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN, eventCallback: onPaddleEvent });
     // 나라별 가격을 미리 받아 둔다 — 결제 모달이 열릴 때 «이미» 있어야 한 번에 옳게 보인다.
     // (같은 블록의 함수 선언이라 여기서 불러도 된다. 실패해도 조용히 기본값으로 물러난다.)
@@ -3542,12 +3568,68 @@ function showLgErr(msg){
 var _recoveryMode = false;  // 메일 링크(type=recovery)로 진입했는지
 
 function lgShowView(which){
-  ['login','reset','newpw','resend'].forEach(function(v){
+  ['login','reset','newpw','resend','signup'].forEach(function(v){
     var el = document.getElementById('lg-view-' + v);
     if(el) el.style.display = (v === which) ? '' : 'none';
   });
 }
 function lgShowLogin(){ lgShowView('login'); }
+// ── RE sign-up (plan item 5 · 2026-10-29) ─────────────────
+function lgShowSignup(){
+  var sel = document.getElementById('su-state');
+  if(sel && !sel.options.length){
+    sel.innerHTML = '<option value="">Choose your state</option>' + Object.keys(RE_STATES).map(function(k){
+      return '<option value="' + k + '">' + RE_STATES[k] + '</option>'; }).join('');
+  }
+  var pre = null; try { pre = new URLSearchParams(location.search).get('state') || localStorage.getItem('pe_re_state'); } catch(e){}
+  if(sel && pre && RE_STATES[pre] && !sel.value) sel.value = pre;
+  var le = document.getElementById('lg-email'), se = document.getElementById('su-email');
+  if(le && se && le.value && !se.value) se.value = le.value.trim();
+  lgShowView('signup');
+}
+function doReSignup(){
+  var g = function(id){ var el = document.getElementById(id); return el ? el : {}; };
+  var st = g('su-state').value, fn = (g('su-fname').value || '').trim(), ln = (g('su-lname').value || '').trim();
+  var em = (g('su-email').value || '').trim(), pw = g('su-pw').value || '';
+  var err = document.getElementById('su-err'), ok = document.getElementById('su-ok'), btn = document.getElementById('su-btn');
+  err.style.display = 'none'; ok.style.display = 'none';
+  var bad = null;
+  if(!RE_STATES[st]) bad = 'Please choose your exam state.';
+  else if(!fn || !ln) bad = 'Please enter your first and last name.';
+  else if(!em) bad = 'Please enter your email.';
+  else if(pw.length < 6) bad = 'Please choose a password of at least 6 characters.';
+  else if(!g('su-terms').checked) bad = 'Please agree to the Terms and Privacy Policy.';
+  if(bad){ err.textContent = bad; err.style.display = 'block'; return; }
+  var mkt = !!g('su-mkt').checked;
+  try { localStorage.setItem('pe_re_state', st); } catch(e){}
+  // redirect_to must be on the Supabase Redirect URLs list, or the confirm link falls back to the Site URL (EA app).
+  var redirect = window.location.origin + '/re/app';
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  fetch(SUPABASE_URL + '/auth/v1/signup?redirect_to=' + encodeURIComponent(redirect), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+    body: JSON.stringify({ email: em, password: pw, data: {
+      first_name: fn, last_name: ln, language: 'en',
+      marketing_consent: mkt, marketing_consent_at: mkt ? new Date().toISOString() : null,
+      terms_accepted_at: new Date().toISOString(), terms_version: '2026-07-06', privacy_version: '2026-07-05',
+      re_state: st, signup_exam: 're-' + st, referral_source: 're_app' } })
+  })
+  .then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+  .then(function(r){
+    if(r.ok){
+      ok.innerHTML = '✅ Account created. We sent a confirmation link to <b>' + em.replace(/</g, '&lt;') + '</b>.<br>Open it, then log in here. Check your spam folder if you do not see it.';
+      ok.style.display = 'block';
+      var le = document.getElementById('lg-email'); if(le) le.value = em;
+    } else {
+      err.textContent = '❌ ' + ((r.data && (r.data.msg || r.data.error_description || r.data.message)) || 'Sign-up failed. Please try again.');
+      err.style.display = 'block';
+    }
+  })
+  .catch(function(){ err.textContent = 'Network error. Please try again.'; err.style.display = 'block'; })
+  .finally(function(){ btn.disabled = false; btn.textContent = 'Create account'; });
+}
+try { if(new URLSearchParams(location.search).get('signup') === '1') setTimeout(function(){ if(!SB_USER) lgShowSignup(); }, 0); } catch(e){}
+
 
 // ⚠️ 로그인 게이트는 **영어로 통일**한다 (2026-07-27 사용자 결정).
 //    고객 대부분이 영어권이고, 카드 안의 기존 문구(Email/Password/Log In/Forgot password?)도
@@ -3982,7 +4064,7 @@ async function loadTrialStatus(){
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
     if(!data) return;  // profiles row 없으면(과거 가입자 등) 기존 동작 유지(미차단)
-    reEnforceState();   // RE: customer → own state only (separate query, safe if the column is missing)
+    // RE: state + access come from entitlements (reApplyEntitlement below), not profiles.re_state
     S.isPaid = !!data.is_paid;
     S.subCanceled = !!data.sub_canceled;   // 해지 예정(기간말 해지 신청됨) — 멤버십 카드 표시용
     S.marketingConsent = !!data.marketing_consent;
@@ -3994,6 +4076,8 @@ async function loadTrialStatus(){
     S.trialExpired = !S.isPaid && S.trialEndsAt && (new Date(S.trialEndsAt) < new Date());
     S.pastDueSince = data.past_due_since || null;   // 갱신 결제 실패 — 화면 안내용
     S.payLink = data.pay_link || null;              // Paddle 본인 결제수단 변경 주소
+    // RE (plan items 4-5 · 2026-10-29): the EA values above are replaced by the customer's ONE RE row.
+    if(await reApplyEntitlement() === 'reload') return;
     try{ renderPastDueBanner(); }catch(e){ console.warn('pastdue banner:', e); }
 
     // ── 무료 제공 프로그램 배지 (앰배서더 등) — 본인에게만 보인다 ──
@@ -4033,9 +4117,92 @@ async function loadTrialStatus(){
   try{ updateSyncStatus(); }catch(e){}
 }
 
+
+// ── RE access from entitlements (plan items 4-5 · 2026-10-29) ─────────────
+// One RE row per customer (uq_entitlements_one_re_state): exam 're-fl' = Florida. The row IS the state.
+// No row yet → start the 30-day trial on the state chosen at sign-up, or ask for the state.
+// (S is declared further down the file, so S.reExam / S.reTrialActive start undefined = false)
+async function reApplyEntitlement(){
+  S.reExam = null; S.reTrialActive = false;
+  S.isPaid = false; S.subCanceled = false; S.paidUntil = null; S.planCode = null;
+  S.trialEndsAt = null; S.trialExpired = false; S.pastDueSince = null; S.payLink = null;
+  var r;
+  try { r = await sb.from('entitlements').select('exam,is_paid,paid_until,plan_code,trial_ends_at,sub_canceled,past_due_since,pay_link')
+          .eq('user_id', SB_USER.id).like('exam', 're-%').maybeSingle(); } catch(e){ console.warn('re entitlement:', e); return null; }
+  if(!r || r.error){ console.warn('re entitlement:', r && r.error); return null; }
+  var row = r.data;
+  if(!row){
+    var meta = String(((SB_USER.user_metadata || {}).re_state) || '').toLowerCase();
+    if(RE_STATES[meta]){ if(await reStartTrial(meta)) return 'reload'; }
+    setTimeout(reAskState, 400);
+    return null;
+  }
+  var s = String(row.exam || '').slice(3);
+  var q = null; try { q = new URLSearchParams(location.search).get('state'); } catch(e){}
+  if(RE_STATES[s] && (s !== RE_STATE || q)){
+    try { localStorage.setItem('pe_re_state', s); } catch(e){}
+    location.replace('/re/app'); return 'reload';
+  }
+  var now = new Date();
+  S.reExam = row.exam;
+  S.isPaid = !!row.is_paid && (!row.paid_until || new Date(row.paid_until) > now);
+  S.subCanceled = !!row.sub_canceled;
+  S.paidUntil = row.paid_until || null;
+  S.planCode = row.plan_code || null;
+  S.trialEndsAt = row.trial_ends_at || null;
+  S.reTrialActive = !S.isPaid && !!S.trialEndsAt && new Date(S.trialEndsAt) > now;
+  S.trialExpired = !S.isPaid && !!S.trialEndsAt && new Date(S.trialEndsAt) <= now;
+  S.pastDueSince = row.past_due_since || null;
+  S.payLink = row.pay_link || null;
+  return row;
+}
+async function reStartTrial(st){
+  try {
+    var r = await sb.rpc('start_re_trial', { p_state: st });
+    if(r.error){ console.warn('start_re_trial:', r.error); showToast(LANG === 'en' ? 'Could not start your free trial. Please try again or email hello@pracexam.com.' : '무료 체험을 시작하지 못했습니다. 다시 시도하시거나 hello@pracexam.com 으로 알려 주세요.'); return false; }
+    var s = String(r.data || '').slice(3);
+    if(RE_STATES[s]){ try { localStorage.setItem('pe_re_state', s); } catch(e){} }
+    location.replace('/re/app');
+    return true;
+  } catch(e){ console.warn('start_re_trial:', e); return false; }
+}
+function reStateName(s){ return (LANG === 'en') ? RE_STATES[s] : (RE_STATE_KO[s] || RE_STATES[s]); }
+// Customers with no RE row yet (EA customers opening RE, or older sign-ups): pick the state once.
+function reAskState(){
+  if(!SB_USER || SB_USER.id === ADMIN_UID || S.reExam) return;
+  var mc = document.getElementById('modal-content'); if(!mc) return;
+  var en = (LANG === 'en');
+  mc.innerHTML =
+    '<div style="padding:.6rem 0;">' +
+      '<div style="font-size:18px;font-weight:800;margin-bottom:.4rem;">' + (en ? 'Which state is your exam in?' : '어느 주 시험을 준비하시나요?') + '</div>' +
+      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">' +
+        (en ? 'Your account will cover this state only, with 30 days of full access free. To change the state later, email hello@pracexam.com.'
+            : '선택한 주 하나만 이용하실 수 있고, 30일 동안 모든 기능을 무료로 쓰실 수 있습니다. 나중에 주를 바꾸시려면 hello@pracexam.com 으로 메일 주세요.') +
+      '</div>' +
+      Object.keys(RE_STATES).map(function(k){
+        return '<button class="btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;" onclick="reConfirmState(\'' + k + '\')">' + reStateName(k) + '</button>';
+      }).join('') +
+    '</div>';
+  document.getElementById('modal-bg').classList.add('open');
+}
+function reConfirmState(k){
+  if(!RE_STATES[k]) return;
+  var en = (LANG === 'en');
+  var mc = document.getElementById('modal-content'); if(!mc) return;
+  mc.innerHTML =
+    '<div style="padding:.6rem 0;text-align:center;">' +
+      '<div style="font-size:18px;font-weight:800;margin-bottom:.5rem;">' + reStateName(k) + '</div>' +
+      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">' +
+        (en ? 'Start your 30-day free trial for this state? You cannot switch states yourself later.'
+            : '이 주로 30일 무료 체험을 시작할까요? 시작한 뒤에는 직접 주를 바꿀 수 없습니다.') + '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="this.disabled=true;reStartTrial(\'' + k + '\')">' + (en ? 'Yes, start' : '네, 시작합니다') + '</button>' +
+      '<button class="btn-ghost" style="width:100%;" onclick="reAskState()">' + (en ? 'Back' : '다시 고르기') + '</button>' +
+    '</div>';
+}
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
 function isTrialLimited(){
-  return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
+  // RE: the 30-day trial (entitlements.trial_ends_at) is full access
+  return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid && !S.reTrialActive;
 }
 
 // Study Setup 화면을 Quick(5문제) 전용으로 단순화 — 체험 사용자 한정
@@ -4388,10 +4555,11 @@ function openCheckout(){
   if(!SB_USER){ showToast(t('login_required')); return; }
   if(SB_USER.id === ADMIN_UID){ showToast(t('admin_no_pay')); return; }
   if(!window.Paddle){ showToast(t('checkout_unavailable')); return; }
+  if(!S.reExam){ reAskState(); return; }   // RE: a state must exist before paying (plan item 4)
   try{
     Paddle.Checkout.open({
       items: [{ priceId: PADDLE_PRICE_MONTHLY, quantity: 1 }],
-      customData: { user_id: SB_USER.id },              // 웹훅이 누구 결제인지 매칭하는 핵심
+      customData: { user_id: SB_USER.id, exam: S.reExam },   // 웹훅이 누구·어느 주 결제인지 매칭 (RE: exam = 're-fl' 등)
       customer: SB_USER.email ? { email: SB_USER.email } : undefined
     });
   }catch(e){
@@ -4467,12 +4635,15 @@ function pePaintPrice(){
 function showPricingModal(){
   if(!SB_USER){ showToast(t('login_required')); return; }
   if(SB_USER.id === ADMIN_UID){ showToast(t('admin_no_pay')); return; }
+  if(!S.reExam){ reAskState(); return; }   // RE: confirm the state before showing the price
   var mc = document.getElementById('modal-content');
   if(!mc) return;
   mc.innerHTML =
     '<div style="text-align:center;padding:1rem 0;">' +
       '<div style="font-size:36px;margin-bottom:.4rem;">🚀</div>' +
       '<div style="font-size:19px;font-weight:800;margin-bottom:.2rem;">' + t('pricing_title') + '</div>' +
+      (S.reExam ? '<div style="font-size:13.5px;font-weight:700;margin:.2rem 0;">' + reStateName(S.reExam.slice(3)) + (LANG === 'en' ? ' real estate exam' : ' 부동산 시험') + '</div>' +
+        '<div style="font-size:12px;color:var(--text-mid);margin-bottom:.2rem;">' + (LANG === 'en' ? 'To change your state, email hello@pracexam.com.' : '주 변경은 hello@pracexam.com 으로 요청해 주세요.') + '</div>' : '') +
       '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' +
         '<span id="pricing-amt">' + (_pePriceStr || '$29') + '</span> ' +
         '<span style="font-size:15px;font-weight:700;">' + t('pricing_permonth') + '</span>' +
