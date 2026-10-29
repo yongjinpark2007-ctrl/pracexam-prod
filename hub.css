@@ -21,7 +21,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1
 header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px}
 .logo img{height:38px;width:auto;display:block}
 .logo .w{display:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo .d{display:none}:root:not([data-theme="light"]) .logo .w{display:block}}
+/* 2026-10-28 boss: the premium-study block below forces light colours, so phone dark mode must NOT switch to the white logo */
 :root[data-theme="dark"] .logo .d{display:none}:root[data-theme="dark"] .logo .w{display:block}
 .hdr-r{display:flex;gap:10px;align-items:center}
 .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
