@@ -11,12 +11,14 @@
      TX  Pearson VUE handbook — Sales: National 85 items + State 50 items, 240 min for both;
          pass = 56 correct National and 28 correct State (of 80 / 40 scored). Both portions must be passed.
      NJ  PSI bulletin — Salesperson 110 questions, 70% (77 correct), 4 hours.
-     NY  DOS — 1 1/2 hours. DOS does not publish the question count or the passing score. */
+     NY  DOS — 1 1/2 hours. DOS does not publish the question count or the passing score.
+     FL  DBPR/Pearson VUE sales associate booklet — 100 multiple-choice questions, 3 1/2 hours, 75 points or higher (2026-10-29). */
 (function(){
   var FMT = {
     ca: { n:150, min:180, pct:70, portions:false, ko:['150문항 · 3시간', '70% 이상이면 합격 (California DRE 기준)'], en:['150 questions · 3 hours', 'Pass at 70% or more (California DRE)'] },
     tx: { n:135, min:240, pct:70, portions:true,  ko:['National 85 + 주 50문항 · 4시간', 'National과 주 부분을 각각 70% 이상 맞혀야 합격 (실제 시험: 채점 80문항 중 56개 · 40문항 중 28개)'],
                                                    en:['National 85 + State 50 questions · 4 hours', 'Pass each portion at 70% (real exam: 56 of 80 and 28 of 40 scored items)'] },
+    fl: { n:100, min:210, pct:75, portions:false, ko:['100문항 · 3시간 30분', '75점 이상이면 합격 (Florida DBPR 기준)'], en:['100 questions · 3 hours 30 minutes', 'Pass at 75 or more (Florida DBPR)'] },
     nj: { n:110, min:240, pct:70, portions:false, ko:['110문항 · 4시간', '70% (77문항) 이상이면 합격 (PSI 기준)'], en:['110 questions · 4 hours', 'Pass at 70% (77 correct) or more (PSI)'] },
     ny: { n:75,  min:90,  pct:70, portions:false, ko:['75문항 · 1시간 30분', '뉴욕주는 합격선을 공개하지 않습니다 — 여기서는 70%로 표시'], en:['75 questions · 1 hour 30 minutes', 'New York does not publish a passing score — shown here at 70%'] }
   };

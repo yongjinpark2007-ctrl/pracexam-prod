@@ -1579,8 +1579,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 <script>
 /* ── RE app config (phase 1, 2026-10-24) — built from /app.html by build_re_app.py ── */
-var RE_STATES = { ca:'California', tx:'Texas', nj:'New Jersey', ny:'New York' };
-var RE_STATE_KO = { ca:'캘리포니아', tx:'텍사스', nj:'뉴저지', ny:'뉴욕' };
+var RE_STATES = { ca:'California', tx:'Texas', fl:'Florida', nj:'New Jersey', ny:'New York' };
+var RE_STATE_KO = { ca:'캘리포니아', tx:'텍사스', fl:'플로리다', nj:'뉴저지', ny:'뉴욕' };
 var RE_STATE = (function(){
   var s = null;
   try { s = new URLSearchParams(location.search).get('state'); } catch(e){}
@@ -1592,13 +1592,30 @@ var RE_STATE = (function(){
 })();
 var RE_EXAMS = ['re-n', 're-' + RE_STATE];
 function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e){} location.href = '/re/app?state=' + s; }
+// Customers see ONLY the state they chose at sign-up / payment (boss 2026-10-29: «드랍다운 … 관리자만 보여야 합니다 ·
+// 일반 고객은 사인업할때 또 페이할때 고른 해당 주만 자동으로 나와야 합니다 · 다른 것으로 선택하게 하면 안됩니다»).
+// The state lives in profiles.re_state (DB column + signup/payment wiring = Jay, SQL_re_profile_state_2026-10-29.sql).
+// Separate query: if the column does not exist yet, the error is ignored and nothing else breaks.
+// ⚠ Screen-level only. The server must also limit a customer to their state (re_practice_meta / question payload).
+async function reEnforceState(){
+  try {
+    if (!SB_USER || SB_USER.id === ADMIN_UID) return;
+    var r = await sb.from('profiles').select('re_state').eq('id', SB_USER.id).maybeSingle();
+    if (r.error || !r.data) return;
+    var s = String(r.data.re_state || '').toLowerCase();
+    if (!RE_STATES[s]) return;
+    try { localStorage.setItem('pe_re_state', s); } catch(e){}
+    var q = null; try { q = new URLSearchParams(location.search).get('state'); } catch(e){}
+    if (s !== RE_STATE || q) location.replace('/re/app');   // drop any ?state= and reload on the customer's own state
+  } catch(e) { console.warn('re state:', e); }
+}
 </script>
 <style>
 /* phase 1: EA-only features hidden */
 #nav-videos, #nav-anomaly { display:none !important; }
 #part-row, .dash-parts-list, .dash-hero-picker .dash-parts-list { grid-template-columns:repeat(2,1fr) !important; }   /* RE: National + state, two tiles fill the row */
 #part-row > button:nth-child(3), button[data-p="Part 3"] { display:none !important; }
-.re-statebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:0 0 12px}
+.re-statebar{display:none;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:0 0 12px}
 .re-statebar select{font:inherit;padding:5px 8px;border-radius:8px;border:1px solid var(--border-clr,#ccc);background:var(--card-bg,#fff);color:inherit}
 #re-admin-only{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:var(--page-bg,#fff);padding:16px}
 #re-admin-only.show{display:flex}
@@ -1797,7 +1814,7 @@ function reSetState(s){ try { localStorage.setItem('pe_re_state', s); } catch(e)
 <!-- ═══ DASHBOARD V2 ═══ -->
 <div id="screen-dashboard" class="screen active">
 <div class="re-statebar">State: <select onchange="reSetState(this.value)">
-  <option value="ca">California</option><option value="tx">Texas</option><option value="nj">New Jersey</option><option value="ny">New York</option>
+  <option value="ca">California</option><option value="tx">Texas</option><option value="fl">Florida</option><option value="nj">New Jersey</option><option value="ny">New York</option>
 </select><script>document.currentScript.previousElementSibling.value = RE_STATE;</script></div>
   <!-- Hero: Current Focus Part -->
   <div id="dash-hero"></div>
@@ -2865,6 +2882,8 @@ function navSvg(name, cls){
 
 function applyAdminVisibility(){
   var isAdmin = SB_USER && SB_USER.id === ADMIN_UID;
+  // RE state dropdown = admin only (boss 2026-10-29). Hidden by default in CSS.
+  document.querySelectorAll('.re-statebar').forEach(function(el){ el.style.display = isAdmin ? 'flex' : 'none'; });
 
   // ── Settings(Admin) vs 내 계정(일반 유저) ──
   var setBtn = document.getElementById('nav-settings');
@@ -3962,6 +3981,7 @@ async function loadTrialStatus(){
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
     if(!data) return;  // profiles row 없으면(과거 가입자 등) 기존 동작 유지(미차단)
+    reEnforceState();   // RE: customer → own state only (separate query, safe if the column is missing)
     S.isPaid = !!data.is_paid;
     S.subCanceled = !!data.sub_canceled;   // 해지 예정(기간말 해지 신청됨) — 멤버십 카드 표시용
     S.marketingConsent = !!data.marketing_consent;
@@ -11386,6 +11406,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
-<script src="/re/re-mock.js?v=eb74ddf4b2"></script>
+<script src="/re/re-mock.js?v=dd272cee3e"></script>
 </body>
 </html>

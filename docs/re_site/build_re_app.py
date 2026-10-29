@@ -4,6 +4,9 @@
 #   Mock exam, War Room, videos hidden (EA-only server functions / no RE sheets in DB yet).
 #   RE rows are still is_active=false (pre-launch) → the RE copy does not filter is_active (admin only).
 # Re-run after app.html changes: py build_re_app.py   (every edit is anchored; a missing anchor stops the build)
+# ⛔ 2026-10-29 창1: DO NOT RUN as is. R points at pracexam-prod (main), whose app.html is older (10-17) than the
+#    re-site app (10-27 edits), and it WRITES R + "re/app.html" into the prod tree. Since 10-27, re/app.html in
+#    pracexam-re-site has been edited by hand; keep this script in sync by hand (FL added 2026-10-29) until R is fixed.
 import io, re, sys
 R = r"C:/Users/Yongj/pracexam-prod/"
 h = io.open(R + "app.html", encoding="utf-8", newline="").read().replace("\r\n", "\n")
@@ -24,8 +27,8 @@ one("navigator.serviceWorker.register('sw.js')", "Promise.reject(new Error('RE a
 RE_CFG = r"""
 <script>
 /* ── RE app config (phase 1, 2026-10-24) — built from /app.html by build_re_app.py ── */
-var RE_STATES = { ca:'California', tx:'Texas', nj:'New Jersey', ny:'New York' };
-var RE_STATE_KO = { ca:'캘리포니아', tx:'텍사스', nj:'뉴저지', ny:'뉴욕' };
+var RE_STATES = { ca:'California', tx:'Texas', fl:'Florida', nj:'New Jersey', ny:'New York' };
+var RE_STATE_KO = { ca:'캘리포니아', tx:'텍사스', fl:'플로리다', nj:'뉴저지', ny:'뉴욕' };
 var RE_STATE = (function(){
   var s = null;
   try { s = new URLSearchParams(location.search).get('state'); } catch(e){}
@@ -234,7 +237,7 @@ for k in ("ea_focus_part", "ea_prep_v3"):
 
 # ── state switcher on the dashboard (top of the main area) ──
 SB = """<div class="re-statebar">State: <select onchange="reSetState(this.value)">
-  <option value="ca">California</option><option value="tx">Texas</option><option value="nj">New Jersey</option><option value="ny">New York</option>
+  <option value="ca">California</option><option value="tx">Texas</option><option value="fl">Florida</option><option value="nj">New Jersey</option><option value="ny">New York</option>
 </select><script>document.currentScript.previousElementSibling.value = RE_STATE;</script></div>"""
 m = re.search(r'(<div[^>]*id="screen-dashboard"[^>]*>)', h)
 if not m: sys.exit("no dashboard screen anchor")

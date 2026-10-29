@@ -5,6 +5,7 @@
   var STATES = [
     { id:'ca', name:'California' },   // west to east (boss 2026-10-24)
     { id:'tx', name:'Texas' },
+    { id:'fl', name:'Florida' },      // added 2026-10-29 (boss: «랜딩에 업데이트 하세요»)
     { id:'nj', name:'New Jersey' },
     { id:'ny', name:'New York' }
   ];
