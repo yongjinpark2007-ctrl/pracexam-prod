@@ -1,0 +1,15 @@
+{
+  "name": "PracExam — Real Estate Exam Prep",
+  "short_name": "PracExam RE",
+  "id": "/re/app",
+  "start_url": "/re/app",
+  "scope": "/re/",
+  "display": "standalone",
+  "background_color": "#12324D",
+  "theme_color": "#12324D",
+  "lang": "en",
+  "icons": [
+    { "src": "/re/img/re-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/re/img/re-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
