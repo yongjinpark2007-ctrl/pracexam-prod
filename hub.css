@@ -84,12 +84,12 @@ body{margin:0}
 .login-msg{display:none;margin-top:12px;font-size:13.5px;padding:9px 11px;border-radius:8px;background:rgba(220,38,38,.1);color:#B91C1C}
 .login-msg.show{display:block}
 .login-msg a{color:inherit;font-weight:700}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .login-msg{color:#FCA5A5}}
+
 .btn:disabled{opacity:.6;cursor:default}
 .resume-bar{display:flex;align-items:center;justify-content:center;width:100%;margin:18px 0 0;padding:14px 18px;background:var(--ea);color:#fff;border-radius:12px;font:700 16px var(--f-body);text-decoration:none;box-shadow:0 12px 26px -16px rgba(16,48,76,.6)}
 .resume-bar[hidden]{display:none}
 .resume-bar:hover{background:var(--re)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .resume-bar{background:var(--ea-acc);color:#10201F}}
+
 /* header exam switch (exams.js + exam-switch.css) borrows the draft's colors, also in dark mode */
 body[data-exam="hub"]{--white:var(--surface);--navy:var(--ink);--border-strong:var(--line);--text-mid:var(--ink-mid);--text-main:var(--ink);--accent:var(--ea-acc);--accent-tint:var(--ea-tint);--terracotta:var(--cta);--navy-rgb:16,48,76;--border-clr:var(--line)}
 .nav-inner .exam-switch{margin-left:12px}
