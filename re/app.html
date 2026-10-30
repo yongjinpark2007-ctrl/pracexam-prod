@@ -3618,7 +3618,7 @@ function doReSignup(){
   .then(function(r){
     // Email that already has an account (2026-10-29): GoTrue answers 200 with identities: [] and sends no mail.
     if(r.ok && r.data && Array.isArray(r.data.identities) && r.data.identities.length === 0){
-      err.innerHTML = 'This email already has a PracExam account. Please <a href="#" onclick="lgShowView(\'login\');return false;">log in</a> with it. Forgot your password? Use «Forgot password?» on the log-in screen.';
+      err.innerHTML = 'This email already has a PracExam account. Please <a href="#" onclick="lgShowView(\'login\');return false;">log in</a> with your registered email and password. Forgot your password? Use «Forgot password?» on the log-in screen.';
       err.style.display = 'block';
       var le0 = document.getElementById('lg-email'); if(le0) le0.value = em;
       return;
