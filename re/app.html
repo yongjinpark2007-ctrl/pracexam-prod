@@ -2858,7 +2858,7 @@ async function reEnforceState(){
 </div><!-- /app -->
 
 <div class="toast" id="toast"></div>
-<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeModal()">
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this && !this.dataset.lock)closeModal()">
   <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
 </div>
 
@@ -4106,9 +4106,8 @@ async function loadTrialStatus(){
     // 무료 가입 Welcome 메일: 이메일 확인 완료 + 미발송이면 1회 발송 요청.
     // 서버 Edge Function send-signup-welcome 이 profiles.signup_welcome_sent 를
     // 원자적으로 선점해 멱등 처리하므로, 재로그인/새로고침으로 여러 번 호출돼도 1통만 나간다.
-    if(SB_USER.email_confirmed_at && data.signup_welcome_sent === false){
-      sb.functions.invoke('send-signup-welcome').catch(function(e){ console.warn('signup welcome invoke skip:', e && e.message); });
-    }
+    // EA / RE 분리 (2026-10-29): send-signup-welcome 은 EA 환영 메일이라 RE 앱에서는 부르지 않는다.
+    // RE 환영 메일은 계획 10번에서 따로 만든다.
   }catch(e){ console.warn('loadTrialStatus 오류:', e); }
   updateTrialStatusUI();
   applyTrialSetupRestrictions();
@@ -4182,8 +4181,16 @@ function reAskState(){
       Object.keys(RE_STATES).map(function(k){
         return '<button class="btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;" onclick="reConfirmState(\'' + k + '\')">' + reStateName(k) + '</button>';
       }).join('') +
+      '<div style="margin-top:.6rem;font-size:13px;text-align:center;">' +
+        '<a href="/app" style="color:var(--text-mid);">' + (en ? 'Back to EA' : 'EA 앱으로 돌아가기') + '</a> · ' +
+        '<a href="#" onclick="doLogout();return false;" style="color:var(--text-mid);">' + (en ? 'Log out' : '로그아웃') + '</a>' +
+      '</div>' +
     '</div>';
-  document.getElementById('modal-bg').classList.add('open');
+  // RE 는 따로 가입한다 (2026-10-29) — 주를 고르기 전에는 닫을 수 없다.
+  var bg = document.getElementById('modal-bg');
+  bg.dataset.lock = '1';
+  var cx = bg.querySelector('.modal-close'); if(cx) cx.style.display = 'none';
+  bg.classList.add('open');
 }
 function reConfirmState(k){
   if(!RE_STATES[k]) return;
