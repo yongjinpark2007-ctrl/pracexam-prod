@@ -2106,7 +2106,7 @@ async function reEnforceState(){
       <div class="update-body" id="update-body"></div>
     </div>
     <div class="tip-box">
-      <div class="tip-label" data-i18n="exp_tip">EA Exam Tip · 2025 세법 기준</div>
+      <div class="tip-label" data-i18n="exp_tip">Exam Tip</div>
       <div class="tip-body" id="tip-body"></div>
     </div>
 
@@ -2269,7 +2269,7 @@ async function reEnforceState(){
 }
 </style>
 <div id="screen-videos" class="screen">
-  <div class="section-title" data-i18n="vid_title">동영상 EA 문제 풀이</div>
+  <div class="section-title" data-i18n="vid_title">동영상 부동산 문제 풀이</div>
   <div id="vid-body"></div>
 </div>
 
@@ -5333,7 +5333,7 @@ var UI_TEXT = {
   mob_settings:  {ko:'설정',     en:'Settings'},
   nav_videos:    {ko:'동영상',   en:'Videos'},
   mob_videos:    {ko:'동영상',   en:'Videos'},
-  vid_title:     {ko:'동영상 EA 문제 풀이', en:'EA Practice Question Videos'},
+  vid_title:     {ko:'동영상 부동산 문제 풀이', en:'Real Estate Practice Question Videos'},
   nav_account:   {ko:'내 계정',  en:'My Account'},
   nav_settings:  {ko:'설정',     en:'Settings'},
   nav_admin:     {ko:'관리자',   en:'Admin'},
@@ -5379,7 +5379,7 @@ var UI_TEXT = {
   q_copy:        {ko:'복사',     en:'Copy'},
   q_flag:        {ko:'플래그',   en:'Flag'},
   exp_explanation:{ko:'해설',    en:'Explanation'},
-  exp_tip:       {ko:'EA 시험 팁 · 2025 세법 기준', en:'EA Exam Tip · 2025 Tax Law'},
+  exp_tip:       {ko:'시험 팁', en:'Exam Tip'},
   exp_copyright: {ko:'© 2026 PracExam · 본 문제 및 해설의 무단 복제·배포·이용을 금지합니다.', en:'© 2026 PracExam · Unauthorized reproduction, distribution, or use of these questions and explanations is prohibited.'},
   // 세션 종료 모달
   es_title:      {ko:'세션 종료', en:'End Session'},
@@ -6350,7 +6350,7 @@ function renderDashVideos(){
         '<div class="fs-grid">' +
           '<div class="fs-media"><div class="vx-frame" id="dv-frame"></div></div>' +
           '<div class="fs-text">' +
-            '<span class="dv-eyebrow">' + vidT('동영상 EA 문제 풀이', 'EA Practice Question Videos') + '</span>' +
+            '<span class="dv-eyebrow">' + vidT('동영상 부동산 문제 풀이', 'Real Estate Practice Question Videos') + '</span>' +
             '<h2 id="dv-title"></h2>' +
             '<div><span class="vx-pill" id="dv-pill"></span></div>' +
             '<p class="fs-desc" id="dv-desc" style="margin-top:12px;"></p>' +
@@ -10870,7 +10870,7 @@ async function mockReviewItem(qid){
       '<div style="font-size:15.5px;color:var(--text-main);line-height:1.65;margin-bottom:12px;">'+mockEsc(q.text||'')+'</div>'+oh+
       '<div style="font-size:11.5px;font-weight:800;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;margin:14px 0 6px;">'+mL('해설','Explanation')+'</div>'+
       '<div style="font-size:15.5px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;">'+mockEsc(expl)+'</div>'+
-      (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+mL('EA 시험 팁','EA Exam Tip')+'</b> · '+mockEsc(tip)+'</div>':'')+
+      (tip?'<div style="border-left:3px solid var(--accent);background:var(--accent-tint);border-radius:0 10px 10px 0;padding:11px 13px;margin-top:12px;font-size:15px;color:#7c4a2d;line-height:1.65;white-space:pre-wrap;"><b>'+mL('시험 팁','Exam Tip')+'</b> · '+mockEsc(tip)+'</div>':'')+
       (wrBtn?'<div style="margin-top:14px;">'+wrBtn+'</div>':'')+
       '<div style="margin-top:16px;text-align:right;"><button class="btn-ghost" onclick="closeModal()">'+mL('닫기','Close')+'</button></div></div>';
     // copy guard — War Room(.wr-protected)과 동일: 우클릭·복사·잘라내기·드래그·선택 차단 (박스 스코프, 다른 모달 무영향)
