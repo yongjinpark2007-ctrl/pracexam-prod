@@ -1385,6 +1385,8 @@ function doSignup(){
     return;
   }
   try { if (window.PE_RE_STATE) PE_RE_STATE.set(reState); localStorage.setItem('pe_re_state', reState); } catch(e){}
+  // remembered for the first app visit after confirming, in case the account existed unconfirmed and the metadata was not saved
+  try { localStorage.setItem('pe_re_signup', JSON.stringify({ state: reState, at: Date.now() })); } catch(e){}
   if (!fname || !lname) {
     showMsg(lang === 'ko' ? '이름을 입력해주세요.' : 'Please enter your name.', false);
     return;

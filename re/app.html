@@ -4149,7 +4149,10 @@ async function reApplyEntitlement(){
   var row = r.data;
   if(!row){
     var meta = String(((SB_USER.user_metadata || {}).re_state) || '').toLowerCase();
-    if(RE_STATES[meta]){ if(await reStartTrial(meta)) return 'reload'; }
+    // fallback (2026-10-30): the state chosen in the sign-up pop-up in this browser within 7 days
+    if(!RE_STATES[meta]){ try { var _ps = JSON.parse(localStorage.getItem('pe_re_signup') || 'null');
+      if(_ps && RE_STATES[_ps.state] && (Date.now() - (_ps.at || 0)) < 7 * 864e5) meta = _ps.state; } catch(e){} }
+    if(RE_STATES[meta]){ if(await reStartTrial(meta)){ try { localStorage.removeItem('pe_re_signup'); } catch(e){} return 'reload'; } }
     setTimeout(reAskState, 400);
     return null;
   }
