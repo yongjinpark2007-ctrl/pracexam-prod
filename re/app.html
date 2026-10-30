@@ -6408,11 +6408,7 @@ function renderVideosScreen(keepRows){
     var list = rows.filter(function(r){
       return (_VID.part === 'all' || String(r.ea_part) === _VID.part) && PXVideos.usable(r, LANG);
     });
-    var f = '<div class="vp-filters"><div><span class="vx-toggle" role="group">' +
-      ['all', '1', '2'].map(function(v){
-        return '<button type="button" aria-pressed="' + (_VID.part === v) + '" onclick="vidSetPart(\'' + v + '\')">' +
-               (v === 'all' ? vidT('전체', 'All') : partLabel('Part ' + v)) + '</button>';
-      }).join('') + '</span></div></div>';
+    var f = '';   // RE: National videos only — no National/State selector (boss 2026-10-30)
     host.innerHTML = f + (list.length
       ? '<div class="vp-grid" id="vid-grid"></div>'
       : '<div class="vp-empty">' + vidT('아직 영상이 없습니다.', 'No videos yet.') + '</div>');

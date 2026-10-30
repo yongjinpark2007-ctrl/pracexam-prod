@@ -323,15 +323,6 @@ html{scrollbar-gutter:stable;}
     </p>
   </div>
 
-  <div class="vp-filters">
-    <div>
-      <span class="vx-toggle" id="f-part" role="group" aria-label="National or state">
-        <button type="button" data-v="all" aria-pressed="true"><span class="ko">전체</span><span class="en">All</span></button>
-        <button type="button" data-v="1" aria-pressed="false">National</button>
-        <button type="button" data-v="2" aria-pressed="false">State</button>
-      </span></div>
-  </div>
-
   <div class="vp-grid" id="vp-grid" aria-live="polite">
     <div class="vp-card"><div class="vx-frame vx-skel"></div></div>
     <div class="vp-card"><div class="vx-frame vx-skel"></div></div>
@@ -405,8 +396,6 @@ document.addEventListener('keydown', function(e){
   var grid = document.getElementById('vp-grid');
   var rows = [];
   var state = { part: 'all', lang: PXVideos.siteLang(), shown: 12 };   // 12 at a time (2026-10-30)
-  var p = new URLSearchParams(location.search).get('part');
-  if (p === '1' || p === '2') state.part = p;
 
   function syncButtons(){
     ['part'].forEach(function(k){
@@ -467,10 +456,6 @@ document.addEventListener('keydown', function(e){
     }
   }
 
-  document.getElementById('f-part').addEventListener('click', function(e){
-    var b = e.target.closest('button'); if (!b) return;
-    state.part = b.getAttribute('data-v'); state.shown = 12; syncButtons(); syncUrl(); render();
-  });
   new MutationObserver(function(){
     var l = PXVideos.siteLang();
     if (l !== state.lang) { state.lang = l; syncButtons(); syncUrl(); render(); }
