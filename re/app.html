@@ -3615,7 +3615,7 @@ function doReSignup(){
       first_name: fn, last_name: ln, language: 'en',
       marketing_consent: mkt, marketing_consent_at: mkt ? new Date().toISOString() : null,
       terms_accepted_at: new Date().toISOString(), terms_version: '2026-07-06', privacy_version: '2026-07-05',
-      re_state: st, signup_exam: 're-' + st, referral_source: 're_app' } })
+      re_state: st, signup_exam: 're-' + st, exam_brand: 're', referral_source: 're_app' } })
   })
   .then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
   .then(function(r){
