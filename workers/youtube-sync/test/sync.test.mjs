@@ -194,3 +194,49 @@ test('end to end: members playlist configured, unlisted video lands as access=me
   assert.deepEqual(acc, { 'free-a': 'free', 'mem-a': 'members' });
   assert.equal(on.fetchedMembers, 1);
 });
+
+// ── Real Estate playlists (2026-10-29) ─────────────────────────────────────
+import { syncAll } from '../syncShorts.mjs';
+
+test('RE titles: topic after "Real Estate Agent Exam:" / "부동산 중개인 시험:"; no part in title -> defaultPart', () => {
+  assert.equal(topicFromTitle('Real Estate Agent Exam: What Is Procuring Cause? | Practice Question | PracExam'), 'What Is Procuring Cause?');
+  assert.equal(topicFromTitle('미국 부동산 중개인 시험: 조달원인(Procuring Cause)이란? | 실전 문제 | PracExam'), '조달원인(Procuring Cause)이란?');
+  const v = { id: 'RE000000001', title: 'Real Estate Agent Exam: What Is Procuring Cause? | Practice Question', description: 'PX: key=re-procuring-cause',
+              publishedAt: '2026-10-29T00:00:00Z', privacyStatus: 'public' };
+  assert.equal(indexLanguage([v], 'en').byKey.size, 0);                                   // EA rules: no part -> skipped
+  assert.equal(indexLanguage([v], 'en', { defaultPart: 1 }).byKey.get('re-procuring-cause').part, 1);
+});
+
+test('syncAll: RE vars unset = EA only, exactly as before; RE vars set = RE writes go to re_shorts_videos only', async () => {
+  const writes = [];
+  const fetchFn = async (url, opts = {}) => {
+    const u = String(url);
+    if (opts.method) { writes.push(opts.method + ' ' + u.split('?')[0].split('/rest/v1/')[1]); return { ok: true, status: 201, json: async () => ({}) }; }
+    if (u.includes('playlistItems')) {
+      const pl = new URL(u).searchParams.get('playlistId');
+      const id = { PLEA: 'EA000000001', PLREEN: 'RE000000001', PLREKO: 'RE000000002' }[pl];
+      return { ok: true, json: async () => ({ items: id ? [{ contentDetails: { videoId: id } }] : [] }) };
+    }
+    if (u.includes('/videos?')) {
+      const ids = new URL(u).searchParams.get('id').split(',');
+      return { ok: true, json: async () => ({ items: ids.map((id) => ({ id,
+        snippet: id.startsWith('EA')
+          ? { title: 'EA Exam: Filing Status | Part 1', description: 'PX: key=ea-fs', publishedAt: '2026-10-01T00:00:00Z' }
+          : { title: id.endsWith('1') ? 'Real Estate Agent Exam: Procuring Cause | Practice Question' : '미국 부동산 중개인 시험: 조달원인 | 실전 문제',
+              description: 'PX: key=re-procuring-cause', publishedAt: '2026-10-29T00:00:00Z' },
+        status: { privacyStatus: 'public' } })) }) };
+    }
+    return { ok: true, json: async () => [] };                                  // both tables start empty
+  };
+  const base = { YOUTUBE_API_KEY: 'k', SUPABASE_URL: 'https://x.test', SUPABASE_SERVICE_ROLE_KEY: 's', YT_PLAYLIST_ID_EN: 'PLEA', YT_PLAYLIST_ID_KO: 'PLNONE' };
+  const off = await syncAll(base, { fetchFn, now: NOW });
+  assert.equal(off.re, null);
+  assert.deepEqual(writes, ['POST shorts_videos']);
+  writes.length = 0;
+  const on = await syncAll({ ...base, YT_PLAYLIST_ID_RE_EN: 'PLREEN', YT_PLAYLIST_ID_RE_KO: 'PLREKO' }, { fetchFn, now: NOW, dry: true });
+  assert.deepEqual(on.re.plan.creates.map((r) => [r.slug, r.ea_part, r.youtube_id_en, r.youtube_id_ko]), [['re-procuring-cause', 1, 'RE000000001', 'RE000000002']]);
+  assert.deepEqual(on.ea.plan.creates.map((r) => r.slug), ['ea-fs']);                    // EA plan unchanged
+  const live = await syncAll({ ...base, YT_PLAYLIST_ID_RE_EN: 'PLREEN', YT_PLAYLIST_ID_RE_KO: 'PLREKO' }, { fetchFn, now: NOW });
+  assert.ok(live.re && live.re.errors.length === 0);
+  assert.deepEqual(writes.sort(), ['POST re_shorts_videos', 'POST shorts_videos']);
+});

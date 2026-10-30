@@ -32,3 +32,6 @@ body[data-exam="re"] .tpiq-section{background:linear-gradient(180deg,#DCE7F3 0%,
 
 /* 2026-10-26 (boss): RE logo (salmon check) in the top-left, light/dark pair like the hub */
 .logo img{height:28px;width:auto;display:block}.logo .w{display:none}/* 2026-10-28 boss: RE pages have no dark theme, so the phone dark mode must NOT switch to the white logo (it vanished on the white header) */:root[data-theme="dark"] .logo .d{display:none}:root[data-theme="dark"] .logo .w{display:block}
+
+/* 2026-10-29: featured-short band (videos.css) glows in EA teal by default; RE uses its own accent */
+body[data-exam="re"] .fs-media::before{background:radial-gradient(closest-side, rgba(var(--accent-rgb),.35), rgba(var(--accent-rgb),0));}

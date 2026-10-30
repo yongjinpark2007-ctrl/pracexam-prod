@@ -7,7 +7,8 @@
 
   // Members-only videos (2026-10-17): the list comes from the RPC get_videos_for_viewer(). For viewers who may not watch a
   // video the server returns it with locked=true and NO YouTube id, so a lock card is all we can draw (nothing to leak).
-  var cfg = { url:'', anon:'', getToken:null, onLocked:null, lockedHref:'/app' };
+  var cfg = { url:'', anon:'', getToken:null, onLocked:null, lockedHref:'/app',
+              rpc:'get_videos_for_viewer', table:'shorts_videos', partLabel:null };   // RE pages pass their own (2026-10-29)
   var current = null;   // the one player that is currently playing: { box, row, lang }
 
   var UI = {
@@ -22,6 +23,9 @@
     if(o.getToken) cfg.getToken = o.getToken;
     if(o.onLocked) cfg.onLocked = o.onLocked;
     if(o.lockedHref) cfg.lockedHref = o.lockedHref;
+    if(o.rpc) cfg.rpc = o.rpc;                 // RE: get_re_videos_for_viewer
+    if(o.table) cfg.table = o.table;           // RE: re_shorts_videos
+    if(o.partLabel) cfg.partLabel = o.partLabel;   // RE: function(part, lang) -> 'National' / state name
   }
 
   function siteLang(){
@@ -54,6 +58,7 @@
       .map(function(s){ return s.replace(/\s+/g, ' ').trim(); })
       .filter(function(s){ return s && !/^[━─=\-\s]+$/.test(s); }).join(' ').slice(0, 300);
   }
+  function partText(row, l){ return cfg.partLabel ? cfg.partLabel(row.ea_part, l) : (UI[l].part + row.ea_part); }
   function descOf(row, l){ return firstLine(row['description_' + l] || row['description_' + other(l)]); }
 
   // ── data ────────────────────────────────────────────────
@@ -69,7 +74,7 @@
     return null;
   }
   function rpcRows(token, limit){
-    return fetch(cfg.url + '/rest/v1/rpc/get_videos_for_viewer', {
+    return fetch(cfg.url + '/rest/v1/rpc/' + cfg.rpc, {
       method:'POST',
       headers:{ apikey:cfg.anon, Authorization:'Bearer ' + (token || cfg.anon), 'Content-Type':'application/json' },
       body: JSON.stringify({ p_limit: limit || null })
@@ -77,7 +82,7 @@
   }
   // The old direct table read (free rows only). Used if the RPC is not available - the site must never break.
   function tableRows(limit){
-    var q = cfg.url + '/rest/v1/shorts_videos?select=*&is_published=eq.true' +
+    var q = cfg.url + '/rest/v1/' + cfg.table + '?select=*&is_published=eq.true' +
             '&order=published_at.desc,sort_order.desc' + (limit ? '&limit=' + limit : '');
     return fetch(q, { headers:{ apikey:cfg.anon, Authorization:'Bearer ' + cfg.anon } })
       .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
@@ -124,7 +129,7 @@
     btn.className = 'vx-poster';
     btn.setAttribute('aria-label', UI[l].play + title);
 
-    var fb = '<span class="vx-fallback"><span>' + esc(UI[l].part + row.ea_part) + '</span><small>' + esc(row.topic) + '</small></span>';
+    var fb = '<span class="vx-fallback"><span>' + esc(partText(row, l)) + '</span><small>' + esc(row.topic) + '</small></span>';
     var src = posterFor(row, l);
     var imgHtml = '';
     if(src){
@@ -160,7 +165,7 @@
     btn.type = 'button';
     btn.className = 'vx-poster vx-locked';
     btn.setAttribute('aria-label', UI[l].lockedLabel + title);
-    var fb = '<span class="vx-fallback"><span>' + esc(UI[l].part + row.ea_part) + '</span><small>' + esc(row.topic) + '</small></span>';
+    var fb = '<span class="vx-fallback"><span>' + esc(partText(row, l)) + '</span><small>' + esc(row.topic) + '</small></span>';
     var bg = row.poster_url
       ? '<img alt="" width="360" height="640" loading="lazy" decoding="async" src="' + esc(row.poster_url) + '">'
       : fb;
@@ -257,7 +262,7 @@
       out.push({
         '@context':'https://schema.org', '@type':'VideoObject',
         name: row['title_' + l] || row.topic,
-        description: plainDesc(row['description_' + l]) || ('EA Part ' + row.ea_part + ' - ' + row.topic),
+        description: plainDesc(row['description_' + l]) || (partText(row, l) + ' - ' + row.topic),
         thumbnailUrl: [row.poster_url || ytThumb(id, 'hqdefault')],
         uploadDate: isoDate(row.published_at),
         embedUrl: 'https://www.youtube.com/embed/' + id,

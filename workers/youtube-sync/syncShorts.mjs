@@ -45,7 +45,8 @@ export function partFromTitle(title) {
 // "Enrolled Agent EA Exam: Filing Status for Year of Death | Part 1 Question #eaexam" -> "Filing Status for Year of Death"
 export function topicFromTitle(title) {
   let t = String(title || '').replace(/#\S+/g, ' ').split('|')[0];
-  const i = t.search(/(?:EA\s*Exam|EA\s*시험)\s*:/i);
+  // RE (2026-10-29): "Real Estate Agent Exam: …" / "미국 부동산 중개인 시험: …"
+  const i = t.search(/(?:EA\s*Exam|EA\s*시험|Real\s*Estate(?:\s*Agent)?\s*Exam|부동산\s*중개인\s*시험)\s*:/i);
   if (i >= 0) t = t.slice(t.indexOf(':', i) + 1);
   t = t.replace(/\s+/g, ' ').trim();
   return t || null;
@@ -55,6 +56,7 @@ export function topicFromTitle(title) {
 // Returns { byKey: Map(key -> {id,title,description,publishedAt,part,topic}), skipped: [], warnings: [] }
 // opts.access        'free' (default) | 'members'  - tag stored on each entry
 // opts.allowUnlisted  members playlists hold UNLISTED videos on purpose; the free playlists stay public-only
+// opts.defaultPart    used when neither the PX line nor the title names a part (RE titles carry no part: 1 = National)
 export function indexLanguage(videos, lang, opts = {}) {
   const access = opts.access || 'free';
   const byKey = new Map();
@@ -66,7 +68,7 @@ export function indexLanguage(videos, lang, opts = {}) {
     if (!okStatus) continue;                                // private / deleted (and unlisted unless allowed)
     const px = parsePx(v.description);
     if (!px.ok) { skipped.push(`skipped: no/invalid PX line (${v.id})`); continue; }
-    const part = px.part ?? partFromTitle(v.title);
+    const part = px.part ?? partFromTitle(v.title) ?? (opts.defaultPart || null);
     const topic = px.topic ?? topicFromTitle(v.title);
     if (!part || !topic) { skipped.push(`skipped: no part/topic in PX line or title (${v.id})`); continue; }
     const entry = { id: v.id, title: v.title || null, description: px.cleaned || null,
@@ -224,26 +226,29 @@ function sbHeaders(env, extra) {
            'Content-Type': 'application/json', ...extra };
 }
 
-async function loadExisting(env, fetchFn) {
-  const r = await fetchFn(`${env.SUPABASE_URL}/rest/v1/shorts_videos?select=*`, { headers: sbHeaders(env) });
+async function loadExisting(env, fetchFn, table = 'shorts_videos') {
+  const r = await fetchFn(`${env.SUPABASE_URL}/rest/v1/${table}?select=*`, { headers: sbHeaders(env) });
   if (!r.ok) throw new Error('Supabase read HTTP ' + r.status);
   return new Map((await r.json()).map((row) => [row.slug, row]));
 }
 
 // ── main ────────────────────────────────────────────────────────────────
-export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new Date() } = {}) {
+// target (optional): { table, lists:{en,ko}, memberLists:{en,ko}, defaultPart }. Unset = the EA playlists -> shorts_videos.
+export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new Date(), target = null } = {}) {
   const summary = { fetchedEn: 0, fetchedKo: 0, fetchedMembers: 0, upserted: 0, unpublished: 0, skipped: 0, warnings: [], errors: [], dry };
   const fetched = { en: null, ko: null };
-  const lists = { en: env.YT_PLAYLIST_ID_EN, ko: env.YT_PLAYLIST_ID_KO };
+  const table = (target && target.table) || 'shorts_videos';
+  const lists = (target && target.lists) || { en: env.YT_PLAYLIST_ID_EN, ko: env.YT_PLAYLIST_ID_KO };
   // Optional members-only playlists (UNLISTED videos). Empty / unset = feature off, behaviour exactly as before.
-  const memberLists = { en: env.YT_PLAYLIST_ID_MEMBERS_EN, ko: env.YT_PLAYLIST_ID_MEMBERS_KO };
+  const memberLists = (target && target.memberLists) || { en: env.YT_PLAYLIST_ID_MEMBERS_EN, ko: env.YT_PLAYLIST_ID_MEMBERS_KO };
+  const idxOpts = (target && target.defaultPart) ? { defaultPart: target.defaultPart } : {};
   const noRemove = new Set();
 
   // both languages in parallel; a failure only disables removal for that language
   await Promise.all(LANGS.map(async (l) => {
     try {
       const vids = await fetchPlaylistVideos(fetchFn, lists[l], env.YOUTUBE_API_KEY);
-      const idx = indexLanguage(vids, l);
+      const idx = indexLanguage(vids, l, idxOpts);
       fetched[l] = idx.byKey;
       summary['fetched' + (l === 'en' ? 'En' : 'Ko')] = vids.length;
       summary.skipped += idx.skipped.length;
@@ -256,7 +261,7 @@ export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new 
     if (!memberLists[l]) return;                           // members playlist not configured
     try {
       const mvids = await fetchPlaylistVideos(fetchFn, memberLists[l], env.YOUTUBE_API_KEY);
-      const midx = indexLanguage(mvids, l, { access: 'members', allowUnlisted: true });
+      const midx = indexLanguage(mvids, l, { ...idxOpts, access: 'members', allowUnlisted: true });
       fetched[l] = mergeTiers(fetched[l], midx.byKey, l, summary.warnings);
       summary.fetchedMembers += mvids.length;
       summary.skipped += midx.skipped.length;
@@ -270,7 +275,7 @@ export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new 
 
   let existing;
   try {
-    existing = await loadExisting(env, fetchFn);
+    existing = await loadExisting(env, fetchFn, table);
   } catch (e) {
     summary.errors.push(e.message);
     console.log(JSON.stringify(summary));
@@ -285,7 +290,7 @@ export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new 
   summary.plan = dry ? plan : undefined;
 
   if (!dry) {
-    const base = `${env.SUPABASE_URL}/rest/v1/shorts_videos`;
+    const base = `${env.SUPABASE_URL}/rest/v1/${table}`;
     // One request per row: a bulk upsert with different key sets would null the missing columns.
     const jobs = [
       ...plan.creates.map((row) => fetchFn(`${base}?on_conflict=slug`, {
@@ -298,6 +303,19 @@ export async function syncShorts(env, { dry = false, fetchFn = fetch, now = new 
   }
   // one-line summary, no secrets, no description text
   const { plan: _p, ...line } = summary;
-  console.log(JSON.stringify(line));
+  console.log(JSON.stringify({ table, ...line }));
   return summary;
+}
+
+// EA, then Real Estate (2026-10-29). RE runs only when an RE playlist is set; it writes to its own table
+// re_shorts_videos so EA pages never see RE videos. A failure in one never stops the other.
+export async function syncAll(env, opts = {}) {
+  const out = { ea: null, re: null };
+  try { out.ea = await syncShorts(env, opts); } catch (e) { out.ea = { errors: ['ea sync crashed: ' + e.message] }; }
+  if (env.YT_PLAYLIST_ID_RE_EN || env.YT_PLAYLIST_ID_RE_KO) {
+    const target = { table: 're_shorts_videos', defaultPart: 1, memberLists: {},
+                     lists: { en: env.YT_PLAYLIST_ID_RE_EN, ko: env.YT_PLAYLIST_ID_RE_KO } };
+    try { out.re = await syncShorts(env, { ...opts, target }); } catch (e) { out.re = { errors: ['re sync crashed: ' + e.message] }; }
+  }
+  return out;
 }

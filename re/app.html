@@ -6308,7 +6308,7 @@ function ensureVideoLib(){
   _VID.ready = new Promise(function(res, rej){
     try{
       var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/videos.css?v=20261017'; document.head.appendChild(l);
-      var s = document.createElement('script'); s.src = '/videos.js?v=20261017';
+      var s = document.createElement('script'); s.src = '/videos.js?v=20261029';
       s.onload = function(){ _vidInit(); res(); };
       s.onerror = function(){ _VID.ready = null; rej(new Error('videos.js load failed')); };
       document.head.appendChild(s);
@@ -6318,6 +6318,8 @@ function ensureVideoLib(){
 }
 function _vidInit(){
   PXVideos.init({ url: SUPABASE_URL, anon: SUPABASE_ANON,
+    rpc: 'get_re_videos_for_viewer', table: 're_shorts_videos',   // RE shorts live in their own table (2026-10-29)
+    partLabel: function(p){ return partLabel('Part ' + p); },
     onLocked: function(){ try{ showPricingModal(); }catch(e){} } });
 }
 // 1분 동안은 같은 목록을 다시 쓴다(언어를 바꿀 때마다 서버를 부르지 않게). force 면 새로 받는다.
@@ -6360,7 +6362,7 @@ function renderDashVideos(){
         '</div>' +
       '</div>';
     el.setAttribute('data-lang', LANG);
-    document.getElementById('dv-pill').textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+    document.getElementById('dv-pill').textContent = partLabel('Part ' + row.ea_part) + ' · ' + row.topic;
     document.getElementById('dv-title').textContent = PXVideos.titleOf(row, l);
     document.getElementById('dv-desc').textContent = PXVideos.descOf(row, l) || '';
     PXVideos.mount(document.getElementById('dv-frame'), row, l);
@@ -6376,10 +6378,10 @@ function renderVideosScreen(keepRows){
     var list = rows.filter(function(r){
       return (_VID.part === 'all' || String(r.ea_part) === _VID.part) && PXVideos.usable(r, LANG);
     });
-    var f = '<div class="vp-filters"><div><label>' + vidT('파트', 'Part') + '</label><span class="vx-toggle" role="group">' +
-      ['all', '1', '2', '3'].map(function(v){
+    var f = '<div class="vp-filters"><div><span class="vx-toggle" role="group">' +
+      ['all', '1', '2'].map(function(v){
         return '<button type="button" aria-pressed="' + (_VID.part === v) + '" onclick="vidSetPart(\'' + v + '\')">' +
-               (v === 'all' ? vidT('전체', 'All') : v) + '</button>';
+               (v === 'all' ? vidT('전체', 'All') : partLabel('Part ' + v)) + '</button>';
       }).join('') + '</span></div></div>';
     host.innerHTML = f + (list.length
       ? '<div class="vp-grid" id="vid-grid"></div>'
@@ -6392,7 +6394,7 @@ function renderVideosScreen(keepRows){
       var h = document.createElement('h3'); h.textContent = PXVideos.titleOf(row, l);
       var meta = document.createElement('div'); meta.className = 'vp-meta';
       var pill = document.createElement('span'); pill.className = 'vx-pill';
-      pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+      pill.textContent = partLabel('Part ' + row.ea_part) + ' · ' + row.topic;
       meta.appendChild(pill);
       if(row.access === 'members' && !row.locked){
         var tag = document.createElement('span'); tag.className = 'vx-pill';
