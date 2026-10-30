@@ -1403,7 +1403,7 @@ function goApp(ev){
 }
 var _SB_KEY = 'sb-ufrhvodruulpgnmudzwh-auth-token';
 function _knownEmail(){
-  try { var s = JSON.parse(localStorage.getItem(_SB_KEY) || 'null'); return (s && s.refresh_token && s.user && s.user.email && (s.user.user_metadata && s.user.user_metadata.exam_brand === 're')) ? s.user.email : '';   // only a customer of the OTHER exam (2026-10-30) } catch(e){ return ''; }
+  try { var s = JSON.parse(localStorage.getItem(_SB_KEY) || 'null'); return (s && s.refresh_token && s.user && s.user.email && (s.user.user_metadata && s.user.user_metadata.exam_brand === 're')) ? s.user.email : ''; } catch(e){ return ''; }   // only a customer of the OTHER exam (2026-10-30)
 }
 // «Sign up with a different email»: forget this browser's session, then show the normal sign-up form.
 function _knownOther(){
