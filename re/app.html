@@ -7667,14 +7667,15 @@ function renderDashWeakTopics(){
   if(!el) return;
 
   // 제목은 카드 안에 (공지사항·프리미엄 카드와 동일 문법, 2026-07-27 통일)
-  var label = '<div class="dash-sec-title">' + t('dash_weak_more') + focusPart + ' Top 3</div>';
+  var focusName = partLabel(focusPart);   // RE: National / state name, not «Part 1/2» (2026-10-30)
+  var label = '<div class="dash-sec-title">' + t('dash_weak_more') + focusName + ' Top 3</div>';
 
   if(weak.length === 0){
     var reason = Object.keys(copMap).length === 0
       ? t('dash_weak_empty_none')
       : (LANG === 'en'
-          ? ('Shown after ' + MIN_ATT + '+ attempts on a ' + focusPart + ' topic')
-          : (focusPart + ' 주제를 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
+          ? ('Shown after ' + MIN_ATT + '+ attempts on a ' + focusName + ' topic')
+          : (focusName + ' 주제를 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
     el.innerHTML = '<div class="dash-sec-card">' + label +
       '<div class="empty" style="padding:1.25rem 1rem;background:var(--ann-item-bg);' +
       'border:1px solid rgba(16,48,76,.10);border-radius:10px;">' +
