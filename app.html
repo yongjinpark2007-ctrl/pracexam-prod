@@ -4607,17 +4607,20 @@ async function fetchCopRows(){
   }
 }
 
+// EA / RE split (2026-10-29): the EA app reads EA records only — Real Estate questions are RE-* (and MOCK-RE-*).
+function _eaNotRe(q){ return q.not('question_id', 'like', 'RE-%').not('question_id', 'like', 'MOCK-RE-%'); }
+function _eaSessions(rows){ return (rows || []).filter(function(s){ return !(s.question_ids || []).some(function(id){ return /^(MOCK-)?RE-/.test(String(id)); }); }); }
 async function fetchProgressRows(){
   try{
     return await _legacyPaginate(function(){
-      return sb.from('user_progress')
+      return _eaNotRe(sb.from('user_progress')
         .select('question_id, times, correct_count, wrong_count, flagged, updated_at')
-        .eq('user_id', SB_USER.id);
+        .eq('user_id', SB_USER.id));
     });
   }catch(e){
     console.warn('[Load] user_progress 명시 컸럼 실패 → select(*) 폴백:', e && e.message);
     return await _legacyPaginate(function(){
-      return sb.from('user_progress').select('*').eq('user_id', SB_USER.id);
+      return _eaNotRe(sb.from('user_progress').select('*').eq('user_id', SB_USER.id));
     });
   }
 }
@@ -4630,7 +4633,7 @@ async function fetchSessionRows(){
     .eq('user_id', SB_USER.id)
     .order('created_at', { ascending: false })
     .limit(200); // Phase 4 통계 왜곡 방지 (기존 20 → 200, 2026-06-09)
-  if (!fast.error) return fast.data || [];
+  if (!fast.error) return _eaSessions(fast.data);
   console.warn('[Load] sessions 명시 컸럼 실패 → select(*) 폴백:', fast.error.message);
   const legacy = await sb
     .from('sessions')
@@ -4638,7 +4641,7 @@ async function fetchSessionRows(){
     .eq('user_id', SB_USER.id)
     .order('created_at', { ascending: false })
     .limit(200);
-  return legacy.data || [];
+  return _eaSessions(legacy.data);
 }
 
 // 관리자 전용: 본문/정답/해설을 백그라운드에서 채움 (부팅 비차단)
