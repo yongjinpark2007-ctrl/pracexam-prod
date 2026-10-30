@@ -6788,7 +6788,7 @@ function adminTab(name){
 // ── 관리자: Pop Quiz 문제 지정 (popquiz.html 노출 · 2026-07-24) ──
 //   · daily_quiz 테이블에 insert (RLS: is_admin()만 허용) → get_daily_quiz() 최신 1행 노출
 //   · daily_quiz_setup.sql 미실행 시 조회/지정이 실패하나, 안내만 뜨고 앱은 정상
-function _rePqPart(p){ var s = String(p == null ? '' : p); return (s === '1' || s === 'Part 1') ? 'National' : (s ? 'State' : '?'); }
+function _rePqPart(qid){ return String(qid || '').indexOf('RE-N-') === 0 ? 'National' : 'State'; }   // RE: label from the id, not questions.part
 function _dailyMsg(txt, ok){
   var m = document.getElementById('daily-form-msg'); if(!m) return;
   m.textContent = txt || '';
@@ -6807,7 +6807,7 @@ async function renderDailyAdmin(){
     var letter = String.fromCharCode(65 + (row.correct || 0));
     var txt = String(row.text || '');
     if(cur) cur.innerHTML =
-      '<div style="font-weight:700;color:var(--text-main);margin-bottom:4px;">' + _escHtml(row.question_id) + ' · ' + _rePqPart(row.part) + (row.topic ? ' · ' + _escHtml(row.topic) : '') + '</div>' +
+      '<div style="font-weight:700;color:var(--text-main);margin-bottom:4px;">' + _escHtml(row.question_id) + ' · ' + _rePqPart(row.question_id) + (row.topic ? ' · ' + _escHtml(row.topic) : '') + '</div>' +
       '<div>' + _escHtml(txt.slice(0, 160)) + (txt.length > 160 ? '…' : '') + '</div>' +
       '<div style="margin-top:4px;color:var(--text-muted);">정답: ' + letter + '</div>';
   }catch(e){
@@ -7114,7 +7114,7 @@ async function adminDailyPreview(){
     if(box){
       box.style.display = '';
       box.innerHTML =
-        '<div style="font-weight:700;margin-bottom:6px;">' + _escHtml(r.question_id) + ' · ' + _rePqPart(r.part) + (r.topic ? ' · ' + _escHtml(r.topic) : '') + '</div>' +
+        '<div style="font-weight:700;margin-bottom:6px;">' + _escHtml(r.question_id) + ' · ' + _rePqPart(r.question_id) + (r.topic ? ' · ' + _escHtml(r.topic) : '') + '</div>' +
         '<div style="margin-bottom:8px;">' + _escHtml(r.text || '') + '</div>' + oh;
     }
     _dailyMsg('확인되면 "Pop Quiz로 지정"을 누르세요', true);
