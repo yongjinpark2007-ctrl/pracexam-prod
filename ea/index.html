@@ -643,26 +643,26 @@
          <span class="en">Sample questions from Part 1. Click an option to see the correct answer, explanation, and exam tip.</span></p>
     </div>
 
-    <div style="text-align:center;margin-top:4px;">
-      <button type="button" class="btn btn-primary btn-lg" id="samples-toggle" aria-expanded="false" aria-controls="sample-questions-mount">
-        <span class="ko" data-open="접기 ▴" data-closed="예제 문제 풀어 보기 ▾">예제 문제 풀어 보기 ▾</span><span class="en" data-open="Hide questions ▴" data-closed="Try the sample questions ▾">Try the sample questions ▾</span>
+    <style>
+    /* 2026-10-30: only the first sample question shows until «See 2 more questions» */
+    #sample-questions-mount:not(.sq-open) .sample-card:not([data-qindex="0"]){display:none;}
+    </style>
+    <div id="sample-questions-mount"></div>
+    <div style="text-align:center;margin-top:20px;">
+      <button type="button" class="btn btn-ghost btn-lg" id="samples-toggle" aria-expanded="false" aria-controls="sample-questions-mount">
+        <span class="ko" data-open="접기 ▴" data-closed="나머지 문제 더 보기 ▾">나머지 문제 더 보기 ▾</span><span class="en" data-open="Show fewer ▴" data-closed="See 2 more questions ▾">See 2 more questions ▾</span>
       </button>
     </div>
-    <div id="sample-questions-mount" style="display:none;margin-top:28px;"></div>
     <script>
-    // Sample questions collapsed until asked for (2026-10-30). Arriving at #samples opens them.
     (function(){
       var btn = document.getElementById('samples-toggle'), box = document.getElementById('sample-questions-mount');
       if(!btn || !box) return;
-      function set(open){
-        box.style.display = open ? '' : 'none';
+      btn.addEventListener('click', function(){
+        var open = !box.classList.contains('sq-open');
+        box.classList.toggle('sq-open', open);
         btn.setAttribute('aria-expanded', String(open));
         btn.querySelectorAll('span[data-open]').forEach(function(s){ s.textContent = s.getAttribute(open ? 'data-open' : 'data-closed'); });
-      }
-      btn.addEventListener('click', function(){ set(box.style.display === 'none'); });
-      function fromHash(){ if(location.hash === '#samples') set(true); }
-      window.addEventListener('hashchange', fromHash); fromHash();
-      document.querySelectorAll('a[href="#samples"]').forEach(function(a){ a.addEventListener('click', function(){ set(true); }); });
+      });
     })();
     </script>
 
