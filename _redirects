@@ -7,3 +7,6 @@
 # 2026-10-24  /<exam>/app 패턴이 EA 에도 통하게 한다. 앱 자체는 /app 그대로 (옮기지 말 것).
 /ea/app       /app  301
 /ea/app.html  /app  301
+# 2026-10-30  RE exam info moved to /re/exam-tips/ (EA and RE use the same address shape)
+/re/tips      /re/exam-tips/  301
+/re/tips/     /re/exam-tips/  301
