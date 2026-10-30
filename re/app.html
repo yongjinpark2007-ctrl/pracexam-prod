@@ -6308,7 +6308,8 @@ function heroRing(pct, color, under, lab, sub, target, back, aria, big){
 //   · 잠금 카드를 누르면 요금제 안내창(showPricingModal)
 //   · 함수가 없거나 실패하면 영상 칸만 비워 둔다 — 앱의 다른 부분은 영향 없음
 // ══════════════════════════════════════════════════════
-var _VID = { rows:null, at:0, loading:null, ready:null, part:'all' };
+var _VID = { rows:null, at:0, loading:null, ready:null, part:'all', shown:12 };   // shown: 12 at a time (2026-10-30)
+function vidMore(){ _VID.shown += 12; renderVideosScreen(true); }
 function vidT(ko, en){ return LANG === 'en' ? en : ko; }
 function ensureVideoLib(){
   if(window.PXVideos){ _vidInit(); return Promise.resolve(); }
@@ -6377,7 +6378,7 @@ function renderDashVideos(){
   }).catch(function(){ el.innerHTML = ''; });
 }
 
-function vidSetPart(v){ _VID.part = v; renderVideosScreen(true); }
+function vidSetPart(v){ _VID.part = v; _VID.shown = 12; renderVideosScreen(true); }
 function renderVideosScreen(keepRows){
   var host = document.getElementById('vid-body'); if(!host) return;
   host.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">' + vidT('불러오는 중…', 'Loading…') + '</div>';
@@ -6395,7 +6396,11 @@ function renderVideosScreen(keepRows){
       ? '<div class="vp-grid" id="vid-grid"></div>'
       : '<div class="vp-empty">' + vidT('아직 영상이 없습니다.', 'No videos yet.') + '</div>');
     var grid = document.getElementById('vid-grid'); if(!grid) return;
-    list.forEach(function(row){
+    if(list.length > _VID.shown){
+      grid.insertAdjacentHTML('afterend', '<div style="text-align:center;margin:1.25rem 0 0;"><button class="btn-ghost" onclick="vidMore()">' +
+        vidT('영상 더 보기', 'More videos') + ' (' + (list.length - _VID.shown) + ')</button></div>');
+    }
+    list.slice(0, _VID.shown).forEach(function(row){
       var l = PXVideos.usable(row, LANG);
       var art = document.createElement('article'); art.className = 'vp-card';
       var frame = document.createElement('div'); frame.className = 'vx-frame';
