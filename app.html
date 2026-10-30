@@ -1576,6 +1576,20 @@ textarea.ann-input{resize:vertical;min-height:60px;}
   .sts-topic-table th,.sts-topic-table td{padding:7px 5px;}
   .sts-topic-bar{display:none;}
 }
+
+/* Join step for an existing account (2026-10-30): wider card, checklist, one-line button */
+.lg-card.lg-card-wide{max-width:560px;padding:2.4rem 2.6rem;}
+.je-h{font-size:22px;font-weight:700;color:var(--text-main);margin:0 0 6px;letter-spacing:-.01em;}
+.je-lead{font-size:14.5px;color:var(--text-mid);line-height:1.6;margin:0 0 18px;}
+.je-list{list-style:none;margin:0 0 20px;padding:14px 16px;border:1px solid var(--border-clr);border-radius:12px;background:var(--page-bg);}
+.je-list li{position:relative;padding-left:26px;font-size:14px;line-height:1.55;color:var(--text-main);}
+.je-list li+li{margin-top:7px;}
+.je-list li::before{content:"\2713";position:absolute;left:4px;top:0;font-weight:700;color:var(--teal);}
+.je-terms{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--text-mid);line-height:1.5;margin:0;}
+.je-terms input{margin-top:3px;}
+.je-note{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:10px 0 0;}
+.je-foot{text-align:center;}
+@media (max-width:600px){ .lg-card.lg-card-wide{padding:1.75rem 1.4rem;} .je-h{font-size:19px;} }
 </style>
 </head>
 <body>
@@ -3995,21 +4009,23 @@ function eaShowEnrollGate(){
   var email = (SB_USER && SB_USER.email) ? String(SB_USER.email).replace(/</g, '&lt;') : 'your account';
   var html =
     '<div id="ea-enroll-view">' +
-      '<div style="font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:6px;">Add EA to your account</div>' +
-      '<div style="font-size:13px;color:var(--text-mid);line-height:1.65;margin-bottom:14px;">' +
-        'You\'re logged in as <b>' + email + '</b>. Your PracExam account already exists, so there is nothing new to create &mdash; ' +
-        'just join PracExam EA (Enrolled Agent exam prep) below. Your <b>30-day free EA trial</b> starts right away, and your other PracExam service stays as it is.' +
-      '</div>' +
-      '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--text-mid);line-height:1.5;margin:0 0 4px;">' +
-        '<input type="checkbox" id="ea-enroll-terms" style="margin-top:3px"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>' +
-      '<button class="lg-btn" onclick="eaStartTrial(this)">Join PracExam EA &middot; Start free trial</button>' +
+      '<div class="je-h">Add EA to your account</div>' +
+      '<div class="je-lead">You\'re logged in as <b>' + email + '</b>. You already have a PracExam account &mdash; just add EA.</div>' +
+      '<ul class="je-list">' +
+        '<li>Enrolled Agent (EA) exam prep for Parts 1, 2 and 3</li>' +
+        '<li>30-day free trial starts right away</li>' +
+        '<li>Same email and password &mdash; your other PracExam service stays as it is</li>' +
+      '</ul>' +
+      '<label class="je-terms"><input type="checkbox" id="ea-enroll-terms"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>' +
+      '<button class="lg-btn" onclick="eaStartTrial(this)">Start free trial</button>' +
       '<div class="lg-err" id="ea-enroll-err" style="display:block;"></div>' +
-      '<div style="text-align:center;"><a class="lg-link" onclick="doLogout()">Not now &mdash; log out</a></div>' +
+      '<div class="je-foot"><a class="lg-link" onclick="doLogout()">Not now &mdash; log out</a></div>' +
     '</div>';
   var gate = document.getElementById('login-gate');
   var card = gate ? gate.querySelector('.lg-card') : null;
   if(gate && card){
     Array.prototype.forEach.call(card.children, function(c){ c.style.display = 'none'; });
+    card.classList.add('lg-card-wide');
     card.insertAdjacentHTML('beforeend', html);
     gate.style.display = 'flex';
     return;
@@ -4017,7 +4033,7 @@ function eaShowEnrollGate(){
   // fallback (gate markup missing): plain page-level card
   var d = document.createElement('div');
   d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--page-bg,#fff);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;';
-  d.innerHTML = '<div class="lg-card">' + html + '</div>';
+  d.innerHTML = '<div class="lg-card lg-card-wide">' + html + '</div>';
   document.body.appendChild(d);
 }
 async function eaStartTrial(b){
