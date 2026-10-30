@@ -4165,6 +4165,23 @@ async function reStartTrial(st){
     return true;
   } catch(e){ console.warn('start_re_trial:', e); return false; }
 }
+// Sign-up for customers who came from another exam: Terms again (boss 2026-10-29), then start the trial.
+async function reEnrollStart(b, k){
+  var en = (LANG === 'en');
+  var m = document.getElementById('re-enroll-err');
+  var t = document.getElementById('re-enroll-terms');
+  if(!t || !t.checked){ if(m) m.textContent = en ? 'Please agree to the Terms and Privacy Policy.' : '이용약관과 개인정보처리방침에 동의해 주세요.'; return; }
+  b.disabled = true;
+  try {
+    var u = await sb.auth.updateUser({ data: { re_terms_accepted_at: new Date().toISOString(), re_terms_version: '2026-07-06', re_privacy_version: '2026-07-05' } });
+    if(u.error) throw u.error;
+  } catch(e){
+    b.disabled = false;
+    if(m) m.textContent = en ? 'Please try again in a moment.' : '잠시 후 다시 시도해 주세요.';
+    console.warn('re terms:', e && e.message); return;
+  }
+  if(!(await reStartTrial(k))) b.disabled = false;
+}
 function reStateName(s){ return (LANG === 'en') ? RE_STATES[s] : (RE_STATE_KO[s] || RE_STATES[s]); }
 // Customers with no RE row yet (EA customers opening RE, or older sign-ups): pick the state once.
 function reAskState(){
@@ -4173,7 +4190,8 @@ function reAskState(){
   var en = (LANG === 'en');
   mc.innerHTML =
     '<div style="padding:.6rem 0;">' +
-      '<div style="font-size:18px;font-weight:800;margin-bottom:.4rem;">' + (en ? 'Which state is your exam in?' : '어느 주 시험을 준비하시나요?') + '</div>' +
+      '<div style="font-size:18px;font-weight:800;margin-bottom:.2rem;">' + (en ? 'Sign up for PracExam Real Estate' : 'PracExam 부동산 가입') + '</div>' +
+      '<div style="font-size:15px;font-weight:700;margin-bottom:.4rem;">' + (en ? 'Which state is your exam in?' : '어느 주 시험을 준비하시나요?') + '</div>' +
       '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">' +
         (en ? 'Your account will cover this state only, with 30 days of full access free. To change the state later, email hello@pracexam.com.'
             : '선택한 주 하나만 이용하실 수 있고, 30일 동안 모든 기능을 무료로 쓰실 수 있습니다. 나중에 주를 바꾸시려면 hello@pracexam.com 으로 메일 주세요.') +
@@ -4182,7 +4200,6 @@ function reAskState(){
         return '<button class="btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;" onclick="reConfirmState(\'' + k + '\')">' + reStateName(k) + '</button>';
       }).join('') +
       '<div style="margin-top:.6rem;font-size:13px;text-align:center;">' +
-        '<a href="/app" style="color:var(--text-mid);">' + (en ? 'Back to EA' : 'EA 앱으로 돌아가기') + '</a> · ' +
         '<a href="#" onclick="doLogout();return false;" style="color:var(--text-mid);">' + (en ? 'Log out' : '로그아웃') + '</a>' +
       '</div>' +
     '</div>';
@@ -4202,7 +4219,12 @@ function reConfirmState(k){
       '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">' +
         (en ? 'Start your 30-day free trial for this state? You cannot switch states yourself later.'
             : '이 주로 30일 무료 체험을 시작할까요? 시작한 뒤에는 직접 주를 바꿀 수 없습니다.') + '</div>' +
-      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="this.disabled=true;reStartTrial(\'' + k + '\')">' + (en ? 'Yes, start' : '네, 시작합니다') + '</button>' +
+      '<label style="display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:13px;color:var(--text-mid);line-height:1.5;margin:0 0 12px;">' +
+        '<input type="checkbox" id="re-enroll-terms" style="margin-top:3px"/> <span>' +
+        (en ? 'I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.'
+            : '<a href="/terms.html" target="_blank">이용약관</a>과 <a href="/privacy.html" target="_blank">개인정보처리방침</a>에 동의합니다.') + '</span></label>' +
+      '<div id="re-enroll-err" style="color:#dc2626;font-size:13px;margin:0 0 8px;"></div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="reEnrollStart(this,\'' + k + '\')">' + (en ? 'Sign up · Start 30-day free trial' : '가입하고 30일 무료 체험 시작') + '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="reAskState()">' + (en ? 'Back' : '다시 고르기') + '</button>' +
     '</div>';
 }

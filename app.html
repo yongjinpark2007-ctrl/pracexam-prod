@@ -3987,36 +3987,46 @@ async function loadTrialStatus(){
 }
 
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
-// ── EA 가입 화면 (2026-10-29) — RE 로만 가입한 고객용. 닫을 수 없다. ──
+// ── EA 신규 가입 화면 (2026-10-29) — EA 가입 기록이 없는 고객용(다른 시험으로 먼저 가입). 닫을 수 없다.
+// 사장님: 신규 가입 화면에서 약관 동의를 다시 받는다 — 고객이 새 서비스에 가입함을 알게.
 function eaShowEnrollGate(){
   if(document.getElementById('ea-enroll-gate')) return;
   var en = (typeof LANG === 'undefined' || LANG === 'en');
   var d = document.createElement('div');
   d.id = 'ea-enroll-gate';
-  d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#fff);display:flex;align-items:center;justify-content:center;padding:16px;';
+  d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#fff);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;';
   d.innerHTML =
     '<div style="max-width:380px;width:100%;text-align:center;">' +
-      '<div style="font-size:20px;font-weight:800;margin-bottom:.5rem;">' + (en ? 'Sign up for EA exam prep' : 'EA 시험 준비에 가입하세요') + '</div>' +
-      '<div style="font-size:14px;color:var(--text-mid,#555);line-height:1.7;margin-bottom:1.2rem;">' +
-        (en ? 'Your PracExam account is set up for Real Estate. EA is a separate service with its own 30-day free trial and its own subscription.'
-            : '지금 계정은 부동산 시험으로 가입되어 있습니다. EA는 별도 서비스이며 30일 무료 체험과 구독도 따로입니다.') + '</div>' +
-      '<button class="btn-navy" style="width:100%;margin-bottom:8px;justify-content:center;" onclick="eaStartTrial(this)">' + (en ? 'Start EA 30-day free trial' : 'EA 30일 무료 체험 시작') + '</button>' +
-      '<a class="btn-ghost" style="display:flex;justify-content:center;width:100%;box-sizing:border-box;margin-bottom:8px;text-decoration:none;" href="/re/app">' + (en ? 'Back to Real Estate' : '부동산 앱으로 돌아가기') + '</a>' +
+      '<div style="font-size:20px;font-weight:800;margin-bottom:.5rem;">' + (en ? 'Sign up for PracExam EA' : 'PracExam EA 가입') + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid,#555);line-height:1.7;margin-bottom:1rem;">' +
+        (en ? 'Enrolled Agent exam prep. Start with 30 days of free access. Your subscription is separate.'
+            : 'EA(Enrolled Agent) 시험 준비 서비스입니다. 30일 동안 무료로 이용하실 수 있고, 구독은 따로입니다.') + '</div>' +
+      '<label style="display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:13px;color:var(--text-mid,#555);line-height:1.5;margin:0 0 12px;">' +
+        '<input type="checkbox" id="ea-enroll-terms" style="margin-top:3px"/> <span>' +
+        (en ? 'I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.'
+            : '<a href="/terms.html" target="_blank">이용약관</a>과 <a href="/privacy.html" target="_blank">개인정보처리방침</a>에 동의합니다.') + '</span></label>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;justify-content:center;" onclick="eaStartTrial(this)">' + (en ? 'Sign up · Start 30-day free trial' : '가입하고 30일 무료 체험 시작') + '</button>' +
       '<button class="btn-ghost" style="width:100%;justify-content:center;" onclick="doLogout()">' + (en ? 'Log out' : '로그아웃') + '</button>' +
       '<div id="ea-enroll-err" style="color:#dc2626;font-size:13px;margin-top:10px;"></div>' +
     '</div>';
   document.body.appendChild(d);
 }
 async function eaStartTrial(b){
+  var en = (typeof LANG === 'undefined' || LANG === 'en');
+  var m = document.getElementById('ea-enroll-err');
+  var t = document.getElementById('ea-enroll-terms');
+  if(!t || !t.checked){ if(m) m.textContent = en ? 'Please agree to the Terms and Privacy Policy.' : '이용약관과 개인정보처리방침에 동의해 주세요.'; return; }
   b.disabled = true;
   try{
+    var now = new Date().toISOString();
+    var u = await sb.auth.updateUser({ data: { ea_terms_accepted_at: now, ea_terms_version: '2026-07-06', ea_privacy_version: '2026-07-05' } });
+    if(u.error) throw u.error;
     const r = await sb.rpc('start_ea_trial');
     if(r.error) throw r.error;
     location.reload();
   }catch(e){
     b.disabled = false;
-    var m = document.getElementById('ea-enroll-err');
-    if(m) m.textContent = (typeof LANG !== 'undefined' && LANG === 'ko') ? '잠시 후 다시 시도해 주세요.' : 'Please try again in a moment.';
+    if(m) m.textContent = en ? 'Please try again in a moment.' : '잠시 후 다시 시도해 주세요.';
     console.warn('start_ea_trial:', e && e.message);
   }
 }
