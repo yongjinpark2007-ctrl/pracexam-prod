@@ -4088,7 +4088,7 @@ function updateSyncStatus(){
 async function loadTrialStatus(){
   if(!SB_USER) return;
   if(SB_USER.id === ADMIN_UID){
-    S.isPaid = true; S.trialExpired = false; updateTrialStatusUI(); applyTrialSetupRestrictions(); return;
+    _joinCoverOff(); S.isPaid = true; S.trialExpired = false; updateTrialStatusUI(); applyTrialSetupRestrictions(); return;
   }
   try{
     const { data, error } = await sb
