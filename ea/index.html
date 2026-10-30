@@ -1558,8 +1558,8 @@ function doSignup(){
     if (result.ok && result.data && Array.isArray(result.data.identities) && result.data.identities.length === 0) {
       showMsg(
         lang === 'ko'
-          ? '이 이메일은 이미 PracExam 계정이 있습니다. pracexam.com/app 에서 그 이메일과 비밀번호로 로그인해 주세요. 로그인하면 가입 화면이 이어집니다. 비밀번호가 기억나지 않으면 로그인 화면의 «Forgot password?»를 눌러 주세요.'
-          : 'This email already has a PracExam account. Please log in at pracexam.com/app with that email and password; sign-up continues after you log in. Forgot your password? Use «Forgot password?» on the log-in screen.',
+          ? '이 이메일은 이미 PracExam 계정이 있습니다. pracexam.com/app 에서 그 이메일과 비밀번호로 로그인해 주세요. 비밀번호가 기억나지 않으면 로그인 화면의 «Forgot password?»를 눌러 주세요.'
+          : 'This email already has a PracExam account. Please log in at pracexam.com/app with that email and password. Forgot your password? Use «Forgot password?» on the log-in screen.',
         false
       );
       return;
