@@ -4873,17 +4873,21 @@ function _isMyExamId(id){ return /^(MOCK-)?RE-/i.test(id || ''); }
 // Announcements: EA unless the row says exam='re' (column to be added by Jay; until then every row is EA).
 function _isMyExamAnn(a){ return !!(a && a.exam === 're'); }
 
+// RE (2026-10-29): only this exam's questions — national RE-N-* and this state's RE-<ST>-* (not EA, not another state)
+function _reMyQid(id){ id = String(id || ''); return id.indexOf('RE-N-') === 0 || id.indexOf('RE-' + RE_STATE.toUpperCase() + '-') === 0; }
+function _reScopeProgress(q){ return q.or('question_id.like.RE-N-*,question_id.like.RE-' + RE_STATE.toUpperCase() + '-*'); }
+function _reScopeSessions(rows){ return (rows || []).filter(function(s){ var ids = s.question_ids || []; return ids.length > 0 && ids.every(_reMyQid); }); }
 async function fetchProgressRows(){
   try{
     return await _legacyPaginate(function(){
-      return sb.from('user_progress')
+      return _reScopeProgress(sb.from('user_progress')
         .select('question_id, times, correct_count, wrong_count, flagged, updated_at')
-        .eq('user_id', SB_USER.id);
+        .eq('user_id', SB_USER.id));
     });
   }catch(e){
     console.warn('[Load] user_progress 명시 컸럼 실패 → select(*) 폴백:', e && e.message);
     return await _legacyPaginate(function(){
-      return sb.from('user_progress').select('*').eq('user_id', SB_USER.id);
+      return _reScopeProgress(sb.from('user_progress').select('*').eq('user_id', SB_USER.id));
     });
   }
 }
@@ -4896,7 +4900,7 @@ async function fetchSessionRows(){
     .eq('user_id', SB_USER.id)
     .order('created_at', { ascending: false })
     .limit(200); // Phase 4 통계 왜곡 방지 (기존 20 → 200, 2026-06-09)
-  if (!fast.error) return fast.data || [];
+  if (!fast.error) return _reScopeSessions(fast.data);
   console.warn('[Load] sessions 명시 컸럼 실패 → select(*) 폴백:', fast.error.message);
   const legacy = await sb
     .from('sessions')
@@ -4904,7 +4908,7 @@ async function fetchSessionRows(){
     .eq('user_id', SB_USER.id)
     .order('created_at', { ascending: false })
     .limit(200);
-  return legacy.data || [];
+  return _reScopeSessions(legacy.data);
 }
 
 // 관리자 전용: 본문/정답/해설을 백그라운드에서 채움 (부팅 비차단)
@@ -5176,7 +5180,7 @@ async function loadFromCloud(){
 async function saveProgressToCloud(questionId, isCorrect, isFlagged){
   if(!SB_USER) return;
   const existing = S.answered[questionId] || { times:0, correct:0, wrong:0 };
-  await sb.from('user_progress').upsert({
+  var row = {
     user_id:      SB_USER.id,
     question_id:  questionId,
     times:        existing.times,
@@ -5184,16 +5188,18 @@ async function saveProgressToCloud(questionId, isCorrect, isFlagged){
     wrong_count:  existing.wrong,
     flagged:      S.flagged.has(questionId),
     updated_at:   new Date().toISOString(),
-  }, { onConflict: 'user_id,question_id' });
+    exam:         'RE-' === String(questionId).slice(0, 3) ? ('re-' + RE_STATE) : 'ea',   // RE records carry their exam (2026-10-29)
+  };
+  var up = await sb.from('user_progress').upsert(row, { onConflict: 'user_id,question_id' });
+  if(up && up.error){ delete row.exam; await sb.from('user_progress').upsert(row, { onConflict: 'user_id,question_id' }); }   // column not writable: save as before
 }
 
 async function saveSessionToCloud(count, correct, pct, questionIds){
   if(!SB_USER) return null;
-  const { data, error } = await sb.from('sessions').insert({
-    user_id: SB_USER.id,
-    count, correct, pct,
-    question_ids: questionIds || []
-  }).select().single();
+  var srow = { user_id: SB_USER.id, count, correct, pct, question_ids: questionIds || [], exam: 're-' + RE_STATE };   // RE sessions carry their exam (2026-10-29)
+  var ins = await sb.from('sessions').insert(srow).select().single();
+  if(ins.error){ delete srow.exam; ins = await sb.from('sessions').insert(srow).select().single(); }
+  const data = ins.data, error = ins.error;
   if(error){ console.warn('session save:', error); return null; }
   return data;
 }
