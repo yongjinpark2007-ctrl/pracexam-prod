@@ -4193,7 +4193,7 @@ async function reEnrollStart(b, k){
   }
   if(!(await reStartTrial(k))) b.disabled = false;
 }
-function reStateName(s){ return (LANG === 'en') ? RE_STATES[s] : (RE_STATE_KO[s] || RE_STATES[s]); }
+function reStateName(s){ return RE_STATES[s] || s; }   // state names in English in both languages, like the rest of the RE app (boss 2026-10-30)
 // Customers with no RE row yet (EA customers opening RE, or older sign-ups): pick the state once.
 function reAskState(){
   if(!SB_USER || SB_USER.id === ADMIN_UID || S.reExam) return;
