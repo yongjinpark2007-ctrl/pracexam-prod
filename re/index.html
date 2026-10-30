@@ -792,10 +792,10 @@
         <span class="ko">먼저 계정을 만들면 결제 화면으로 이어집니다. (이메일 인증 후 자동 연결)</span>
         <span class="en">Create your account first — you'll be taken to checkout right after (via the email confirmation link).</span>
       </div>
-      <label for="su-state"><span class="ko">시험 볼 주</span><span class="en">Your exam state</span></label>
+      <label for="su-state"><span class="ko">시험 응시 주</span><span class="en">Your exam state</span></label>
       <select id="su-state"></select>
       <p class="su-consent-note" style="margin-top:6px;">
-        <span class="ko">계정은 이 주 전용입니다. 나중에 바꾸려면 hello@pracexam.com 으로 메일 주세요.</span>
+        <span class="ko">이 계정은 해당 주에만 적용됩니다. 나중에 변경하시려면 hello@pracexam.com으로 이메일을 보내 주세요.</span>
         <span class="en">Your account covers this state only. To change it later, email hello@pracexam.com.</span>
       </p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
@@ -1381,7 +1381,7 @@ function doSignup(){
   var stEl = document.getElementById('su-state');
   var reState = stEl ? stEl.value : '';
   if (!reState || !(window.PE_RE_STATES || []).some(function(s){ return s.id === reState; })) {
-    showMsg(lang === 'ko' ? '시험 볼 주를 골라 주세요.' : 'Please choose your exam state.', false);
+    showMsg(lang === 'ko' ? '시험 응시 주를 선택해 주세요.' : 'Please choose your exam state.', false);
     return;
   }
   try { if (window.PE_RE_STATE) PE_RE_STATE.set(reState); localStorage.setItem('pe_re_state', reState); } catch(e){}
