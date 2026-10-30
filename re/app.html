@@ -4230,6 +4230,13 @@ async function reEnrollStart(b, k){
 }
 function reStateName(s){ return RE_STATES[s] || s; }   // state names in English in both languages, like the rest of the RE app (boss 2026-10-30)
 // Customers with no RE row yet (EA customers opening RE, or older sign-ups): pick the state once.
+function _joinBackHref(fallback){
+  try {
+    var r = document.referrer ? new URL(document.referrer) : null;
+    if(r && r.origin === location.origin && !/\/app(\.html)?$/.test(r.pathname)) return r.pathname + r.search;
+  } catch(e){}
+  return fallback;
+}
 function reAskState(){
   if(!SB_USER || SB_USER.id === ADMIN_UID || S.reExam) return;
   if(document.getElementById('re-enroll-view')) return;
@@ -4241,7 +4248,7 @@ function reAskState(){
   var html =
     '<div id="re-enroll-view">' +
       '<div class="je-h">Add Real Estate to your account</div>' +
-      '<div class="je-lead">You\'re logged in as <b>' + email + '</b>. You already have a PracExam account &mdash; just choose your exam state and add Real Estate.</div>' +
+      '<div class="je-lead"><b>' + email + '</b> already has a PracExam account. Choose your exam state and add Real Estate to the same account &mdash; no new sign-up or password needed.</div>' +
       '<ul class="je-list">' +
         '<li>National and state questions for the state you choose</li>' +
         '<li>30-day free trial starts right away</li>' +
@@ -4254,7 +4261,7 @@ function reAskState(){
       '<div class="je-note">PracExam is exam practice. It does not replace your state\'s required pre-license course. <a href="/re/exam-tips/#school" target="_blank">Learn more</a></div>' +
       '<button class="lg-btn" onclick="reEnrollStart(this)">Start free trial</button>' +
       '<div class="lg-err" id="re-enroll-err" style="display:block;"></div>' +
-      '<div class="je-foot"><a class="lg-link" href="/app">Not now &mdash; back to PracExam EA</a></div>' +
+      '<div class="je-foot"><a class="lg-link" href="' + _joinBackHref('/re/') + '">Not now &mdash; go back</a></div>' +
     '</div>';
   try { var bg = document.getElementById('modal-bg'); if(bg){ bg.classList.remove('open'); delete bg.dataset.lock; } } catch(e){}
   var gate = document.getElementById('login-gate');

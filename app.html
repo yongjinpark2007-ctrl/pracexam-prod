@@ -4004,13 +4004,20 @@ async function loadTrialStatus(){
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
 // ── EA 신규 가입 화면 (2026-10-29) — EA 가입 기록이 없는 고객용(다른 시험으로 먼저 가입). 닫을 수 없다.
 // 사장님: 신규 가입 화면에서 약관 동의를 다시 받는다 — 고객이 새 서비스에 가입함을 알게.
+function _joinBackHref(fallback){
+  try {
+    var r = document.referrer ? new URL(document.referrer) : null;
+    if(r && r.origin === location.origin && !/\/app(\.html)?$/.test(r.pathname)) return r.pathname + r.search;
+  } catch(e){}
+  return fallback;
+}
 function eaShowEnrollGate(){
   if(document.getElementById('ea-enroll-view')) return;
   var email = (SB_USER && SB_USER.email) ? String(SB_USER.email).replace(/</g, '&lt;') : 'your account';
   var html =
     '<div id="ea-enroll-view">' +
       '<div class="je-h">Add EA to your account</div>' +
-      '<div class="je-lead">You\'re logged in as <b>' + email + '</b>. You already have a PracExam account &mdash; just add EA.</div>' +
+      '<div class="je-lead"><b>' + email + '</b> already has a PracExam account. Add EA to the same account &mdash; no new sign-up or password needed.</div>' +
       '<ul class="je-list">' +
         '<li>Enrolled Agent (EA) exam prep for Parts 1, 2 and 3</li>' +
         '<li>30-day free trial starts right away</li>' +
@@ -4019,7 +4026,7 @@ function eaShowEnrollGate(){
       '<label class="je-terms"><input type="checkbox" id="ea-enroll-terms"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>' +
       '<button class="lg-btn" onclick="eaStartTrial(this)">Start free trial</button>' +
       '<div class="lg-err" id="ea-enroll-err" style="display:block;"></div>' +
-      '<div class="je-foot"><a class="lg-link" href="/re/app">Not now &mdash; back to PracExam Real Estate</a></div>' +
+      '<div class="je-foot"><a class="lg-link" href="' + _joinBackHref('/ea/') + '">Not now &mdash; go back</a></div>' +
     '</div>';
   var gate = document.getElementById('login-gate');
   var card = gate ? gate.querySelector('.lg-card') : null;
