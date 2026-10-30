@@ -4197,17 +4197,19 @@ async function reStartTrial(st){
 }
 // Sign-up for customers who came from another exam: Terms again (boss 2026-10-29), then start the trial.
 async function reEnrollStart(b, k){
-  var en = (LANG === 'en');
   var m = document.getElementById('re-enroll-err');
   var t = document.getElementById('re-enroll-terms');
-  if(!t || !t.checked){ if(m) m.textContent = en ? 'Please agree to the Terms and Privacy Policy.' : '이용약관과 개인정보처리방침에 동의해 주세요.'; return; }
+  var sel = document.getElementById('re-enroll-state');
+  if(!k && sel) k = sel.value;
+  if(!RE_STATES[k]){ if(m) m.textContent = 'Please choose your exam state.'; return; }
+  if(!t || !t.checked){ if(m) m.textContent = 'Please agree to the Terms and Privacy Policy.'; return; }
   b.disabled = true;
   try {
     var u = await sb.auth.updateUser({ data: { re_terms_accepted_at: new Date().toISOString(), re_terms_version: '2026-07-06', re_privacy_version: '2026-07-05' } });
     if(u.error) throw u.error;
   } catch(e){
     b.disabled = false;
-    if(m) m.textContent = en ? 'Please try again in a moment.' : '잠시 후 다시 시도해 주세요.';
+    if(m) m.textContent = 'Please try again in a moment.';
     console.warn('re terms:', e && e.message); return;
   }
   if(!(await reStartTrial(k))) b.disabled = false;
@@ -4216,50 +4218,42 @@ function reStateName(s){ return RE_STATES[s] || s; }   // state names in English
 // Customers with no RE row yet (EA customers opening RE, or older sign-ups): pick the state once.
 function reAskState(){
   if(!SB_USER || SB_USER.id === ADMIN_UID || S.reExam) return;
-  var mc = document.getElementById('modal-content'); if(!mc) return;
-  var en = (LANG === 'en');
-  mc.innerHTML =
-    '<div style="padding:.6rem 0;">' +
-      '<div style="font-size:18px;font-weight:800;margin-bottom:.2rem;">' + (en ? 'Sign up for PracExam Real Estate' : 'PracExam 부동산 가입') + '</div>' +
-      '<div style="font-size:15px;font-weight:700;margin-bottom:.4rem;">' + (en ? 'Which state is your exam in?' : '어느 주 시험을 준비하시나요?') + '</div>' +
-      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">' +
-        (en ? 'Your account will cover this state only, with a 30-day free trial (5 questions a day). To change the state later, email hello@pracexam.com.'
-            : '선택한 주 하나만 이용하실 수 있고, 30일 무료 체험(하루 5문제)을 드립니다. 나중에 주를 바꾸시려면 hello@pracexam.com 으로 메일 주세요.') +
+  if(document.getElementById('re-enroll-view')) return;
+  var email = SB_USER.email ? String(SB_USER.email).replace(/</g, '&lt;') : 'your account';
+  var pre = ''; try { pre = localStorage.getItem('pe_re_state') || ''; } catch(e){}
+  var opts = '<option value="">Select your exam state</option>' + Object.keys(RE_STATES).map(function(k){
+    return '<option value="' + k + '"' + (k === pre ? ' selected' : '') + '>' + reStateName(k) + '</option>';
+  }).join('');
+  var html =
+    '<div id="re-enroll-view">' +
+      '<div style="font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:6px;">Add Real Estate to your account</div>' +
+      '<div style="font-size:13px;color:var(--text-mid);line-height:1.65;margin-bottom:14px;">' +
+        'You\'re logged in as <b>' + email + '</b>. Your PracExam account already exists, so there is nothing new to create &mdash; ' +
+        'just choose your exam state and join PracExam Real Estate below. Your <b>30-day free trial</b> starts right away, and your other PracExam service stays as it is.' +
       '</div>' +
-      Object.keys(RE_STATES).map(function(k){
-        return '<button class="btn-ghost" style="width:100%;margin-bottom:8px;text-align:left;" onclick="reConfirmState(\'' + k + '\')">' + reStateName(k) + '</button>';
-      }).join('') +
-      '<div style="margin-top:.6rem;font-size:13px;text-align:center;">' +
-        '<a href="#" onclick="doLogout();return false;" style="color:var(--text-mid);">' + (en ? 'Log out' : '로그아웃') + '</a>' +
-      '</div>' +
+      '<div class="lg-label">Exam state</div>' +
+      '<select class="lg-input" id="re-enroll-state">' + opts + '</select>' +
+      '<div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin:2px 0 12px;">Your trial covers this state only. To change it later, email hello@pracexam.com.</div>' +
+      '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--text-mid);line-height:1.5;margin:0 0 8px;">' +
+        '<input type="checkbox" id="re-enroll-terms" style="margin-top:3px"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>' +
+      '<div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin:0 0 4px;">PracExam is exam practice. It does not replace your state\'s required pre-license course. <a href="/re/exam-tips/#school" target="_blank">Learn more</a></div>' +
+      '<button class="lg-btn" onclick="reEnrollStart(this)">Join PracExam Real Estate &middot; Start free trial</button>' +
+      '<div class="lg-err" id="re-enroll-err" style="display:block;"></div>' +
+      '<div style="text-align:center;"><a class="lg-link" onclick="doLogout()">Not now &mdash; log out</a></div>' +
     '</div>';
-  // RE 는 따로 가입한다 (2026-10-29) — 주를 고르기 전에는 닫을 수 없다.
-  var bg = document.getElementById('modal-bg');
-  bg.dataset.lock = '1';
-  var cx = bg.querySelector('.modal-close'); if(cx) cx.style.display = 'none';
-  bg.classList.add('open');
-}
-function reConfirmState(k){
-  if(!RE_STATES[k]) return;
-  var en = (LANG === 'en');
-  var mc = document.getElementById('modal-content'); if(!mc) return;
-  mc.innerHTML =
-    '<div style="padding:.6rem 0;text-align:center;">' +
-      '<div style="font-size:18px;font-weight:800;margin-bottom:.5rem;">' + reStateName(k) + '</div>' +
-      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.7;margin-bottom:1rem;">' +
-        (en ? 'Start your 30-day free trial for this state? You cannot switch states yourself later.'
-            : '이 주로 30일 무료 체험을 시작할까요? 시작한 뒤에는 직접 주를 바꿀 수 없습니다.') + '</div>' +
-      '<label style="display:flex;gap:8px;align-items:flex-start;text-align:left;font-size:13px;color:var(--text-mid);line-height:1.5;margin:0 0 12px;">' +
-        '<input type="checkbox" id="re-enroll-terms" style="margin-top:3px"/> <span>' +
-        (en ? 'I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.'
-            : '<a href="/terms.html" target="_blank">이용약관</a>과 <a href="/privacy.html" target="_blank">개인정보처리방침</a>에 동의합니다.') + '</span></label>' +
-      '<div style="font-size:12px;color:var(--text-muted);line-height:1.5;text-align:left;margin:0 0 12px;">' +
-        (en ? 'PracExam is exam practice. It does not replace your state\'s required pre-license course. <a href="/re/exam-tips/#school" target="_blank">Learn more</a>'
-            : 'PracExam은 시험 대비 연습 서비스이며 해당 주에서 요구하는 사전교육(Pre-License) 과정을 대체하지 않습니다. <a href="/re/exam-tips/#school" target="_blank">자세히 보기</a>') + '</div>' +
-      '<div id="re-enroll-err" style="color:#dc2626;font-size:13px;margin:0 0 8px;"></div>' +
-      '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="reEnrollStart(this,\'' + k + '\')">' + (en ? 'Sign up · Start 30-day free trial' : '가입하고 30일 무료 체험 시작') + '</button>' +
-      '<button class="btn-ghost" style="width:100%;" onclick="reAskState()">' + (en ? 'Back' : '다시 고르기') + '</button>' +
-    '</div>';
+  try { var bg = document.getElementById('modal-bg'); if(bg){ bg.classList.remove('open'); delete bg.dataset.lock; } } catch(e){}
+  var gate = document.getElementById('login-gate');
+  var card = gate ? gate.querySelector('.lg-card') : null;
+  if(gate && card){
+    Array.prototype.forEach.call(card.children, function(c){ c.style.display = 'none'; });
+    card.insertAdjacentHTML('beforeend', html);
+    gate.style.display = 'flex';
+    return;
+  }
+  var d = document.createElement('div');
+  d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--page-bg,#fff);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;';
+  d.innerHTML = '<div class="lg-card">' + html + '</div>';
+  document.body.appendChild(d);
 }
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
 function isTrialLimited(){
