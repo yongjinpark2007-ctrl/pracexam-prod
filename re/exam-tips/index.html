@@ -313,90 +313,75 @@ html{scrollbar-gutter:stable;}
 <!-- ══ 머리줄 끝 ══ -->
 
 <main class="vp-main et-main">
-  <!-- RE «Exam Tips» v2 — one page, narrative + Top-N lists, topics collapse (boss 2026-10-30).
+  <!-- RE “Exam Tips” v2 — one page, narrative + Top-N lists, topics collapse (boss 2026-10-30).
        Numbers only from official texts in re_generator\sources: CA DRE RE 4 + RE 206 (Rev. 7/26) + Taking the Exam ·
        TX Pearson VUE handbook (Jan 2026, rev05/2026) + TREC rules · FL DBPR/Pearson VUE booklet (Jan 2025) + 61J2-3 + F.S. 475 ·
-       NJ PSI bulletin (2/1/2026) + N.J.S.A. 45:15 · NY DOS «Real Estate Agent» page + FAQ + RPL 12-A.
+       NJ PSI bulletin (2/1/2026) + N.J.S.A. 45:15 · NY DOS “Real Estate Agent” page + FAQ + RPL 12-A.
        Facts with no official source are left out (boss 2026-10-30). School links checked 200 on 2026-10-30. -->
   <style>
     .et-main{max-width:820px;}
-    .et-hero{padding:40px 0 8px;}
-    .et-hero h1{margin:10px 0 14px;font-size:clamp(26px,3.2vw,34px);line-height:1.25;font-weight:800;}
-    .et-hero p{color:var(--text-mid);line-height:1.85;margin:0 0 10px;font-size:16.5px;}
-    .et-toc{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 8px;}
-    .et-toc a{font-size:13px;font-weight:600;text-decoration:none;color:var(--navy);border:1px solid var(--border-strong);border-radius:999px;padding:6px 12px;}
-    .et-toc a:hover{background:var(--accent-tint);}
-    .et-sec{padding:30px 0;border-top:1px solid var(--border-clr);scroll-margin-top:80px;}
-    .et-sec h2, .et-state h2{font-size:23px;line-height:1.35;margin:0 0 14px;font-weight:800;color:var(--navy);}
-    .et-sec h3, .et-acc h3{font-size:17px;margin:22px 0 8px;font-weight:700;color:var(--navy);}
-    .et-main p, .et-main li{line-height:1.85;color:var(--text-main);font-size:16px;}
-    .et-main p{margin:0 0 12px;}
-    .et-main ul{padding-left:20px;margin:8px 0 12px;}
-    .et-top{background:var(--accent-tint);border:1px solid var(--border-clr);border-left:5px solid var(--navy);border-radius:12px;padding:18px 20px 10px;margin:18px 0;}
-    .et-top h3{margin:0 0 10px;font-size:17px;color:var(--navy);}
-    .et-top ol{margin:0;padding-left:22px;}
-    .et-top li{padding:4px 0;line-height:1.7;}
-    .et-top li b{color:var(--navy);}
-    .et-tbl{overflow-x:auto;margin:12px 0 8px;}
-    .et-tbl table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px;}
-    .et-tbl th, .et-tbl td{border-bottom:1px solid var(--border-clr);padding:9px 10px;text-align:left;vertical-align:top;}
-    .et-tbl th{background:var(--accent-tint);font-weight:700;color:var(--navy);white-space:nowrap;}
-    .et-tbl td:first-child{font-weight:700;color:var(--navy);white-space:nowrap;}
-    .et-note{font-size:13.5px;color:var(--text-muted);margin-top:8px;}
-    .et-cta{text-align:center;padding:36px 0 56px;border-top:1px solid var(--border-clr);}
-    .et-cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
-    .et-acc{border:1px solid var(--border-clr);border-radius:14px;background:var(--white);margin:12px 0;scroll-margin-top:80px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-    .et-acc > summary{list-style:none;cursor:pointer;padding:18px 52px 16px 20px;position:relative;}
-    .et-acc > summary::-webkit-details-marker{display:none;}
-    .et-acc > summary::after{content:"";position:absolute;right:22px;top:26px;width:10px;height:10px;border-right:2.5px solid var(--navy);border-bottom:2.5px solid var(--navy);transform:rotate(45deg);transition:transform .2s;}
-    .et-acc[open] > summary::after{transform:rotate(-135deg);top:31px;}
-    .et-acc > summary h2{font-size:19px;margin:0 0 6px;font-weight:800;color:var(--navy);line-height:1.35;}
-    .et-acc > summary .et-teaser{margin:0;color:var(--text-mid);font-size:15px;line-height:1.65;}
-    .et-acc > summary .et-more{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent,#2563eb);}
-    .et-acc[open] > summary .et-more{display:none;}
-    .et-acc > summary:hover h2{text-decoration:underline;}
-    .et-acc .et-body{padding:0 20px 18px;border-top:1px solid var(--border-clr);}
-    .et-acc .et-body > p:first-child, .et-acc .et-body > ul:first-child{margin-top:16px;}
-    /* Study Tips look (tips/ notes.css) */
-    .et-main{max-width:860px;}
+    /* one text rhythm for the whole page */
+    .et-main p, .et-main li{font-size:16px;line-height:1.8;color:var(--text-main);}
+    .et-main p{margin:0 0 14px;}
+    .et-main ul, .et-main ol{margin:6px 0 16px;padding-left:1.6em;}
+    .et-main ul{list-style:disc outside;}
+    .et-main ol{list-style:decimal outside;}
+    .et-main li{margin:0 0 8px;padding-left:.2em;}
+    .et-main li:last-child{margin-bottom:0;}
+    .et-main h3{font-size:17px;font-weight:700;color:var(--navy);margin:24px 0 10px;line-height:1.4;}
+    .et-note{font-size:14px !important;color:var(--text-muted) !important;margin:10px 0 0 !important;}
+    /* hero = Study Tips list hero */
     .et-hero{padding:44px 0 8px;}
-    .et-hero h1.nl-h1{font-family:var(--font-display);font-size:clamp(26px,2.6vw,32px);line-height:1.2;color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px;font-weight:800;}
-    .et-hero p.nl-lede{font-size:16.5px;line-height:1.7;color:var(--text-mid);max-width:62ch;margin:0 0 10px;}
     .et-hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy-mid);}
-    .et-toc a{border-color:var(--accent-border);color:#3f7671;background:var(--accent-tint);}
-    .nl-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:40px 0 0;padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);flex-wrap:wrap}
-    .nl-sechead h2{font-family:var(--font-serif);font-size:19px;margin:0;color:var(--navy)}
-    .nl-count{font-size:12.5px;color:var(--text-muted);font-weight:600}
-    .nl-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#3f7671;background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:999px;padding:4px 11px}
-    .et-sec#glance{border-top:0;padding-top:12px;}
-    .et-sec#glance > h2{font-family:var(--font-serif);font-size:19px;}
-    .et-acc{border:0;border-bottom:1px solid var(--border-clr);border-radius:0;box-shadow:none;margin:0;background:transparent;}
-    .et-acc > summary{padding:20px 44px 18px 0;}
-    .et-acc > summary::after{right:8px;top:30px;}
-    .et-acc[open] > summary::after{top:35px;}
-    .et-acc > summary h2{font-family:var(--font-serif);font-weight:700;font-size:18px;line-height:1.42;color:var(--text-main);margin:9px 0 6px;}
-    .et-acc > summary .et-teaser{font-size:14.5px;line-height:1.6;color:var(--text-mid);max-width:62ch;}
-    .et-acc > summary .et-more{font-size:12.5px;color:var(--text-muted);font-weight:600;}
-    .et-acc > summary:hover h2{text-decoration:none;color:var(--navy);}
-    .et-acc .et-body{padding:0 0 22px;border-top:0;}
-    .et-top{background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-left:1px solid var(--terracotta-border);border-radius:var(--radius);}
-    .et-top h3{color:var(--terracotta-deep);}
+    .et-hero h1{font-family:var(--font-display);font-size:clamp(26px,2.6vw,32px);line-height:1.2;color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px;font-weight:800;}
+    .et-hero p{font-size:16.5px;color:var(--text-mid);max-width:62ch;}
+    .et-toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;}
+    .et-toc a{font-size:13px;font-weight:600;text-decoration:none;color:#3f7671;background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:999px;padding:6px 12px;}
+    /* group heads = Study Tips section head */
+    .nl-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:44px 0 0;padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);flex-wrap:wrap;scroll-margin-top:80px;}
+    .nl-sechead h2{font-family:var(--font-serif);font-size:20px;margin:0;color:var(--navy);}
+    .nl-count{font-size:12.5px;color:var(--text-muted);font-weight:600;}
+    /* always-open intro block */
+    .et-open{padding:8px 0 0;}
+    /* collapsible rows */
+    .et-acc{border-bottom:1px solid var(--border-clr);scroll-margin-top:80px;}
+    .et-acc > summary{list-style:none;cursor:pointer;padding:18px 44px 16px 0;position:relative;}
+    .et-acc > summary::-webkit-details-marker{display:none;}
+    .et-acc > summary::after{content:"";position:absolute;right:8px;top:26px;width:9px;height:9px;border-right:2.5px solid var(--navy);border-bottom:2.5px solid var(--navy);transform:rotate(45deg);transition:transform .2s;}
+    .et-acc[open] > summary::after{transform:rotate(-135deg);top:31px;}
+    .et-acc > summary h3{font-family:var(--font-serif);font-size:18px;margin:0 0 6px;color:var(--text-main);}
+    .et-acc > summary:hover h3{color:var(--navy);}
+    .et-acc > summary p{margin:0;font-size:15px;line-height:1.65;color:var(--text-mid);}
+    .et-acc .et-body{padding:4px 0 22px;}
+    /* Top-N box = Study Tips “Exam Tip” callout colours */
+    .et-top{background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:18px 22px;margin:16px 0;}
+    .et-top h4{margin:0 0 10px;font-size:16px;font-weight:700;color:var(--terracotta-deep);}
+    .et-top ol{margin:0;}
     .et-top li b{color:var(--terracotta-deep);}
-    .na-cta{margin:44px 0 56px;background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    .na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--terracotta-deep);margin:0 0 6px;letter-spacing:0}
-    .na-cta p{margin:0;font-size:14.5px;color:var(--text-mid);max-width:48ch;line-height:1.62}
-    .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap}
-    .et-back{margin:0 0 40px;font-size:14px;}
-    @media (max-width:640px){ .na-cta{padding:22px} }
+    /* tables */
+    .et-tbl{overflow-x:auto;margin:12px 0 16px;}
+    .et-tbl table{border-collapse:collapse;width:100%;font-size:14.5px;}
+    .et-tbl th, .et-tbl td{border-bottom:1px solid var(--border-clr);padding:9px 10px;text-align:left;vertical-align:top;line-height:1.5;}
+    .et-tbl th{background:var(--accent-tint);font-weight:700;color:var(--navy);}
+    .et-tbl td.n, .et-tbl th.n{text-align:right;width:60px;}
+    .et-wide table{min-width:640px;}
+    .et-wide td:first-child{font-weight:700;color:var(--navy);white-space:nowrap;}
+    /* CTA = Study Tips “Put this into practice” */
+    .na-cta{margin:48px 0 0;background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+    .na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--terracotta-deep);margin:0 0 6px;}
+    .na-cta p{margin:0 !important;font-size:14.5px !important;color:var(--text-mid) !important;max-width:48ch;line-height:1.62 !important;}
+    .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap;}
+    .et-back{margin:20px 0 56px !important;font-size:14px !important;}
+    @media (max-width:640px){ .na-cta{padding:22px;} .et-top{padding:16px 18px;} }
   </style>
 
   <section class="et-hero">
     <span class="eyebrow"><span class="ko">Exam Tips</span><span class="en">EXAM TIPS</span></span>
-    <h1 class="nl-h1"><span class="ko">부동산 중개 면허 시험, 처음부터 차근차근</span><span class="en">The Real Estate License Exam, Step by Step</span></h1>
-    <p class="nl-lede"><span class="ko">미국에서 부동산 일을 시작하고 싶은데 어디서부터 해야 할지 막막하신가요? 이 페이지는 면허를 받기까지의 과정을 처음부터 순서대로 설명합니다. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 다섯 주가 어떻게 다른지도 함께 정리했습니다.</span>
+    <h1><span class="ko">부동산 중개 면허 시험, 처음부터 차근차근</span><span class="en">The Real Estate License Exam, Step by Step</span></h1>
+    <p><span class="ko">미국에서 부동산 일을 시작하고 싶은데 어디서부터 해야 할지 막막하신가요? 이 페이지는 면허를 받기까지의 과정을 처음부터 순서대로 설명합니다. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 다섯 주가 어떻게 다른지도 함께 정리했습니다.</span>
        <span class="en">Want to start in U.S. real estate but not sure where to begin? This page walks you through the road to a license, in order, and shows how California, Texas, Florida, New Jersey and New York differ.</span></p>
-    <p class="nl-lede"><span class="ko">모든 숫자는 각 주 감독 기관과 시험 기관의 공식 자료(2026년 10월 30일 기준)에서 가져왔습니다. 궁금한 토픽만 골라 펼쳐 보세요.</span>
-       <span class="en">Every number comes from each state's regulator and exam vendor (official sources as of October 30, 2026). Open only the topics you need.</span></p>
+    <p><span class="ko">모든 숫자는 각 주 감독 기관과 시험 기관의 공식 자료에서 가져왔습니다. 궁금한 토픽만 골라 펼쳐 보세요.</span>
+       <span class="en">Every number comes from each state's regulator and exam vendor. Open only the topics you need.</span></p>
     <nav class="et-toc" aria-label="On this page">
       <a href="#glance"><span class="ko">한눈에 Top 5</span><span class="en">Top 5 at a glance</span></a>
       <a href="#what"><span class="ko">어떤 면허인가</span><span class="en">What the license is</span></a>
@@ -409,10 +394,10 @@ html{scrollbar-gutter:stable;}
     </nav>
   </section>
 
-  <section class="et-sec" id="glance">
-    <h2><span class="ko">먼저, 꼭 알아야 할 5가지</span><span class="en">First, the five things to know</span></h2>
+  <div class="nl-sechead" id="glance"><h2><span class="ko">먼저, 꼭 알아야 할 5가지</span><span class="en">First, the five things to know</span></h2></div>
+  <div class="et-open">
     <div class="et-top">
-      <h3><span class="ko">부동산 면허 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the real estate exam</span></h3>
+      <h4><span class="ko">부동산 면허 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the real estate exam</span></h4>
       <ol>
         <li><span class="ko"><b>면허는 주마다 따로 받습니다.</b> 일하려는 주의 면허가 필요하고, 요건과 시험도 주마다 다릅니다.</span><span class="en"><b>Licenses are state by state.</b> You need the license of the state where you will work, and each state sets its own rules and exam.</span></li>
         <li><span class="ko"><b>시험 전에 사전교육을 먼저 마쳐야 합니다.</b> 주가 승인한 학교에서 정해진 시간을 이수합니다.</span><span class="en"><b>Pre-license education comes first.</b> You complete the required hours at a state-approved school.</span></li>
@@ -421,11 +406,11 @@ html{scrollbar-gutter:stable;}
         <li><span class="ko"><b>세일즈 에이전트는 브로커 아래에서 일합니다.</b> 혼자 독립해서 영업하려면 따로 브로커 면허가 필요합니다.</span><span class="en"><b>Salespeople work under a broker.</b> Working independently requires a separate broker license.</span></li>
       </ol>
     </div>
-  </section>
+  </div>
 
-  <div class="nl-sechead"><h2><span class="ko">토픽별로 보기</span><span class="en">Topics</span></h2><span class="nl-count"><span class="ko">11개 토픽 · 눌러서 펼쳐 보기</span><span class="en">11 topics · tap to open</span></span></div>
+  <div class="nl-sechead" id="g-about"><h2><span class="ko">부동산 면허 알아보기</span><span class="en">About the license</span></h2><span class="nl-count"><span class="ko">3개 · 눌러서 펼치기</span><span class="en">3 · tap to open</span></span></div>
   <details class="et-acc" id="what">
-    <summary><span class="nl-badge"><span class="ko">토픽 1</span><span class="en">Topic 1</span></span><h2><span class="ko">부동산 세일즈 에이전트는 어떤 면허인가요?</span><span class="en">What is a real estate salesperson license?</span></h2><p class="et-teaser"><span class="ko">브로커 아래에서 사고팔고 빌리는 일을 돕는 면허입니다. 왜 주마다 따로 받는지도 알려 드립니다.</span><span class="en">A license to help people buy, sell and lease under a broker — and why it is issued state by state.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">부동산 세일즈 에이전트는 어떤 면허인가요?</span><span class="en">What is a real estate salesperson license?</span></h3><p><span class="ko">브로커 아래에서 사고팔고 빌리는 일을 돕는 면허입니다. 왜 주마다 따로 받는지도 알려 드립니다.</span><span class="en">A license to help people buy, sell and lease under a broker — and why it is issued state by state.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">부동산 세일즈 에이전트는 사람들이 집이나 건물을 사고, 팔고, 빌리는 일을 돕는 사람입니다. 주에 따라 이름이 조금씩 다릅니다. 캘리포니아와 뉴욕은 salesperson, 텍사스는 sales agent, 플로리다는 sales associate라고 부르지만 하는 일은 같습니다.</span>
        <span class="en">A real estate salesperson helps people buy, sell and lease homes and buildings. The title varies — salesperson in California and New York, sales agent in Texas, sales associate in Florida — but the job is the same.</span></p>
@@ -437,7 +422,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="steps">
-    <summary><span class="nl-badge"><span class="ko">토픽 2</span><span class="en">Topic 2</span></span><h2><span class="ko">면허를 받기까지 5단계</span><span class="en">Five steps to your license</span></h2><p class="et-teaser"><span class="ko">사전교육 → 시험 접수 → 합격 → 면허 신청 → 브로커 소속. 다섯 주 모두 큰 흐름은 같습니다.</span><span class="en">Education → apply → pass → license → join a broker. The path is similar in all five states.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">면허를 받기까지 5단계</span><span class="en">Five steps to your license</span></h3><p><span class="ko">사전교육 → 시험 접수 → 합격 → 면허 신청 → 브로커 소속. 다섯 주 모두 큰 흐름은 같습니다.</span><span class="en">Education → apply → pass → license → join a broker. The path is similar in all five states.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">주마다 세부 내용은 다르지만, 큰 흐름은 다섯 주 모두 비슷합니다.</span>
        <span class="en">Details differ by state, but the overall path is similar in all five.</span></p>
@@ -454,7 +439,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="compare">
-    <summary><span class="nl-badge"><span class="ko">토픽 3</span><span class="en">Topic 3</span></span><h2><span class="ko">다섯 주는 어떻게 다른가요?</span><span class="en">How do the five states differ?</span></h2><p class="et-teaser"><span class="ko">사전교육은 63~180시간, 시험은 1시간 30분~4시간. 한 표로 비교하고, 꼭 알아 둘 차이 Top 5를 짚었습니다.</span><span class="en">63 to 180 hours of education, 1.5 to 4 hours of exam. One table, plus the top 5 differences.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">다섯 주는 어떻게 다른가요?</span><span class="en">How do the five states differ?</span></h3><p><span class="ko">사전교육은 63~180시간, 시험은 1시간 30분~4시간. 한 표로 비교하고, 꼭 알아 둘 차이 Top 5를 짚었습니다.</span><span class="en">63 to 180 hours of education, 1.5 to 4 hours of exam. One table, plus the top 5 differences.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">가장 큰 차이는 <b>사전교육 시간</b>과 <b>시험 길이</b>입니다. 텍사스는 사전교육이 180시간으로 가장 길고, 시험도 National과 State 두 부분을 따로 채점합니다. 뉴욕은 시험 시간이 1시간 30분으로 가장 짧습니다.</span>
        <span class="en">The biggest differences are <b>pre-license hours</b> and <b>exam length</b>. Texas requires the most education (180 hours) and scores its National and State portions separately. New York has the shortest exam at 1.5 hours.</span></p>
@@ -467,7 +452,7 @@ html{scrollbar-gutter:stable;}
       <tr><td><span class="ko">응시료</span><span class="en">Exam fee</span></td><td>$100</td><td>$43</td><td></td><td>$38</td><td>$15</td></tr>
     </table></div>
     <div class="et-top">
-      <h3><span class="ko">주별로 알아야 할 차이점 Top 5</span><span class="en">Top 5 differences to know</span></h3>
+      <h4><span class="ko">주별로 알아야 할 차이점 Top 5</span><span class="en">Top 5 differences to know</span></h4>
       <ol>
         <li><span class="ko"><b>텍사스는 두 부분을 따로 합격</b>해야 합니다. 떨어진 부분만 다시 보면 됩니다.</span><span class="en"><b>Texas scores two portions separately</b>; you retake only the portion you failed.</span></li>
         <li><span class="ko"><b>계산기 규칙이 다릅니다.</b> 캘리포니아는 기본 계산기를 주고, 텍사스는 주지 않으며, 뉴저지는 휴대용 계산기를 금지합니다.</span><span class="en"><b>Calculator rules differ:</b> California provides one, Texas does not, and New Jersey prohibits handheld calculators.</span></li>
@@ -479,8 +464,9 @@ html{scrollbar-gutter:stable;}
     </div>
   </details>
 
+  <div class="nl-sechead" id="g-states"><h2><span class="ko">주별 시험 안내</span><span class="en">Exam guide by state</span></h2><span class="nl-count"><span class="ko">5개 주 · 눌러서 펼치기</span><span class="en">5 states · tap to open</span></span></div>
   <details class="et-acc" id="ca">
-    <summary><span class="nl-badge"><span class="ko">토픽 4</span><span class="en">Topic 4</span></span><h2>California</h2><p class="et-teaser"><span class="ko">150문항·3시간·70% 합격. 캘리포니아에 살지 않아도 응시할 수 있습니다.</span><span class="en">150 questions, 3 hours, 70% to pass. You don't need to live in California.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3>California</h3><p><span class="ko">150문항·3시간·70% 합격. 캘리포니아에 살지 않아도 응시할 수 있습니다.</span><span class="en">150 questions, 3 hours, 70% to pass. You don't need to live in California.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">캘리포니아는 <b>California Department of Real Estate(DRE)</b>가 면허와 시험을 직접 맡습니다. 만 18세 이상이면 응시할 수 있고, <b>캘리포니아에 살지 않아도</b> 됩니다. 실무 경력도 필요 없습니다.</span>
        <span class="en">In California, the <b>Department of Real Estate (DRE)</b> runs both the license and the exam. You must be 18 or older, but <b>you don't need to live in California</b>, and no experience is required.</span></p>
@@ -495,7 +481,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="tx">
-    <summary><span class="nl-badge"><span class="ko">토픽 5</span><span class="en">Topic 5</span></span><h2>Texas</h2><p class="et-teaser"><span class="ko">사전교육 180시간. National과 State를 따로 채점하므로 떨어진 부분만 다시 봅니다.</span><span class="en">180 hours of education. National and State are scored separately — retake only what you fail.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3>Texas</h3><p><span class="ko">사전교육 180시간. National과 State를 따로 채점하므로 떨어진 부분만 다시 봅니다.</span><span class="en">180 hours of education. National and State are scored separately — retake only what you fail.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">텍사스는 <b>Texas Real Estate Commission(TREC)</b>이 면허를 맡고, 시험은 <b>Pearson VUE</b>가 운영합니다. 만 18세 이상이고 미국 시민이거나 합법 체류 외국인이어야 합니다.</span>
        <span class="en">In Texas, the <b>Texas Real Estate Commission (TREC)</b> issues the license and <b>Pearson VUE</b> runs the exam. You must be 18 or older and a U.S. citizen or lawfully admitted alien.</span></p>
@@ -510,7 +496,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="fl">
-    <summary><span class="nl-badge"><span class="ko">토픽 6</span><span class="en">Topic 6</span></span><h2>Florida</h2><p class="et-teaser"><span class="ko">100문항·3시간 30분·75점 합격. 시험 당일 수료증이 없으면 들어갈 수 없습니다.</span><span class="en">100 questions, 3.5 hours, 75 to pass. No completion certificate, no entry.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3>Florida</h3><p><span class="ko">100문항·3시간 30분·75점 합격. 시험 당일 수료증이 없으면 들어갈 수 없습니다.</span><span class="en">100 questions, 3.5 hours, 75 to pass. No completion certificate, no entry.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">플로리다는 <b>DBPR의 Florida Real Estate Commission(FREC)</b>이 면허를 맡고, 시험은 <b>Pearson VUE</b>가 운영합니다. 만 18세 이상이고 고등학교 졸업 또는 그에 준하는 학력이 있어야 합니다.</span>
        <span class="en">In Florida, the <b>Florida Real Estate Commission (FREC) under DBPR</b> issues the license and <b>Pearson VUE</b> runs the exam. You must be 18 or older with a high school diploma or equivalent.</span></p>
@@ -525,7 +511,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="nj">
-    <summary><span class="nl-badge"><span class="ko">토픽 7</span><span class="en">Topic 7</span></span><h2>New Jersey</h2><p class="et-teaser"><span class="ko">110문항·4시간·70% 합격. 휴대용 계산기는 가져갈 수 없습니다.</span><span class="en">110 questions, 4 hours, 70% to pass. Handheld calculators are prohibited.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3>New Jersey</h3><p><span class="ko">110문항·4시간·70% 합격. 휴대용 계산기는 가져갈 수 없습니다.</span><span class="en">110 questions, 4 hours, 70% to pass. Handheld calculators are prohibited.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">뉴저지는 <b>New Jersey Real Estate Commission</b>이 면허를 맡고, 시험은 <b>PSI</b>가 운영합니다. 만 18세 이상이고 고등학교 졸업 또는 그에 준하는 학력이 있어야 합니다.</span>
        <span class="en">In New Jersey, the <b>New Jersey Real Estate Commission</b> issues the license and <b>PSI</b> runs the exam. You must be 18 or older with a high school education or equivalent.</span></p>
@@ -540,7 +526,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="ny">
-    <summary><span class="nl-badge"><span class="ko">토픽 8</span><span class="en">Topic 8</span></span><h2>New York</h2><p class="et-teaser"><span class="ko">1시간 30분 객관식, 합격·불합격만 알려 줍니다. 합격 결과는 2년 동안 유효합니다.</span><span class="en">1.5-hour multiple-choice exam, pass/fail only. Results are valid for two years.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3>New York</h3><p><span class="ko">1시간 30분 객관식, 합격·불합격만 알려 줍니다. 합격 결과는 2년 동안 유효합니다.</span><span class="en">1.5-hour multiple-choice exam, pass/fail only. Results are valid for two years.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">뉴욕은 <b>New York Department of State(DOS)</b>가 면허와 시험을 직접 맡습니다. 만 18세 이상이면 됩니다.</span>
        <span class="en">In New York, the <b>Department of State (DOS)</b> runs both the license and the exam. You must be 18 or older.</span></p>
@@ -554,8 +540,9 @@ html{scrollbar-gutter:stable;}
     </div>
   </details>
 
+  <div class="nl-sechead" id="g-prep"><h2><span class="ko">시험 준비와 합격 요령</span><span class="en">Preparing and passing</span></h2><span class="nl-count"><span class="ko">3개 · 눌러서 펼치기</span><span class="en">3 · tap to open</span></span></div>
   <details class="et-acc" id="school">
-    <summary><span class="nl-badge"><span class="ko">토픽 9</span><span class="en">Topic 9</span></span><h2><span class="ko">사전교육 과정은 어디서 수강하나요?</span><span class="en">Where do I take the pre-license course?</span></h2><p class="et-teaser"><span class="ko">사전교육은 주가 승인한 학교에서만 받을 수 있습니다. 주별 공식 학교 찾기 링크를 모았습니다.</span><span class="en">Pre-license education comes only from state-approved schools. Official school finders for each state.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">사전교육 과정은 어디서 수강하나요?</span><span class="en">Where do I take the pre-license course?</span></h3><p><span class="ko">사전교육은 주가 승인한 학교에서만 받을 수 있습니다. 주별 공식 학교 찾기 링크를 모았습니다.</span><span class="en">Pre-license education comes only from state-approved schools. Official school finders for each state.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">사전교육은 <b>해당 주에서 승인한 학교</b>에서만 이수할 수 있습니다. 수료해야 시험에 응시할 수 있으며, 플로리다주는 시험 당일 수료증 제출을 요구합니다.</span>
        <span class="en">Pre-license education must be taken at a school <b>approved by your state</b>. You need to finish it before you can sit for the exam, and Florida asks for your completion certificate on exam day.</span></p>
@@ -573,15 +560,15 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="day">
-    <summary><span class="nl-badge"><span class="ko">토픽 10</span><span class="en">Topic 10</span></span><h2><span class="ko">시험 당일에는 무엇을 챙기나요?</span><span class="en">What should I bring on exam day?</span></h2><p class="et-teaser"><span class="ko">신분증·서류·계산기 규칙이 주마다 다릅니다. 시험 당일 체크리스트 Top 5.</span><span class="en">ID, papers and calculator rules differ by state. The top 5 exam-day checklist.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">시험 당일에는 무엇을 챙기나요?</span><span class="en">What should I bring on exam day?</span></h3><p><span class="ko">신분증·서류·계산기 규칙이 주마다 다릅니다. 시험 당일 체크리스트 Top 5.</span><span class="en">ID, papers and calculator rules differ by state. The top 5 exam-day checklist.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">시험 당일 규칙은 주마다 조금씩 다릅니다. 신분증 개수, 계산기, 가져가야 할 서류가 주마다 다르니, 시험 전날 내 주의 규칙을 다시 확인하세요.</span>
        <span class="en">Exam-day rules vary by state — the number of IDs, calculators and required papers all differ — so recheck your state's rules the day before.</span></p>
     <div class="et-top">
-      <h3><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h3>
+      <h4><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h4>
       <ol>
         <li><span class="ko"><b>신분증</b> — 텍사스와 플로리다는 서명이 있는 신분증 2개, 뉴저지와 뉴욕은 정부 발급 사진 신분증 1개입니다. 이름이 등록한 이름과 같은지 확인하세요.</span><span class="en"><b>ID</b> — two signature IDs in Texas and Florida; one government-issued photo ID in New Jersey and New York. Make sure the name matches your registration.</span></li>
-        <li><span class="ko"><b>필요한 서류</b> — 플로리다는 사전교육 수료증, 뉴욕은 «Summary of Your Submission» 출력본을 가져갑니다.</span><span class="en"><b>Required papers</b> — your pre-license certificate in Florida; the «Summary of Your Submission» printout in New York.</span></li>
+        <li><span class="ko"><b>필요한 서류</b> — 플로리다는 사전교육 수료증, 뉴욕은 “Summary of Your Submission” 출력본을 가져갑니다.</span><span class="en"><b>Required papers</b> — your pre-license certificate in Florida; the “Summary of Your Submission” printout in New York.</span></li>
         <li><span class="ko"><b>계산기</b> — 캘리포니아는 제공(개인 계산기 금지), 텍사스는 미제공(금융 계산기 가능), 뉴저지는 휴대용 계산기 금지입니다.</span><span class="en"><b>Calculator</b> — provided in California (no personal ones), not provided in Texas (financial calculator allowed), handheld calculators prohibited in New Jersey.</span></li>
         <li><span class="ko"><b>개인 물건</b> — 시험실에는 가지고 들어갈 수 없습니다. 플로리다는 투명 비닐봉투에 넣어 사물함에 보관합니다.</span><span class="en"><b>Personal items</b> stay out of the testing room; in Florida they go in a clear plastic bag in a locker.</span></li>
         <li><span class="ko"><b>여유 있게 도착</b> — 신분 확인과 안내에 시간이 걸리니 일찍 도착하세요.</span><span class="en"><b>Arrive early</b> — ID checks and check-in take time.</span></li>
@@ -591,7 +578,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="tips">
-    <summary><span class="nl-badge"><span class="ko">토픽 11</span><span class="en">Topic 11</span></span><h2><span class="ko">합격을 위한 공부·시험 요령 Top 10</span><span class="en">Top 10 tips to pass</span></h2><p class="et-teaser"><span class="ko">내 주의 시험 구성 확인하기부터 낯선 문제에 흔들리지 않기까지, 합격에 도움이 되는 열 가지 요령입니다.</span><span class="en">From knowing your state's format to staying calm on strange questions — ten habits that help you pass.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">합격을 위한 공부·시험 요령 Top 10</span><span class="en">Top 10 tips to pass</span></h3><p><span class="ko">내 주의 시험 구성 확인하기부터 낯선 문제에 흔들리지 않기까지, 합격에 도움이 되는 열 가지 요령입니다.</span><span class="en">From knowing your state's format to staying calm on strange questions — ten habits that help you pass.</span></p></summary>
     <div class="et-body">
     <div class="et-top">
       <ol>
@@ -601,13 +588,13 @@ html{scrollbar-gutter:stable;}
         <li><span class="ko"><b>문제를 많이 풀어 보세요.</b> 시험과 같은 4지선다 문제로 연습해야 실제 문제에서 규칙이 보입니다.</span><span class="en"><b>Practice with real-style questions.</b> Four-option practice questions teach you to spot the rule on test day.</span></li>
         <li><span class="ko"><b>틀린 문제의 해설을 꼭 읽으세요.</b> 오답 보기가 왜 그럴듯해 보였는지 이해하는 것이 실력이 됩니다.</span><span class="en"><b>Read the explanation for every miss.</b> Understanding why a wrong option looked right is where you improve.</span></li>
         <li><span class="ko"><b>시간을 재며 모의고사를 보세요.</b> 전체 시간을 문항 수로 나눠 한 문항에 쓸 시간을 미리 정해 두세요.</span><span class="en"><b>Take timed mock exams.</b> Divide the time by the number of questions and practice that pace.</span></li>
-        <li><span class="ko"><b>«EXCEPT», «NOT» 문제를 조심하세요.</b> 틀린 보기 하나를 찾는 문제입니다. 문제를 끝까지 읽으세요.</span><span class="en"><b>Watch for «EXCEPT» and «NOT».</b> You are looking for the one wrong statement — read to the end.</span></li>
+        <li><span class="ko"><b>“EXCEPT”, “NOT” 문제를 조심하세요.</b> 틀린 보기 하나를 찾는 문제입니다. 문제를 끝까지 읽으세요.</span><span class="en"><b>Watch for “EXCEPT” and “NOT”.</b> You are looking for the one wrong statement — read to the end.</span></li>
         <li><span class="ko"><b>확실히 틀린 보기부터 지우세요.</b> 남은 둘 중에서 고르기가 훨씬 쉬워집니다.</span><span class="en"><b>Eliminate the clearly wrong options first.</b> Choosing between two is much easier.</span></li>
         <li><span class="ko"><b>막히면 표시하고 넘어가세요.</b> 한 문제에 오래 매달리지 말고, 마지막에 다시 보세요.</span><span class="en"><b>Flag and move on.</b> Don't get stuck — come back at the end.</span></li>
         <li><span class="ko"><b>낯선 문제에 흔들리지 마세요.</b> 채점하지 않는 시범 문항이 섞여 있을 수 있습니다.</span><span class="en"><b>Don't let a strange question rattle you.</b> Unscored pretest questions may be mixed in.</span></li>
       </ol>
     </div>
-    <p class="et-note"><span class="ko">이 페이지는 2026년 10월 30일 기준 공식 자료로 정리했습니다. 응시 전에 각 주의 공식 링크로 최신 내용을 꼭 확인하세요.</span><span class="en">Based on official sources as of October 30, 2026. Always confirm on your state's official links before you apply.</span></p>
+    <p class="et-note"><span class="ko">응시 전에 각 주의 공식 링크로 최신 내용을 꼭 확인하세요.</span><span class="en">Always confirm on your state's official links before you apply.</span></p>
     </div>
   </details>
 

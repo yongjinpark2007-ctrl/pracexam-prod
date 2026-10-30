@@ -312,89 +312,74 @@ html{scrollbar-gutter:stable;}
 <!-- ══ 머리줄 끝 ══ -->
 
 <main class="vp-main et-main">
-  <!-- EA «Exam Tips» v2 — narrative guide for beginners + Top-N highlight lists (boss 2026-10-30).
+  <!-- EA “Exam Tips” v2 — narrative guide for beginners + Top-N highlight lists (boss 2026-10-30).
        Every number comes from an official text: PSI SEE Candidate Information Bulletin (REVISED Aug 28, 2026) ·
-       Circular 230 (31 CFR Part 10, eCFR current) · 26 CFR Part 300 · Form 23 · IRS «Become an enrolled agent» /
-       «Enrolled agent information» / PTIN pages (fetched 2026-10-30). Files: ea_generator\irs_pubs. -->
+       Circular 230 (31 CFR Part 10, eCFR current) · 26 CFR Part 300 · Form 23 · IRS “Become an enrolled agent” /
+       “Enrolled agent information” / PTIN pages (fetched 2026-10-30). Files: ea_generator\irs_pubs. -->
   <style>
     .et-main{max-width:820px;}
-    .et-hero{padding:40px 0 8px;}
-    .et-hero h1{margin:10px 0 14px;font-size:clamp(26px,3.2vw,34px);line-height:1.25;font-weight:800;}
-    .et-hero p{color:var(--text-mid);line-height:1.85;margin:0 0 10px;font-size:16.5px;}
-    .et-toc{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 8px;}
-    .et-toc a{font-size:13px;font-weight:600;text-decoration:none;color:var(--navy);border:1px solid var(--border-strong);border-radius:999px;padding:6px 12px;}
-    .et-toc a:hover{background:var(--accent-tint);}
-    .et-sec{padding:30px 0;border-top:1px solid var(--border-clr);scroll-margin-top:80px;}
-    .et-sec h2{font-size:23px;line-height:1.35;margin:0 0 14px;font-weight:800;color:var(--navy);}
-    .et-sec h3{font-size:17px;margin:22px 0 8px;font-weight:700;color:var(--navy);}
-    .et-sec p, .et-sec li{line-height:1.85;color:var(--text-main);font-size:16px;}
-    .et-sec p{margin:0 0 12px;}
-    .et-sec ul{padding-left:20px;margin:8px 0 12px;}
-    .et-top{background:var(--accent-tint);border:1px solid var(--border-clr);border-left:5px solid var(--navy);border-radius:12px;padding:18px 20px 10px;margin:18px 0;}
-    .et-top h3{margin:0 0 10px;font-size:17px;color:var(--navy);}
-    .et-top ol{margin:0;padding-left:22px;}
-    .et-top li{padding:4px 0;line-height:1.7;}
-    .et-top li b{color:var(--navy);}
-    .et-tbl{overflow-x:auto;margin:12px 0 8px;}
+    /* one text rhythm for the whole page */
+    .et-main p, .et-main li{font-size:16px;line-height:1.8;color:var(--text-main);}
+    .et-main p{margin:0 0 14px;}
+    .et-main ul, .et-main ol{margin:6px 0 16px;padding-left:1.6em;}
+    .et-main ul{list-style:disc outside;}
+    .et-main ol{list-style:decimal outside;}
+    .et-main li{margin:0 0 8px;padding-left:.2em;}
+    .et-main li:last-child{margin-bottom:0;}
+    .et-main h3{font-size:17px;font-weight:700;color:var(--navy);margin:24px 0 10px;line-height:1.4;}
+    .et-note{font-size:14px !important;color:var(--text-muted) !important;margin:10px 0 0 !important;}
+    /* hero = Study Tips list hero */
+    .et-hero{padding:44px 0 8px;}
+    .et-hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy-mid);}
+    .et-hero h1{font-family:var(--font-display);font-size:clamp(26px,2.6vw,32px);line-height:1.2;color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px;font-weight:800;}
+    .et-hero p{font-size:16.5px;color:var(--text-mid);max-width:62ch;}
+    .et-toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;}
+    .et-toc a{font-size:13px;font-weight:600;text-decoration:none;color:#3f7671;background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:999px;padding:6px 12px;}
+    /* group heads = Study Tips section head */
+    .nl-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:44px 0 0;padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);flex-wrap:wrap;scroll-margin-top:80px;}
+    .nl-sechead h2{font-family:var(--font-serif);font-size:20px;margin:0;color:var(--navy);}
+    .nl-count{font-size:12.5px;color:var(--text-muted);font-weight:600;}
+    /* always-open intro block */
+    .et-open{padding:8px 0 0;}
+    /* collapsible rows */
+    .et-acc{border-bottom:1px solid var(--border-clr);scroll-margin-top:80px;}
+    .et-acc > summary{list-style:none;cursor:pointer;padding:18px 44px 16px 0;position:relative;}
+    .et-acc > summary::-webkit-details-marker{display:none;}
+    .et-acc > summary::after{content:"";position:absolute;right:8px;top:26px;width:9px;height:9px;border-right:2.5px solid var(--navy);border-bottom:2.5px solid var(--navy);transform:rotate(45deg);transition:transform .2s;}
+    .et-acc[open] > summary::after{transform:rotate(-135deg);top:31px;}
+    .et-acc > summary h3{font-family:var(--font-serif);font-size:18px;margin:0 0 6px;color:var(--text-main);}
+    .et-acc > summary:hover h3{color:var(--navy);}
+    .et-acc > summary p{margin:0;font-size:15px;line-height:1.65;color:var(--text-mid);}
+    .et-acc .et-body{padding:4px 0 22px;}
+    /* Top-N box = Study Tips “Exam Tip” callout colours */
+    .et-top{background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:18px 22px;margin:16px 0;}
+    .et-top h4{margin:0 0 10px;font-size:16px;font-weight:700;color:var(--terracotta-deep);}
+    .et-top ol{margin:0;}
+    .et-top li b{color:var(--terracotta-deep);}
+    /* tables */
+    .et-tbl{overflow-x:auto;margin:12px 0 16px;}
     .et-tbl table{border-collapse:collapse;width:100%;font-size:14.5px;}
-    .et-tbl th, .et-tbl td{border-bottom:1px solid var(--border-clr);padding:9px 10px;text-align:left;vertical-align:top;}
+    .et-tbl th, .et-tbl td{border-bottom:1px solid var(--border-clr);padding:9px 10px;text-align:left;vertical-align:top;line-height:1.5;}
     .et-tbl th{background:var(--accent-tint);font-weight:700;color:var(--navy);}
     .et-tbl td.n, .et-tbl th.n{text-align:right;width:60px;}
-    .et-note{font-size:13.5px;color:var(--text-muted);margin-top:8px;}
-    .et-cta{text-align:center;padding:36px 0 56px;border-top:1px solid var(--border-clr);}
-    .et-cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
-    .et-acc{border:1px solid var(--border-clr);border-radius:14px;background:var(--white);margin:12px 0;scroll-margin-top:80px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-    .et-acc > summary{list-style:none;cursor:pointer;padding:18px 52px 16px 20px;position:relative;}
-    .et-acc > summary::-webkit-details-marker{display:none;}
-    .et-acc > summary::after{content:"";position:absolute;right:22px;top:26px;width:10px;height:10px;border-right:2.5px solid var(--navy);border-bottom:2.5px solid var(--navy);transform:rotate(45deg);transition:transform .2s;}
-    .et-acc[open] > summary::after{transform:rotate(-135deg);top:31px;}
-    .et-acc > summary h2{font-size:19px;margin:0 0 6px;font-weight:800;color:var(--navy);line-height:1.35;}
-    .et-acc > summary .et-teaser{margin:0;color:var(--text-mid);font-size:15px;line-height:1.65;}
-    .et-acc > summary .et-more{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent,#2563eb);}
-    .et-acc[open] > summary .et-more{display:none;}
-    .et-acc > summary:hover h2{text-decoration:underline;}
-    .et-acc .et-body{padding:0 20px 18px;border-top:1px solid var(--border-clr);}
-    .et-acc .et-body > p:first-child, .et-acc .et-body > ul:first-child{margin-top:16px;}
-    /* Study Tips look (tips/ notes.css) */
-    .et-main{max-width:860px;}
-    .et-hero{padding:44px 0 8px;}
-    .et-hero h1.nl-h1{font-family:var(--font-display);font-size:clamp(26px,2.6vw,32px);line-height:1.2;color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px;font-weight:800;}
-    .et-hero p.nl-lede{font-size:16.5px;line-height:1.7;color:var(--text-mid);max-width:62ch;margin:0 0 10px;}
-    .et-hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy-mid);}
-    .et-toc a{border-color:var(--accent-border);color:#3f7671;background:var(--accent-tint);}
-    .nl-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:40px 0 0;padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);flex-wrap:wrap}
-    .nl-sechead h2{font-family:var(--font-serif);font-size:19px;margin:0;color:var(--navy)}
-    .nl-count{font-size:12.5px;color:var(--text-muted);font-weight:600}
-    .nl-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#3f7671;background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:999px;padding:4px 11px}
-    .et-sec#glance{border-top:0;padding-top:12px;}
-    .et-sec#glance > h2{font-family:var(--font-serif);font-size:19px;}
-    .et-acc{border:0;border-bottom:1px solid var(--border-clr);border-radius:0;box-shadow:none;margin:0;background:transparent;}
-    .et-acc > summary{padding:20px 44px 18px 0;}
-    .et-acc > summary::after{right:8px;top:30px;}
-    .et-acc[open] > summary::after{top:35px;}
-    .et-acc > summary h2{font-family:var(--font-serif);font-weight:700;font-size:18px;line-height:1.42;color:var(--text-main);margin:9px 0 6px;}
-    .et-acc > summary .et-teaser{font-size:14.5px;line-height:1.6;color:var(--text-mid);max-width:62ch;}
-    .et-acc > summary .et-more{font-size:12.5px;color:var(--text-muted);font-weight:600;}
-    .et-acc > summary:hover h2{text-decoration:none;color:var(--navy);}
-    .et-acc .et-body{padding:0 0 22px;border-top:0;}
-    .et-top{background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-left:1px solid var(--terracotta-border);border-radius:var(--radius);}
-    .et-top h3{color:var(--terracotta-deep);}
-    .et-top li b{color:var(--terracotta-deep);}
-    .na-cta{margin:44px 0 56px;background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    .na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--terracotta-deep);margin:0 0 6px;letter-spacing:0}
-    .na-cta p{margin:0;font-size:14.5px;color:var(--text-mid);max-width:48ch;line-height:1.62}
-    .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap}
-    .et-back{margin:0 0 40px;font-size:14px;}
-    @media (max-width:640px){ .na-cta{padding:22px} }
+    .et-wide table{min-width:640px;}
+    .et-wide td:first-child{font-weight:700;color:var(--navy);white-space:nowrap;}
+    /* CTA = Study Tips “Put this into practice” */
+    .na-cta{margin:48px 0 0;background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+    .na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--terracotta-deep);margin:0 0 6px;}
+    .na-cta p{margin:0 !important;font-size:14.5px !important;color:var(--text-mid) !important;max-width:48ch;line-height:1.62 !important;}
+    .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap;}
+    .et-back{margin:20px 0 56px !important;font-size:14px !important;}
+    @media (max-width:640px){ .na-cta{padding:22px;} .et-top{padding:16px 18px;} }
   </style>
 
   <section class="et-hero">
     <span class="eyebrow"><span class="ko">Exam Tips</span><span class="en">EXAM TIPS</span></span>
-    <h1 class="nl-h1"><span class="ko">EA(Enrolled Agent) 시험, 처음부터 차근차근</span><span class="en">The Enrolled Agent (EA) Exam, Step by Step</span></h1>
-    <p class="nl-lede"><span class="ko">«EA가 뭐지?», «회계 전공이 아니어도 볼 수 있을까?», «한국에서도 시험을 볼 수 있을까?» EA를 처음 알아보는 분들이 가장 많이 묻는 질문입니다. 이 페이지는 그 질문들에 처음부터 순서대로 답합니다.</span>
-       <span class="en">«What is an EA?» «Can I take it without an accounting degree?» «Can I test from outside the U.S.?» These are the first questions most people ask. This page answers them in order, from the very beginning.</span></p>
-    <p class="nl-lede"><span class="ko">모든 숫자는 IRS와 시험 기관 PSI의 공식 자료(2026년 10월 30일 기준)에서 가져왔습니다.</span>
-       <span class="en">Every number here comes from the IRS and the exam vendor PSI (official sources as of October 30, 2026).</span></p>
+    <h1><span class="ko">EA(Enrolled Agent) 시험, 처음부터 차근차근</span><span class="en">The Enrolled Agent (EA) Exam, Step by Step</span></h1>
+    <p><span class="ko">“EA가 뭐지?”, “회계 전공이 아니어도 볼 수 있을까?”, “한국에서도 시험을 볼 수 있을까?” EA를 처음 알아보는 분들이 가장 많이 묻는 질문입니다. 이 페이지는 그 질문들에 처음부터 순서대로 답합니다.</span>
+       <span class="en">“What is an EA?” “Can I take it without an accounting degree?” “Can I test from outside the U.S.?” These are the first questions most people ask. This page answers them in order, from the very beginning.</span></p>
+    <p><span class="ko">모든 숫자는 IRS와 시험 기관 PSI의 공식 자료에서 가져왔습니다.</span>
+       <span class="en">Every number here comes from official IRS and PSI sources.</span></p>
     <nav class="et-toc" aria-label="On this page">
       <a href="#glance"><span class="ko">한눈에 Top 5</span><span class="en">Top 5 at a glance</span></a>
       <a href="#what"><span class="ko">EA란</span><span class="en">What is an EA</span></a>
@@ -407,10 +392,10 @@ html{scrollbar-gutter:stable;}
     </nav>
   </section>
 
-  <section class="et-sec" id="glance">
-    <h2><span class="ko">먼저, 꼭 알아야 할 5가지</span><span class="en">First, the five things to know</span></h2>
+  <div class="nl-sechead" id="glance"><h2><span class="ko">먼저, 꼭 알아야 할 5가지</span><span class="en">First, the five things to know</span></h2></div>
+  <div class="et-open">
     <div class="et-top">
-      <h3><span class="ko">EA 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the EA exam</span></h3>
+      <h4><span class="ko">EA 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the EA exam</span></h4>
       <ol>
         <li><span class="ko"><b>IRS가 주는 가장 높은 자격</b>입니다. EA로 등록되면 변호사·CPA처럼 IRS 앞에서 납세자를 대리할 수 있습니다.</span><span class="en"><b>It is the highest credential the IRS awards.</b> Once enrolled, you can represent taxpayers before the IRS, like attorneys and CPAs.</span></li>
         <li><span class="ko"><b>학력·경력 요건이 없습니다.</b> 만 18세 이상이고 PTIN(세무 대리인 번호)이 있으면 응시할 수 있습니다.</span><span class="en"><b>No degree or experience is required.</b> If you are 18 or older and have a PTIN, you can take the exam.</span></li>
@@ -419,22 +404,22 @@ html{scrollbar-gutter:stable;}
         <li><span class="ko"><b>한국을 비롯해 어디서나 응시할 수 있습니다.</b> 미국 밖에서는 온라인 원격 감독 시험으로 봅니다.</span><span class="en"><b>You can test from Korea or anywhere else.</b> Outside the U.S., the exam is taken online with a remote proctor.</span></li>
       </ol>
     </div>
-  </section>
+  </div>
 
-  <div class="nl-sechead"><h2><span class="ko">토픽별로 보기</span><span class="en">Topics</span></h2><span class="nl-count"><span class="ko">8개 토픽 · 눌러서 펼쳐 보기</span><span class="en">8 topics · tap to open</span></span></div>
+  <div class="nl-sechead" id="g-about"><h2><span class="ko">EA 알아보기</span><span class="en">About the EA</span></h2><span class="nl-count"><span class="ko">2개 · 눌러서 펼치기</span><span class="en">2 · tap to open</span></span></div>
   <details class="et-acc" id="what">
-    <summary><span class="nl-badge"><span class="ko">토픽 1</span><span class="en">Topic 1</span></span><h2><span class="ko">EA(Enrolled Agent)는 어떤 자격인가요?</span><span class="en">What is an Enrolled Agent?</span></h2><p class="et-teaser"><span class="ko">IRS가 주는 가장 높은 세무 자격입니다. EA가 실제로 하는 일과, 많은 사람이 이 자격을 고르는 이유 Top 5를 소개합니다.</span><span class="en">The highest credential the IRS awards. What an EA actually does, and the top 5 reasons people choose it.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">EA(Enrolled Agent)는 어떤 자격인가요?</span><span class="en">What is an Enrolled Agent?</span></h3><p><span class="ko">IRS가 주는 가장 높은 세무 자격입니다. EA가 실제로 하는 일과, 많은 사람이 이 자격을 고르는 이유 Top 5를 소개합니다.</span><span class="en">The highest credential the IRS awards. What an EA actually does, and the top 5 reasons people choose it.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">EA는 <b>미국 국세청(IRS)이 직접 시험을 치르고 자격을 주는 연방 세무 전문가</b>입니다. 이름이 낯설게 느껴질 수 있지만, 하는 일은 분명합니다. 고객의 세금 신고를 도와주고, 고객이 IRS와 문제가 생겼을 때 고객을 대신해 IRS를 상대합니다.</span>
        <span class="en">An enrolled agent is <b>a federal tax professional licensed by the IRS through its own exam</b>. The name may be unfamiliar, but the job is clear: you help clients with their tax returns, and when a client has a problem with the IRS, you deal with the IRS on the client's behalf.</span></p>
-    <p><span class="ko">IRS는 EA를 «IRS가 주는 가장 높은 자격»이라고 설명합니다. EA의 가장 큰 특징은 <b>대리할 수 있는 범위에 제한이 없다</b>는 점입니다. 변호사나 CPA처럼, 어떤 납세자든, 어떤 세무 문제든, IRS의 어느 부서 앞에서든 고객을 대리할 수 있습니다.</span>
+    <p><span class="ko">IRS는 EA를 “IRS가 주는 가장 높은 자격”이라고 설명합니다. EA의 가장 큰 특징은 <b>대리할 수 있는 범위에 제한이 없다</b>는 점입니다. 변호사나 CPA처럼, 어떤 납세자든, 어떤 세무 문제든, IRS의 어느 부서 앞에서든 고객을 대리할 수 있습니다.</span>
        <span class="en">The IRS calls EA status the highest credential it awards. What sets it apart is that <b>an EA's practice rights are unlimited</b>: like attorneys and CPAs, an EA can represent any taxpayer, on any tax matter, before any IRS office.</span></p>
     <p><span class="ko">CPA는 주마다 면허를 받지만, EA는 연방(IRS) 자격이라 <b>미국 어느 주에서든</b> IRS 앞에서 같은 일을 할 수 있습니다. 또 시험 범위가 세금 하나에 집중되어 있습니다.</span>
        <span class="en">CPAs are licensed by each state, but the EA is a federal (IRS) credential, so the same practice rights apply <b>in every state</b>. And the exam focuses on one subject: tax.</span></p>
 
     <h3><span class="ko">EA가 실제로 하는 일</span><span class="en">What an EA actually does</span></h3>
-    <p><span class="ko">IRS 규정(Circular 230)은 IRS 앞에서 하는 «대리(practice)»에 대표적으로 다음 일이 들어간다고 정합니다.</span>
-       <span class="en">The IRS rules (Circular 230) say «practice before the IRS» includes, among other things:</span></p>
+    <p><span class="ko">IRS 규정(Circular 230)은 IRS 앞에서 하는 “대리(practice)”에 대표적으로 다음 일이 들어간다고 정합니다.</span>
+       <span class="en">The IRS rules (Circular 230) say “practice before the IRS” includes, among other things:</span></p>
     <ul>
       <li><span class="ko">세무 서류를 작성하고 IRS에 제출하는 일</span><span class="en">Preparing and filing documents with the IRS</span></li>
       <li><span class="ko">고객을 대신해 IRS와 서신을 주고받고 소통하는 일</span><span class="en">Corresponding and communicating with the IRS for a client</span></li>
@@ -443,7 +428,7 @@ html{scrollbar-gutter:stable;}
     </ul>
 
     <div class="et-top">
-      <h3><span class="ko">EA 자격의 장점 Top 5</span><span class="en">Top 5 reasons people choose the EA</span></h3>
+      <h4><span class="ko">EA 자격의 장점 Top 5</span><span class="en">Top 5 reasons people choose the EA</span></h4>
       <ol>
         <li><span class="ko"><b>대리 범위에 제한이 없습니다</b> — 변호사·CPA와 같은 수준으로 IRS 앞에서 고객을 대리합니다.</span><span class="en"><b>Unlimited practice rights</b> — the same level as attorneys and CPAs before the IRS.</span></li>
         <li><span class="ko"><b>문턱이 낮습니다</b> — 학력·전공·실무 경력 요건이 없습니다.</span><span class="en"><b>Low barrier to entry</b> — no degree, major or work experience required.</span></li>
@@ -456,7 +441,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="who">
-    <summary><span class="nl-badge"><span class="ko">토픽 2</span><span class="en">Topic 2</span></span><h2><span class="ko">누가 시험을 볼 수 있나요?</span><span class="en">Who can take the exam?</span></h2><p class="et-teaser"><span class="ko">학력이나 경력 요건이 없습니다. 시험을 보는 데 필요한 것은 네 가지뿐입니다.</span><span class="en">No degree or experience required. You only need four things to sit for the exam.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">누가 시험을 볼 수 있나요?</span><span class="en">Who can take the exam?</span></h3><p><span class="ko">학력이나 경력 요건이 없습니다. 시험을 보는 데 필요한 것은 네 가지뿐입니다.</span><span class="en">No degree or experience required. You only need four things to sit for the exam.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">EA 시험의 좋은 점은 <b>응시 문턱이 낮다</b>는 것입니다. IRS 규정(Circular 230 §10.4)에는 학력이나 실무 경력 요건이 없습니다. 세무나 회계를 전공하지 않았어도, 지금 다른 일을 하고 있어도 응시할 수 있습니다.</span>
        <span class="en">The EA exam is <b>open to almost anyone</b>. The IRS rules (Circular 230 §10.4) list no degree or work experience. You can apply even if you never studied tax or accounting, or work in another field today.</span></p>
@@ -472,8 +457,9 @@ html{scrollbar-gutter:stable;}
     </div>
   </details>
 
+  <div class="nl-sechead" id="g-exam"><h2><span class="ko">시험 준비하기</span><span class="en">Preparing for the exam</span></h2><span class="nl-count"><span class="ko">2개 · 눌러서 펼치기</span><span class="en">2 · tap to open</span></span></div>
   <details class="et-acc" id="format">
-    <summary><span class="nl-badge"><span class="ko">토픽 3</span><span class="en">Topic 3</span></span><h2><span class="ko">시험은 어떻게 구성되나요?</span><span class="en">How is the exam built?</span></h2><p class="et-teaser"><span class="ko">3개 파트, 파트당 100문항을 3시간 30분 동안 풉니다. 합격선과 파트별 출제 비중도 함께 확인하세요.</span><span class="en">Three parts, 100 questions in 3.5 hours each. See the passing score and what each part covers.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">시험은 어떻게 구성되나요?</span><span class="en">How is the exam built?</span></h3><p><span class="ko">3개 파트, 파트당 100문항을 3시간 30분 동안 풉니다. 합격선과 파트별 출제 비중도 함께 확인하세요.</span><span class="en">Three parts, 100 questions in 3.5 hours each. See the passing score and what each part covers.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">EA 시험의 공식 이름은 <b>SEE(Special Enrollment Examination)</b>입니다. 세 파트로 나뉘어 있고, 파트마다 따로 응시하고 따로 합격합니다. 순서는 자유롭습니다. 개인 세금(Part 1)부터 시작하는 분이 많지만, 대리·절차(Part 3)부터 봐도 괜찮습니다.</span>
        <span class="en">The official name is the <b>SEE (Special Enrollment Examination)</b>. It has three parts, and you take and pass each part separately, in any order. Many people start with individual tax (Part 1), but starting with representation (Part 3) is fine too.</span></p>
@@ -484,8 +470,8 @@ html{scrollbar-gutter:stable;}
     </ul>
     <p><span class="ko">각 파트는 <b>100문항, 3시간 30분</b>입니다. 그중 85문항만 채점되고, 15문항은 다음 시험에 쓸지 시험해 보는 비채점 문항입니다. 어느 문항이 비채점인지는 표시되지 않습니다. 모든 문항은 보기 4개 중 가장 알맞은 답 하나를 고르는 객관식입니다.</span>
        <span class="en">Each part has <b>100 questions in 3.5 hours</b>. Only 85 are scored; the other 15 are unscored questions being tried out for future exams, and they are not marked. Every question is multiple choice with four options and one best answer.</span></p>
-    <p><span class="ko">점수는 200~800점으로 환산되고, <b>500점 이상이면 합격</b>입니다. 합격하면 점수 없이 «합격»만 알려 줍니다. 한 시험 기간 안에 파트마다 최대 4번까지 볼 수 있습니다.</span>
-       <span class="en">Scores are scaled from 200 to 800, and <b>500 is a pass</b>. If you pass, you see «pass» without a score. You can take each part up to four times in one testing window.</span></p>
+    <p><span class="ko">점수는 200~800점으로 환산되고, <b>500점 이상이면 합격</b>입니다. 합격하면 점수 없이 “합격”만 알려 줍니다. 한 시험 기간 안에 파트마다 최대 4번까지 볼 수 있습니다.</span>
+       <span class="en">Scores are scaled from 200 to 800, and <b>500 is a pass</b>. If you pass, you see “pass” without a score. You can take each part up to four times in one testing window.</span></p>
     <p><span class="ko">합격한 파트는 <b>합격일로부터 최대 3년 동안</b> 유지됩니다. 그 안에 나머지 파트를 모두 합격해야 합니다. 3년이 지나면 그 파트를 다시 봐야 합니다.</span>
        <span class="en">A passed part counts for <b>up to three years from the date you passed it</b>. You need to pass the other parts within that time; after three years, that part must be retaken.</span></p>
 
@@ -518,7 +504,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="register">
-    <summary><span class="nl-badge"><span class="ko">토픽 4</span><span class="en">Topic 4</span></span><h2><span class="ko">시험 접수는 어떻게 하나요?</span><span class="en">How do I schedule the exam?</span></h2><p class="et-teaser"><span class="ko">PSI에서 접수하고 응시료는 파트당 $317입니다. 한국에서는 온라인 원격 감독으로 응시합니다.</span><span class="en">Schedule with PSI for $317 per part. From Korea, you test online with a remote proctor.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">시험 접수는 어떻게 하나요?</span><span class="en">How do I schedule the exam?</span></h3><p><span class="ko">PSI에서 접수하고 응시료는 파트당 $317입니다. 한국에서는 온라인 원격 감독으로 응시합니다.</span><span class="en">Schedule with PSI for $317 per part. From Korea, you test online with a remote proctor.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">2026년 3월 1일부터 EA 시험은 <b>PSI</b>라는 시험 기관이 맡고 있습니다(그 전에는 Prometric). 순서는 간단합니다.</span>
        <span class="en">Since March 1, 2026, the EA exam has been run by <b>PSI</b> (previously Prometric). The steps are simple:</span></p>
@@ -534,15 +520,16 @@ html{scrollbar-gutter:stable;}
     </div>
   </details>
 
+  <div class="nl-sechead" id="g-day"><h2><span class="ko">시험 당일과 합격 후</span><span class="en">Exam day and after</span></h2><span class="nl-count"><span class="ko">2개 · 눌러서 펼치기</span><span class="en">2 · tap to open</span></span></div>
   <details class="et-acc" id="day">
-    <summary><span class="nl-badge"><span class="ko">토픽 5</span><span class="en">Topic 5</span></span><h2><span class="ko">시험 당일에는 어떻게 진행되나요?</span><span class="en">What happens on exam day?</span></h2><p class="et-teaser"><span class="ko">지나간 구간으로는 돌아갈 수 없습니다. 꼭 챙겨야 할 시험 당일 체크리스트 Top 5를 정리했습니다.</span><span class="en">You can't go back to a finished section. Plus the top 5 exam-day checklist.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">시험 당일에는 어떻게 진행되나요?</span><span class="en">What happens on exam day?</span></h3><p><span class="ko">지나간 구간으로는 돌아갈 수 없습니다. 꼭 챙겨야 할 시험 당일 체크리스트 Top 5를 정리했습니다.</span><span class="en">You can't go back to a finished section. Plus the top 5 exam-day checklist.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">시험장에서는 신분증을 확인한 뒤 컴퓨터로 시험을 봅니다. 책이나 메모 없이 보는 시험(closed book)이라 휴대폰과 개인 물건은 시험실에 가지고 들어갈 수 없습니다. 계산이 필요한 문제는 화면에 나오는 계산기를 씁니다.</span>
        <span class="en">At the test center your ID is checked, then you test on a computer. The exam is closed book, so phones and personal items stay out of the testing room. For math, you use the on-screen calculator.</span></p>
     <p><span class="ko">100문항은 세 구간으로 나뉘고, <b>34번과 67번 뒤에 10분 휴식</b>이 한 번씩 있습니다. 중요한 점은 <b>한 구간을 끝내면 그 구간으로 돌아갈 수 없다</b>는 것입니다. 그래서 휴식에 들어가기 전에 표시해 둔 문제를 모두 확인해야 합니다.</span>
        <span class="en">The 100 questions are split into three sections, with <b>a 10-minute break after questions 34 and 67</b>. The key point: <b>once you finish a section, you cannot go back to it</b>, so review your flagged questions before each break.</span></p>
     <div class="et-top">
-      <h3><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h3>
+      <h4><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h4>
       <ol>
         <li><span class="ko"><b>신분증 원본</b> — 정부가 발급한 유효한 신분증(사진·서명이 있고 등록한 이름과 같아야 함). 복사본이나 사진 파일은 안 됩니다.</span><span class="en"><b>Original ID</b> — a valid government-issued ID with photo and signature that matches your registration name. No copies or images.</span></li>
         <li><span class="ko"><b>30분 먼저 도착</b> — 30분 이상 늦으면 응시할 수 없습니다.</span><span class="en"><b>Arrive 30 minutes early</b> — if you are 30 minutes or more late, you cannot test.</span></li>
@@ -555,7 +542,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="after">
-    <summary><span class="nl-badge"><span class="ko">토픽 6</span><span class="en">Topic 6</span></span><h2><span class="ko">세 파트에 합격한 다음에는요?</span><span class="en">I passed all three parts. What's next?</span></h2><p class="et-teaser"><span class="ko">합격 뒤 1년 이내에 Form 23을 내고 IRS 심사를 받습니다. 갱신과 보수교육까지 알려 드립니다.</span><span class="en">File Form 23 within a year and pass the IRS check. Then renewals and continuing education.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">세 파트에 합격한 다음에는요?</span><span class="en">I passed all three parts. What's next?</span></h3><p><span class="ko">합격 뒤 1년 이내에 Form 23을 내고 IRS 심사를 받습니다. 갱신과 보수교육까지 알려 드립니다.</span><span class="en">File Form 23 within a year and pass the IRS check. Then renewals and continuing education.</span></p></summary>
     <div class="et-body">
     <p><span class="ko">세 파트에 합격했다고 바로 EA가 되는 것은 아닙니다. <b>세 번째 파트에 합격한 날로부터 1년 이내에 Form 23(EA 등록 신청서)</b>을 내야 합니다. 신청 수수료는 $140이고 환불되지 않습니다.</span>
        <span class="en">Passing the three parts does not make you an EA by itself. <b>Within one year of passing your third part, apply for enrollment with Form 23.</b> The fee is $140 and is not refundable.</span></p>
@@ -566,8 +553,9 @@ html{scrollbar-gutter:stable;}
     </div>
   </details>
 
+  <div class="nl-sechead" id="g-tips"><h2><span class="ko">합격 요령과 공식 자료</span><span class="en">Tips and official sources</span></h2><span class="nl-count"><span class="ko">2개 · 눌러서 펼치기</span><span class="en">2 · tap to open</span></span></div>
   <details class="et-acc" id="tips">
-    <summary><span class="nl-badge"><span class="ko">토픽 7</span><span class="en">Topic 7</span></span><h2><span class="ko">합격을 위한 공부·시험 요령 Top 10</span><span class="en">Top 10 tips to pass</span></h2><p class="et-teaser"><span class="ko">2025년 숫자로 공부하기부터 답을 비워 두지 않기까지, 합격에 도움이 되는 열 가지 요령입니다.</span><span class="en">From studying the 2025 numbers to never leaving a blank — ten habits that help you pass.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">합격을 위한 공부·시험 요령 Top 10</span><span class="en">Top 10 tips to pass</span></h3><p><span class="ko">2025년 숫자로 공부하기부터 답을 비워 두지 않기까지, 합격에 도움이 되는 열 가지 요령입니다.</span><span class="en">From studying the 2025 numbers to never leaving a blank — ten habits that help you pass.</span></p></summary>
     <div class="et-body">
     <div class="et-top">
       <ol>
@@ -577,7 +565,7 @@ html{scrollbar-gutter:stable;}
         <li><span class="ko"><b>문제를 많이 풀어 보세요.</b> 규칙을 읽는 것만으로는 부족합니다. 시험과 같은 4지선다 문제로 연습해야 실제 문제에서 규칙이 보입니다.</span><span class="en"><b>Practice with real-style questions.</b> Reading rules is not enough; four-option practice questions teach you to spot the rule in an exam question.</span></li>
         <li><span class="ko"><b>틀린 문제의 해설을 꼭 읽으세요.</b> 왜 틀렸는지, 오답 보기가 왜 그럴듯해 보였는지 이해하는 것이 실력이 됩니다.</span><span class="en"><b>Read the explanation for every miss.</b> Understanding why a wrong option looked right is where you improve.</span></li>
         <li><span class="ko"><b>시간을 재며 모의고사를 보세요.</b> 100문항에 210분이니 한 문항에 약 2분입니다. 시험 전에 이 속도에 익숙해지세요.</span><span class="en"><b>Take timed mock exams.</b> 210 minutes for 100 questions is about 2 minutes each — get used to that pace before test day.</span></li>
-        <li><span class="ko"><b>«Except» 문제를 조심하세요.</b> «다음 중 ~이 아닌 것»은 맞는 보기 셋, 틀린 보기 하나를 찾는 문제입니다. 문제 끝의 except를 놓치지 마세요.</span><span class="en"><b>Watch for «except».</b> In «All of the following except» questions, three options are true and one is not.</span></li>
+        <li><span class="ko"><b>“Except” 문제를 조심하세요.</b> “다음 중 ~이 아닌 것”은 맞는 보기 셋, 틀린 보기 하나를 찾는 문제입니다. 문제 끝의 except를 놓치지 마세요.</span><span class="en"><b>Watch for “except”.</b> In “All of the following except” questions, three options are true and one is not.</span></li>
         <li><span class="ko"><b>막히면 표시하고 넘어가세요.</b> 구간이 끝나면 돌아갈 수 없으니, 휴식 전에 표시한 문제를 다시 보세요.</span><span class="en"><b>Flag and move on.</b> You can't return after a section ends, so revisit flagged questions before each break.</span></li>
         <li><span class="ko"><b>답을 비워 두지 마세요.</b> 틀린 답에 감점은 없습니다. 모르는 문제는 틀린 보기부터 지우고 고르세요.</span><span class="en"><b>Never leave a blank.</b> There is no penalty for a wrong answer — eliminate what you can and choose.</span></li>
         <li><span class="ko"><b>낯선 문제에 흔들리지 마세요.</b> 비채점 문항 15개가 섞여 있습니다. 처음 보는 문제 하나에 오래 매달리지 마세요.</span><span class="en"><b>Don't let a strange question rattle you.</b> Fifteen unscored questions are mixed in — don't spend too long on one.</span></li>
@@ -587,7 +575,7 @@ html{scrollbar-gutter:stable;}
   </details>
 
   <details class="et-acc" id="links">
-    <summary><span class="nl-badge"><span class="ko">토픽 8</span><span class="en">Topic 8</span></span><h2><span class="ko">공식 자료</span><span class="en">Official sources</span></h2><p class="et-teaser"><span class="ko">IRS와 PSI의 공식 페이지를 모았습니다. 접수 전에 최신 내용을 확인하세요.</span><span class="en">IRS and PSI official pages. Check the latest before you register.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <summary><h3><span class="ko">공식 자료</span><span class="en">Official sources</span></h3><p><span class="ko">IRS와 PSI의 공식 페이지를 모았습니다. 접수 전에 최신 내용을 확인하세요.</span><span class="en">IRS and PSI official pages. Check the latest before you register.</span></p></summary>
     <div class="et-body">
     <ul>
       <li><a href="https://www.irs.gov/tax-professionals/enrolled-agents/become-an-enrolled-agent" target="_blank" rel="noopener">IRS — Become an enrolled agent</a></li>
@@ -596,7 +584,7 @@ html{scrollbar-gutter:stable;}
       <li><a href="https://test-takers.psigov.us/api/content/bulletin/12238" target="_blank" rel="noopener">PSI — SEE Candidate Information Bulletin (<span class="ko">출제 범위 포함</span><span class="en">includes the content outlines</span>)</a></li>
       <li><a href="https://www.irs.gov/tax-professionals/ptin-requirements-for-tax-return-preparers" target="_blank" rel="noopener">IRS — PTIN requirements</a></li>
     </ul>
-    <p class="et-note"><span class="ko">이 페이지는 2026년 10월 30일 기준 공식 자료로 정리했습니다. 접수 전에 위 공식 자료로 최신 내용을 꼭 확인하세요.</span><span class="en">Based on official sources as of October 30, 2026. Always check the official pages above before you register.</span></p>
+    <p class="et-note"><span class="ko">접수 전에 위 공식 자료로 최신 내용을 꼭 확인하세요.</span><span class="en">Always check the official pages above before you register.</span></p>
     </div>
   </details>
 
