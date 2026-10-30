@@ -1631,7 +1631,8 @@ async function reEnforceState(){
 #login-gate{
   position:fixed;inset:0;z-index:9999;
   background:var(--page-bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;
+  display:flex;flex-direction:column;align-items:center;justify-content:safe center;padding:2rem;
+  overflow-y:auto;
 }
 .lg-logo{width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;overflow:hidden;box-shadow:0 0 32px rgba(16,48,76,.3);}
 .lg-title{font-size:20px;font-weight:600;color:var(--text-main);margin-bottom:5px;letter-spacing:-.01em;}
@@ -1650,10 +1651,12 @@ async function reEnforceState(){
 .lg-card{
   background:#ffffff;
   border:1px solid var(--border-clr);
-  border-radius:20px;padding:2rem;width:100%;max-width:340px;
+  border-radius:20px;padding:1.75rem 2rem;width:100%;max-width:420px;
   box-shadow:0 2px 16px rgba(0,0,0,.08);
 }
-.lg-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;margin-top:14px;}
+.lg-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;margin-top:11px;}
+.lg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media (max-width:360px){ .lg-row{grid-template-columns:1fr;gap:0;} }
 .lg-input{
   width:100%;padding:10px 12px;font-size:16px;line-height:1.3;
   border:1px solid rgba(0,0,0,.06);
@@ -1744,10 +1747,10 @@ async function reEnforceState(){
       <div class="lg-label">Your exam state</div>
       <select class="lg-input" id="su-state"></select>
       <div style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:8px 0 4px;">Your account covers this state only. To change it later, email hello@pracexam.com.</div>
-      <div class="lg-label">First name</div>
-      <input class="lg-input" type="text" id="su-fname" autocomplete="given-name"/>
-      <div class="lg-label">Last name</div>
-      <input class="lg-input" type="text" id="su-lname" autocomplete="family-name"/>
+      <div class="lg-row">
+        <div><div class="lg-label">First name</div><input class="lg-input" type="text" id="su-fname" autocomplete="given-name"/></div>
+        <div><div class="lg-label">Last name</div><input class="lg-input" type="text" id="su-lname" autocomplete="family-name"/></div>
+      </div>
       <div class="lg-label">Email</div>
       <input class="lg-input" type="email" id="su-email" autocomplete="email"/>
       <div class="lg-label">Password</div>
