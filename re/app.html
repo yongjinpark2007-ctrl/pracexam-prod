@@ -2339,7 +2339,7 @@ async function reEnforceState(){
     <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
     <button id="atab-unconfirmed" class="admin-tab" onclick="adminTab('unconfirmed')">미확인 가입자</button>
     <button id="atab-qc" class="admin-tab" onclick="adminTab('qc')">문제 검토</button>
-    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')" style="display:none">Pop Quiz 문제</button><!-- RE: the daily quiz is EA's (2026-10-29) -->
+    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')">Pop Quiz 문제</button><!-- RE Pop Quiz (2026-10-30): daily_quiz_re + send-daily-quiz-re -->
   </div>
 
   <!-- ═══ 공지 관리 ═══ -->
@@ -2472,7 +2472,7 @@ async function reEnforceState(){
   <!-- ═══ Pop Quiz 문제 지정 (popquiz.html 노출용) ═══ -->
   <div id="admin-panel-daily" style="display:none;">
     <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:1rem;">
-      <strong>Pop Quiz</strong> (<a href="/re/popquiz" target="_blank" style="color:var(--teal);">popquiz.html</a>)에 노출할 문제를 여기서 지정합니다.
+      <strong>부동산 Pop Quiz</strong> (<a href="/re/popquiz" target="_blank" style="color:var(--teal);">/re/popquiz</a>)에 노출할 문제를 여기서 지정합니다. 부동산(RE-) 문제만 지정할 수 있습니다.
       지정 즉시 반영되며 <strong>배포는 필요 없습니다</strong>.
     </div>
 
@@ -2486,7 +2486,7 @@ async function reEnforceState(){
       <div class="admin-sub-title">새 문제로 지정</div>
       <div class="ann-field">
         <label>question_id</label>
-        <input class="ann-input" id="daily-id-input" placeholder="예) P1-0342">
+        <input class="ann-input" id="daily-id-input" placeholder="예) RE-N-0001">
       </div>
       <div class="ann-field">
         <label>메모 (선택 — 관리용, 화면엔 안 보임)</label>
@@ -2503,7 +2503,7 @@ async function reEnforceState(){
           <span style="display:block;color:var(--text-muted);font-size:12px;font-weight:400;">
             체크해도 <strong>바로 나가지 않습니다.</strong> 문제 지정이 끝나면 수신 인원이 적힌
             확인창이 뜨고, 거기서 <strong>[확인]</strong>을 눌러야 발송됩니다. [취소]해도 문제 지정은 유지됩니다.<br>
-            대상 = 마케팅 수신 동의 + 이메일 확인을 마친 회원 (메일에서 수신거부한 사람은 자동 제외).
+            대상 = 부동산 회원 가운데 마케팅 수신 동의 + 이메일 확인을 마친 회원 (메일에서 수신거부한 사람은 자동 제외).
           </span>
         </label>
       </div>
@@ -2529,23 +2529,23 @@ async function reEnforceState(){
       <div class="ann-field">
         <label>영문 제목 줄 (선택 · 비우면 “Sharpen Your Exam Instincts”)</label>
         <input class="ann-input" id="daily-copy-head-en" maxlength="120" oninput="adminDailyCopyPreview()"
-               placeholder="예) A closer look at the Child and Dependent Care Credit">
+               placeholder="예) A closer look at agency relationships">
       </div>
       <div class="ann-field">
         <label>영문 인사말 (선택)</label>
         <textarea class="ann-input" id="daily-copy-intro-en" maxlength="800" style="min-height:92px;" oninput="adminDailyCopyPreview()"
-                  placeholder="예) 👨‍👩‍👧‍👦 Mastering the Child and Dependent Care Credit is crucial—it's one of the most frequently asked questions on the exam! 🎯💡 ✅ See if you can get this one right: https://pracexam.com/popquiz"></textarea>
+                  placeholder="예) 🏠 Agency relationships show up on every real estate exam. 🎯 See if you can get this one right: https://pracexam.com/re/popquiz"></textarea>
       </div>
 
       <div class="ann-field">
         <label>국문 제목 줄 (선택 · 비우면 “실전 문제 풀이로 시험 감각 UP!”)</label>
         <input class="ann-input" id="daily-copy-head-ko" maxlength="120" oninput="adminDailyCopyPreview()"
-               placeholder="예) 돌봄 크레딧, 한 문제로 짚어 보기">
+               placeholder="예) 대리 관계, 한 문제로 짚어 보기">
       </div>
       <div class="ann-field">
         <label>국문 인사말 (선택)</label>
         <textarea class="ann-input" id="daily-copy-intro-ko" maxlength="800" style="min-height:92px;" oninput="adminDailyCopyPreview()"
-                  placeholder="예) 👨‍👩‍👧‍👦 자녀·부양가족 돌봄 크레딧은 시험에 자주 나옵니다. 🎯 이 문제, 맞히실 수 있는지 한번 보세요: https://pracexam.com/popquiz"></textarea>
+                  placeholder="예) 🏠 대리 관계는 부동산 시험에 자주 나옵니다. 🎯 이 문제, 맞히실 수 있는지 한번 보세요: https://pracexam.com/re/popquiz"></textarea>
       </div>
 
       <div class="ann-form-actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -6788,6 +6788,7 @@ function adminTab(name){
 // ── 관리자: Pop Quiz 문제 지정 (popquiz.html 노출 · 2026-07-24) ──
 //   · daily_quiz 테이블에 insert (RLS: is_admin()만 허용) → get_daily_quiz() 최신 1행 노출
 //   · daily_quiz_setup.sql 미실행 시 조회/지정이 실패하나, 안내만 뜨고 앱은 정상
+function _rePqPart(p){ var s = String(p == null ? '' : p); return (s === '1' || s === 'Part 1') ? 'National' : (s ? 'State' : '?'); }
 function _dailyMsg(txt, ok){
   var m = document.getElementById('daily-form-msg'); if(!m) return;
   m.textContent = txt || '';
@@ -6799,18 +6800,18 @@ async function renderDailyAdmin(){
   var cur = document.getElementById('daily-current');
   if(cur) cur.textContent = '불러오는 중…';
   try{
-    var res = await sb.rpc('get_daily_quiz');
+    var res = await sb.rpc('get_daily_quiz_re');
     if(res.error) throw res.error;
     var row = Array.isArray(res.data) ? res.data[0] : res.data;
     if(!row){ if(cur) cur.innerHTML = '<em>아직 지정된 문제가 없습니다.</em>'; renderDailyMailStatus(); return; }
     var letter = String.fromCharCode(65 + (row.correct || 0));
     var txt = String(row.text || '');
     if(cur) cur.innerHTML =
-      '<div style="font-weight:700;color:var(--text-main);margin-bottom:4px;">' + _escHtml(row.question_id) + ' · Part ' + (row.part != null ? row.part : '?') + (row.topic ? ' · ' + _escHtml(row.topic) : '') + '</div>' +
+      '<div style="font-weight:700;color:var(--text-main);margin-bottom:4px;">' + _escHtml(row.question_id) + ' · ' + _rePqPart(row.part) + (row.topic ? ' · ' + _escHtml(row.topic) : '') + '</div>' +
       '<div>' + _escHtml(txt.slice(0, 160)) + (txt.length > 160 ? '…' : '') + '</div>' +
       '<div style="margin-top:4px;color:var(--text-muted);">정답: ' + letter + '</div>';
   }catch(e){
-    if(cur) cur.innerHTML = '<em style="color:var(--danger-color);">불러오기 실패 — daily_quiz 셋업(SQL)이 아직 안 됐을 수 있습니다.</em>';
+    if(cur) cur.innerHTML = '<em style="color:var(--danger-color);">불러오기 실패 — SQL_re_popquiz_2026-10-30.sql 이 아직 실행되지 않았을 수 있습니다.</em>';
   }
   renderDailyMailStatus();
   adminDailyCopyRestore();     // 지난번에 쓰다 만 인사말을 되살린다
@@ -6833,7 +6834,7 @@ async function renderDailyMailStatus(){
   box.innerHTML = '';
   _dailyMailState = null;
   try{
-    var res = await sb.rpc('get_daily_quiz_email_status');
+    var res = await sb.rpc('get_daily_quiz_re_email_status');
     if(res.error) throw res.error;
     var st = Array.isArray(res.data) ? res.data[0] : res.data;
     if(!st) return;
@@ -6872,7 +6873,7 @@ async function renderDailyMailStatus(){
     box.innerHTML = html;
   }catch(e){
     // 함수 미배포 = 기능 미설치. 관리자에게만 조용히 안내.
-    box.innerHTML = '<span style="color:var(--text-muted);">메일 기능 미설치 — <code>daily_quiz_email_setup.sql</code> 실행 및 <code>send-daily-quiz</code> 배포가 필요합니다.</span>';
+    box.innerHTML = '<span style="color:var(--text-muted);">메일 기능 미설치 — <code>SQL_re_popquiz_2026-10-30.sql</code> 실행 및 <code>send-daily-quiz-re</code> 배포가 필요합니다.</span>';
   }
 }
 
@@ -7025,7 +7026,8 @@ function adminDailyCopyPreview(){
 
 // Edge Function 호출 공통부. 반환 = { ok:boolean, data:object, msg:string }
 async function _dailyMailInvoke(payload){
-  var res = await sb.functions.invoke('send-daily-quiz', { body: payload });
+  payload = payload || {}; payload.origin = window.location.origin;   // RE: quiz link = <this site>/re/popquiz
+  var res = await sb.functions.invoke('send-daily-quiz-re', { body: payload });
   if(res.error){
     return { ok:false, data:null, msg:'호출 실패: ' + (res.error.message || res.error) };
   }
@@ -7106,12 +7108,13 @@ async function adminDailyPreview(){
   try{
     var r = await _dailyFetchQuestion(id);
     if(!r){ if(box) box.style.display = 'none'; _dailyMsg('해당 question_id를 찾을 수 없습니다', false); return; }
+    if(String(r.question_id).indexOf('RE-') !== 0){ if(box) box.style.display = 'none'; _dailyMsg('부동산(RE-) 문제만 지정할 수 있습니다', false); return; }
     var opts = Array.isArray(r.options) ? r.options : [];
     var oh = opts.map(function(o, i){ return '<div>' + String.fromCharCode(65 + i) + '. ' + _escHtml(o) + (i === r.correct ? ' ✅' : '') + '</div>'; }).join('');
     if(box){
       box.style.display = '';
       box.innerHTML =
-        '<div style="font-weight:700;margin-bottom:6px;">' + _escHtml(r.question_id) + ' · Part ' + (r.part != null ? r.part : '?') + (r.topic ? ' · ' + _escHtml(r.topic) : '') + '</div>' +
+        '<div style="font-weight:700;margin-bottom:6px;">' + _escHtml(r.question_id) + ' · ' + _rePqPart(r.part) + (r.topic ? ' · ' + _escHtml(r.topic) : '') + '</div>' +
         '<div style="margin-bottom:8px;">' + _escHtml(r.text || '') + '</div>' + oh;
     }
     _dailyMsg('확인되면 "Pop Quiz로 지정"을 누르세요', true);
@@ -7127,9 +7130,10 @@ async function adminDailySet(){
   try{
     var r = await _dailyFetchQuestion(id);
     if(!r || !r.question_id){ _dailyMsg('해당 question_id가 존재하지 않습니다', false); return; }
-    var ins = await sb.from('daily_quiz').insert({ question_id: r.question_id, note: note || null });
+    if(String(r.question_id).indexOf('RE-') !== 0){ _dailyMsg('부동산(RE-) 문제만 지정할 수 있습니다', false); return; }
+    var ins = await sb.from('daily_quiz_re').insert({ question_id: r.question_id, note: note || null });
     if(ins.error) throw ins.error;
-    _dailyMsg('✓ 지정 완료 — popquiz.html에 반영되었습니다', true);
+    _dailyMsg('✓ 지정 완료 — /re/popquiz 에 반영되었습니다', true);
     document.getElementById('daily-id-input').value = '';
     document.getElementById('daily-note-input').value = '';
     var box = document.getElementById('daily-preview'); if(box) box.style.display = 'none';
