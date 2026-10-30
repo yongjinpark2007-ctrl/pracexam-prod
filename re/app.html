@@ -1699,7 +1699,7 @@ async function reEnforceState(){
       <div class="lg-status" id="lg-status">🔄 Signing in…</div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowReset()">Forgot password?</a></div>
       <div style="text-align:center;"><a class="lg-link" onclick="lgShowResend()">Didn't get the confirmation email?</a></div>
-      <div class="lg-newhere">First time here? <a class="lg-link" style="display:inline" onclick="lgShowSignup()">Create a free account</a> &mdash; 30 days free.</div>
+      <div class="lg-newhere">First time here? <a href="/re/?signup=1">Join us at PracExam.com</a>.</div>
     </div>
 
     <!-- View 2: 비밀번호 재설정 메일 요청 -->
@@ -3641,7 +3641,8 @@ function doReSignup(){
   .catch(function(){ err.textContent = 'Network error. Please try again.'; err.style.display = 'block'; })
   .finally(function(){ btn.disabled = false; btn.textContent = 'Create account'; });
 }
-try { if(new URLSearchParams(location.search).get('signup') === '1') setTimeout(function(){ if(!SB_USER) lgShowSignup(); }, 0); } catch(e){}
+// 2026-10-30: sign-up lives in the landing pop-up (same as EA) — forward ?signup=1 there, keeping ?state=.
+try { var _sq = new URLSearchParams(location.search); if(_sq.get('signup') === '1') setTimeout(function(){ if(!SB_USER) location.replace('/re/?signup=1' + (_sq.get('state') ? '&state=' + encodeURIComponent(_sq.get('state')) : '')); }, 0); } catch(e){}
 
 
 // ⚠️ 로그인 게이트는 **영어로 통일**한다 (2026-07-27 사용자 결정).
