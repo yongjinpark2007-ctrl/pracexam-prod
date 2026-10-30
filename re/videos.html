@@ -281,7 +281,7 @@ html{scrollbar-gutter:stable;}
    (사용자: "로고가 계속 움직임"). 로고도 가로 크기를 적어 두었다. */
 @media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
 </style>
-</head>
+<link rel="stylesheet" href="/exam-switch.css?v=20261030"><script src="/exams.js?v=1f67a91240" defer></script></head>
 <body data-exam="re">
 <!-- ══ RE copy of /videos (2026-10-29, build_re_videos_page.py). Not synced by sync_nav.js. ══ -->
 <header class="nav">
@@ -289,10 +289,7 @@ html{scrollbar-gutter:stable;}
     <a href="/re/" class="logo"><img src="/img/logo-re.png?v=9c5f07a5c9" alt="PracExam Real Estate" width="529" height="110" style="height:28px;width:auto;object-fit:contain;"></a>
     <div class="nav-right">
       <div class="nav-menu" id="nav-menu">
-      <nav class="nav-links">
-      <a href="/re/#features" onclick="closeNavMenu()"><span class="ko">주요 특징</span><span class="en">Features</span></a>
-      <a href="/re/#pricing" onclick="closeNavMenu()"><span class="ko">요금제</span><span class="en">Pricing</span></a>
-      </nav>
+      <div class="exam-switch" data-exam-switch></div><nav class="nav-links"><a href="/re/#features" onclick="closeNavMenu()"><span class="ko">주요 특징</span><span class="en">Features</span></a><a href="/re/popquiz" onclick="closeNavMenu()" style="color:var(--accent); font-weight:700;"><span class="ko">Pop Quiz</span><span class="en">Pop Quiz</span></a><a href="/re/#pricing" onclick="closeNavMenu()"><span class="ko">요금제</span><span class="en">Pricing</span></a><div class="exam-dd nav-more" data-nav-more><button type="button" class="exam-dd-btn" aria-haspopup="true" aria-expanded="false"><span class="ko">더보기</span><span class="en">More</span><span class="exam-dd-caret" aria-hidden="true">▾</span></button><ul class="exam-dd-list"><li><a href="/re/videos" onclick="closeNavMenu()"><span class="ko">동영상</span><span class="en">Videos</span></a></li><li><a href="/re/#samples" onclick="closeNavMenu()"><span class="ko">예제 문제</span><span class="en">Sample Questions</span></a></li><li><a href="/re/tips/" onclick="closeNavMenu()"><span class="ko">Exam Tips</span><span class="en">Exam Tips</span></a></li></ul></div></nav>
       <div class="nav-actions">
       <a href="/re/app" class="btn btn-ghost btn-sm">
       <span class="ko">로그인</span><span class="en">Log In</span>
@@ -485,5 +482,5 @@ document.addEventListener('keydown', function(e){
     .catch(function(){ grid.innerHTML = ''; document.getElementById('vp-error').hidden = false; });
 })();
 </script>
-</body>
+<script>(function(){document.querySelectorAll("[data-nav-more]").forEach(function(dd){var b=dd.querySelector(".exam-dd-btn");function s(v){dd.classList.toggle("open",v);b.setAttribute("aria-expanded",v?"true":"false");}b.addEventListener("click",function(e){e.stopPropagation();s(!dd.classList.contains("open"));});dd.addEventListener("keydown",function(e){if(e.key==="Escape"){s(false);b.focus();}});document.addEventListener("click",function(e){if(!dd.contains(e.target))s(false);});});})();</script></body>
 </html>
