@@ -690,7 +690,7 @@ footer{border-top:1px solid var(--border-clr); padding:36px 0; font-size:13px; c
 }
 .modal-bg.open{display:flex;}
 .modal{
-  background:var(--white); border-radius:16px; padding:28px; max-width:380px; width:100%;
+  background:var(--white); border-radius:16px; padding:28px; max-width:440px; width:100%;
   box-shadow:0 30px 70px -30px rgba(0,0,0,.4);
 }
 .modal h3{margin-bottom:6px;}
