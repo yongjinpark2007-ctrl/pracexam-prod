@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" class="lang-en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Estate Exam Tips | PracExam</title>
+<meta name="description" content="Real estate license exam tips from PracExam. Coming soon.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/re/img/re-apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="/exam-palettes.css?v=e87e8149ac">
+<link rel="stylesheet" href="/landing.css?v=c27bff0be4">
+<!-- RE «Exam Tips» placeholder (boss 2026-10-30: the landing «More» menu links here until the tips are written) -->
+<style>
+body{background:var(--white); color:var(--text-main);}
+.tips-top{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px max(16px, env(safe-area-inset-right, 0px)) 16px max(16px, env(safe-area-inset-left, 0px)); max-width:1120px; margin:0 auto;}
+.tips-top img{height:28px; width:auto; display:block;}
+.tips-lang{display:flex; border:1.5px solid var(--border-strong); border-radius:8px; overflow:hidden;}
+.tips-lang button{font:700 12px var(--font-sans, inherit); letter-spacing:.05em; padding:6px 11px; border:0; background:var(--white); color:var(--navy); cursor:pointer;}
+.tips-lang button.active{background:var(--navy); color:var(--white);}
+.tips-main{max-width:640px; margin:0 auto; padding:72px 24px 96px; text-align:center;}
+.tips-main h1{font-family:var(--font-serif, serif); color:var(--navy); font-size:clamp(28px,4vw,40px); line-height:1.2; margin:14px 0 16px; text-wrap:balance;}
+.tips-main p{color:var(--text-mid); font-size:16px; line-height:1.75; margin:0 0 28px;}
+.tips-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+</style>
+</head>
+<body data-exam="re">
+<header class="tips-top">
+  <a href="/re/" aria-label="PracExam Real Estate home"><img src="/img/logo-re.png?v=9c5f07a5c9" width="529" height="110" alt="PracExam Real Estate"></a>
+  <div class="tips-lang" title="Shortcut: L">
+    <button id="btn-ko" onclick="setLang('ko')">KO</button>
+    <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+  </div>
+</header>
+<main class="tips-main">
+  <span class="eyebrow"><span class="ko">시험 팁</span><span class="en">EXAM TIPS</span></span>
+  <h1><span class="ko">부동산 시험 팁, 곧 공개합니다</span><span class="en">Real estate exam tips are coming soon</span></h1>
+  <p><span class="ko">자주 틀리는 개념과 시험장에서 바로 쓰는 요령을 정리하고 있습니다. 그동안 무료 영상과 예제 문제로 먼저 연습해 보세요.</span>
+     <span class="en">We are putting together the concepts people miss most and the tips you can use in the exam room. In the meantime, practice with our free videos and sample questions.</span></p>
+  <div class="tips-actions">
+    <a href="/re/videos" class="btn btn-primary btn-lg"><span class="ko">무료 영상 보기</span><span class="en">Watch free videos</span></a>
+    <a href="/re/#samples" class="btn btn-ghost btn-lg"><span class="ko">예제 문제 풀어 보기</span><span class="en">Try sample questions</span></a>
+  </div>
+  <p style="margin-top:36px;"><a href="/re/"><span class="ko">← PracExam 부동산 홈으로</span><span class="en">← Back to PracExam Real Estate</span></a></p>
+</main>
+<script>
+function setLang(lang){
+  document.getElementById('html-root').className = 'lang-' + lang;
+  document.getElementById('html-root').setAttribute('lang', lang);
+  document.getElementById('btn-ko').classList.toggle('active', lang === 'ko');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  try { localStorage.setItem('ea_lang', lang); } catch(e){}
+}
+(function(){ var s = 'en'; try { s = localStorage.getItem('ea_lang') || 'en'; } catch(e){} setLang(s === 'ko' ? 'ko' : 'en'); })();
+</script>
+</body>
+</html>

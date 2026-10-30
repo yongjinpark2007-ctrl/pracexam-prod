@@ -30,3 +30,9 @@
   .nav-menu .exam-dd-list{display:block; position:static; min-width:0; border:0; box-shadow:none; padding:6px 0 8px; background:none;}
   .nav-menu .exam-dd-list a{padding:11px 2px;}
 }
+
+/* «More» menu in the landing nav (2026-10-30): the exam-switch dropdown, drawn as a plain nav link */
+.nav-more .exam-dd-btn{border:0; background:none; padding:0; font:inherit; color:inherit;}
+.nav-more .exam-dd-btn:hover{color:var(--navy);}
+.nav-more .exam-dd-list{left:auto; right:0; min-width:210px;}
+@media (max-width:860px){ .nav-menu .nav-more{border-bottom:0;} }

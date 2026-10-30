@@ -156,7 +156,7 @@
 <link rel="stylesheet" href="/videos.css?v=f9ce8e4eb2">
 <link rel="stylesheet" href="/exam-palettes.css?v=e87e8149ac">
 <link rel="stylesheet" href="/landing.css?v=c27bff0be4">
-<link rel="stylesheet" href="/exam-switch.css?v=013782badc">
+<link rel="stylesheet" href="/exam-switch.css?v=20261030">
 </head>
 <body data-exam="ea">
 
@@ -175,9 +175,28 @@
     <nav class="nav-links">
       <a href="#features" onclick="closeNavMenu()"><span class="ko">주요 특징</span><span class="en">Features</span></a>
       <a href="/popquiz.html" onclick="closeNavMenu()" style="color:var(--accent); font-weight:700;"><span class="ko">Pop Quiz</span><span class="en">Pop Quiz</span></a>
-      <a href="/tips/" id="nav-notes" onclick="closeNavMenu()" style="color:var(--accent); font-weight:700;"><span class="ko">Study Tips</span><span class="en">Study Tips</span></a>
       <a href="#pricing" onclick="closeNavMenu()"><span class="ko">요금제</span><span class="en">Pricing</span></a>
+      <div class="exam-dd nav-more" data-nav-more>
+        <button type="button" class="exam-dd-btn" aria-haspopup="true" aria-expanded="false"><span class="ko">더보기</span><span class="en">More</span><span class="exam-dd-caret" aria-hidden="true">▾</span></button>
+        <ul class="exam-dd-list">
+          <li><a href="/videos" onclick="closeNavMenu()"><span class="ko">동영상</span><span class="en">Videos</span></a></li>
+          <li><a href="#samples" onclick="closeNavMenu()"><span class="ko">예제 문제</span><span class="en">Sample Questions</span></a></li>
+          <li><a href="/tips/" id="nav-notes" onclick="closeNavMenu()"><span class="ko">Study Tips</span><span class="en">Study Tips</span></a></li>
+        </ul>
+      </div>
     </nav>
+    <script>
+    // «More» dropdown (2026-10-30): click opens, a click outside or Esc closes. Same behaviour as the exam switch.
+    (function(){
+      document.querySelectorAll('[data-nav-more]').forEach(function(dd){
+        var b = dd.querySelector('.exam-dd-btn');
+        function set(v){ dd.classList.toggle('open', v); b.setAttribute('aria-expanded', v ? 'true' : 'false'); }
+        b.addEventListener('click', function(e){ e.stopPropagation(); set(!dd.classList.contains('open')); });
+        dd.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ set(false); b.focus(); } });
+        document.addEventListener('click', function(e){ if(!dd.contains(e.target)) set(false); });
+      });
+    })();
+    </script>
     <div class="nav-actions">
       <a href="/app.html" class="btn btn-ghost btn-sm">
         <span class="ko">로그인</span><span class="en">Log In</span>
