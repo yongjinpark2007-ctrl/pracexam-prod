@@ -4123,8 +4123,18 @@ async function loadTrialStatus(){
     // 무료 가입 Welcome 메일: 이메일 확인 완료 + 미발송이면 1회 발송 요청.
     // 서버 Edge Function send-signup-welcome 이 profiles.signup_welcome_sent 를
     // 원자적으로 선점해 멱등 처리하므로, 재로그인/새로고침으로 여러 번 호출돼도 1통만 나간다.
-    // EA / RE 분리 (2026-10-29): send-signup-welcome 은 EA 환영 메일이라 RE 앱에서는 부르지 않는다.
-    // RE 환영 메일은 계획 10번에서 따로 만든다.
+    // EA / RE 분리 (2026-10-29): RE 앱은 EA 환영 메일을 부르지 않는다.
+    // RE 환영 메일 (2026-10-30): 같은 함수에 {exam:'re'} 로 부른다. 서버가 profiles.re_welcome_sent 를 원자적으로 선점해
+    // 1통만 보낸다. 브라우저는 «보냄/이미 보냄» 답을 받으면 기억해 두고 더는 묻지 않는다.
+    if(SB_USER.email_confirmed_at && S.reExam){
+      var _rwKey = 'pe_re_welcome_' + SB_USER.id, _rwDone = null;
+      try { _rwDone = localStorage.getItem(_rwKey); } catch(e){}
+      if(!_rwDone){
+        sb.functions.invoke('send-signup-welcome', { body: { exam: 're', origin: window.location.origin } })
+          .then(function(r){ var st = r && r.data && r.data.status; if(st === 'sent' || st === 'already sent'){ try { localStorage.setItem(_rwKey, '1'); } catch(e){} } })
+          .catch(function(e){ console.warn('re welcome invoke skip:', e && e.message); });
+      }
+    }
   }catch(e){ console.warn('loadTrialStatus 오류:', e); }
   updateTrialStatusUI();
   applyTrialSetupRestrictions();
@@ -5584,7 +5594,7 @@ var UI_TEXT = {
   // 🔴 금액은 Paddle 이 나라에 맞게 계산해 준 값을 쓴다(peFetchPrice). 아래는 «못 가져왔을 때»의 기본값.
   pricing_price:  {ko:'$29 / 월', en:'$29 / month'},
   pricing_permonth:{ko:'/ 월', en:'/ month'},
-  pricing_benefits:{ko:'• 5,000+ 전 문항 무제한 풀이<br>• Part 1·2·3 전 영역<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 5,000+ questions<br>• All of Part 1, 2, 3<br>• Korean/English explanations<br>• Cancel anytime · 14-day money-back'},
+  pricing_benefits:{ko:'• 5,000+ 전 문항 무제한 풀이<br>• 전국 공통(National)과 주(State) 문제 전체<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 5,000+ questions<br>• National and state portions<br>• Detailed explanations for every question<br>• Cancel anytime · 14-day money-back'},
   pricing_subscribe:{ko:'구독하기 ($29/월)', en:'Subscribe ($29/mo)'},
   pricing_subscribe_pre:{ko:'구독하기', en:'Subscribe'},
   pricing_fineprint:{ko:'매월 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews monthly · cancel anytime. Payments securely handled by Paddle.'},
