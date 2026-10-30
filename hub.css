@@ -306,6 +306,8 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 /* ---- 2026-10-24 boss: «More states on the way» under the RE states line ---- */
 .door-list li.door-note{margin-top:-6px;font-size:13px;font-style:italic;color:var(--ink-mid);opacity:.8}
 .door-list li.door-note::before{content:none}
+.door-list .dl-t{display:block;font-weight:700;color:var(--ink);font-size:15.5px;line-height:1.45}
+.door-list .dl-d{display:block;margin-top:2px;font-size:14px;line-height:1.55;color:var(--ink-mid)}
 .door-list{align-content:start}
 
 /* ---- 2026-10-26 boss: door links become real buttons (each exam's own colour) + the whole card is clickable ---- */
