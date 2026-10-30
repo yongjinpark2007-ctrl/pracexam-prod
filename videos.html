@@ -352,6 +352,10 @@ html{scrollbar-gutter:stable;}
     <span class="en">We couldn't load the videos. Please try again in a moment.</span>
   </p>
 
+  <div style="text-align:center;margin:8px 0 28px;">
+    <button type="button" class="btn btn-ghost btn-lg" id="vp-more" hidden><span class="ko">영상 더 보기</span><span class="en">More videos</span></button>
+  </div>
+
   <div class="vp-cta">
     <a href="/" class="btn btn-primary btn-lg">
       <span class="ko">PracExam 홈으로</span><span class="en">Back to PracExam home</span>
@@ -404,7 +408,7 @@ document.addEventListener('keydown', function(e){
   PXVideos.init({ url: 'https://ufrhvodruulpgnmudzwh.supabase.co', anon: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8' });
   var grid = document.getElementById('vp-grid');
   var rows = [];
-  var state = { part: 'all', lang: PXVideos.siteLang() };
+  var state = { part: 'all', lang: PXVideos.siteLang(), shown: 12 };   // 12 at a time (2026-10-30)
   var p = new URLSearchParams(location.search).get('part');
   if (p === '1' || p === '2' || p === '3') state.part = p;
 
@@ -452,7 +456,13 @@ document.addEventListener('keydown', function(e){
       return (state.part === 'all' || String(r.ea_part) === state.part) && PXVideos.usable(r, state.lang);
     });
     grid.innerHTML = '';
-    list.forEach(function(r){ grid.appendChild(card(r)); });
+    if (location.hash) {   // a link to one video further down: show enough of the list to reach it
+      var at = list.map(function(r){ return r.slug; }).indexOf(location.hash.slice(1));
+      if (at >= state.shown) state.shown = (Math.floor(at / 12) + 1) * 12;
+    }
+    list.slice(0, state.shown).forEach(function(r){ grid.appendChild(card(r)); });
+    var more = document.getElementById('vp-more');
+    if (more) more.hidden = list.length <= state.shown;
     document.getElementById('vp-empty').hidden = list.length > 0;
     PXVideos.injectLd(rows, 'videos');   // all rows, both languages, whatever is selected
     if (location.hash) {
@@ -463,13 +473,14 @@ document.addEventListener('keydown', function(e){
 
   document.getElementById('f-part').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (!b) return;
-    state.part = b.getAttribute('data-v'); syncButtons(); syncUrl(); render();
+    state.part = b.getAttribute('data-v'); state.shown = 12; syncButtons(); syncUrl(); render();
   });
   new MutationObserver(function(){
     var l = PXVideos.siteLang();
     if (l !== state.lang) { state.lang = l; syncButtons(); syncUrl(); render(); }
   }).observe(document.getElementById('html-root'), { attributes: true, attributeFilter: ['class'] });
 
+  document.getElementById('vp-more').addEventListener('click', function(){ state.shown += 12; render(); });
   syncButtons();
   PXVideos.fetchRows().then(function(r){ rows = r; syncUrl(); render(); })
     .catch(function(){ grid.innerHTML = ''; document.getElementById('vp-error').hidden = false; });
