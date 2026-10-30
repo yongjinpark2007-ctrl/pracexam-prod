@@ -225,6 +225,7 @@
     </div>
     <div class="hero-demo" id="hero-rot">
       <img class="hero-photo rot-active" src="/re/img/hero-re.jpg?v=efaff17fa3" width="1200" height="800" alt="Real estate agent holding a tablet while a couple tours a home" fetchpriority="high">
+      <img class="hero-photo" data-src="/re/img/hero-re-2.webp?v=20261030" width="1200" height="800" alt="Real estate agent standing in front of a house for sale" loading="lazy">
     </div>
   </div>
 </section>
@@ -1719,6 +1720,42 @@ function _refSync(){
 // site-common.js switches the language by class on #html-root — redraw the referral box when it changes (EA does it inside setLang)
 try { new MutationObserver(function(){ try { _refBuild(); } catch(e){} })
         .observe(document.getElementById('html-root'), { attributes:true, attributeFilter:['class'] }); } catch(e){}
+</script>
+<script>
+// Copied from /ea/ (2026-10-30, boss: RE hero rotates like EA)
+// ── 히어로 사진 로테이션 (2026-09-13) ──────────────────────
+// ⚠️ 나머지 4장은 페이지 load 이벤트 «뒤»에만 받아온다 — 첫 화면 로딩 속도(LCP)에 영향 없게.
+// 🔴 prefers-reduced-motion 분기는 넣었다가 뺐다 — 브라우저마다(같은 기기의 크롬·엣지끼리도)
+// 그 설정 감지가 달라 fade 유무가 들쭉날쭉했다(사용자 실측). 이제 항상 돈다.
+(function(){
+  var root = document.getElementById('hero-rot');
+  if(!root) return;
+  var slides = Array.prototype.slice.call(root.querySelectorAll('.hero-photo'));
+  if(slides.length < 2) return;
+
+  function loadDeferred(){
+    slides.forEach(function(img){
+      if(img.dataset.src){
+        img.src = img.dataset.src;
+        if(img.dataset.srcset) img.srcset = img.dataset.srcset;
+      }
+    });
+  }
+  if(document.readyState === 'complete'){
+    setTimeout(loadDeferred, 300);
+  } else {
+    window.addEventListener('load', function(){
+      setTimeout(loadDeferred, 300);   // load 직후도 한 박자 늦춰 «정말 한가할 때» 받아온다
+    });
+  }
+
+  var i = 0;
+  setInterval(function(){
+    slides[i].classList.remove('rot-active');
+    i = (i + 1) % slides.length;
+    slides[i].classList.add('rot-active');
+  }, 15000);
+})();
 </script>
 </body>
 </html>
