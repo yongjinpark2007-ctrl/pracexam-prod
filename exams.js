@@ -14,11 +14,11 @@
   var EXAMS = [
     { id:'ea', url:'/ea/', app:'/app', color:'#6FA39E',
       name:{ ko:'EA', en:'Enrolled Agent' },
-      full:{ ko:'미국 세무사 Enrolled Agent (EA)', en:'Enrolled Agent (EA)' },
+      full:{ ko:'미국 세무사 Enrolled Agent (EA)', en:'Enrolled Agent' },   // switch list = same name as the button (boss 2026-10-30)
       blurb:{ ko:'IRS EA 시험 Part 1·2·3 — 5,000개+ 실전 문제', en:'IRS Enrolled Agent exam, Parts 1–3 — 5,000+ practice questions' } },
     { id:'re', url:'/re/', app:'/re/app', color:'#4F7CAC',
-      name:{ ko:'부동산', en:'Real Estate' },
-      full:{ ko:'미국 부동산 중개사 Real Estate Agent', en:'Real Estate License' },
+      name:{ ko:'부동산', en:'Real Estate Agent' },
+      full:{ ko:'미국 부동산 중개사 Real Estate Agent', en:'Real Estate Agent' },
       blurb:{ ko:'National + 주(州) 시험 — 캘리포니아·텍사스·뉴저지·뉴욕', en:'National + state exams — CA, TX, NJ, NY' } }
   ];
 
