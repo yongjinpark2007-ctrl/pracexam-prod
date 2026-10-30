@@ -22,7 +22,7 @@
                                                    en:['National 85 + State 50 questions · 4 hours', 'Pass each portion at 70% (real exam: 56 of 80 and 28 of 40 scored items)'] },
     fl: { n:100, min:210, pct:75, portions:false, ko:['100문항 · 3시간 30분', '75점 이상이면 합격 (Florida DBPR 기준)'], en:['100 questions · 3 hours 30 minutes', 'Pass at 75 or more (Florida DBPR)'] },
     nj: { n:110, min:240, pct:70, portions:false, ko:['110문항 · 4시간', '70% (77문항) 이상이면 합격 (PSI 기준)'], en:['110 questions · 4 hours', 'Pass at 70% (77 correct) or more (PSI)'] },
-    ny: { n:75,  min:90,  pct:70, portions:false, ko:['75문항 · 1시간 30분', '뉴욕주는 합격선을 공개하지 않습니다 — 여기서는 70%로 표시'], en:['75 questions · 1 hour 30 minutes', 'New York does not publish a passing score — shown here at 70%'] }
+    ny: { n:75,  min:90,  pct:70, portions:false, ko:['모의고사 75문항 · 1시간 30분(실제 시험 시간과 같음)', '실제 시험은 합격·불합격만 알려 줍니다 — 이 모의고사는 70%를 합격선으로 씁니다'], en:['Mock exam: 75 questions · 1 hour 30 minutes (same time as the real exam)', 'The real exam reports pass or fail only — this mock uses 70% as its pass line'] }
   };
   var F = FMT[(typeof RE_STATE !== 'undefined' && FMT[RE_STATE]) ? RE_STATE : 'ca'];
   var STN = (typeof RE_STATES !== 'undefined') ? RE_STATES[RE_STATE] : 'California';
