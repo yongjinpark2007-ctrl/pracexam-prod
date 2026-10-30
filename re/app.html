@@ -9990,10 +9990,23 @@ function flaggedSubmittableByPart(){
   return groups;
 }
 
+var _revAutoPartDone = false;
+// First time the review opens: the remembered tab may be empty while the other one has the customer's work.
+function _revAutoPart(){
+  if(_revAutoPartDone || REV_PART === 'all') return;
+  _revAutoPartDone = true;
+  var has = {};
+  (S.sessions || []).forEach(function(s){ if((s.count || 0) > 0){ var p = stsSessionPart(s); if(p) has[p] = (has[p] || 0) + 1; } });
+  (S.questions || []).forEach(function(q){ if(S.flagged && S.flagged.has(q.id) && q.part) has[q.part] = (has[q.part] || 0) + 1; });
+  if(has[REV_PART]) return;
+  var other = ['Part 1', 'Part 2'].filter(function(p){ return p !== REV_PART && has[p]; })[0];
+  if(other) REV_PART = other;
+}
 async function renderBookmarks(){
   var el = document.getElementById('bookmarks-list');
   var badge = document.getElementById('rev-badge-flagged');
   var sub = document.getElementById('rev-flag-sub');
+  _revAutoPart();
   revSyncSeg();
   var allFlagged = S.questions.filter(function(q){ return S.flagged.has(q.id) && (REV_PART === 'all' || q.part === REV_PART); });
   if(badge) badge.textContent = allFlagged.length;
