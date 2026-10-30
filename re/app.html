@@ -3616,6 +3616,13 @@ function doReSignup(){
   })
   .then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
   .then(function(r){
+    // Email that already has an account (2026-10-29): GoTrue answers 200 with identities: [] and sends no mail.
+    if(r.ok && r.data && Array.isArray(r.data.identities) && r.data.identities.length === 0){
+      err.innerHTML = 'This email already has a PracExam account. Please <a href="#" onclick="lgShowView(\'login\');return false;">log in</a> with it; sign-up continues after you log in. Forgot your password? Use «Forgot password?» on the log-in screen.';
+      err.style.display = 'block';
+      var le0 = document.getElementById('lg-email'); if(le0) le0.value = em;
+      return;
+    }
     if(r.ok){
       ok.innerHTML = '✅ Account created. We sent a confirmation link to <b>' + em.replace(/</g, '&lt;') + '</b>.<br>Open it, then log in here. Check your spam folder if you do not see it.';
       ok.style.display = 'block';
