@@ -1612,8 +1612,8 @@ async function reEnforceState(){
 }
 </script>
 <style>
-/* phase 1: EA-only features hidden */
-#nav-videos, #nav-anomaly { display:none !important; }
+/* phase 1 hid #nav-videos and #nav-anomaly here. 2026-10-29: both now serve RE data (RE shorts, RE admin), so they show again
+   (videos for everyone, admin for the admin account only — applyAdminVisibility). */
 #part-row, .dash-parts-list, .dash-hero-picker .dash-parts-list { grid-template-columns:repeat(2,1fr) !important; }   /* RE: National + state, two tiles fill the row */
 #part-row > button:nth-child(3), button[data-p="Part 3"] { display:none !important; }
 .re-statebar{display:none;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;margin:0 0 12px}
