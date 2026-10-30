@@ -313,221 +313,250 @@ html{scrollbar-gutter:stable;}
 <!-- ══ 머리줄 끝 ══ -->
 
 <main class="vp-main et-main">
-  <!-- RE «Exam Tips» (boss 2026-10-30). Every number comes from an official text on disk (re_generator\sources):
-       CA DRE RE 4 + RE 206 (Rev. 7/26) + Taking the Exam page · TX Pearson VUE candidate handbook (Jan 2026, rev05/2026) + TREC rules ·
-       FL DBPR/Pearson VUE sales associate booklet (Jan 2025) + 61J2-3 + F.S. 475 · NJ PSI bulletin (updated 2/1/2026) + N.J.S.A. 45:15 ·
-       NY Department of State «Real Estate Agent» page + FAQ + RPL Art. 12-A. Not published / not verified: FL exam fee, NY question count
-       and passing score (NY reports pass/fail only). -->
+  <!-- RE «Exam Tips» v2 — one page, narrative + Top-N lists, topics collapse (boss 2026-10-30).
+       Numbers only from official texts in re_generator\sources: CA DRE RE 4 + RE 206 (Rev. 7/26) + Taking the Exam ·
+       TX Pearson VUE handbook (Jan 2026, rev05/2026) + TREC rules · FL DBPR/Pearson VUE booklet (Jan 2025) + 61J2-3 + F.S. 475 ·
+       NJ PSI bulletin (2/1/2026) + N.J.S.A. 45:15 · NY DOS «Real Estate Agent» page + FAQ + RPL 12-A.
+       Facts with no official source are left out (boss 2026-10-30). School links checked 200 on 2026-10-30. -->
   <style>
-    .et-main{max-width:960px;}
+    .et-main{max-width:820px;}
     .et-hero{padding:40px 0 8px;}
-    .et-hero h1{margin:10px 0 12px;font-size:clamp(26px,3.2vw,34px);line-height:1.25;font-weight:800;}
-    .et-hero p{color:var(--text-mid);line-height:1.75;margin:0;}
-    .et-toc{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 8px;}
+    .et-hero h1{margin:10px 0 14px;font-size:clamp(26px,3.2vw,34px);line-height:1.25;font-weight:800;}
+    .et-hero p{color:var(--text-mid);line-height:1.85;margin:0 0 10px;font-size:16.5px;}
+    .et-toc{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 8px;}
     .et-toc a{font-size:13px;font-weight:600;text-decoration:none;color:var(--navy);border:1px solid var(--border-strong);border-radius:999px;padding:6px 12px;}
     .et-toc a:hover{background:var(--accent-tint);}
-    .et-sec{padding:28px 0;border-top:1px solid var(--border-clr);}
-    .et-sec h2{font-size:22px;line-height:1.3;margin:0 0 14px;font-weight:800;color:var(--navy);}
-    .et-sec h3{font-size:16px;margin:18px 0 8px;font-weight:700;}
-    .et-sec p, .et-sec li{line-height:1.75;color:var(--text-main);}
-    .et-sec ul{padding-left:20px;margin:8px 0;}
-    .et-lead{font-size:17px;}
-    .et-tbl{overflow-x:auto;margin:10px 0 6px;}
-    .et-tbl table{border-collapse:collapse;width:100%;font-size:14px;min-width:720px;}
+    .et-sec{padding:30px 0;border-top:1px solid var(--border-clr);scroll-margin-top:80px;}
+    .et-sec h2, .et-state h2{font-size:23px;line-height:1.35;margin:0 0 14px;font-weight:800;color:var(--navy);}
+    .et-sec h3, .et-acc h3{font-size:17px;margin:22px 0 8px;font-weight:700;color:var(--navy);}
+    .et-main p, .et-main li{line-height:1.85;color:var(--text-main);font-size:16px;}
+    .et-main p{margin:0 0 12px;}
+    .et-main ul{padding-left:20px;margin:8px 0 12px;}
+    .et-top{background:var(--accent-tint);border:1px solid var(--border-clr);border-left:5px solid var(--navy);border-radius:12px;padding:18px 20px 10px;margin:18px 0;}
+    .et-top h3{margin:0 0 10px;font-size:17px;color:var(--navy);}
+    .et-top ol{margin:0;padding-left:22px;}
+    .et-top li{padding:4px 0;line-height:1.7;}
+    .et-top li b{color:var(--navy);}
+    .et-tbl{overflow-x:auto;margin:12px 0 8px;}
+    .et-tbl table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px;}
     .et-tbl th, .et-tbl td{border-bottom:1px solid var(--border-clr);padding:9px 10px;text-align:left;vertical-align:top;}
     .et-tbl th{background:var(--accent-tint);font-weight:700;color:var(--navy);white-space:nowrap;}
     .et-tbl td:first-child{font-weight:700;color:var(--navy);white-space:nowrap;}
-    .et-note{font-size:13px;color:var(--text-muted);margin-top:8px;}
-    .et-states{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
-    .et-states a{flex:1 1 150px;text-align:center;font-weight:700;text-decoration:none;color:var(--white);background:var(--navy);border-radius:10px;padding:12px 14px;}
-    .et-states a:hover{background:var(--navy-mid);}
-    .et-state{padding:26px 0;border-top:1px solid var(--border-clr);scroll-margin-top:80px;}
-    .et-state h2{font-size:22px;margin:0 0 6px;font-weight:800;color:var(--navy);}
-    .et-state .who{color:var(--text-muted);font-size:14px;margin:0 0 10px;}
-    .et-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;}
-    .et-card{border:1px solid var(--border-clr);border-radius:12px;padding:14px 16px;background:var(--white);}
-    .et-card h3{margin:0 0 6px;font-size:15px;color:var(--navy);}
-    .et-card ul{margin:0;padding-left:18px;font-size:14.5px;}
-    .et-tips{counter-reset:tip;list-style:none;padding:0;}
-    .et-tips li{counter-increment:tip;position:relative;padding:10px 0 10px 40px;border-bottom:1px solid var(--border-clr);}
-    .et-tips li::before{content:counter(tip);position:absolute;left:0;top:10px;width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;}
+    .et-note{font-size:13.5px;color:var(--text-muted);margin-top:8px;}
     .et-cta{text-align:center;padding:36px 0 56px;border-top:1px solid var(--border-clr);}
     .et-cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+    .et-acc{border:1px solid var(--border-clr);border-radius:14px;background:var(--white);margin:12px 0;scroll-margin-top:80px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+    .et-acc > summary{list-style:none;cursor:pointer;padding:18px 52px 16px 20px;position:relative;}
+    .et-acc > summary::-webkit-details-marker{display:none;}
+    .et-acc > summary::after{content:"";position:absolute;right:22px;top:26px;width:10px;height:10px;border-right:2.5px solid var(--navy);border-bottom:2.5px solid var(--navy);transform:rotate(45deg);transition:transform .2s;}
+    .et-acc[open] > summary::after{transform:rotate(-135deg);top:31px;}
+    .et-acc > summary h2{font-size:19px;margin:0 0 6px;font-weight:800;color:var(--navy);line-height:1.35;}
+    .et-acc > summary .et-teaser{margin:0;color:var(--text-mid);font-size:15px;line-height:1.65;}
+    .et-acc > summary .et-more{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--accent,#2563eb);}
+    .et-acc[open] > summary .et-more{display:none;}
+    .et-acc > summary:hover h2{text-decoration:underline;}
+    .et-acc .et-body{padding:0 20px 18px;border-top:1px solid var(--border-clr);}
+    .et-acc .et-body > p:first-child, .et-acc .et-body > ul:first-child{margin-top:16px;}
+    /* Study Tips look (tips/ notes.css) */
+    .et-main{max-width:860px;}
+    .et-hero{padding:44px 0 8px;}
+    .et-hero h1.nl-h1{font-family:var(--font-display);font-size:clamp(26px,2.6vw,32px);line-height:1.2;color:var(--navy);letter-spacing:-.01em;margin:9px 0 12px;font-weight:800;}
+    .et-hero p.nl-lede{font-size:16.5px;line-height:1.7;color:var(--text-mid);max-width:62ch;margin:0 0 10px;}
+    .et-hero .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--navy-mid);}
+    .et-toc a{border-color:var(--accent-border);color:#3f7671;background:var(--accent-tint);}
+    .nl-sechead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:40px 0 0;padding-bottom:11px;border-bottom:1.5px solid var(--border-clr);flex-wrap:wrap}
+    .nl-sechead h2{font-family:var(--font-serif);font-size:19px;margin:0;color:var(--navy)}
+    .nl-count{font-size:12.5px;color:var(--text-muted);font-weight:600}
+    .nl-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#3f7671;background:var(--accent-tint);border:1px solid var(--accent-border);border-radius:999px;padding:4px 11px}
+    .et-sec#glance{border-top:0;padding-top:12px;}
+    .et-sec#glance > h2{font-family:var(--font-serif);font-size:19px;}
+    .et-acc{border:0;border-bottom:1px solid var(--border-clr);border-radius:0;box-shadow:none;margin:0;background:transparent;}
+    .et-acc > summary{padding:20px 44px 18px 0;}
+    .et-acc > summary::after{right:8px;top:30px;}
+    .et-acc[open] > summary::after{top:35px;}
+    .et-acc > summary h2{font-family:var(--font-serif);font-weight:700;font-size:18px;line-height:1.42;color:var(--text-main);margin:9px 0 6px;}
+    .et-acc > summary .et-teaser{font-size:14.5px;line-height:1.6;color:var(--text-mid);max-width:62ch;}
+    .et-acc > summary .et-more{font-size:12.5px;color:var(--text-muted);font-weight:600;}
+    .et-acc > summary:hover h2{text-decoration:none;color:var(--navy);}
+    .et-acc .et-body{padding:0 0 22px;border-top:0;}
+    .et-top{background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-left:1px solid var(--terracotta-border);border-radius:var(--radius);}
+    .et-top h3{color:var(--terracotta-deep);}
+    .et-top li b{color:var(--terracotta-deep);}
+    .na-cta{margin:44px 0 56px;background:var(--terracotta-tint);border:1px solid var(--terracotta-border);border-radius:var(--radius);padding:26px 28px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .na-cta h3{font-family:var(--font-display);font-size:23px;color:var(--terracotta-deep);margin:0 0 6px;letter-spacing:0}
+    .na-cta p{margin:0;font-size:14.5px;color:var(--text-mid);max-width:48ch;line-height:1.62}
+    .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap}
+    .et-back{margin:0 0 40px;font-size:14px;}
+    @media (max-width:640px){ .na-cta{padding:22px} }
   </style>
 
   <section class="et-hero">
     <span class="eyebrow"><span class="ko">Exam Tips</span><span class="en">EXAM TIPS</span></span>
-    <h1><span class="ko">부동산 중개사(세일즈 에이전트) 시험 안내</span><span class="en">The Real Estate Salesperson License Exam</span></h1>
-    <p><span class="ko">미국에서 부동산 중개 일을 시작하려면 일하려는 주의 면허를 받아야 합니다. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 다섯 주의 응시 자격, 시험 구성, 응시료, 합격 뒤 절차를 각 주 감독 기관과 시험 기관의 공식 자료로 정리했습니다.</span>
-       <span class="en">To start in U.S. real estate you need a license from the state where you will work. Here are the requirements, exam format, fees and next steps for California, Texas, Florida, New Jersey and New York — summarized from each state's regulator and exam vendor.</span></p>
+    <h1 class="nl-h1"><span class="ko">부동산 중개 면허 시험, 처음부터 차근차근</span><span class="en">The Real Estate License Exam, Step by Step</span></h1>
+    <p class="nl-lede"><span class="ko">미국에서 부동산 일을 시작하고 싶은데 어디서부터 해야 할지 막막하신가요? 이 페이지는 면허를 받기까지의 과정을 처음부터 순서대로 설명합니다. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 다섯 주가 어떻게 다른지도 함께 정리했습니다.</span>
+       <span class="en">Want to start in U.S. real estate but not sure where to begin? This page walks you through the road to a license, in order, and shows how California, Texas, Florida, New Jersey and New York differ.</span></p>
+    <p class="nl-lede"><span class="ko">모든 숫자는 각 주 감독 기관과 시험 기관의 공식 자료(2026년 10월 30일 기준)에서 가져왔습니다. 궁금한 토픽만 골라 펼쳐 보세요.</span>
+       <span class="en">Every number comes from each state's regulator and exam vendor (official sources as of October 30, 2026). Open only the topics you need.</span></p>
     <nav class="et-toc" aria-label="On this page">
-      <a href="#what"><span class="ko">어떤 자격인가</span><span class="en">What the license is</span></a>
+      <a href="#glance"><span class="ko">한눈에 Top 5</span><span class="en">Top 5 at a glance</span></a>
+      <a href="#what"><span class="ko">어떤 면허인가</span><span class="en">What the license is</span></a>
+      <a href="#steps"><span class="ko">면허까지 5단계</span><span class="en">5 steps to a license</span></a>
       <a href="#compare"><span class="ko">5개 주 비교</span><span class="en">Compare 5 states</span></a>
       <a href="#ca">California</a><a href="#tx">Texas</a><a href="#fl">Florida</a><a href="#nj">New Jersey</a><a href="#ny">New York</a>
       <a href="#school"><span class="ko">사전교육 학교</span><span class="en">Pre-license schools</span></a>
-      <a href="#tips"><span class="ko">시험 요령</span><span class="en">Test-taking tips</span></a>
+      <a href="#day"><span class="ko">시험 당일</span><span class="en">Exam day</span></a>
+      <a href="#tips"><span class="ko">합격 요령 Top 10</span><span class="en">Top 10 tips</span></a>
     </nav>
   </section>
 
-  <section class="et-sec" id="what">
-    <h2><span class="ko">부동산 세일즈 에이전트 면허란</span><span class="en">What is a real estate salesperson license?</span></h2>
-    <p class="et-lead"><span class="ko">부동산 세일즈 에이전트(주에 따라 salesperson, sales agent, sales associate라고 부름)는 브로커 아래에서 부동산을 사고팔고 빌리는 일을 돕는 사람입니다. 이 면허는 <b>주마다 따로</b> 받습니다.</span>
-       <span class="en">A real estate salesperson (called a sales agent or sales associate in some states) helps people buy, sell and lease property while working under a broker. The license is issued <b>state by state</b>.</span></p>
-    <ul>
-      <li><span class="ko">모든 주에서 정해진 사전교육을 먼저 마쳐야 시험을 볼 수 있습니다.</span><span class="en">Every state requires pre-licensing education before the exam.</span></li>
-      <li><span class="ko">시험은 대개 전국 공통 내용(National)과 그 주의 법·규칙(State)을 함께 묻습니다. 텍사스처럼 두 부분을 따로 채점하는 주도 있습니다.</span><span class="en">Exams usually cover national real estate principles plus the state's own law and rules; some states, like Texas, score the two portions separately.</span></li>
-      <li><span class="ko">합격 뒤에도 면허를 신청해야 하고, 주에 따라 지문 등록이나 브로커 소속 같은 절차를 마쳐야 일을 시작할 수 있습니다.</span><span class="en">After passing you still apply for the license and, depending on the state, complete fingerprints and affiliate with a broker before you can work.</span></li>
-    </ul>
+  <section class="et-sec" id="glance">
+    <h2><span class="ko">먼저, 꼭 알아야 할 5가지</span><span class="en">First, the five things to know</span></h2>
+    <div class="et-top">
+      <h3><span class="ko">부동산 면허 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the real estate exam</span></h3>
+      <ol>
+        <li><span class="ko"><b>면허는 주마다 따로 받습니다.</b> 일하려는 주의 면허가 필요하고, 요건과 시험도 주마다 다릅니다.</span><span class="en"><b>Licenses are state by state.</b> You need the license of the state where you will work, and each state sets its own rules and exam.</span></li>
+        <li><span class="ko"><b>시험 전에 사전교육을 먼저 마쳐야 합니다.</b> 주가 승인한 학교에서 정해진 시간을 이수합니다.</span><span class="en"><b>Pre-license education comes first.</b> You complete the required hours at a state-approved school.</span></li>
+        <li><span class="ko"><b>시험은 전국 공통 내용과 그 주의 법을 함께 묻습니다.</b> 모두 객관식입니다.</span><span class="en"><b>The exam covers national principles and your state's law.</b> All questions are multiple choice.</span></li>
+        <li><span class="ko"><b>합격이 끝이 아닙니다.</b> 면허를 신청하고, 주에 따라 지문 등록과 브로커 소속까지 마쳐야 일을 시작합니다.</span><span class="en"><b>Passing is not the finish line.</b> You still apply for the license and, depending on the state, complete fingerprints and join a broker.</span></li>
+        <li><span class="ko"><b>세일즈 에이전트는 브로커 아래에서 일합니다.</b> 혼자 독립해서 영업하려면 따로 브로커 면허가 필요합니다.</span><span class="en"><b>Salespeople work under a broker.</b> Working independently requires a separate broker license.</span></li>
+      </ol>
+    </div>
   </section>
 
-  <section class="et-sec" id="compare">
-    <h2><span class="ko">5개 주 한눈에 비교</span><span class="en">The five states at a glance</span></h2>
+  <div class="nl-sechead"><h2><span class="ko">토픽별로 보기</span><span class="en">Topics</span></h2><span class="nl-count"><span class="ko">11개 토픽 · 눌러서 펼쳐 보기</span><span class="en">11 topics · tap to open</span></span></div>
+  <details class="et-acc" id="what">
+    <summary><span class="nl-badge"><span class="ko">토픽 1</span><span class="en">Topic 1</span></span><h2><span class="ko">부동산 세일즈 에이전트는 어떤 면허인가요?</span><span class="en">What is a real estate salesperson license?</span></h2><p class="et-teaser"><span class="ko">브로커 아래에서 사고팔고 빌리는 일을 돕는 면허입니다. 왜 주마다 따로 받는지도 알려 드립니다.</span><span class="en">A license to help people buy, sell and lease under a broker — and why it is issued state by state.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">부동산 세일즈 에이전트는 사람들이 집이나 건물을 사고, 팔고, 빌리는 일을 돕는 사람입니다. 주에 따라 이름이 조금씩 다릅니다. 캘리포니아와 뉴욕은 salesperson, 텍사스는 sales agent, 플로리다는 sales associate라고 부르지만 하는 일은 같습니다.</span>
+       <span class="en">A real estate salesperson helps people buy, sell and lease homes and buildings. The title varies — salesperson in California and New York, sales agent in Texas, sales associate in Florida — but the job is the same.</span></p>
+    <p><span class="ko">세일즈 에이전트 면허는 <b>브로커(broker) 아래에서 일하는 면허</b>입니다. 브로커는 중개 사무소를 책임지는 사람으로, 에이전트의 일을 감독합니다. 그래서 대부분의 주는 시험에 합격한 뒤 브로커에 소속되어야 실제로 일을 시작할 수 있게 합니다.</span>
+       <span class="en">A salesperson license is <b>a license to work under a broker</b>. The broker runs the brokerage and supervises the agents, so in most states you start working only after you join a broker.</span></p>
+    <p><span class="ko">미국에는 전국 공통 부동산 면허가 없습니다. <b>일하려는 주에서 면허를 받아야</b> 합니다. 그래서 시험 내용도 전국 공통 원리(National)와 그 주의 법·규칙(State)으로 나뉩니다.</span>
+       <span class="en">There is no national real estate license in the U.S. — <b>you are licensed by the state where you work</b>. That is why the exam is split into national principles and your state's own law and rules.</span></p>
+    </div>
+  </details>
+
+  <details class="et-acc" id="steps">
+    <summary><span class="nl-badge"><span class="ko">토픽 2</span><span class="en">Topic 2</span></span><h2><span class="ko">면허를 받기까지 5단계</span><span class="en">Five steps to your license</span></h2><p class="et-teaser"><span class="ko">사전교육 → 시험 접수 → 합격 → 면허 신청 → 브로커 소속. 다섯 주 모두 큰 흐름은 같습니다.</span><span class="en">Education → apply → pass → license → join a broker. The path is similar in all five states.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">주마다 세부 내용은 다르지만, 큰 흐름은 다섯 주 모두 비슷합니다.</span>
+       <span class="en">Details differ by state, but the overall path is similar in all five.</span></p>
+    <div class="et-top">
+      <ol>
+        <li><span class="ko"><b>사전교육 이수</b> — 주가 승인한 학교에서 정해진 과정을 마칩니다(예: 텍사스 180시간, 뉴욕 77시간).</span><span class="en"><b>Complete pre-license education</b> at a state-approved school (for example, 180 hours in Texas, 77 in New York).</span></li>
+        <li><span class="ko"><b>시험 접수</b> — 주의 감독 기관이나 시험 기관(Pearson VUE, PSI 등)에 신청하고 응시료를 냅니다.</span><span class="en"><b>Apply for the exam</b> with the state regulator or its exam vendor (such as Pearson VUE or PSI) and pay the fee.</span></li>
+        <li><span class="ko"><b>시험 합격</b> — 정해진 합격선을 넘깁니다.</span><span class="en"><b>Pass the exam</b> by reaching the passing score.</span></li>
+        <li><span class="ko"><b>면허 신청</b> — 주에 따라 지문 등록과 신원 조회를 함께 합니다.</span><span class="en"><b>Apply for the license</b>, with fingerprints and a background check where required.</span></li>
+        <li><span class="ko"><b>브로커 소속</b> — 브로커 아래에 소속되면 실제로 일을 시작할 수 있습니다.</span><span class="en"><b>Join a broker</b> — then you can start working.</span></li>
+      </ol>
+    </div>
+    </div>
+  </details>
+
+  <details class="et-acc" id="compare">
+    <summary><span class="nl-badge"><span class="ko">토픽 3</span><span class="en">Topic 3</span></span><h2><span class="ko">다섯 주는 어떻게 다른가요?</span><span class="en">How do the five states differ?</span></h2><p class="et-teaser"><span class="ko">사전교육은 63~180시간, 시험은 1시간 30분~4시간. 한 표로 비교하고, 꼭 알아 둘 차이 Top 5를 짚었습니다.</span><span class="en">63 to 180 hours of education, 1.5 to 4 hours of exam. One table, plus the top 5 differences.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">가장 큰 차이는 <b>사전교육 시간</b>과 <b>시험 길이</b>입니다. 텍사스는 사전교육이 180시간으로 가장 길고, 시험도 National과 State 두 부분을 따로 채점합니다. 뉴욕은 시험 시간이 1시간 30분으로 가장 짧습니다.</span>
+       <span class="en">The biggest differences are <b>pre-license hours</b> and <b>exam length</b>. Texas requires the most education (180 hours) and scores its National and State portions separately. New York has the shortest exam at 1.5 hours.</span></p>
     <div class="et-tbl"><table>
       <tr><th></th><th>California</th><th>Texas</th><th>Florida</th><th>New Jersey</th><th>New York</th></tr>
-      <tr><td><span class="ko">감독 기관</span><span class="en">Regulator</span></td><td>DRE</td><td>TREC</td><td>DBPR (FREC)</td><td><span class="ko">NJ 부동산 위원회</span><span class="en">NJ Real Estate Commission</span></td><td><span class="ko">NY 국무부(DOS)</span><span class="en">NY Department of State</span></td></tr>
-      <tr><td><span class="ko">시험 기관</span><span class="en">Exam vendor</span></td><td><span class="ko">DRE 직접</span><span class="en">DRE itself</span></td><td>Pearson VUE</td><td>Pearson VUE</td><td>PSI</td><td><span class="ko">DOS 직접</span><span class="en">DOS itself</span></td></tr>
-      <tr><td><span class="ko">사전교육</span><span class="en">Pre-licensing</span></td><td><span class="ko">대학 수준 3과목</span><span class="en">3 college-level courses</span></td><td><span class="ko">180시간</span><span class="en">180 hours</span></td><td><span class="ko">63시간(Course I)</span><span class="en">63 hours (Course I)</span></td><td><span class="ko">75시간</span><span class="en">75 hours</span></td><td><span class="ko">77시간</span><span class="en">77 hours</span></td></tr>
-      <tr><td><span class="ko">문항 수</span><span class="en">Questions</span></td><td>150</td><td><span class="ko">135(National 85 + State 50)</span><span class="en">135 (National 85 + State 50)</span></td><td>100</td><td>110</td><td></td></tr>
-      <tr><td><span class="ko">시간</span><span class="en">Time</span></td><td><span class="ko">3시간</span><span class="en">3 hours</span></td><td><span class="ko">4시간(150분 + 90분)</span><span class="en">4 hours (150 + 90 min)</span></td><td><span class="ko">3시간 30분</span><span class="en">3.5 hours</span></td><td><span class="ko">4시간</span><span class="en">4 hours</span></td><td><span class="ko">1시간 30분</span><span class="en">1.5 hours</span></td></tr>
-      <tr><td><span class="ko">합격선</span><span class="en">To pass</span></td><td><span class="ko">70% 이상</span><span class="en">70% or more</span></td><td><span class="ko">National 56/80, State 28/40 (각각)</span><span class="en">National 56/80 and State 28/40</span></td><td><span class="ko">75점 이상</span><span class="en">75 points or more</span></td><td><span class="ko">70%(77문항 정답)</span><span class="en">70% (77 correct)</span></td><td><span class="ko">합격·불합격만 알려 줌</span><span class="en">Pass/fail only</span></td></tr>
+      <tr><td><span class="ko">사전교육</span><span class="en">Pre-license</span></td><td><span class="ko">대학 수준 3과목</span><span class="en">3 college courses</span></td><td><span class="ko">180시간</span><span class="en">180 hours</span></td><td><span class="ko">63시간</span><span class="en">63 hours</span></td><td><span class="ko">75시간</span><span class="en">75 hours</span></td><td><span class="ko">77시간</span><span class="en">77 hours</span></td></tr>
+      <tr><td><span class="ko">문항 수</span><span class="en">Questions</span></td><td>150</td><td>135 (85 + 50)</td><td>100</td><td>110</td><td></td></tr>
+      <tr><td><span class="ko">시간</span><span class="en">Time</span></td><td><span class="ko">3시간</span><span class="en">3 hours</span></td><td><span class="ko">4시간</span><span class="en">4 hours</span></td><td><span class="ko">3시간 30분</span><span class="en">3.5 hours</span></td><td><span class="ko">4시간</span><span class="en">4 hours</span></td><td><span class="ko">1시간 30분</span><span class="en">1.5 hours</span></td></tr>
+      <tr><td><span class="ko">합격선</span><span class="en">To pass</span></td><td>70%</td><td>56/80 · 28/40</td><td><span class="ko">75점</span><span class="en">75 points</span></td><td><span class="ko">70%(77문항)</span><span class="en">70% (77)</span></td><td><span class="ko">합격·불합격만</span><span class="en">Pass/fail</span></td></tr>
       <tr><td><span class="ko">응시료</span><span class="en">Exam fee</span></td><td>$100</td><td>$43</td><td></td><td>$38</td><td>$15</td></tr>
     </table></div>
-    <p class="et-note"><span class="ko">표의 숫자는 2026년 10월 30일 기준 각 주의 공식 자료입니다. 응시 전에 아래 각 주의 공식 링크로 최신 내용을 꼭 확인하세요.</span><span class="en">Figures are from each state's official sources as of October 30, 2026. Always confirm on the official links below before you apply.</span></p>
-    <div class="et-states">
-      <a href="#ca">California</a><a href="#tx">Texas</a><a href="#fl">Florida</a><a href="#nj">New Jersey</a><a href="#ny">New York</a>
+    <div class="et-top">
+      <h3><span class="ko">주별로 알아야 할 차이점 Top 5</span><span class="en">Top 5 differences to know</span></h3>
+      <ol>
+        <li><span class="ko"><b>텍사스는 두 부분을 따로 합격</b>해야 합니다. 떨어진 부분만 다시 보면 됩니다.</span><span class="en"><b>Texas scores two portions separately</b>; you retake only the portion you failed.</span></li>
+        <li><span class="ko"><b>계산기 규칙이 다릅니다.</b> 캘리포니아는 기본 계산기를 주고, 텍사스는 주지 않으며, 뉴저지는 휴대용 계산기를 금지합니다.</span><span class="en"><b>Calculator rules differ:</b> California provides one, Texas does not, and New Jersey prohibits handheld calculators.</span></li>
+        <li><span class="ko"><b>뉴욕은 점수를 알려 주지 않습니다.</b> 합격·불합격만 나옵니다.</span><span class="en"><b>New York gives no score</b> — only pass or fail.</span></li>
+        <li><span class="ko"><b>플로리다는 첫 갱신 전 추가 교육</b>(최대 45시간)을 마치지 않으면 면허가 무효가 됩니다. 텍사스도 첫 갱신 전 90시간을 더 들어야 합니다.</span><span class="en"><b>Florida voids the license</b> if post-licensing education (up to 45 hours) isn't done before the first renewal; Texas also requires 90 more hours.</span></li>
+        <li><span class="ko"><b>합격 뒤 기한이 있습니다.</b> 캘리포니아는 합격 후 1년 이내에 면허를 신청해야 하고, 뉴욕의 합격 결과는 2년 동안 유효합니다.</span><span class="en"><b>Deadlines after passing:</b> California requires you to apply within one year, and New York results are valid for two years.</span></li>
+      </ol>
     </div>
-  </section>
+    </div>
+  </details>
 
-  <section class="et-state" id="ca">
-    <h2>California</h2>
-    <p class="who"><span class="ko">감독·시험: California Department of Real Estate(DRE)</span><span class="en">Regulator and exam: California Department of Real Estate (DRE)</span></p>
-    <div class="et-grid">
-      <div class="et-card"><h3><span class="ko">응시 자격</span><span class="en">Requirements</span></h3><ul>
-        <li><span class="ko">만 18세 이상. 캘리포니아 거주는 필요 없습니다</span><span class="en">18 or older; California residency is not required</span></li>
-        <li><span class="ko">대학 수준 3과목(과목당 3학기 학점 또는 4쿼터 학점): Real Estate Principles, Real Estate Practice, 선택 1과목</span><span class="en">Three college-level courses (3 semester or 4 quarter units each): Real Estate Principles, Real Estate Practice and one elective</span></li>
-        <li><span class="ko">실무 경력은 필요 없습니다. Live Scan 지문 등록</span><span class="en">No experience required; Live Scan fingerprints</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험</span><span class="en">Exam</span></h3><ul>
-        <li><span class="ko">150문항 객관식, 3시간</span><span class="en">150 multiple-choice questions, 3 hours</span></li>
-        <li><span class="ko">70% 이상 맞혀야 합격</span><span class="en">Pass with at least 70% correct</span></li>
-        <li><span class="ko">응시료 $100</span><span class="en">Exam fee $100</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험 당일</span><span class="en">Exam day</span></h3><ul>
-        <li><span class="ko">신분증: 주 운전면허증·DMV 신분증, 미국 여권, 미군 신분증 등</span><span class="en">ID: state driver's license or DMV ID card, U.S. passport, U.S. military ID, and others</span></li>
-        <li><span class="ko">기본 계산기를 줍니다. 개인 계산기는 쓸 수 없습니다</span><span class="en">Basic calculators are provided; personal calculators are not allowed</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">합격 뒤</span><span class="en">After you pass</span></h3><ul>
-        <li><span class="ko">합격 후 1년 이내에 면허 신청(면허 수수료 $350, 지문 $49)</span><span class="en">Apply for the license within one year ($350 license fee, $49 fingerprints)</span></li>
-        <li><span class="ko">브로커에 소속되어야 중개 업무를 할 수 있습니다</span><span class="en">You must be affiliated with a broker before doing licensed work</span></li>
-      </ul></div>
-    </div>
+  <details class="et-acc" id="ca">
+    <summary><span class="nl-badge"><span class="ko">토픽 4</span><span class="en">Topic 4</span></span><h2>California</h2><p class="et-teaser"><span class="ko">150문항·3시간·70% 합격. 캘리포니아에 살지 않아도 응시할 수 있습니다.</span><span class="en">150 questions, 3 hours, 70% to pass. You don't need to live in California.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">캘리포니아는 <b>California Department of Real Estate(DRE)</b>가 면허와 시험을 직접 맡습니다. 만 18세 이상이면 응시할 수 있고, <b>캘리포니아에 살지 않아도</b> 됩니다. 실무 경력도 필요 없습니다.</span>
+       <span class="en">In California, the <b>Department of Real Estate (DRE)</b> runs both the license and the exam. You must be 18 or older, but <b>you don't need to live in California</b>, and no experience is required.</span></p>
+    <p><span class="ko">사전교육은 시간이 아니라 <b>대학 수준 과목 3개</b>로 정합니다. Real Estate Principles, Real Estate Practice, 그리고 선택 과목 하나이며, 과목마다 3학기 학점(또는 4쿼터 학점)입니다.</span>
+       <span class="en">Pre-license education is counted in courses, not hours: <b>three college-level courses</b> — Real Estate Principles, Real Estate Practice and one elective — of 3 semester (or 4 quarter) units each.</span></p>
+    <p><span class="ko">시험은 <b>150문항, 3시간</b>이고 <b>70% 이상</b> 맞히면 합격입니다. 응시료는 $100입니다. 시험장에서는 기본 계산기를 주므로 개인 계산기는 가져갈 수 없습니다.</span>
+       <span class="en">The exam has <b>150 questions in 3 hours</b>, and you pass with <b>70% or more</b>. The fee is $100. Basic calculators are provided, so personal ones are not allowed.</span></p>
+    <p><span class="ko">합격하면 <b>1년 이내에 면허를 신청</b>합니다(면허 수수료 $350, Live Scan 지문 $49). 면허를 받은 뒤 브로커에 소속되어야 중개 일을 할 수 있습니다.</span>
+       <span class="en">After passing, <b>apply for the license within one year</b> ($350 license fee, $49 for Live Scan fingerprints). You must be affiliated with a broker before doing licensed work.</span></p>
     <p class="et-note"><a href="https://www.dre.ca.gov/Examinees/RequirementsSales.html" target="_blank" rel="noopener">DRE — Salesperson requirements</a> · <a href="https://www.dre.ca.gov/files/pdf/forms/re425.pdf" target="_blank" rel="noopener"><span class="ko">출제 범위(RE 425)</span><span class="en">Exam content (RE 425)</span></a></p>
-  </section>
-
-  <section class="et-state" id="tx">
-    <h2>Texas</h2>
-    <p class="who"><span class="ko">감독: Texas Real Estate Commission(TREC) · 시험: Pearson VUE</span><span class="en">Regulator: Texas Real Estate Commission (TREC) · Exam: Pearson VUE</span></p>
-    <div class="et-grid">
-      <div class="et-card"><h3><span class="ko">응시 자격</span><span class="en">Requirements</span></h3><ul>
-        <li><span class="ko">만 18세 이상, 미국 시민 또는 합법 체류 외국인</span><span class="en">18 or older; U.S. citizen or lawfully admitted alien</span></li>
-        <li><span class="ko">사전교육 180시간: Principles 60, Agency 30, Contracts 30, Promulgated Contract Forms 30, Finance 30</span><span class="en">180 hours: Principles 60, Law of Agency 30, Law of Contracts 30, Promulgated Contract Forms 30, Real Estate Finance 30</span></li>
-        <li><span class="ko">TREC용 지문 등록과 신원 조회 통과</span><span class="en">TREC fingerprints and a background check</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험</span><span class="en">Exam</span></h3><ul>
-        <li><span class="ko">National 85문항(채점 80) 150분 + State 50문항(채점 40) 90분</span><span class="en">National: 85 items (80 scored), 150 minutes; State: 50 items (40 scored), 90 minutes</span></li>
-        <li><span class="ko">National 56문항, State 28문항 이상 맞혀야 합격. 떨어진 부분만 다시 봅니다</span><span class="en">Pass with 56 correct on National and 28 on State; retake only the portion you failed</span></li>
-        <li><span class="ko">응시료 $43</span><span class="en">Exam fee $43</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험 당일</span><span class="en">Exam day</span></h3><ul>
-        <li><span class="ko">서명이 있는 신분증 2개(하나는 정부 발급 사진 신분증)</span><span class="en">Two signature IDs; the primary one government-issued with a photo</span></li>
-        <li><span class="ko">계산기는 주지 않습니다. 금융 계산기를 가져갈 수 있습니다</span><span class="en">Calculators are not provided; financial calculators may be brought</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">합격 뒤</span><span class="en">After you pass</span></h3><ul>
-        <li><span class="ko">신원 조회가 끝나면 TREC이 5~10영업일 이내에 이메일로 면허를 보냅니다</span><span class="en">Once your background check clears, TREC emails the license within 5–10 business days</span></li>
-        <li><span class="ko">활성 상태인 텍사스 브로커의 후원(sponsorship)을 받기 전까지는 비활성 면허입니다</span><span class="en">The license stays inactive until an active Texas broker sponsors you</span></li>
-        <li><span class="ko">첫 갱신 전까지 90시간 추가 교육(30시간 브로커리지 과목 포함)</span><span class="en">90 more hours before the first renewal, including the 30-hour brokerage course</span></li>
-      </ul></div>
     </div>
+  </details>
+
+  <details class="et-acc" id="tx">
+    <summary><span class="nl-badge"><span class="ko">토픽 5</span><span class="en">Topic 5</span></span><h2>Texas</h2><p class="et-teaser"><span class="ko">사전교육 180시간. National과 State를 따로 채점하므로 떨어진 부분만 다시 봅니다.</span><span class="en">180 hours of education. National and State are scored separately — retake only what you fail.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">텍사스는 <b>Texas Real Estate Commission(TREC)</b>이 면허를 맡고, 시험은 <b>Pearson VUE</b>가 운영합니다. 만 18세 이상이고 미국 시민이거나 합법 체류 외국인이어야 합니다.</span>
+       <span class="en">In Texas, the <b>Texas Real Estate Commission (TREC)</b> issues the license and <b>Pearson VUE</b> runs the exam. You must be 18 or older and a U.S. citizen or lawfully admitted alien.</span></p>
+    <p><span class="ko">사전교육은 다섯 주 가운데 가장 긴 <b>180시간</b>입니다. Principles 60시간, Agency 30시간, Contracts 30시간, Promulgated Contract Forms 30시간, Finance 30시간으로 구성됩니다. 또 TREC용 지문을 등록하고 신원 조회를 통과해야 합니다.</span>
+       <span class="en">Pre-license education is the longest of the five: <b>180 hours</b> — Principles 60, Law of Agency 30, Law of Contracts 30, Promulgated Contract Forms 30 and Real Estate Finance 30. You also need TREC fingerprints and a background check.</span></p>
+    <p><span class="ko">시험은 두 부분입니다. <b>National은 85문항(채점 80) 150분, State는 50문항(채점 40) 90분</b>입니다. National에서 56문항 이상, State에서 28문항 이상을 맞혀야 하고, <b>두 부분을 따로 채점</b>하므로 떨어진 부분만 다시 보면 됩니다. 응시료는 $43입니다. 계산기는 주지 않으니 금융 계산기를 가져가세요.</span>
+       <span class="en">The exam has two portions: <b>National, 85 items (80 scored) in 150 minutes, and State, 50 items (40 scored) in 90 minutes</b>. You need 56 correct on National and 28 on State, and <b>each portion is scored separately</b>, so you retake only the one you fail. The fee is $43. Calculators are not provided — you may bring a financial calculator.</span></p>
+    <p><span class="ko">합격하고 신원 조회가 끝나면 TREC이 <b>5~10영업일 이내에 이메일로 면허</b>를 보냅니다. 다만 활성 상태인 텍사스 브로커의 후원(sponsorship)을 받기 전까지는 비활성 면허입니다. 첫 갱신 전까지 30시간 브로커리지 과목을 포함해 90시간을 더 들어야 합니다.</span>
+       <span class="en">Once you pass and your background check clears, TREC <b>emails your license within 5–10 business days</b>. It stays inactive until an active Texas broker sponsors you. Before the first renewal you need 90 more hours, including the 30-hour brokerage course.</span></p>
     <p class="et-note"><a href="https://www.trec.texas.gov" target="_blank" rel="noopener">TREC</a> · <a href="https://www.pearsonvue.com/us/en/tx/realestate.html" target="_blank" rel="noopener">Pearson VUE — Texas</a></p>
-  </section>
-
-  <section class="et-state" id="fl">
-    <h2>Florida</h2>
-    <p class="who"><span class="ko">감독: DBPR / Florida Real Estate Commission(FREC) · 시험: Pearson VUE</span><span class="en">Regulator: DBPR / Florida Real Estate Commission (FREC) · Exam: Pearson VUE</span></p>
-    <div class="et-grid">
-      <div class="et-card"><h3><span class="ko">응시 자격</span><span class="en">Requirements</span></h3><ul>
-        <li><span class="ko">만 18세 이상, 고등학교 졸업 또는 그에 준하는 학력</span><span class="en">18 or older; high school diploma or equivalent</span></li>
-        <li><span class="ko">Course I 63시간(과정 시험 포함), 과정 시험 70% 이상</span><span class="en">Course I: 63 hours including the course exam; 70% or higher on the end-of-course exam</span></li>
-        <li><span class="ko">디지털 지문 등록</span><span class="en">Digital fingerprints</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험</span><span class="en">Exam</span></h3><ul>
-        <li><span class="ko">100문항 객관식, 3시간 30분</span><span class="en">100 multiple-choice questions, 3.5 hours</span></li>
-        <li><span class="ko">75점 이상 합격. 시범 문항은 채점하지 않고 시간을 더 줍니다</span><span class="en">Pass with 75 points or more; pilot questions are not scored and extra time is given</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험 당일</span><span class="en">Exam day</span></h3><ul>
-        <li><span class="ko">서명이 있는 신분증 2개(하나는 정부 발급) + 사전교육 수료증</span><span class="en">Two signature IDs (one government-issued) plus your pre-licensing completion certificate</span></li>
-        <li><span class="ko">소리 없고, 인쇄 기능과 문자 자판이 없는 휴대용 계산기는 쓸 수 있습니다</span><span class="en">Silent, hand-held, non-printing calculators without an alphabetic keypad are allowed</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">합격 뒤</span><span class="en">After you pass</span></h3><ul>
-        <li><span class="ko">브로커의 지휘·감독 아래에서 일합니다</span><span class="en">You work under the direction of a broker</span></li>
-        <li><span class="ko">첫 갱신 전까지 면허 후 교육(최대 45시간)을 마쳐야 하며, 마치지 않으면 면허가 무효가 됩니다</span><span class="en">Complete post-licensing education (up to 45 hours) before the first renewal, or the license becomes void</span></li>
-      </ul></div>
     </div>
+  </details>
+
+  <details class="et-acc" id="fl">
+    <summary><span class="nl-badge"><span class="ko">토픽 6</span><span class="en">Topic 6</span></span><h2>Florida</h2><p class="et-teaser"><span class="ko">100문항·3시간 30분·75점 합격. 시험 당일 수료증이 없으면 들어갈 수 없습니다.</span><span class="en">100 questions, 3.5 hours, 75 to pass. No completion certificate, no entry.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">플로리다는 <b>DBPR의 Florida Real Estate Commission(FREC)</b>이 면허를 맡고, 시험은 <b>Pearson VUE</b>가 운영합니다. 만 18세 이상이고 고등학교 졸업 또는 그에 준하는 학력이 있어야 합니다.</span>
+       <span class="en">In Florida, the <b>Florida Real Estate Commission (FREC) under DBPR</b> issues the license and <b>Pearson VUE</b> runs the exam. You must be 18 or older with a high school diploma or equivalent.</span></p>
+    <p><span class="ko">사전교육은 <b>Course I 63시간</b>(과정 시험 포함)이고, 과정 시험에서 70% 이상을 받아야 수료합니다. 디지털 지문도 등록합니다.</span>
+       <span class="en">Pre-license education is <b>Course I, 63 hours</b> including the course exam, which you pass with 70% or higher. Digital fingerprints are also required.</span></p>
+    <p><span class="ko">시험은 <b>100문항, 3시간 30분</b>이고 <b>75점 이상</b>이면 합격입니다. 채점하지 않는 시범 문항이 섞일 수 있는데, 그만큼 시간을 더 줍니다. 시험 당일에는 신분증 2개와 함께 <b>사전교육 수료증</b>을 꼭 가져가야 합니다. 수료증이 없으면 들어갈 수 없습니다.</span>
+       <span class="en">The exam has <b>100 questions in 3.5 hours</b>; you pass with <b>75 points or more</b>. Unscored pilot questions may be included, with extra time added. On exam day, bring two IDs and your <b>pre-license completion certificate</b> — without it you won't be admitted.</span></p>
+    <p><span class="ko">합격 뒤에는 브로커의 지휘·감독 아래에서 일합니다. 중요한 점은 <b>첫 갱신 전까지 면허 후 교육(최대 45시간)</b>을 마쳐야 한다는 것입니다. 마치지 않으면 면허가 무효가 됩니다.</span>
+       <span class="en">After passing, you work under a broker's direction. Importantly, <b>complete post-licensing education (up to 45 hours) before your first renewal</b>, or the license becomes void.</span></p>
     <p class="et-note"><a href="https://www2.myfloridalicense.com/examination-information/" target="_blank" rel="noopener">DBPR — Examination information</a> · <a href="https://home.pearsonvue.com/fl/realestate" target="_blank" rel="noopener">Pearson VUE — Florida</a></p>
-  </section>
-
-  <section class="et-state" id="nj">
-    <h2>New Jersey</h2>
-    <p class="who"><span class="ko">감독: New Jersey Real Estate Commission · 시험: PSI</span><span class="en">Regulator: New Jersey Real Estate Commission · Exam: PSI</span></p>
-    <div class="et-grid">
-      <div class="et-card"><h3><span class="ko">응시 자격</span><span class="en">Requirements</span></h3><ul>
-        <li><span class="ko">만 18세 이상, 고등학교 졸업 또는 그에 준하는 학력</span><span class="en">18 or older; high school education or equivalent</span></li>
-        <li><span class="ko">사전교육 75시간(학교 최종 시험 시간 포함)</span><span class="en">75 hours of pre-licensing education (the school's final exam counts toward the hours)</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험</span><span class="en">Exam</span></h3><ul>
-        <li><span class="ko">110문항, 4시간, 70%(77문항) 이상 합격</span><span class="en">110 questions, 4 hours; pass with 70% (77 correct)</span></li>
-        <li><span class="ko">채점하지 않는 시험 문항 5~10개가 더 있고, 이 문항도 시험 시간에 포함됩니다</span><span class="en">5–10 unscored experimental questions are added and count against the time</span></li>
-        <li><span class="ko">응시료 $38</span><span class="en">Exam fee $38</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험 당일</span><span class="en">Exam day</span></h3><ul>
-        <li><span class="ko">이름·사진·서명이 있는 유효한 정부 발급 신분증 1개</span><span class="en">One current government-issued ID with name, signature and photo</span></li>
-        <li><span class="ko">휴대용 계산기는 반입 금지 물품입니다</span><span class="en">Handheld calculators are on the prohibited list</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">합격 뒤</span><span class="en">After you pass</span></h3><ul>
-        <li><span class="ko">지문 등록, 고용 브로커의 서명을 받은 합격 통지서 제출, 수수료 $160</span><span class="en">Fingerprints, a score report signed by your employing broker, and a $160 fee</span></li>
-        <li><span class="ko">응시 자격 기간(1년) 이내에 합격하고 면허를 신청해야 합니다</span><span class="en">Pass and apply within your one-year eligibility period</span></li>
-      </ul></div>
     </div>
+  </details>
+
+  <details class="et-acc" id="nj">
+    <summary><span class="nl-badge"><span class="ko">토픽 7</span><span class="en">Topic 7</span></span><h2>New Jersey</h2><p class="et-teaser"><span class="ko">110문항·4시간·70% 합격. 휴대용 계산기는 가져갈 수 없습니다.</span><span class="en">110 questions, 4 hours, 70% to pass. Handheld calculators are prohibited.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">뉴저지는 <b>New Jersey Real Estate Commission</b>이 면허를 맡고, 시험은 <b>PSI</b>가 운영합니다. 만 18세 이상이고 고등학교 졸업 또는 그에 준하는 학력이 있어야 합니다.</span>
+       <span class="en">In New Jersey, the <b>New Jersey Real Estate Commission</b> issues the license and <b>PSI</b> runs the exam. You must be 18 or older with a high school education or equivalent.</span></p>
+    <p><span class="ko">사전교육은 <b>75시간</b>이고, 학교의 최종 시험 시간도 이 75시간에 포함됩니다.</span>
+       <span class="en">Pre-license education is <b>75 hours</b>, and the school's final exam counts toward those hours.</span></p>
+    <p><span class="ko">시험은 <b>110문항, 4시간</b>이고 <b>70%(77문항) 이상</b> 맞히면 합격입니다. 채점하지 않는 시범 문항 5~10개가 더 들어가는데, 이 문항도 시험 시간 안에서 풀어야 합니다. 응시료는 $38입니다. 휴대용 계산기는 반입 금지 물품이라는 점을 기억하세요.</span>
+       <span class="en">The exam has <b>110 questions in 4 hours</b>; you pass with <b>70% (77 correct)</b>. Another 5–10 unscored questions are added and count against your time. The fee is $38. Remember that handheld calculators are prohibited.</span></p>
+    <p><span class="ko">합격하면 지문을 등록하고, 고용할 브로커의 서명을 받은 합격 통지서와 수수료 $160을 냅니다. 이 모든 것을 <b>응시 자격 기간(1년) 이내에</b> 마쳐야 합니다.</span>
+       <span class="en">After passing, complete fingerprints and submit your score report signed by your employing broker with the $160 fee — all <b>within your one-year eligibility period</b>.</span></p>
     <p class="et-note"><a href="https://test-takers.psiexams.com/njre" target="_blank" rel="noopener">PSI — New Jersey real estate</a> · <a href="https://dobi.nj.gov" target="_blank" rel="noopener">NJ DOBI</a></p>
-  </section>
-
-  <section class="et-state" id="ny">
-    <h2>New York</h2>
-    <p class="who"><span class="ko">감독·시험: New York Department of State(DOS)</span><span class="en">Regulator and exam: New York Department of State (DOS)</span></p>
-    <div class="et-grid">
-      <div class="et-card"><h3><span class="ko">응시 자격</span><span class="en">Requirements</span></h3><ul>
-        <li><span class="ko">만 18세 이상</span><span class="en">18 or older</span></li>
-        <li><span class="ko">사전교육 77시간(공정 주거 6시간 포함) + 학교 감독 시험</span><span class="en">77 hours of qualifying education (6 on fair housing) plus a school-proctored exam</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험</span><span class="en">Exam</span></h3><ul>
-        <li><span class="ko">객관식, 1시간 30분</span><span class="en">Multiple choice, 1.5 hours</span></li>
-        <li><span class="ko">결과는 합격·불합격만 알려 주고 점수는 주지 않습니다</span><span class="en">Results are pass/fail with no numerical score</span></li>
-        <li><span class="ko">응시료 $15</span><span class="en">Exam fee $15</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">시험 당일</span><span class="en">Exam day</span></h3><ul>
-        <li><span class="ko">유효한 정부 발급 사진·서명 신분증 + «Summary of Your Submission» 출력본</span><span class="en">A current government-issued photo ID with signature, plus your «Summary of Your Submission» printout</span></li>
-        <li><span class="ko">소리 없고, 인쇄 기능과 문자 자판이 없는 계산기는 쓸 수 있습니다</span><span class="en">Silent, non-printing calculators without an alphabetic keyboard are allowed</span></li>
-      </ul></div>
-      <div class="et-card"><h3><span class="ko">합격 뒤</span><span class="en">After you pass</span></h3><ul>
-        <li><span class="ko">eAccessNY에서 면허 신청(신청비 $65), 뉴욕주 면허 브로커의 후원이 필요합니다</span><span class="en">Apply in eAccessNY ($65 application fee); you need sponsorship by a New York licensed broker</span></li>
-        <li><span class="ko">합격 결과는 2년 동안 유효합니다</span><span class="en">Passed exam results are valid for two years</span></li>
-      </ul></div>
     </div>
-    <p class="et-note"><a href="https://dos.ny.gov/real-estate-agent" target="_blank" rel="noopener">NY DOS — Real estate agent</a></p>
-  </section>
+  </details>
 
-  <section class="et-sec" id="school">
-    <h2><span class="ko">사전교육 과정은 어디서 수강하나요?</span><span class="en">Where do I take the pre-license course?</span></h2>
+  <details class="et-acc" id="ny">
+    <summary><span class="nl-badge"><span class="ko">토픽 8</span><span class="en">Topic 8</span></span><h2>New York</h2><p class="et-teaser"><span class="ko">1시간 30분 객관식, 합격·불합격만 알려 줍니다. 합격 결과는 2년 동안 유효합니다.</span><span class="en">1.5-hour multiple-choice exam, pass/fail only. Results are valid for two years.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">뉴욕은 <b>New York Department of State(DOS)</b>가 면허와 시험을 직접 맡습니다. 만 18세 이상이면 됩니다.</span>
+       <span class="en">In New York, the <b>Department of State (DOS)</b> runs both the license and the exam. You must be 18 or older.</span></p>
+    <p><span class="ko">사전교육은 <b>77시간</b>이고, 그중 6시간은 공정 주거(fair housing)입니다. 과정을 마친 뒤 학교에서 감독하는 시험도 통과해야 합니다.</span>
+       <span class="en">Pre-license education is <b>77 hours</b>, including 6 hours on fair housing, and you must pass the school's proctored exam.</span></p>
+    <p><span class="ko">주 시험은 객관식으로 <b>1시간 30분</b> 동안 봅니다. 결과는 <b>합격·불합격만</b> 알려 주고 점수는 주지 않습니다. 응시료는 $15입니다. 소리 없고 인쇄 기능과 문자 자판이 없는 계산기는 쓸 수 있습니다.</span>
+       <span class="en">The state exam is multiple choice and lasts <b>1.5 hours</b>. Results are <b>pass or fail only</b>, with no score. The fee is $15. Silent, non-printing calculators without an alphabetic keyboard are allowed.</span></p>
+    <p><span class="ko">합격하면 eAccessNY에서 면허를 신청합니다(신청비 $65). 뉴욕주 면허를 소지한 브로커의 후원이 필요하고, <b>합격 결과는 2년 동안 유효</b>합니다.</span>
+       <span class="en">After passing, apply in eAccessNY ($65 application fee). You need sponsorship by a New York licensed broker, and <b>passed results are valid for two years</b>.</span></p>
+    <p class="et-note"><a href="https://dos.ny.gov/real-estate-agent" target="_blank" rel="noopener">NY DOS — Real estate agent</a></p>
+    </div>
+  </details>
+
+  <details class="et-acc" id="school">
+    <summary><span class="nl-badge"><span class="ko">토픽 9</span><span class="en">Topic 9</span></span><h2><span class="ko">사전교육 과정은 어디서 수강하나요?</span><span class="en">Where do I take the pre-license course?</span></h2><p class="et-teaser"><span class="ko">사전교육은 주가 승인한 학교에서만 받을 수 있습니다. 주별 공식 학교 찾기 링크를 모았습니다.</span><span class="en">Pre-license education comes only from state-approved schools. Official school finders for each state.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
     <p><span class="ko">사전교육은 <b>해당 주에서 승인한 학교</b>에서만 이수할 수 있습니다. 수료해야 시험에 응시할 수 있으며, 플로리다주는 시험 당일 수료증 제출을 요구합니다.</span>
        <span class="en">Pre-license education must be taken at a school <b>approved by your state</b>. You need to finish it before you can sit for the exam, and Florida asks for your completion certificate on exam day.</span></p>
     <p><span class="ko"><b>PracExam은 주정부 승인 사전교육 과정이 아닙니다.</b> 해당 과정을 대체하지 않으며, 교육 과정을 이수하는 중이거나 완료한 후 시험을 대비하기 위한 연습 문제 서비스입니다.</span>
@@ -540,30 +569,57 @@ html{scrollbar-gutter:stable;}
       <li>New Jersey — <a href="https://www.nj.gov/dobi/division_rec/licensing/schlist.html" target="_blank" rel="noopener">NJ Real Estate Commission: Licensed real estate schools</a></li>
       <li>New York — <a href="https://dos.ny.gov/real-estate-course-providers" target="_blank" rel="noopener">NY DOS: Real estate course providers</a></li>
     </ul>
-  </section>
-
-  <section class="et-sec" id="tips">
-    <h2><span class="ko">시험 요령</span><span class="en">Test-taking tips</span></h2>
-    <ol class="et-tips">
-      <li><span class="ko">내 주의 시험 구성부터 확인하세요. 텍사스처럼 National과 State를 따로 채점하면 두 부분을 모두 합격선 위로 올려야 합니다.</span><span class="en">Know your state's format first. Where National and State are scored separately, as in Texas, you must pass both.</span></li>
-      <li><span class="ko">시간 배분: 전체 시간을 문항 수로 나눠 한 문항에 쓸 시간을 미리 정해 두세요. 막히는 문제는 표시하고 넘어갔다가 마지막에 다시 보세요.</span><span class="en">Pace yourself: divide the time by the number of questions before you start. Flag hard questions and come back at the end.</span></li>
-      <li><span class="ko">계산기 규칙은 주마다 다릅니다. 캘리포니아는 계산기를 주고, 텍사스는 주지 않으며, 뉴저지는 휴대용 계산기를 금지합니다. 응시 전에 내 주의 규칙을 확인하세요.</span><span class="en">Calculator rules differ: California provides one, Texas does not, and New Jersey prohibits handheld calculators. Check your state's rule.</span></li>
-      <li><span class="ko">보기 넷 가운데 확실히 틀린 것부터 지우면 남은 둘 중에서 고르기가 쉬워집니다.</span><span class="en">Eliminate the options you know are wrong first; choosing between two is easier than between four.</span></li>
-      <li><span class="ko">«EXCEPT», «NOT»이 들어간 문제는 틀린 보기 하나를 찾는 문제입니다. 문제 끝까지 읽으세요.</span><span class="en">In «EXCEPT» or «NOT» questions you are looking for the one wrong statement. Read to the end of the question.</span></li>
-      <li><span class="ko">채점하지 않는 시험 문항이 섞여 있을 수 있습니다. 처음 보는 낯선 문제 하나에 오래 매달리지 마세요.</span><span class="en">Unscored pretest questions may be mixed in. Don't let one unfamiliar question eat your time.</span></li>
-      <li><span class="ko">신분증 이름이 등록한 이름과 같은지, 플로리다처럼 수료증이 필요한지 전날 확인하세요.</span><span class="en">The day before, check that your ID name matches your registration, and whether you need a course certificate (as in Florida).</span></li>
-      <li><span class="ko">전국 공통 문제와 내 주 문제를 함께 연습하세요. PracExam은 National 문제와 주별 문제를 나누어 연습할 수 있습니다.</span><span class="en">Practice both national and state questions. PracExam lets you study National and your state separately.</span></li>
-    </ol>
-  </section>
-
-  <section class="et-cta">
-    <h2 style="margin:0;font-size:22px;"><span class="ko">PracExam으로 부동산 시험 준비하기</span><span class="en">Prepare for your real estate exam with PracExam</span></h2>
-    <div class="row">
-      <a href="/re/app" class="btn btn-primary btn-lg"><span class="ko">무료로 시작하기</span><span class="en">Start free</span></a>
-      <a href="/re/#samples" class="btn btn-ghost btn-lg"><span class="ko">예제 문제 풀어 보기</span><span class="en">Try sample questions</span></a>
     </div>
-    <p style="margin-top:24px;"><a href="/re/"><span class="ko">← PracExam 부동산 홈으로</span><span class="en">← Back to PracExam Real Estate</span></a></p>
-  </section>
+  </details>
+
+  <details class="et-acc" id="day">
+    <summary><span class="nl-badge"><span class="ko">토픽 10</span><span class="en">Topic 10</span></span><h2><span class="ko">시험 당일에는 무엇을 챙기나요?</span><span class="en">What should I bring on exam day?</span></h2><p class="et-teaser"><span class="ko">신분증·서류·계산기 규칙이 주마다 다릅니다. 시험 당일 체크리스트 Top 5.</span><span class="en">ID, papers and calculator rules differ by state. The top 5 exam-day checklist.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <p><span class="ko">시험 당일 규칙은 주마다 조금씩 다릅니다. 신분증 개수, 계산기, 가져가야 할 서류가 주마다 다르니, 시험 전날 내 주의 규칙을 다시 확인하세요.</span>
+       <span class="en">Exam-day rules vary by state — the number of IDs, calculators and required papers all differ — so recheck your state's rules the day before.</span></p>
+    <div class="et-top">
+      <h3><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h3>
+      <ol>
+        <li><span class="ko"><b>신분증</b> — 텍사스와 플로리다는 서명이 있는 신분증 2개, 뉴저지와 뉴욕은 정부 발급 사진 신분증 1개입니다. 이름이 등록한 이름과 같은지 확인하세요.</span><span class="en"><b>ID</b> — two signature IDs in Texas and Florida; one government-issued photo ID in New Jersey and New York. Make sure the name matches your registration.</span></li>
+        <li><span class="ko"><b>필요한 서류</b> — 플로리다는 사전교육 수료증, 뉴욕은 «Summary of Your Submission» 출력본을 가져갑니다.</span><span class="en"><b>Required papers</b> — your pre-license certificate in Florida; the «Summary of Your Submission» printout in New York.</span></li>
+        <li><span class="ko"><b>계산기</b> — 캘리포니아는 제공(개인 계산기 금지), 텍사스는 미제공(금융 계산기 가능), 뉴저지는 휴대용 계산기 금지입니다.</span><span class="en"><b>Calculator</b> — provided in California (no personal ones), not provided in Texas (financial calculator allowed), handheld calculators prohibited in New Jersey.</span></li>
+        <li><span class="ko"><b>개인 물건</b> — 시험실에는 가지고 들어갈 수 없습니다. 플로리다는 투명 비닐봉투에 넣어 사물함에 보관합니다.</span><span class="en"><b>Personal items</b> stay out of the testing room; in Florida they go in a clear plastic bag in a locker.</span></li>
+        <li><span class="ko"><b>여유 있게 도착</b> — 신분 확인과 안내에 시간이 걸리니 일찍 도착하세요.</span><span class="en"><b>Arrive early</b> — ID checks and check-in take time.</span></li>
+      </ol>
+    </div>
+    </div>
+  </details>
+
+  <details class="et-acc" id="tips">
+    <summary><span class="nl-badge"><span class="ko">토픽 11</span><span class="en">Topic 11</span></span><h2><span class="ko">합격을 위한 공부·시험 요령 Top 10</span><span class="en">Top 10 tips to pass</span></h2><p class="et-teaser"><span class="ko">내 주의 시험 구성 확인하기부터 낯선 문제에 흔들리지 않기까지, 합격에 도움이 되는 열 가지 요령입니다.</span><span class="en">From knowing your state's format to staying calm on strange questions — ten habits that help you pass.</span></p><span class="et-more"><span class="ko">펼쳐 보기</span><span class="en">Read more</span></span></summary>
+    <div class="et-body">
+    <div class="et-top">
+      <ol>
+        <li><span class="ko"><b>내 주의 시험 구성부터 확인하세요.</b> 텍사스처럼 두 부분을 따로 채점하면 둘 다 합격선을 넘겨야 합니다.</span><span class="en"><b>Know your state's format first.</b> Where portions are scored separately, as in Texas, you must pass both.</span></li>
+        <li><span class="ko"><b>National과 State를 함께 공부하세요.</b> 전국 공통 원리만으로는 그 주의 법 문제를 풀 수 없습니다.</span><span class="en"><b>Study both National and State.</b> National principles alone won't answer your state's law questions.</span></li>
+        <li><span class="ko"><b>용어부터 정확히 익히세요.</b> 부동산 시험은 비슷해 보이는 용어를 구별하는 문제가 많습니다.</span><span class="en"><b>Learn the terms precisely.</b> Many questions test whether you can tell similar-looking terms apart.</span></li>
+        <li><span class="ko"><b>문제를 많이 풀어 보세요.</b> 시험과 같은 4지선다 문제로 연습해야 실제 문제에서 규칙이 보입니다.</span><span class="en"><b>Practice with real-style questions.</b> Four-option practice questions teach you to spot the rule on test day.</span></li>
+        <li><span class="ko"><b>틀린 문제의 해설을 꼭 읽으세요.</b> 오답 보기가 왜 그럴듯해 보였는지 이해하는 것이 실력이 됩니다.</span><span class="en"><b>Read the explanation for every miss.</b> Understanding why a wrong option looked right is where you improve.</span></li>
+        <li><span class="ko"><b>시간을 재며 모의고사를 보세요.</b> 전체 시간을 문항 수로 나눠 한 문항에 쓸 시간을 미리 정해 두세요.</span><span class="en"><b>Take timed mock exams.</b> Divide the time by the number of questions and practice that pace.</span></li>
+        <li><span class="ko"><b>«EXCEPT», «NOT» 문제를 조심하세요.</b> 틀린 보기 하나를 찾는 문제입니다. 문제를 끝까지 읽으세요.</span><span class="en"><b>Watch for «EXCEPT» and «NOT».</b> You are looking for the one wrong statement — read to the end.</span></li>
+        <li><span class="ko"><b>확실히 틀린 보기부터 지우세요.</b> 남은 둘 중에서 고르기가 훨씬 쉬워집니다.</span><span class="en"><b>Eliminate the clearly wrong options first.</b> Choosing between two is much easier.</span></li>
+        <li><span class="ko"><b>막히면 표시하고 넘어가세요.</b> 한 문제에 오래 매달리지 말고, 마지막에 다시 보세요.</span><span class="en"><b>Flag and move on.</b> Don't get stuck — come back at the end.</span></li>
+        <li><span class="ko"><b>낯선 문제에 흔들리지 마세요.</b> 채점하지 않는 시범 문항이 섞여 있을 수 있습니다.</span><span class="en"><b>Don't let a strange question rattle you.</b> Unscored pretest questions may be mixed in.</span></li>
+      </ol>
+    </div>
+    <p class="et-note"><span class="ko">이 페이지는 2026년 10월 30일 기준 공식 자료로 정리했습니다. 응시 전에 각 주의 공식 링크로 최신 내용을 꼭 확인하세요.</span><span class="en">Based on official sources as of October 30, 2026. Always confirm on your state's official links before you apply.</span></p>
+    </div>
+  </details>
+
+  <div class="na-cta"><div><h3><span class="ko">배운 내용을 문제로 연습해 보세요</span><span class="en">Put this into practice</span></h3><p><span class="ko">실제 시험과 같은 형식의 문제로 매일 연습하세요. 30일 동안 매일 무료 문제 5개를 풀 수 있고, 카드 등록은 필요 없습니다.</span><span class="en">Practice every day with questions in the real exam format. Five free questions a day for 30 days — no card needed.</span></p></div><a class="btn btn-lg" href="/re/app"><span class="ko">무료 문제 풀어 보기</span><span class="en">Try free questions</span></a></div>
+  <p class="et-back"><a href="/re/"><span class="ko">← PracExam 부동산 홈으로</span><span class="en">← Back to PracExam Real Estate</span></a></p>
+  <script>
+  (function(){
+    function openHash(){ var id=(location.hash||'').slice(1); if(!id) return; var el=document.getElementById(id);
+      if(el && el.tagName==='DETAILS'){ el.open=true; setTimeout(function(){ el.scrollIntoView({block:'start'}); },0); } }
+    window.addEventListener('hashchange', openHash); openHash();
+  })();
+  </script>
 </main>
 
 <footer>
