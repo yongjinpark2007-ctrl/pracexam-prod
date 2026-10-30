@@ -1764,7 +1764,7 @@ async function reEnforceState(){
   <!-- LOGIN FOOTER — 법인/DBA 명시 (주소·연락처 제외) -->
   <footer class="lg-footer">
     © 2026 PracExam. All rights reserved.
-    <span class="app-footer-sep">·</span><a href="/ea/#about">About</a>
+    <span class="app-footer-sep">·</span><a href="/re/#about">About</a>
     <span class="app-footer-sep">·</span><a href="/privacy.html">Privacy</a>
     <span class="app-footer-sep">·</span><a href="mailto:hello@pracexam.com">Contact</a>
   </footer>
@@ -1775,7 +1775,7 @@ async function reEnforceState(){
 <!-- HEADER -->
 <div class="header">
   <a class="header-brand" href="/re/" title="PracExam" style="text-decoration:none;color:inherit;">
-    <img src="/img/logo-re.png?v=9c5f07a5c9" alt="PracExam Real Estate" style="height:21px;width:auto;object-fit:contain;flex-shrink:0;">
+    <img src="/img/logo-re-white.png?v=4192287393" alt="PracExam Real Estate" style="height:21px;width:auto;object-fit:contain;flex-shrink:0;">
     <div>
       <div class="header-title">Real Estate Exam Practice</div>
       <div class="header-sub"><script>document.write(RE_STATES[RE_STATE] + ' · Real Estate')</script></div>
@@ -2176,9 +2176,9 @@ async function reEnforceState(){
   <!-- Part 선택 — 통계와 같은 부품(작게) · 두 탭에 함께 -->
   <div class="sts-part-seg" id="rev-part-seg">
     <button data-p="all" onclick="revSetPart('all')" data-i18n="sts_part_all">전체</button>
-    <button class="active" data-p="Part 1" onclick="revSetPart('Part 1')">Part 1</button>
-    <button data-p="Part 2" onclick="revSetPart('Part 2')">Part 2</button>
-    <button data-p="Part 3" onclick="revSetPart('Part 3')">Part 3</button>
+    <button class="active" data-p="Part 1" onclick="revSetPart('Part 1')">National</button>
+    <button data-p="Part 2" onclick="revSetPart('Part 2')" class="re-state-name">State</button>
+    <button data-p="Part 3" onclick="revSetPart('Part 3')" style="display:none">Part 3</button>
   </div>
   <!-- Flagged panel -->
   <div id="rev-panel-flagged">
@@ -2202,10 +2202,11 @@ async function reEnforceState(){
   <!-- Part 선택 — 요약·추세·토픽 표가 함께 걸러진다 (2026-08-25) -->
   <div class="sts-part-seg" id="sts-part-seg">
     <button data-p="all" onclick="stsSetPart('all')" data-i18n="sts_part_all">전체</button>
-    <button class="active" data-p="Part 1" onclick="stsSetPart('Part 1')">Part 1</button>
-    <button data-p="Part 2" onclick="stsSetPart('Part 2')">Part 2</button>
-    <button data-p="Part 3" onclick="stsSetPart('Part 3')">Part 3</button>
+    <button class="active" data-p="Part 1" onclick="stsSetPart('Part 1')">National</button>
+    <button data-p="Part 2" onclick="stsSetPart('Part 2')" class="re-state-name">State</button>
+    <button data-p="Part 3" onclick="stsSetPart('Part 3')" style="display:none">Part 3</button>
   </div>
+  <script>/* RE: «Part 2» = the customer's state (2026-10-29) */ document.querySelectorAll('.re-state-name').forEach(function(b){ b.textContent = RE_STATES[RE_STATE] || 'State'; });</script>
 
   <!-- 요약 카드 4개 -->
   <div class="sts-summary-grid" id="sts-summary"></div>
@@ -2846,7 +2847,7 @@ async function reEnforceState(){
 <footer class="app-footer">
   © 2026 PracExam. All rights reserved.
   <div class="app-footer-links">
-    <a href="/ea/#about" data-i18n="ft_about">About</a>
+    <a href="/re/#about" data-i18n="ft_about">About</a>
     <span class="app-footer-sep">·</span><a href="/terms.html" data-i18n="ft_terms">Terms</a>
     <span class="app-footer-sep">·</span><a href="/privacy.html" data-i18n="ft_privacy">Privacy</a>
     <span class="app-footer-sep">·</span><a href="/refund.html" data-i18n="ft_refunds">Refunds</a>
@@ -3858,8 +3859,8 @@ async function confirmLogout(){
     ]);
   }catch(e){ console.warn('signOut 실패, 강제 로그아웃 진행:', e); }
   SB_USER = null;
-  // 로그아웃 후 랜딩 페이지로 이동 (무료 유저 가입 유도). 랜딩이 없으면 앱 리로드로 폴백.
-  try{ location.href = '/ea/'; }
+  // 로그아웃 후 RE 랜딩으로 (2026-10-29 사장님 — EA 랜딩으로 가면 안 된다). 실패하면 앱 리로드로 폴백.
+  try{ location.href = '/re/'; }
   catch(e){ location.reload(); }
 }
 
@@ -5515,7 +5516,7 @@ var UI_TEXT = {
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   // ── Statistics ──
   sts_title:      {ko:'통계',    en:'Statistics'},
-  sts_subtitle:   {ko:'학습 추세 · Part별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy by part · topic analysis'},
+  sts_subtitle:   {ko:'학습 추세 · National·주별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy for National and state · topic analysis'},
   sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
   sts_trend_n:    {ko:'점수 추세 (최근 {n}세션)', en:'Score Trend (last {n} sessions)'},
   sts_trend_alln: {ko:'점수 추세 (전체 {n}세션)', en:'Score Trend (all {n} sessions)'},
@@ -6115,8 +6116,8 @@ function progressColor(){ return progressBarColor(); }
 
 // Part 메타데이터 (아이콘 + 라벨) — renderDashboard 와 dashStartFocusPart 공용
 const PART_META = {
-  'Part 1': { ko: 'National — 공통', en: 'National',    icon: '<svg viewBox="0 0 24 24"><path d="M4 22V3"/><rect x="4" y="4" width="16" height="11" rx="1"/><path d="M4 9.5h6.5V4"/><path d="M10.5 6.8H20M10.5 9.5H20M4 12.3h16"/></svg>' },
-  'Part 2': { ko: RE_STATE_KO[RE_STATE] + ' — 주 시험', en: RE_STATES[RE_STATE] + ' — State',     icon: '<svg viewBox="0 0 24 24"><path d="M12 21.5s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11.2-6.5 11.2z"/><circle cx="12" cy="10.3" r="2.4"/></svg>' },
+  'Part 1': { ko: 'National', en: 'National',    icon: '<svg viewBox="0 0 24 24"><path d="M4 22V3"/><rect x="4" y="4" width="16" height="11" rx="1"/><path d="M4 9.5h6.5V4"/><path d="M10.5 6.8H20M10.5 9.5H20M4 12.3h16"/></svg>' },
+  'Part 2': { ko: RE_STATES[RE_STATE], en: RE_STATES[RE_STATE],     icon: '<svg viewBox="0 0 24 24"><path d="M12 21.5s-6.5-5.8-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11.2-6.5 11.2z"/><circle cx="12" cy="10.3" r="2.4"/></svg>' },
   'Part 3': { ko: 'Part 3 — 대리인', en: 'Part 3 — Representation', icon: '<svg viewBox="0 0 24 24"><path d="M15 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' }
 };
 // Part 라벨 — 선택 언어로 반환 (없으면 Part 키 그대로)
