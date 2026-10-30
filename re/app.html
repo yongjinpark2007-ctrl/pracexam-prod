@@ -2334,7 +2334,7 @@ async function reEnforceState(){
     <button id="atab-anomaly" class="admin-tab" onclick="adminTab('anomaly')">이상 탐지</button>
     <button id="atab-unconfirmed" class="admin-tab" onclick="adminTab('unconfirmed')">미확인 가입자</button>
     <button id="atab-qc" class="admin-tab" onclick="adminTab('qc')">문제 검토</button>
-    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')">Pop Quiz 문제</button>
+    <button id="atab-daily" class="admin-tab" onclick="adminTab('daily')" style="display:none">Pop Quiz 문제</button><!-- RE: the daily quiz is EA's (2026-10-29) -->
   </div>
 
   <!-- ═══ 공지 관리 ═══ -->
@@ -3030,7 +3030,7 @@ function loadAdminPlans(){
     _ADMIN_PLAN_PROMISE = (async function(){
       _ADMIN_PLAN = {};
       try{
-        var res = await sb.rpc('admin_list_customers', { p_limit: 2000, p_offset: 0 });
+        var res = await sb.rpc('admin_list_re_customers', { p_limit: 2000, p_offset: 0 });
         if(res.error) throw res.error;
         (res.data || []).forEach(function(u){
           _ADMIN_PLAN[u.user_id] = { is_paid: !!u.is_paid, plan_code: u.plan_code || '', trial_ends_at: u.trial_ends_at || null };
@@ -3102,7 +3102,7 @@ function loadWarRoomUse(){
     _WR_USE_PROMISE = (async function(){
       var map = {}, ok = false, err = '';
       try{
-        var res = await sb.rpc('admin_war_room_users');
+        var res = await sb.rpc('admin_re_war_room_users');
         if(res.error) throw res.error;
         (res.data || []).forEach(function(u){
           map[u.user_id] = {
@@ -3175,7 +3175,7 @@ async function renderMockActivity(){
   if(sum) sum.textContent='';
   var res;
   try{
-    res=await sb.rpc('get_mock_activity_report',{ p_hours:hours });
+    res=await sb.rpc('get_re_mock_activity_report',{ p_hours:hours });
     if(res.error) throw res.error;
   }catch(e){
     var code=(e&&(e.code||''))+'', msg=(e&&(e.message||''))+'';
@@ -3238,7 +3238,7 @@ async function renderAnomaly(){
 
   var res;
   try{
-    res = await sb.rpc('get_anomaly_report', { p_hours: hours });
+    res = await sb.rpc('get_re_anomaly_report', { p_hours: hours });
     if(res.error) throw res.error;
   }catch(e){
     var code = (e && (e.code || '')) + '';
@@ -3394,7 +3394,7 @@ async function fetchAnomWarRoom(uid, mountId, row){
   if(!el) return;
   var res;
   try{
-    res = await sb.rpc('admin_war_room_user', { p_user_id: uid });
+    res = await sb.rpc('admin_re_war_room_user', { p_user_id: uid });
     if(res.error) throw res.error;
   }catch(e){
     var code = (e && (e.code || '')) + '';
@@ -3468,7 +3468,7 @@ async function fetchAnomStudyRange(uid, mountId){
   if(!el) return;
   var res;
   try{
-    res = await sb.rpc('get_user_study_range', { p_uid: uid });
+    res = await sb.rpc('get_re_user_study_range', { p_uid: uid });
     if(res.error) throw res.error;
   }catch(e){
     var code = (e && (e.code || '')) + '';
@@ -6485,7 +6485,7 @@ async function loadAnnouncements(){
   var el = document.getElementById('dash-announcements');
   if(!el) return;
   try{
-    var res = await sb.rpc('get_announcements');
+    var res = await sb.rpc('get_re_announcements');
     if(res.error) throw res.error;
     _ANN = (res.data || []).filter(_isMyExamAnn);   // 2026-10-24: EA / RE announcements kept apart
   }catch(e){
@@ -6610,7 +6610,7 @@ async function renderUnconfirmed(){
 
   var res;
   try{
-    res = await sb.rpc('get_unconfirmed_users');
+    res = await sb.rpc('get_re_unconfirmed_users');
     if(res.error) throw res.error;
   }catch(e){
     var code = (e && (e.code || '')) + '';
@@ -7296,7 +7296,7 @@ async function renderAdminAnnList(){
   var el = document.getElementById('admin-ann-list');
   if(!el) return;
   try{
-    var res = await sb.rpc('admin_list_announcements');
+    var res = await sb.rpc('admin_list_re_announcements');
     if(res.error) throw res.error;
     _ADMIN_ANN = res.data || [];
   }catch(e){
@@ -7361,7 +7361,7 @@ function adminAnnEdit(id){
 }
 
 async function _annUpsert(payload){
-  var res = await sb.rpc('upsert_announcement', payload);
+  var res = await sb.rpc('upsert_re_announcement', payload);
   if(res.error) throw res.error;
   _ANN = null;   // 대시보드 공개 캐시 무효화 → 다음 렌더 시 재조회
   return res.data;
