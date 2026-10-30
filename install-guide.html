@@ -129,7 +129,7 @@ footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;colo
 <body>
 
 <nav class="nav"><div class="nav-inner">
-  <a class="logo" href="/"><img src="PracExam_logo_dark_transparent.png" alt="PracExam" height="30"></a>
+  <a class="logo" href="/ea/"><img src="PracExam_logo_dark_transparent.png" alt="PracExam" height="30"></a>
   <div class="lang-toggle">
     <button id="btn-ko" onclick="setLang('ko')">KO</button>
     <button id="btn-en" onclick="setLang('en')">EN</button>
@@ -329,14 +329,14 @@ footer{border-top:1px solid var(--border-clr);padding:28px 0;font-size:13px;colo
   </div>
 
   <div class="cta">
-    <a href="/"><span class="ko">← 홈으로 돌아가기</span><span class="en">← Back to home</span></a>
+    <a href="/ea/"><span class="ko">← 홈으로 돌아가기</span><span class="en">← Back to home</span></a>
   </div>
 </main>
 
 <footer><div class="wrap">
   <span>© 2026 dxd investment group LLC. All rights reserved.</span>
   <div class="footer-links">
-    <a href="/"><span class="ko">홈</span><span class="en">Home</span></a>
+    <a href="/ea/"><span class="ko">홈</span><span class="en">Home</span></a>
     <a href="terms.html"><span class="ko">이용약관</span><span class="en">Terms</span></a>
     <a href="privacy.html"><span class="ko">개인정보처리방침</span><span class="en">Privacy</span></a>
     <a href="refund.html"><span class="ko">환불정책</span><span class="en">Refunds</span></a>
@@ -369,6 +369,18 @@ function setPlatform(p){
   try {
     if (/android/i.test(navigator.userAgent)) setPlatform('android');
   } catch(e){}
+})();
+</script>
+<script>
+// RE visitors (2026-10-29): opened from the Real Estate landing with ?exam=re (or straight from a /re/ page).
+(function(){
+  var re = false;
+  try { re = new URLSearchParams(location.search).get('exam') === 're' || /^\/re(\/|$)/.test(new URL(document.referrer).pathname); } catch(e){}
+  if(!re) return;
+  document.querySelectorAll('a[href="/ea/"]').forEach(function(a){ a.setAttribute('href', '/re/'); });
+  var logo = document.querySelector('.nav .logo img');
+  if(logo){ logo.src = '/img/logo-re.png?v=9c5f07a5c9'; logo.alt = 'PracExam Real Estate'; }
+  document.querySelectorAll('.step-desc strong').forEach(function(s){ if(s.textContent === 'pracexam.com') s.textContent = 'pracexam.com/re/app'; });
 })();
 </script>
 </body>
