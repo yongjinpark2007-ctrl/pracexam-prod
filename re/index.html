@@ -1477,8 +1477,8 @@ function doSignup(){
     if (result.ok && result.data && Array.isArray(result.data.identities) && result.data.identities.length === 0) {
       showMsg(
         lang === 'ko'
-          ? '이 이메일은 이미 PracExam 계정이 있습니다. pracexam.com/re/app 에서 등록된 이메일과 비밀번호로 로그인해 주세요. 비밀번호가 기억나지 않으면 로그인 화면의 «Forgot password?»를 눌러 주세요.'
-          : 'This email already has a PracExam account. Please log in at pracexam.com/re/app with your registered email and password. Forgot your password? Use «Forgot password?» on the log-in screen.',
+          ? '이 이메일로 만든 PracExam 계정이 이미 있습니다. 같은 이메일과 비밀번호로 로그인하시면 부동산(Real Estate)를 한 단계로 추가할 수 있습니다. 비밀번호가 기억나지 않으면 로그인 화면의 “Forgot password?”를 눌러 주세요.'
+          : 'You already have a PracExam account with this email. Log in with the same email and password, and you can add Real Estate in one step. Forgot your password? Use “Forgot password?” on the log-in screen.',
         false
       );
       return;
