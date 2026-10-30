@@ -3907,6 +3907,12 @@ async function loadTrialStatus(){
       .maybeSingle();
     if(error){ console.warn('profile 조회 실패:', error); return; }
     if(!data) return;  // profiles row 없으면(과거 가입자 등) 기존 동작 유지(미차단)
+    // EA / RE 가입 분리 (2026-10-29): RE 로만 가입한 고객은 EA 체험이 없다 → EA 가입 화면부터.
+    // 칸이 아직 없거나 읽기가 실패하면 지금처럼 둔다(기존 EA 고객은 전부 ea_enrolled = true).
+    try{
+      const er = await sb.from('profiles').select('ea_enrolled').eq('id', SB_USER.id).maybeSingle();
+      if(!er.error && er.data && er.data.ea_enrolled === false && !data.is_paid){ eaShowEnrollGate(); return; }
+    }catch(e){ console.warn('ea_enrolled skip:', e && e.message); }
     S.isPaid = !!data.is_paid;
     S.subCanceled = !!data.sub_canceled;   // 해지 예정(기간말 해지 신청됨) — 멤버십 카드 표시용
     S.marketingConsent = !!data.marketing_consent;
@@ -3958,6 +3964,40 @@ async function loadTrialStatus(){
 }
 
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
+// ── EA 가입 화면 (2026-10-29) — RE 로만 가입한 고객용. 닫을 수 없다. ──
+function eaShowEnrollGate(){
+  if(document.getElementById('ea-enroll-gate')) return;
+  var en = (typeof LANG === 'undefined' || LANG === 'en');
+  var d = document.createElement('div');
+  d.id = 'ea-enroll-gate';
+  d.style.cssText = 'position:fixed;inset:0;z-index:99999;background:var(--bg,#fff);display:flex;align-items:center;justify-content:center;padding:16px;';
+  d.innerHTML =
+    '<div style="max-width:380px;width:100%;text-align:center;">' +
+      '<div style="font-size:20px;font-weight:800;margin-bottom:.5rem;">' + (en ? 'Sign up for EA exam prep' : 'EA 시험 준비에 가입하세요') + '</div>' +
+      '<div style="font-size:14px;color:var(--text-mid,#555);line-height:1.7;margin-bottom:1.2rem;">' +
+        (en ? 'Your PracExam account is set up for Real Estate. EA is a separate service with its own 30-day free trial and its own subscription.'
+            : '지금 계정은 부동산 시험으로 가입되어 있습니다. EA는 별도 서비스이며 30일 무료 체험과 구독도 따로입니다.') + '</div>' +
+      '<button class="btn-navy" style="width:100%;margin-bottom:8px;justify-content:center;" onclick="eaStartTrial(this)">' + (en ? 'Start EA 30-day free trial' : 'EA 30일 무료 체험 시작') + '</button>' +
+      '<a class="btn-ghost" style="display:flex;justify-content:center;width:100%;box-sizing:border-box;margin-bottom:8px;text-decoration:none;" href="/re/app">' + (en ? 'Back to Real Estate' : '부동산 앱으로 돌아가기') + '</a>' +
+      '<button class="btn-ghost" style="width:100%;justify-content:center;" onclick="doLogout()">' + (en ? 'Log out' : '로그아웃') + '</button>' +
+      '<div id="ea-enroll-err" style="color:#dc2626;font-size:13px;margin-top:10px;"></div>' +
+    '</div>';
+  document.body.appendChild(d);
+}
+async function eaStartTrial(b){
+  b.disabled = true;
+  try{
+    const r = await sb.rpc('start_ea_trial');
+    if(r.error) throw r.error;
+    location.reload();
+  }catch(e){
+    b.disabled = false;
+    var m = document.getElementById('ea-enroll-err');
+    if(m) m.textContent = (typeof LANG !== 'undefined' && LANG === 'ko') ? '잠시 후 다시 시도해 주세요.' : 'Please try again in a moment.';
+    console.warn('start_ea_trial:', e && e.message);
+  }
+}
+
 function isTrialLimited(){
   return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
 }
