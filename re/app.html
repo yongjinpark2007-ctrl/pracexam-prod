@@ -9079,10 +9079,18 @@ function _resultIcon(kind){
 // 제목 목록은 list_war_room_topics(본문 없음 · ~100KB)를 «한 번만» 불러 기억한다. 못 불러오면
 // 예전처럼 q.topic 을 띄운다(조용히 물러남).
 var _WR_TITLES = null, _WR_TITLES_P = null;
+// RE War Room (2026-10-29): customers read through list_re_war_room / get_re_war_room_topic / get_re_war_room_preview
+// (my state + national; full text for subscribers and free sheets). The admin keeps reading the table (drafts of any state).
+function _reWrIsAdmin(){ return !!(SB_USER && SB_USER.id === ADMIN_UID); }
+function _reWrList(){ return _reWrIsAdmin() ? sb.from('war_room_topics').select('outline_code,part,domain,title_ko,title_en,is_free,sort_order').eq('status','draft').or('outline_code.like.N-*,outline_code.like.' + RE_STATE.toUpperCase() + '-*').order('sort_order') : sb.rpc('list_re_war_room'); }
+function _reWrBody(code, preview){
+  if(_reWrIsAdmin()) return sb.from('war_room_topics').select('*').eq('outline_code',code).eq('status','draft');
+  return sb.rpc(preview ? 'get_re_war_room_preview' : 'get_re_war_room_topic', { p_code: code });
+}
 function _wrTitlesLoad(){
   if(_WR_TITLES) return Promise.resolve(_WR_TITLES);
   if(_WR_TITLES_P) return _WR_TITLES_P;
-  _WR_TITLES_P = sb.from('war_room_topics').select('outline_code,part,domain,title_ko,title_en,is_free,sort_order').eq('status','draft').or('outline_code.like.N-*,outline_code.like.' + RE_STATE.toUpperCase() + '-*').order('sort_order').then(function(res){
+  _WR_TITLES_P = _reWrList().then(function(res){
     if(res.error) throw res.error;
     var m = {};
     (res.data || []).forEach(function(r){ var c = ((r.outline_code || '') + '').trim(); if(c) m[c] = r; });
@@ -11095,7 +11103,7 @@ async function renderWarRoom(preferCode){
   var mount=document.getElementById('warroom-mount'); if(!mount) return;
   mount.innerHTML='<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
   try{
-    var res=await sb.from('war_room_topics').select('outline_code,part,domain,title_ko,title_en,is_free,sort_order').eq('status','draft').or('outline_code.like.N-*,outline_code.like.' + RE_STATE.toUpperCase() + '-*').order('sort_order');
+    var res=await _reWrList();
     if(res.error) throw res.error;
     var rows=(res.data||[]).slice();
     if(!rows.length){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room content is coming soon.':'War Room 콘텐츠가 곧 제공됩니다.')+'</div>'; return; }
@@ -11348,7 +11356,7 @@ async function wrShow(code){
     content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
     var peek='';
     try{
-      var pres=await sb.from('war_room_topics').select('*').eq('outline_code',code).eq('status','draft');
+      var pres=await _reWrBody(code, true);
       if(!pres.error){
         var pd=Array.isArray(pres.data)?pres.data[0]:pres.data;
         var pb=pd?(_wrLang()==='en'?(pd.body_en||pd.body_ko):(pd.body_ko||pd.body_en)):'';
@@ -11377,7 +11385,7 @@ async function wrShow(code){
   content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
   var _fm=null;
   try{
-    var res=await sb.from('war_room_topics').select('*').eq('outline_code',code).eq('status','draft');
+    var res=await _reWrBody(code, false);
     if(res.error) throw res.error;
     var d=Array.isArray(res.data)?res.data[0]:res.data;
     var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
