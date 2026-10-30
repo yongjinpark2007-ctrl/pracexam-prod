@@ -1593,6 +1593,12 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 </style>
 </head>
 <body>
+<script>/* join cover (2026-10-30): hide the app until we know if the join step is needed */
+(function(){ try { if(/[?&]join=1/.test(location.search)){ var c = document.createElement('div'); c.id = 'join-cover';
+  c.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--page-bg,#eef2f3);';
+  document.body.appendChild(c); setTimeout(function(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }, 8000); } } catch(e){} })();
+function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }
+</script>
 <style>
 /* ── LOGIN GATE ── */
 #login-gate{
@@ -3935,7 +3941,7 @@ function updateSyncStatus(){
 async function loadTrialStatus(){
   if(!SB_USER) return;
   if(SB_USER.id === ADMIN_UID){
-    S.isPaid = true; S.trialExpired = false; updateTrialStatusUI(); applyTrialSetupRestrictions(); return;
+    _joinCoverOff(); S.isPaid = true; S.trialExpired = false; updateTrialStatusUI(); applyTrialSetupRestrictions(); return;
   }
   try{
     const { data, error } = await sb
@@ -3951,6 +3957,7 @@ async function loadTrialStatus(){
       const er = await sb.from('profiles').select('ea_enrolled').eq('id', SB_USER.id).maybeSingle();
       if(!er.error && er.data && er.data.ea_enrolled === false && !data.is_paid){ eaShowEnrollGate(); return; }
     }catch(e){ console.warn('ea_enrolled skip:', e && e.message); }
+    _joinCoverOff();   // enrolled: show the app
     S.isPaid = !!data.is_paid;
     S.subCanceled = !!data.sub_canceled;   // 해지 예정(기간말 해지 신청됨) — 멤버십 카드 표시용
     S.marketingConsent = !!data.marketing_consent;

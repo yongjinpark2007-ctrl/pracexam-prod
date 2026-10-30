@@ -1639,6 +1639,12 @@ async function reEnforceState(){
 </style>
 </head>
 <body>
+<script>/* join cover (2026-10-30): hide the app until we know if the join step is needed */
+(function(){ try { if(/[?&]join=1/.test(location.search)){ var c = document.createElement('div'); c.id = 'join-cover';
+  c.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--page-bg,#eef2f3);';
+  document.body.appendChild(c); setTimeout(function(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }, 8000); } } catch(e){} })();
+function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }
+</script>
 <div id="re-admin-only"><div class="box"><b>Real Estate practice app — admin preview</b><br>This test build is open to the administrator account only.<br>이 시험용 화면은 관리자 계정만 사용할 수 있습니다.<br><a href="/re/">Real Estate home</a><a href="/app">EA app</a></div></div>
 <style>
 /* ── LOGIN GATE ── */
@@ -4180,6 +4186,7 @@ async function reApplyEntitlement(){
     setTimeout(reAskState, 400);
     return null;
   }
+  _joinCoverOff();   // has an RE row: show the app
   var s = String(row.exam || '').slice(3);
   var q = null; try { q = new URLSearchParams(location.search).get('state'); } catch(e){}
   if(RE_STATES[s] && (s !== RE_STATE || q)){
