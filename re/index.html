@@ -189,7 +189,7 @@
     </script>
     <div class="nav-actions">
       <a href="/re/app" class="btn btn-ghost btn-sm"><span class="ko">로그인</span><span class="en">Log In</span></a>
-      <a href="/re/app" class="btn btn-primary btn-sm"><span class="ko">무료 시작</span><span class="en">Start Free</span></a>
+      <a href="/re/app?signup=1" class="btn btn-primary btn-sm"><span class="ko">무료 시작</span><span class="en">Start Free</span></a>
     </div>
     </div>
     <div class="lang-toggle" title="Shortcut: L">
@@ -211,7 +211,7 @@
       <h1 style="margin-top:14px;"><span class="ko">Master the<br><span style="white-space:nowrap">Real Estate</span> Agent Exam<br><em>Your Ultimate State Exam Finisher</em></span><span class="en">Master the<br><span style="white-space:nowrap">Real Estate</span> Agent Exam<br><em>Your Ultimate State Exam Finisher</em></span></h1>
       <p class="lead"><span class="ko">부동산 중개사 시험은 모든 주가 함께 보는 National 부분과 내 주의 법을 묻는 State 부분으로 나뉩니다. PracExam은 두 부분을 실제 시험의 출제 비율대로 섞어 5,000개 이상의 실전 문항으로 연습하게 하고, 주마다 규칙이 다른 자리는 내 주의 법으로 가르칩니다. 막히는 주제는 War Room에서 규칙과 함정을 한 번에 정리합니다.</span><span class="en">Every license exam has a national portion all states share and a state portion on your own state's law. PracExam mixes both in the proportions your exam uses, across 5,000+ exam-style questions, and teaches your state's rule wherever states differ, with War Room behind every topic.</span></p>
       <div class="hero-actions">
-        <a class="btn btn-primary btn-lg" id="re-start" href="/re/app"><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></a>
+        <a class="btn btn-primary btn-lg" id="re-start" href="/re/app?signup=1"><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></a>
         <a href="#samples" class="btn btn-accent btn-lg"><span class="ko">샘플 문제 풀어보기</span><span class="en">Try Sample Questions</span></a>
       </div>
       <div class="hero-note">
@@ -617,7 +617,7 @@
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">한·영 자세한 해설 &amp; 시험 공부 팁</span><span class="en">Detailed explanations &amp; exam tips</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">플래그 &amp; 복습 모드</span><span class="en">Flag &amp; review</span></span></li>
         </ul>
-        <a class="btn btn-primary" style="width:100%;" href="/re/app">
+        <a class="btn btn-primary" style="width:100%;" href="/re/app?signup=1">
           <span class="ko">무료로 시작하기</span><span class="en">Start Free</span>
         </a>
       </div>
@@ -634,7 +634,7 @@
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">상세한 학습 성과 분석</span><span class="en">Adaptive practice &amp; performance stats</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">취약 영역 분석 및 집중 복습</span><span class="en">Weak-area analysis & targeted review</span></span></li>
         </ul>
-        <a class="btn btn-primary" style="width:100%;" href="/re/app">
+        <a class="btn btn-primary" style="width:100%;" href="/re/app?signup=1">
           <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
         </a>
         <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:12px; text-align:center;">
@@ -659,7 +659,7 @@
     <p><span class="ko">무료로 가입하고 오늘 바로 해당 주의 문제로 시작하세요.</span>
        <span class="en">Sign up free and start with your state's questions today.</span></p>
     <div class="cta-actions">
-      <a class="btn btn-primary btn-lg" href="/re/app">
+      <a class="btn btn-primary btn-lg" href="/re/app?signup=1">
         <span class="ko">무료로 시작하기</span><span class="en">Start Free</span>
       </a>
       <a href="/re/app" class="btn btn-ghost btn-lg ">
@@ -776,7 +776,7 @@
         <span class="ko">이 주제의 규칙·표·주별 차이와 함정을 한자리에 정리해 두었습니다.</span>
         <span class="en">The rule behind this topic — code sections, forms, figures and the traps — is laid out in one place.</span>
       </p>
-      <a class="btn btn-primary" href="/re/app">
+      <a class="btn btn-primary" href="/re/app?signup=1">
         <span class="ko">무료로 시작하기</span><span class="en">Start Free</span>
       </a>
     </div>
@@ -999,7 +999,7 @@ renderSampleQuestions();
   var sel=document.getElementById('re-state'), go=document.getElementById('re-start');
   if(!sel||!window.PE_RE_STATES) return;
   PE_RE_STATES.forEach(function(st){ var o=document.createElement('option'); o.value=st.id; o.textContent=st.name; sel.appendChild(o); });
-  function apply(){ if(go) go.href='/re/app?state='+sel.value; }
+  function apply(){ if(go) go.href='/re/app?signup=1&state='+sel.value; }
   sel.value=PE_RE_STATE.get(); apply();
   sel.addEventListener('change',function(){ PE_RE_STATE.set(sel.value); apply(); });
 })();
