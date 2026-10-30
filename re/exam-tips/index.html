@@ -373,6 +373,17 @@ html{scrollbar-gutter:stable;}
     .na-cta .btn{background:var(--navy);border-color:var(--navy);color:#fff;white-space:nowrap;}
     .et-back{margin:20px 0 56px !important;font-size:14px !important;}
     @media (max-width:640px){ .na-cta{padding:22px;} .et-top{padding:16px 18px;} }
+    /* landing feature-card look for Top-N lists */
+    .et-topx{margin:8px 0 18px;}
+    .et-topx h4{margin:0 0 14px;font-size:17px;font-weight:700;color:var(--navy);}
+    .et-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+    .et-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:var(--radius);padding:22px;transition:border-color .15s,box-shadow .15s;}
+    .et-band-alt .et-card{background:var(--page-bg,#fff);}
+    .et-card:hover{border-color:rgba(var(--navy-rgb),.2);box-shadow:0 14px 30px -22px rgba(var(--navy-rgb),.35);}
+    .et-icon{width:42px;height:42px;border-radius:10px;background:var(--navy-light);color:var(--navy);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-family:var(--font-display);font-weight:800;font-size:19px;}
+    .et-main .et-card h3{margin:0 0 6px;font-size:17px;line-height:1.4;color:var(--text-main);}
+    .et-main .et-card p{margin:0;font-size:15px;line-height:1.7;color:var(--text-mid);}
+    @media (max-width:700px){ .et-grid{grid-template-columns:1fr;} }
     html{overflow-x:clip;}
     .et-band{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding:64px 0;scroll-margin-top:60px;}
     .et-band-alt{background:var(--card-bg);border-top:1px solid var(--border-clr);border-bottom:1px solid var(--border-clr);}
@@ -409,16 +420,15 @@ html{scrollbar-gutter:stable;}
     <div class="et-inner">
       <div class="sec-head"><span class="eyebrow"><span class="ko">한눈에 보기</span><span class="en">AT A GLANCE</span></span><h2><span class="ko">먼저, 꼭 알아야 할 5가지</span><span class="en">First, the five things to know</span></h2></div>
     <div class="et-open">
-    <div class="et-top">
-      <h4><span class="ko">부동산 면허 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the real estate exam</span></h4>
-      <ol>
-        <li><span class="ko"><b>면허는 주마다 따로 받습니다.</b> 일하려는 주의 면허가 필요하고, 요건과 시험도 주마다 다릅니다.</span><span class="en"><b>Licenses are state by state.</b> You need the license of the state where you will work, and each state sets its own rules and exam.</span></li>
-        <li><span class="ko"><b>시험 전에 사전교육을 먼저 마쳐야 합니다.</b> 주가 승인한 학교에서 정해진 시간을 이수합니다.</span><span class="en"><b>Pre-license education comes first.</b> You complete the required hours at a state-approved school.</span></li>
-        <li><span class="ko"><b>시험은 전국 공통 내용과 그 주의 법을 함께 묻습니다.</b> 모두 객관식입니다.</span><span class="en"><b>The exam covers national principles and your state's law.</b> All questions are multiple choice.</span></li>
-        <li><span class="ko"><b>합격이 끝이 아닙니다.</b> 면허를 신청하고, 주에 따라 지문 등록과 브로커 소속까지 마쳐야 일을 시작합니다.</span><span class="en"><b>Passing is not the finish line.</b> You still apply for the license and, depending on the state, complete fingerprints and join a broker.</span></li>
-        <li><span class="ko"><b>세일즈 에이전트는 브로커 아래에서 일합니다.</b> 혼자 독립해서 영업하려면 따로 브로커 면허가 필요합니다.</span><span class="en"><b>Salespeople work under a broker.</b> Working independently requires a separate broker license.</span></li>
-      </ol>
-    </div>
+    <div class="et-topx">
+<h4><span class="ko">부동산 면허 시험 한눈에 보기 Top 5</span><span class="en">Top 5 facts about the real estate exam</span></h4>
+<div class="et-grid">
+<div class="et-card"><div class="et-icon">1</div><h3><span class="ko">면허는 주마다 따로 받습니다</span><span class="en">Licenses are state by state</span></h3><p><span class="ko">일하려는 주의 면허가 필요하고, 요건과 시험도 주마다 다릅니다.</span><span class="en">You need the license of the state where you will work, and each state sets its own rules and exam.</span></p></div>
+<div class="et-card"><div class="et-icon">2</div><h3><span class="ko">시험 전에 사전교육을 먼저 마쳐야 합니다</span><span class="en">Pre-license education comes first</span></h3><p><span class="ko">주가 승인한 학교에서 정해진 시간을 이수합니다.</span><span class="en">You complete the required hours at a state-approved school.</span></p></div>
+<div class="et-card"><div class="et-icon">3</div><h3><span class="ko">시험은 전국 공통 내용과 그 주의 법을 함께 묻습니다</span><span class="en">The exam covers national principles and your state's law</span></h3><p><span class="ko">모두 객관식입니다.</span><span class="en">All questions are multiple choice.</span></p></div>
+<div class="et-card"><div class="et-icon">4</div><h3><span class="ko">합격이 끝이 아닙니다</span><span class="en">Passing is not the finish line</span></h3><p><span class="ko">면허를 신청하고, 주에 따라 지문 등록과 브로커 소속까지 마쳐야 일을 시작합니다.</span><span class="en">You still apply for the license and, depending on the state, complete fingerprints and join a broker.</span></p></div>
+<div class="et-card"><div class="et-icon">5</div><h3><span class="ko">세일즈 에이전트는 브로커 아래에서 일합니다</span><span class="en">Salespeople work under a broker</span></h3><p><span class="ko">혼자 독립해서 영업하려면 따로 브로커 면허가 필요합니다.</span><span class="en">Working independently requires a separate broker license.</span></p></div>
+</div></div>
   </div>
     </div>
   </section>
@@ -442,15 +452,14 @@ html{scrollbar-gutter:stable;}
     <div class="et-body">
     <p><span class="ko">주마다 세부 내용은 다르지만, 큰 흐름은 다섯 주 모두 비슷합니다.</span>
        <span class="en">Details differ by state, but the overall path is similar in all five.</span></p>
-    <div class="et-top">
-      <ol>
-        <li><span class="ko"><b>사전교육 이수</b> — 주가 승인한 학교에서 정해진 과정을 마칩니다(예: 텍사스 180시간, 뉴욕 77시간).</span><span class="en"><b>Complete pre-license education</b> at a state-approved school (for example, 180 hours in Texas, 77 in New York).</span></li>
-        <li><span class="ko"><b>시험 접수</b> — 주의 감독 기관이나 시험 기관(Pearson VUE, PSI 등)에 신청하고 응시료를 냅니다.</span><span class="en"><b>Apply for the exam</b> with the state regulator or its exam vendor (such as Pearson VUE or PSI) and pay the fee.</span></li>
-        <li><span class="ko"><b>시험 합격</b> — 정해진 합격선을 넘깁니다.</span><span class="en"><b>Pass the exam</b> by reaching the passing score.</span></li>
-        <li><span class="ko"><b>면허 신청</b> — 주에 따라 지문 등록과 신원 조회를 함께 합니다.</span><span class="en"><b>Apply for the license</b>, with fingerprints and a background check where required.</span></li>
-        <li><span class="ko"><b>브로커 소속</b> — 브로커 아래에 소속되면 실제로 일을 시작할 수 있습니다.</span><span class="en"><b>Join a broker</b> — then you can start working.</span></li>
-      </ol>
-    </div>
+    <div class="et-topx">
+<div class="et-grid">
+<div class="et-card"><div class="et-icon">1</div><h3><span class="ko">사전교육 이수</span><span class="en">Complete pre-license education</span></h3><p><span class="ko">— 주가 승인한 학교에서 정해진 과정을 마칩니다(예: 텍사스 180시간, 뉴욕 77시간).</span><span class="en">at a state-approved school (for example, 180 hours in Texas, 77 in New York).</span></p></div>
+<div class="et-card"><div class="et-icon">2</div><h3><span class="ko">시험 접수</span><span class="en">Apply for the exam</span></h3><p><span class="ko">— 주의 감독 기관이나 시험 기관(Pearson VUE, PSI 등)에 신청하고 응시료를 냅니다.</span><span class="en">with the state regulator or its exam vendor (such as Pearson VUE or PSI) and pay the fee.</span></p></div>
+<div class="et-card"><div class="et-icon">3</div><h3><span class="ko">시험 합격</span><span class="en">Pass the exam</span></h3><p><span class="ko">— 정해진 합격선을 넘깁니다.</span><span class="en">by reaching the passing score.</span></p></div>
+<div class="et-card"><div class="et-icon">4</div><h3><span class="ko">면허 신청</span><span class="en">Apply for the license</span></h3><p><span class="ko">— 주에 따라 지문 등록과 신원 조회를 함께 합니다.</span><span class="en">, with fingerprints and a background check where required.</span></p></div>
+<div class="et-card"><div class="et-icon">5</div><h3><span class="ko">브로커 소속</span><span class="en">Join a broker</span></h3><p><span class="ko">— 브로커 아래에 소속되면 실제로 일을 시작할 수 있습니다.</span><span class="en">— then you can start working.</span></p></div>
+</div></div>
     </div>
   </details>
 
@@ -467,16 +476,15 @@ html{scrollbar-gutter:stable;}
       <tr><td><span class="ko">합격선</span><span class="en">To pass</span></td><td>70%</td><td>56/80 · 28/40</td><td><span class="ko">75점</span><span class="en">75 points</span></td><td><span class="ko">70%(77문항)</span><span class="en">70% (77)</span></td><td><span class="ko">합격·불합격만</span><span class="en">Pass/fail</span></td></tr>
       <tr><td><span class="ko">응시료</span><span class="en">Exam fee</span></td><td>$100</td><td>$43</td><td></td><td>$38</td><td>$15</td></tr>
     </table></div>
-    <div class="et-top">
-      <h4><span class="ko">주별로 알아야 할 차이점 Top 5</span><span class="en">Top 5 differences to know</span></h4>
-      <ol>
-        <li><span class="ko"><b>텍사스는 두 부분을 따로 합격</b>해야 합니다. 떨어진 부분만 다시 보면 됩니다.</span><span class="en"><b>Texas scores two portions separately</b>; you retake only the portion you failed.</span></li>
-        <li><span class="ko"><b>계산기 규칙이 다릅니다.</b> 캘리포니아는 기본 계산기를 주고, 텍사스는 주지 않으며, 뉴저지는 휴대용 계산기를 금지합니다.</span><span class="en"><b>Calculator rules differ:</b> California provides one, Texas does not, and New Jersey prohibits handheld calculators.</span></li>
-        <li><span class="ko"><b>뉴욕은 점수를 알려 주지 않습니다.</b> 합격·불합격만 나옵니다.</span><span class="en"><b>New York gives no score</b> — only pass or fail.</span></li>
-        <li><span class="ko"><b>플로리다는 첫 갱신 전 추가 교육</b>(최대 45시간)을 마치지 않으면 면허가 무효가 됩니다. 텍사스도 첫 갱신 전 90시간을 더 들어야 합니다.</span><span class="en"><b>Florida voids the license</b> if post-licensing education (up to 45 hours) isn't done before the first renewal; Texas also requires 90 more hours.</span></li>
-        <li><span class="ko"><b>합격 뒤 기한이 있습니다.</b> 캘리포니아는 합격 후 1년 이내에 면허를 신청해야 하고, 뉴욕의 합격 결과는 2년 동안 유효합니다.</span><span class="en"><b>Deadlines after passing:</b> California requires you to apply within one year, and New York results are valid for two years.</span></li>
-      </ol>
-    </div>
+    <div class="et-topx">
+<h4><span class="ko">주별로 알아야 할 차이점 Top 5</span><span class="en">Top 5 differences to know</span></h4>
+<div class="et-grid">
+<div class="et-card"><div class="et-icon">1</div><h3><span class="ko">텍사스는 두 부분을 따로 합격</span><span class="en">Texas scores two portions separately</span></h3><p><span class="ko">해야 합니다. 떨어진 부분만 다시 보면 됩니다.</span><span class="en">; you retake only the portion you failed.</span></p></div>
+<div class="et-card"><div class="et-icon">2</div><h3><span class="ko">계산기 규칙이 다릅니다</span><span class="en">Calculator rules differ:</span></h3><p><span class="ko">캘리포니아는 기본 계산기를 주고, 텍사스는 주지 않으며, 뉴저지는 휴대용 계산기를 금지합니다.</span><span class="en">California provides one, Texas does not, and New Jersey prohibits handheld calculators.</span></p></div>
+<div class="et-card"><div class="et-icon">3</div><h3><span class="ko">뉴욕은 점수를 알려 주지 않습니다</span><span class="en">New York gives no score</span></h3><p><span class="ko">합격·불합격만 나옵니다.</span><span class="en">— only pass or fail.</span></p></div>
+<div class="et-card"><div class="et-icon">4</div><h3><span class="ko">플로리다는 첫 갱신 전 추가 교육</span><span class="en">Florida voids the license</span></h3><p><span class="ko">(최대 45시간)을 마치지 않으면 면허가 무효가 됩니다. 텍사스도 첫 갱신 전 90시간을 더 들어야 합니다.</span><span class="en">if post-licensing education (up to 45 hours) isn't done before the first renewal; Texas also requires 90 more hours.</span></p></div>
+<div class="et-card"><div class="et-icon">5</div><h3><span class="ko">합격 뒤 기한이 있습니다</span><span class="en">Deadlines after passing:</span></h3><p><span class="ko">캘리포니아는 합격 후 1년 이내에 면허를 신청해야 하고, 뉴욕의 합격 결과는 2년 동안 유효합니다.</span><span class="en">California requires you to apply within one year, and New York results are valid for two years.</span></p></div>
+</div></div>
     </div>
   </details>
     </div>
@@ -586,36 +594,34 @@ html{scrollbar-gutter:stable;}
     <div class="et-body">
     <p><span class="ko">시험 당일 규칙은 주마다 조금씩 다릅니다. 신분증 개수, 계산기, 가져가야 할 서류가 주마다 다르니, 시험 전날 내 주의 규칙을 다시 확인하세요.</span>
        <span class="en">Exam-day rules vary by state — the number of IDs, calculators and required papers all differ — so recheck your state's rules the day before.</span></p>
-    <div class="et-top">
-      <h4><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h4>
-      <ol>
-        <li><span class="ko"><b>신분증</b> — 텍사스와 플로리다는 서명이 있는 신분증 2개, 뉴저지와 뉴욕은 정부 발급 사진 신분증 1개입니다. 이름이 등록한 이름과 같은지 확인하세요.</span><span class="en"><b>ID</b> — two signature IDs in Texas and Florida; one government-issued photo ID in New Jersey and New York. Make sure the name matches your registration.</span></li>
-        <li><span class="ko"><b>필요한 서류</b> — 플로리다는 사전교육 수료증, 뉴욕은 “Summary of Your Submission” 출력본을 가져갑니다.</span><span class="en"><b>Required papers</b> — your pre-license certificate in Florida; the “Summary of Your Submission” printout in New York.</span></li>
-        <li><span class="ko"><b>계산기</b> — 캘리포니아는 제공(개인 계산기 금지), 텍사스는 미제공(금융 계산기 가능), 뉴저지는 휴대용 계산기 금지입니다.</span><span class="en"><b>Calculator</b> — provided in California (no personal ones), not provided in Texas (financial calculator allowed), handheld calculators prohibited in New Jersey.</span></li>
-        <li><span class="ko"><b>개인 물건</b> — 시험실에는 가지고 들어갈 수 없습니다. 플로리다는 투명 비닐봉투에 넣어 사물함에 보관합니다.</span><span class="en"><b>Personal items</b> stay out of the testing room; in Florida they go in a clear plastic bag in a locker.</span></li>
-        <li><span class="ko"><b>여유 있게 도착</b> — 신분 확인과 안내에 시간이 걸리니 일찍 도착하세요.</span><span class="en"><b>Arrive early</b> — ID checks and check-in take time.</span></li>
-      </ol>
-    </div>
+    <div class="et-topx">
+<h4><span class="ko">시험 당일 체크리스트 Top 5</span><span class="en">Exam-day checklist: Top 5</span></h4>
+<div class="et-grid">
+<div class="et-card"><div class="et-icon">1</div><h3><span class="ko">신분증</span><span class="en">ID</span></h3><p><span class="ko">— 텍사스와 플로리다는 서명이 있는 신분증 2개, 뉴저지와 뉴욕은 정부 발급 사진 신분증 1개입니다. 이름이 등록한 이름과 같은지 확인하세요.</span><span class="en">— two signature IDs in Texas and Florida; one government-issued photo ID in New Jersey and New York. Make sure the name matches your registration.</span></p></div>
+<div class="et-card"><div class="et-icon">2</div><h3><span class="ko">필요한 서류</span><span class="en">Required papers</span></h3><p><span class="ko">— 플로리다는 사전교육 수료증, 뉴욕은 “Summary of Your Submission” 출력본을 가져갑니다.</span><span class="en">— your pre-license certificate in Florida; the “Summary of Your Submission” printout in New York.</span></p></div>
+<div class="et-card"><div class="et-icon">3</div><h3><span class="ko">계산기</span><span class="en">Calculator</span></h3><p><span class="ko">— 캘리포니아는 제공(개인 계산기 금지), 텍사스는 미제공(금융 계산기 가능), 뉴저지는 휴대용 계산기 금지입니다.</span><span class="en">— provided in California (no personal ones), not provided in Texas (financial calculator allowed), handheld calculators prohibited in New Jersey.</span></p></div>
+<div class="et-card"><div class="et-icon">4</div><h3><span class="ko">개인 물건</span><span class="en">Personal items</span></h3><p><span class="ko">— 시험실에는 가지고 들어갈 수 없습니다. 플로리다는 투명 비닐봉투에 넣어 사물함에 보관합니다.</span><span class="en">stay out of the testing room; in Florida they go in a clear plastic bag in a locker.</span></p></div>
+<div class="et-card"><div class="et-icon">5</div><h3><span class="ko">여유 있게 도착</span><span class="en">Arrive early</span></h3><p><span class="ko">— 신분 확인과 안내에 시간이 걸리니 일찍 도착하세요.</span><span class="en">— ID checks and check-in take time.</span></p></div>
+</div></div>
     </div>
   </details>
 
   <details class="et-acc" id="tips">
     <summary><h3><span class="ko">합격을 위한 공부·시험 요령 Top 10</span><span class="en">Top 10 tips to pass</span></h3><p><span class="ko">내 주의 시험 구성 확인하기부터 낯선 문제에 흔들리지 않기까지, 합격에 도움이 되는 열 가지 요령입니다.</span><span class="en">From knowing your state's format to staying calm on strange questions — ten habits that help you pass.</span></p></summary>
     <div class="et-body">
-    <div class="et-top">
-      <ol>
-        <li><span class="ko"><b>내 주의 시험 구성부터 확인하세요.</b> 텍사스처럼 두 부분을 따로 채점하면 둘 다 합격선을 넘겨야 합니다.</span><span class="en"><b>Know your state's format first.</b> Where portions are scored separately, as in Texas, you must pass both.</span></li>
-        <li><span class="ko"><b>National과 State를 함께 공부하세요.</b> 전국 공통 원리만으로는 그 주의 법 문제를 풀 수 없습니다.</span><span class="en"><b>Study both National and State.</b> National principles alone won't answer your state's law questions.</span></li>
-        <li><span class="ko"><b>용어부터 정확히 익히세요.</b> 부동산 시험은 비슷해 보이는 용어를 구별하는 문제가 많습니다.</span><span class="en"><b>Learn the terms precisely.</b> Many questions test whether you can tell similar-looking terms apart.</span></li>
-        <li><span class="ko"><b>문제를 많이 풀어 보세요.</b> 시험과 같은 4지선다 문제로 연습해야 실제 문제에서 규칙이 보입니다.</span><span class="en"><b>Practice with real-style questions.</b> Four-option practice questions teach you to spot the rule on test day.</span></li>
-        <li><span class="ko"><b>틀린 문제의 해설을 꼭 읽으세요.</b> 오답 보기가 왜 그럴듯해 보였는지 이해하는 것이 실력이 됩니다.</span><span class="en"><b>Read the explanation for every miss.</b> Understanding why a wrong option looked right is where you improve.</span></li>
-        <li><span class="ko"><b>시간을 재며 모의고사를 보세요.</b> 전체 시간을 문항 수로 나눠 한 문항에 쓸 시간을 미리 정해 두세요.</span><span class="en"><b>Take timed mock exams.</b> Divide the time by the number of questions and practice that pace.</span></li>
-        <li><span class="ko"><b>“EXCEPT”, “NOT” 문제를 조심하세요.</b> 틀린 보기 하나를 찾는 문제입니다. 문제를 끝까지 읽으세요.</span><span class="en"><b>Watch for “EXCEPT” and “NOT”.</b> You are looking for the one wrong statement — read to the end.</span></li>
-        <li><span class="ko"><b>확실히 틀린 보기부터 지우세요.</b> 남은 둘 중에서 고르기가 훨씬 쉬워집니다.</span><span class="en"><b>Eliminate the clearly wrong options first.</b> Choosing between two is much easier.</span></li>
-        <li><span class="ko"><b>막히면 표시하고 넘어가세요.</b> 한 문제에 오래 매달리지 말고, 마지막에 다시 보세요.</span><span class="en"><b>Flag and move on.</b> Don't get stuck — come back at the end.</span></li>
-        <li><span class="ko"><b>낯선 문제에 흔들리지 마세요.</b> 채점하지 않는 시범 문항이 섞여 있을 수 있습니다.</span><span class="en"><b>Don't let a strange question rattle you.</b> Unscored pretest questions may be mixed in.</span></li>
-      </ol>
-    </div>
+    <div class="et-topx">
+<div class="et-grid">
+<div class="et-card"><div class="et-icon">1</div><h3><span class="ko">내 주의 시험 구성부터 확인하세요</span><span class="en">Know your state's format first</span></h3><p><span class="ko">텍사스처럼 두 부분을 따로 채점하면 둘 다 합격선을 넘겨야 합니다.</span><span class="en">Where portions are scored separately, as in Texas, you must pass both.</span></p></div>
+<div class="et-card"><div class="et-icon">2</div><h3><span class="ko">National과 State를 함께 공부하세요</span><span class="en">Study both National and State</span></h3><p><span class="ko">전국 공통 원리만으로는 그 주의 법 문제를 풀 수 없습니다.</span><span class="en">National principles alone won't answer your state's law questions.</span></p></div>
+<div class="et-card"><div class="et-icon">3</div><h3><span class="ko">용어부터 정확히 익히세요</span><span class="en">Learn the terms precisely</span></h3><p><span class="ko">부동산 시험은 비슷해 보이는 용어를 구별하는 문제가 많습니다.</span><span class="en">Many questions test whether you can tell similar-looking terms apart.</span></p></div>
+<div class="et-card"><div class="et-icon">4</div><h3><span class="ko">문제를 많이 풀어 보세요</span><span class="en">Practice with real-style questions</span></h3><p><span class="ko">시험과 같은 4지선다 문제로 연습해야 실제 문제에서 규칙이 보입니다.</span><span class="en">Four-option practice questions teach you to spot the rule on test day.</span></p></div>
+<div class="et-card"><div class="et-icon">5</div><h3><span class="ko">틀린 문제의 해설을 꼭 읽으세요</span><span class="en">Read the explanation for every miss</span></h3><p><span class="ko">오답 보기가 왜 그럴듯해 보였는지 이해하는 것이 실력이 됩니다.</span><span class="en">Understanding why a wrong option looked right is where you improve.</span></p></div>
+<div class="et-card"><div class="et-icon">6</div><h3><span class="ko">시간을 재며 모의고사를 보세요</span><span class="en">Take timed mock exams</span></h3><p><span class="ko">전체 시간을 문항 수로 나눠 한 문항에 쓸 시간을 미리 정해 두세요.</span><span class="en">Divide the time by the number of questions and practice that pace.</span></p></div>
+<div class="et-card"><div class="et-icon">7</div><h3><span class="ko">“EXCEPT”, “NOT” 문제를 조심하세요</span><span class="en">Watch for “EXCEPT” and “NOT”</span></h3><p><span class="ko">틀린 보기 하나를 찾는 문제입니다. 문제를 끝까지 읽으세요.</span><span class="en">You are looking for the one wrong statement — read to the end.</span></p></div>
+<div class="et-card"><div class="et-icon">8</div><h3><span class="ko">확실히 틀린 보기부터 지우세요</span><span class="en">Eliminate the clearly wrong options first</span></h3><p><span class="ko">남은 둘 중에서 고르기가 훨씬 쉬워집니다.</span><span class="en">Choosing between two is much easier.</span></p></div>
+<div class="et-card"><div class="et-icon">9</div><h3><span class="ko">막히면 표시하고 넘어가세요</span><span class="en">Flag and move on</span></h3><p><span class="ko">한 문제에 오래 매달리지 말고, 마지막에 다시 보세요.</span><span class="en">Don't get stuck — come back at the end.</span></p></div>
+<div class="et-card"><div class="et-icon">10</div><h3><span class="ko">낯선 문제에 흔들리지 마세요</span><span class="en">Don't let a strange question rattle you</span></h3><p><span class="ko">채점하지 않는 시범 문항이 섞여 있을 수 있습니다.</span><span class="en">Unscored pretest questions may be mixed in.</span></p></div>
+</div></div>
     <p class="et-note"><span class="ko">응시 전에 각 주의 공식 링크로 최신 내용을 꼭 확인하세요.</span><span class="en">Always confirm on your state's official links before you apply.</span></p>
     </div>
   </details>
