@@ -1480,9 +1480,9 @@ html{scrollbar-gutter:stable;}
       </div>
 
       <div class="price-card pro">
-        <span class="price-badge"><span class="ko">가장 인기</span><span class="en">Most Popular</span></span>
         <div class="price-name"><span class="ko">Pro</span><span class="en">Pro</span></div>
         <div class="price-amount">$29 <span><span class="ko">/ 월</span><span class="en">/ month</span></span></div>
+        <div class="price-alt" style="font-size:15px;font-weight:600;color:var(--text-mid);margin:-4px 0 10px;"><span class="ko">또는 $70 / 3개월</span><span class="en">or $70 / 3 months</span></div>
         <p class="price-desc"><span class="ko">합격에 필요한 모든 기능을 담은 프리미엄 학습 플랜</span>
           <span class="en">For serious EA candidates preparing for exam day.</span></p>
         <ul class="price-list">
@@ -1495,8 +1495,8 @@ html{scrollbar-gutter:stable;}
           <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
         </button>
         <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:12px; text-align:center;">
-          <span class="ko">매월 자동결제 · 언제든 해지 · 14일 환불 보장</span>
-          <span class="en">Auto-renews monthly · Cancel anytime · 14-day refund</span><br>
+          <span class="ko">고른 주기(매월 또는 3개월)마다 자동결제 · 언제든 해지 · 14일 환불 보장</span>
+          <span class="en">Auto-renews each billing period (monthly or every 3 months) · Cancel anytime · 14-day refund</span><br>
           <a href="terms.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">이용약관</span><span class="en">Terms</span></a> ·
           <a href="refund.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">환불정책</span><span class="en">Refunds</span></a> ·
           <a href="privacy.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">개인정보</span><span class="en">Privacy</span></a>
@@ -1664,18 +1664,14 @@ html{scrollbar-gutter:stable;}
       <label for="su-marketing" class="su-agree">
         <input type="checkbox" id="su-marketing">
         <span>
-          <span class="ko">학습 팁·할인 코드·시험 정보를 이메일로 받아볼게요. <b>(선택)</b></span>
-          <span class="en">Send me study tips, discount codes, and exam updates by email. <b>(optional)</b></span>
+          <span class="ko">학습 팁·할인 코드·시험 정보를 이메일로 받아볼게요. <b>(선택)</b> PracExam에서 발송합니다. 언제든지 수신을 거부할 수 있습니다.</span>
+          <span class="en">Send me study tips, discount codes, and exam updates by email. <b>(optional)</b> Sent by PracExam. You can unsubscribe at any time.</span>
         </span>
       </label>
       <!-- 법인명(dxd investment group LLC)과 개인정보처리방침 링크는 여기에 넣지 않는다 (2026-08-18 사용자 지시).
            · 법인·DBA 고지는 «푸터»가 한다 — 랜딩·앱 푸터 둘 다 이미 하고 있다.
              법인명을 반드시 밝혀야 하는 곳은 마케팅 «메일 본문» 이지 가입 폼이 아니다.
            · 개인정보처리방침 링크는 바로 두 줄 위 약관 체크박스에 이미 있다. -->
-      <p class="su-consent-note">
-        <span class="ko">PracExam에서 발송합니다. 언제든지 수신을 거부할 수 있습니다.</span>
-        <span class="en">Sent by PracExam. You can unsubscribe at any time.</span>
-      </p>
       <button class="btn btn-primary needs-agree" id="su-submit" onclick="doSignup()">
         <span class="ko">계정 만들기</span><span class="en">Create Account</span>
       </button>
@@ -1696,10 +1692,12 @@ html{scrollbar-gutter:stable;}
     <div id="modal-known" style="display:none">
       <h3 style="padding-right:36px;"><span class="ko">이미 PracExam 계정이 있습니다</span><span class="en">You already have a PracExam account</span></h3>
       <p class="sub">
-        <span class="ko"><b class="known-email"></b> 계정으로 이 브라우저에서 이미 로그인되어 있습니다. 새로 가입할 필요 없이 같은 계정에 EA를 추가하면 30일 무료 체험이 바로 시작됩니다.</span>
-        <span class="en">This browser is already signed in as <b class="known-email"></b>. No new sign-up needed &mdash; add EA to the same account and your 30-day free trial starts right away.</span>
+        <span class="ko known-free"><b class="known-email"></b> 계정으로 이 브라우저에서 이미 로그인되어 있습니다. 새로 가입할 필요 없이 같은 계정에 EA를 추가하면 30일 무료 체험이 바로 시작됩니다.</span>
+        <span class="en known-free">This browser is already signed in as <b class="known-email"></b>. No new sign-up needed &mdash; add EA to the same account and your 30-day free trial starts right away.</span>
+        <span class="ko known-pay" style="display:none"><b class="known-email"></b> 계정으로 이 브라우저에서 이미 로그인되어 있습니다. 새로 가입할 필요 없이 같은 계정에 EA를 추가하신 뒤 바로 결제하시면 됩니다.</span>
+        <span class="en known-pay" style="display:none">This browser is already signed in as <b class="known-email"></b>. No new sign-up needed &mdash; add EA to the same account and complete your payment.</span>
       </p>
-      <a class="btn btn-primary" href="/app?join=1" style="display:flex;width:100%;justify-content:center;box-sizing:border-box;"><span class="ko">EA 추가하기</span><span class="en">Add EA</span></a>
+      <a class="btn btn-primary" id="known-go" href="/app?join=1" style="display:flex;width:100%;justify-content:center;box-sizing:border-box;"><span class="ko">EA 추가하기</span><span class="en">Add EA</span></a>
       <p style="text-align:center;margin:.9rem 0 0;font-size:13px;">
         <a href="#" onclick="_knownOther();return false;" style="color:var(--text-mid);"><span class="ko">다른 이메일로 가입하기</span><span class="en">Sign up with a different email</span></a>
       </p>
@@ -2184,6 +2182,12 @@ function openModal(which){
   if(em){
     Array.prototype.forEach.call(document.querySelectorAll('#modal-known .known-email'), function(x){ x.textContent = em; });
     which = 'known';
+    // Subscribe intent (Pro card): talk about adding the exam and paying, not the free trial (boss 2026-10-31).
+    var pay = (window._intent === 'subscribe');
+    Array.prototype.forEach.call(document.querySelectorAll('#modal-known .known-free'), function(x){ x.style.display = pay ? 'none' : ''; });
+    Array.prototype.forEach.call(document.querySelectorAll('#modal-known .known-pay'), function(x){ x.style.display = pay ? '' : 'none'; });
+    var go = document.getElementById('known-go');
+    if(go) go.href = '/app?join=1' + (pay ? '&intent=subscribe' : '');
   }
   switchModal(which);
 }

@@ -3729,8 +3729,13 @@ async function confirmLogout(){
 try{
   if(new URLSearchParams(window.location.search).get('intent') === 'subscribe'){
     sessionStorage.setItem('pendingIntent', 'subscribe');
+    // Subscribe from the landing while signed in for the other exam (boss 2026-10-31): the add-exam card
+    // reloads the app, which would drop the intent. Keep it for one reload so the checkout opens after joining.
+    if(/[?&]join=1/.test(window.location.search)) sessionStorage.setItem('pendingIntentJoin', 'subscribe');
   }
 }catch(e){}
+function _joinWantsPay(){ try{ return sessionStorage.getItem('pendingIntentJoin') === 'subscribe'; }catch(e){ return false; } }
+function _joinCarryPay(){ try{ if(_joinWantsPay()){ sessionStorage.setItem('pendingIntent', 'subscribe'); sessionStorage.removeItem('pendingIntentJoin'); } }catch(e){} }
 
 // ── SESSION 초기화 (이메일 인증 링크 자동 로그인 + 기존 세션 복원) ──
 
@@ -4010,7 +4015,7 @@ function eaShowEnrollGate(){
         '<li>Same email and password &mdash; your other PracExam service stays as it is</li>' +
       '</ul>' +
       '<label class="je-terms"><input type="checkbox" id="ea-enroll-terms"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>' +
-      '<button class="lg-btn" onclick="eaStartTrial(this)">Start free trial</button>' +
+      '<button class="lg-btn" onclick="eaStartTrial(this)">' + (_joinWantsPay() ? 'Add EA and continue to payment' : 'Start free trial') + '</button>' +
       '<div class="lg-err" id="ea-enroll-err" style="display:block;"></div>' +
       '<div class="je-foot"><a class="lg-link" href="' + _joinBackHref('/') + '">Not now &mdash; go back</a></div>' +
     '</div>';
@@ -4041,6 +4046,7 @@ async function eaStartTrial(b){
     if(u.error) throw u.error;
     const r = await sb.rpc('start_ea_trial');
     if(r.error) throw r.error;
+    _joinCarryPay();   // subscribe intent: the pricing / checkout opens after the reload
     location.reload();
   }catch(e){
     b.disabled = false;
