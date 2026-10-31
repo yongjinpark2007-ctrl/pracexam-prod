@@ -11,6 +11,7 @@ body[data-exam="ea"]{   /* teal / slate — do not change */
   --navy-mid:    #4d6164;
   --navy-light:  #d9ebe9;
   --accent:      #6FA39E;
+  --accent-hover: #5D8F8A;
   --accent-tint: #EDF4F3;
   --accent-border: #C9DEDB;
   --navy-rgb:    53,70,73;
@@ -33,6 +34,7 @@ body[data-exam="re"]{   /* navy / steel blue (agreed in drafts/pracexam_re_landi
   --navy-mid:    #2F5F8F;
   --navy-light:  #DCE7F3;
   --accent:      #4F7CAC;
+  --accent-hover: #3F6A96;
   --accent-tint: #E8EFF7;
   --accent-border: #A9C2DE;
   --navy-rgb:    16,48,76;
