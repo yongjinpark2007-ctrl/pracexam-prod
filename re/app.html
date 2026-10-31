@@ -3746,7 +3746,9 @@ async function doResetRequest(){
   try{
     // redirectTo: 메일 링크 클릭 시 돌아올 주소 (recovery 토큰이 해시로 붙어 옴)
     var res = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://pracexam.com/app.html'
+      // RE (2026-10-30): back to the RE app on this site — it was the EA app on pracexam.com, so an RE customer
+      // who reset a password landed in EA. The link also makes the reset mail use the RE design (quick-service).
+      redirectTo: window.location.origin + '/re/app'
     });
     if(res && res.error){ throw res.error; }
     ok.innerHTML = '✅ Reset link sent.<br>Check your inbox — and your spam/junk folder.';
