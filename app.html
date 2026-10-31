@@ -184,6 +184,13 @@ html, body {
 .header-sub{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;}
 /* Desktop nav */
 .header-nav{display:flex;gap:2px;flex-wrap:nowrap;}
+/* «More» menu in the app nav (boss 2026-10-31): Videos, Upgrade (trial users) and My Account live here. */
+.nav-more-wrap{position:relative;display:inline-flex;}
+.nav-more-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);min-width:190px;z-index:300;
+  flex-direction:column;align-items:stretch;gap:2px;padding:6px;border-radius:12px;
+  background:var(--card,#fff);border:1px solid var(--border,rgba(0,0,0,.12));box-shadow:0 12px 30px rgba(0,0,0,.14);}
+.nav-more-wrap.open .nav-more-menu{display:flex;}
+.nav-more-menu .nav-btn{justify-content:flex-start;width:100%;}
 .nav-btn{
   background:none;border:none;color:rgba(255,255,255,.7);
   padding:7px 14px;border-radius:8px;cursor:pointer;
@@ -1740,8 +1747,14 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
       <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
       <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
       <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
-      <button class="nav-btn" id="nav-videos" onclick="showScreen('videos');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="nav_videos">동영상</span></button>
-      <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
+      <div class="nav-more-wrap" id="nav-more-wrap">
+        <button class="nav-btn" id="nav-more" type="button" aria-haspopup="true" aria-expanded="false" onclick="toggleNavMore(event)"><span data-i18n="nav_more">더보기</span>&nbsp;▾</button>
+        <div class="nav-more-menu" id="nav-more-menu">
+        <button class="nav-btn" id="nav-videos" onclick="showScreen('videos');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="nav_videos">동영상</span></button>
+        <button class="nav-btn" id="nav-upgrade-item" type="button" style="display:none;" onclick="showPricingModal()"><span data-i18n="upgrade_cta">🚀 업그레이드</span></button>
+        <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
+        </div>
+      </div>
       <button class="nav-btn" id="nav-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="nav_admin">관리자</span></button>
     </div>
     <div class="lang-seg" id="lang-seg" role="group" aria-label="Language" title="Shortcut: L">
@@ -4199,6 +4212,14 @@ function ambBadgeHtml(style){
   '</div>';
 }
 
+// «More» menu (boss 2026-10-31)
+function toggleNavMore(ev){ if(ev) ev.stopPropagation(); var w = document.getElementById('nav-more-wrap'); if(!w) return;
+  var open = !w.classList.contains('open'); w.classList.toggle('open', open);
+  var b = document.getElementById('nav-more'); if(b) b.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+function closeNavMore(){ var w = document.getElementById('nav-more-wrap'); if(w) w.classList.remove('open'); }
+document.addEventListener('click', function(e){ var w = document.getElementById('nav-more-wrap');
+  if(!w) return; if(!w.contains(e.target) || e.target.closest('.nav-more-menu .nav-btn')) closeNavMore(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeNavMore(); });
 // Dashboard «Upgrade» banner for free-trial and expired users (boss 2026-10-31: new sign-ups had no visible
 // way to subscribe; a top-nav button was too much, so it sits under the dashboard hero instead).
 function _syncUpgradeNav(){
@@ -4219,6 +4240,7 @@ function _syncUpgradeNav(){
     + '<button onclick="showPricingModal()" style="border:0;border-radius:999px;padding:8px 18px;font-weight:700;font-size:14px;'
     + 'background:#DD8F75;color:#fff;cursor:pointer;">' + (en ? 'Subscribe' : '구독하기') + '</button>';
   b.style.display = show ? 'flex' : 'none';
+  var ui = document.getElementById('nav-upgrade-item'); if(ui) ui.style.display = show ? '' : 'none';
 }
 function updateTrialStatusUI(){
   try{ updateMarketingConsentUI(); }catch(e){}   // 마케팅 토글도 함께 갱신 (early return 전에)
@@ -5202,6 +5224,7 @@ var UI_TEXT = {
   mob_statistics:{ko:'통계',     en:'Statistics'},
   mob_settings:  {ko:'설정',     en:'Settings'},
   nav_videos:    {ko:'동영상',   en:'Videos'},
+  nav_more:      {ko:'더보기',   en:'More'},
   mob_videos:    {ko:'동영상',   en:'Videos'},
   vid_title:     {ko:'동영상 EA 문제 풀이', en:'EA Practice Question Videos'},
   vid_back:      {ko:'← 대시보드로 돌아가기', en:'← Back to dashboard'},
