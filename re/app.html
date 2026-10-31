@@ -4743,6 +4743,8 @@ function pePaintPrice(){
 }
 function pePaintPriceQ(){
   var bq = document.getElementById('pricing-sub-btn-q');
+  var aq = document.getElementById('pricing-amt-q');
+  if(aq && _peQStr) aq.textContent = _peQStr;
   if(bq && _peQStr) bq.textContent = t('pricing_subscribe_q') + ' (' + _peQStr + ' ' + t('pricing_per3m') + ')';
 }
 
@@ -4762,6 +4764,10 @@ function showPricingModal(){
       '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' +
         '<span id="pricing-amt">' + (_pePriceStr || '$29') + '</span> ' +
         '<span style="font-size:15px;font-weight:700;">' + t('pricing_permonth') + '</span>' +
+        (PADDLE_PRICE_QUARTERLY ?   // boss 2026-10-31: show both plans in the headline
+          '<span style="font-size:15px;color:var(--text-mid);margin:0 8px;">·</span>' +
+          '<span id="pricing-amt-q">' + (_peQStr || '$70') + '</span> ' +
+          '<span style="font-size:15px;font-weight:700;">' + t('pricing_per3m') + '</span>' : '') +
       '</div>' +
       '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.9;margin:.75rem auto 1.1rem;text-align:left;display:inline-block;">' +
         t('pricing_benefits') +
