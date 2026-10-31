@@ -635,6 +635,12 @@ body[data-exam="re"] .price-card.pro .price-amount{color:var(--navy-mid);}
 body[data-exam="re"] .price-badge{background:var(--accent);}
 body[data-exam="re"] .price-grid .price-card.pro:hover, body[data-exam="re"] .price-grid .price-card.pro:focus-within{box-shadow:0 14px 34px rgba(var(--accent-rgb),.30);}
 body[data-exam="re"] .price-list li::before{background-image:url(/check-mark-re.png?v=1);}
+/* 2026-10-31 boss: Best Value badge blinks (soft ring pulse) */
+.price-badge{animation:pxBadgePulse 1.8s ease-out infinite;}
+@keyframes pxBadgePulse{0%{box-shadow:0 0 0 0 rgba(221,143,117,.65);}70%{box-shadow:0 0 0 10px rgba(221,143,117,0);}100%{box-shadow:0 0 0 0 rgba(221,143,117,0);}}
+body[data-exam="re"] .price-badge{animation-name:pxBadgePulseRe;}
+@keyframes pxBadgePulseRe{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.65);}70%{box-shadow:0 0 0 10px rgba(var(--accent-rgb),0);}100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),0);}}
+
 
 .price-card.featured::before{
   content:attr(data-tag); position:absolute; top:-12px; left:24px;
