@@ -190,7 +190,10 @@ html, body {
   flex-direction:column;align-items:stretch;gap:2px;padding:6px;border-radius:12px;
   background:var(--card,#fff);border:1px solid var(--border,rgba(0,0,0,.12));box-shadow:0 12px 30px rgba(0,0,0,.14);}
 .nav-more-wrap.open .nav-more-menu{display:flex;}
-.nav-more-menu .nav-btn{justify-content:flex-start;width:100%;}
+.nav-more-menu .nav-btn{justify-content:flex-start;width:100%;color:#232e30;border:0;}
+.nav-more-menu .nav-btn:hover{background:rgba(0,0,0,.06);color:#232e30;}
+.nav-more-menu .nav-btn.active{background:rgba(0,0,0,.08);color:#232e30;border:0;}
+.nav-more-menu .nav-ico{stroke:currentColor;}
 .nav-btn{
   background:none;border:none;color:rgba(255,255,255,.7);
   padding:7px 14px;border-radius:8px;cursor:pointer;
@@ -5894,7 +5897,8 @@ function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,videos:6,settings:7,anomaly:8};  // Upload 메뉴 삭제(2026-08-25) — 인덱스 한 칸 당김
+  // «More» menu (2026-10-31): Videos and My Account sit inside it, so highlight the «More» button for them
+  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:5,videos:6,settings:6,anomaly:10};
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
   const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',videos:'mob-videos',settings:'mob-settings',anomaly:'mob-anomaly'};
   document.querySelectorAll('.mobile-nav-item').forEach(b=>b.classList.remove('active'));
