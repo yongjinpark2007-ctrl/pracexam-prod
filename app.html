@@ -4199,22 +4199,26 @@ function ambBadgeHtml(style){
   '</div>';
 }
 
-// Top-nav «Upgrade» for free-trial and expired users (boss 2026-10-31: new sign-ups had no visible way to subscribe).
+// Dashboard «Upgrade» banner for free-trial and expired users (boss 2026-10-31: new sign-ups had no visible
+// way to subscribe; a top-nav button was too much, so it sits under the dashboard hero instead).
 function _syncUpgradeNav(){
   var show = !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
-  [['nav-settings','nav-upgrade','nav-btn'], ['mob-settings','mob-upgrade','']].forEach(function(x){
-    var anchor = document.getElementById(x[0]); if(!anchor) return;
-    var b = document.getElementById(x[1]);
-    if(!b){
-      b = document.createElement('button'); b.id = x[1];
-      b.className = anchor.className;
-      b.style.cssText = 'font-weight:700;color:var(--teal);';
-      b.onclick = function(){ try{ closeDrawer(); }catch(e){} showPricingModal(); };
-      anchor.parentNode.insertBefore(b, anchor);
-    }
-    b.innerHTML = '<span>' + t('upgrade_cta') + '</span>';
-    b.style.display = show ? '' : 'none';
-  });
+  var hero = document.getElementById('dash-hero'); if(!hero) return;
+  var b = document.getElementById('dash-upgrade');
+  if(!b){
+    b = document.createElement('div'); b.id = 'dash-upgrade';
+    b.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;'
+      + 'margin:12px 0 4px;padding:12px 16px;border-radius:12px;border:1.5px solid #DD8F75;background:#FBF1EC;';
+    hero.parentNode.insertBefore(b, hero.nextSibling);
+  }
+  var en = (LANG === 'en');
+  var msg = S.trialExpired
+    ? (en ? 'Your free trial has ended. Subscribe to keep practicing.' : '무료 체험이 끝났습니다. 구독하고 계속 학습하세요.')
+    : (en ? 'Unlock every question, mock exam and War Room with Pro.' : 'Pro로 모든 문제·모의고사·War Room을 이용하세요.');
+  b.innerHTML = '<span style="font-size:14px;font-weight:600;color:var(--text-main,#232e30);">' + msg + '</span>'
+    + '<button onclick="showPricingModal()" style="border:0;border-radius:999px;padding:8px 18px;font-weight:700;font-size:14px;'
+    + 'background:#DD8F75;color:#fff;cursor:pointer;">' + (en ? 'Subscribe' : '구독하기') + '</button>';
+  b.style.display = show ? 'flex' : 'none';
 }
 function updateTrialStatusUI(){
   try{ updateMarketingConsentUI(); }catch(e){}   // 마케팅 토글도 함께 갱신 (early return 전에)
