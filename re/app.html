@@ -1828,7 +1828,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
         <button class="nav-btn" id="nav-more" type="button" aria-haspopup="true" aria-expanded="false" onclick="toggleNavMore(event)"><span data-i18n="nav_more">더보기</span>&nbsp;▾</button>
         <div class="nav-more-menu" id="nav-more-menu">
         <button class="nav-btn" id="nav-videos" onclick="showScreen('videos');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="nav_videos">동영상</span></button>
-        <button class="nav-btn" id="nav-upgrade-item" type="button" style="display:none;" onclick="showPricingModal()"><span data-i18n="upgrade_cta">🚀 업그레이드</span></button>
+        <button class="nav-btn" id="nav-upgrade-item" type="button" style="display:none;" onclick="showPricingModal()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg><span data-i18n="nav_upgrade">업그레이드</span></button>
         <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
         </div>
       </div>
@@ -5482,6 +5482,7 @@ var UI_TEXT = {
   mob_settings:  {ko:'설정',     en:'Settings'},
   nav_videos:    {ko:'동영상',   en:'Videos'},
   nav_more:      {ko:'더보기',   en:'More'},
+  nav_upgrade:   {ko:'업그레이드', en:'Upgrade'},
   mob_videos:    {ko:'동영상',   en:'Videos'},
   vid_title:     {ko:'동영상 부동산 문제 풀이', en:'Real Estate Practice Question Videos'},
   vid_back:      {ko:'← 대시보드로 돌아가기', en:'← Back to dashboard'},
