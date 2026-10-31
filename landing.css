@@ -620,6 +620,15 @@ section{padding:88px 0;}
 }
 .price-card.featured{border:1.5px solid var(--navy); background:var(--white); position:relative;}
 .price-card.monthly{border:1.5px solid var(--navy); background:var(--white);}   /* boss 2026-10-31: outline like the other two */
+/* 2026-10-31 boss (Google Workspace pricing): buttons are light with dark text until the card is hovered;
+   the hovered card lifts and its button turns solid. Keyboard focus inside a card does the same. */
+.price-grid .price-card{transition:box-shadow .18s, transform .18s, border-color .18s;}
+.price-grid .price-card .btn{background:var(--white); color:var(--navy); border:1.5px solid var(--navy); box-shadow:none;}
+.price-grid .price-card:hover, .price-grid .price-card:focus-within{transform:translateY(-3px);
+  box-shadow:0 14px 34px rgba(var(--navy-rgb),.18);}
+.price-grid .price-card.pro:hover, .price-grid .price-card.pro:focus-within{box-shadow:0 14px 34px rgba(221,143,117,.30);}
+.price-grid .price-card:hover .btn, .price-grid .price-card:focus-within .btn{background:var(--navy); color:var(--white);}
+@media (hover:none){ .price-grid .price-card .btn{background:var(--navy); color:var(--white);} }   /* phones: no hover, keep buttons solid */
 .price-card.featured::before{
   content:attr(data-tag); position:absolute; top:-12px; left:24px;
   background:var(--navy); color:var(--white); font-size:11px; font-weight:700;
