@@ -642,8 +642,8 @@ section{padding:88px 0;}
   stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto; margin-top:2px;}
 /* 2026-10-31 boss: pricing list ticks = the PracExam logo's brush checkmark (transparent PNG cut from the logo) */
 .price-list svg{display:none;}
-.price-list li::before{content:""; flex:0 0 auto; width:18px; height:15px; margin-top:2px;
-  background:url(/check-mark.png?v=1) center/contain no-repeat;}
+.price-list li::before{content:""; flex:0 0 auto; width:17px; height:15px; margin-top:2px;
+  background:url(/check-mark.png?v=2) center/contain no-repeat;}
 
 /* ── CTA ───────────────────────────────────────────────── */
 /* 위쪽 요금제 섹션과 배경이 같아 88+88=176px 이 통째로 빈 공간처럼 보였다.
