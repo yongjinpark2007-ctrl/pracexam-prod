@@ -4455,8 +4455,8 @@ function _syncUpgradeNav(){
   if(!b){
     b = document.createElement('div'); b.id = 'dash-upgrade';
     b.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;'
-      + 'margin:12px 0 4px;padding:12px 16px;border-radius:12px;border:1.5px solid #DD8F75;background:#FBF1EC;';
-    hero.parentNode.insertBefore(b, hero.nextSibling);
+      + 'margin:0 0 14px;padding:12px 16px;border-radius:12px;border:1.5px solid #DD8F75;background:#FBF1EC;';
+    hero.parentNode.insertBefore(b, hero);   // boss 2026-10-31: at the very top of the dashboard
   }
   var en = (LANG === 'en');
   var msg = S.trialExpired
