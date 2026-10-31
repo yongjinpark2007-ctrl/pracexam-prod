@@ -778,13 +778,15 @@
     </div>
 
     <div id="modal-signup">
-      <h3><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></h3>
+      <h3><span class="ko su-free">무료로 시작하기</span><span class="en su-free">Start Free</span><span class="ko su-pay" style="display:none">Pro 구독하기</span><span class="en su-pay" style="display:none">Subscribe to Pro</span></h3>
       <p class="sub">
-        <span class="ko">계정을 만들고 무료로 시작하세요.</span>
-        <span class="en">Create your account to get started.</span>
+        <span class="ko su-free">계정을 만들고 무료로 시작하세요.</span>
+        <span class="en su-free">Create your account to get started.</span>
+        <span class="ko su-pay" style="display:none">계정을 만들면 바로 구독 결제로 이어집니다.</span>
+        <span class="en su-pay" style="display:none">Create your account, then go straight to checkout.</span>
       </p>
       <div id="su-subscribe-note" style="display:none; background:rgba(20,50,90,.05); border:1px solid var(--border-clr,#e5e7eb); border-radius:10px; padding:11px 13px; margin-bottom:14px; font-size:12.5px; line-height:1.6; color:var(--text-mid);">
-        <strong style="color:var(--navy);"><span class="ko">Pro 구독 · $29/월</span><span class="en">Pro subscription · $29/month</span></strong><br>
+        <strong style="color:var(--navy);"><span class="ko">Pro 구독 · $29/월 또는 $70/3개월</span><span class="en">Pro subscription · $29/month or $70/3 months</span></strong><br>
         <span class="ko">먼저 계정을 만들면 결제 화면으로 이어집니다. (이메일 인증 후 자동 연결)</span>
         <span class="en">Create your account first — you'll be taken to checkout right after (via the email confirmation link).</span>
       </div>
@@ -1312,6 +1314,10 @@ function switchModal(which){
   // 구독 의도로 가입 모달을 열면 안내 배너 표시
   var note = document.getElementById('su-subscribe-note');
   if(note) note.style.display = (which === 'signup' && window._intent === 'subscribe') ? 'block' : 'none';
+  // Subscribe intent (boss 2026-10-31): the pop-up title must not say «Start Free».
+  var _pay = (window._intent === 'subscribe');
+  Array.prototype.forEach.call(document.querySelectorAll('#modal-signup .su-free'), function(x){ x.style.display = _pay ? 'none' : ''; });
+  Array.prototype.forEach.call(document.querySelectorAll('#modal-signup .su-pay'), function(x){ x.style.display = _pay ? '' : 'none'; });
 }
 
 // popquiz.html 등 외부 페이지에서 ?signup=1 로 들어오면 가입 모달 자동 오픈
