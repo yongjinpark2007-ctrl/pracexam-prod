@@ -630,7 +630,8 @@ section{padding:88px 0;}
 .price-grid .price-card:hover .btn, .price-grid .price-card:focus-within .btn{background:var(--navy); color:var(--white);}
 @media (hover:none){ .price-grid .price-card .btn{background:var(--navy); color:var(--white);} }   /* phones: no hover, keep buttons solid */
 /* RE pricing in the RE palette (boss 2026-10-31): same layout as EA, blue instead of apricot, RE logo icon for ticks */
-body[data-exam="re"] .price-card.pro{border-color:var(--accent); background:#D4E2F2; box-shadow:0 12px 32px rgba(var(--accent-rgb),.22);}   /* boss 10-31: the light tint vanished into the section background, so a deeper blue */
+body[data-exam="re"] .price-card.pro{border-color:var(--accent); background:var(--accent-tint); box-shadow:0 12px 32px rgba(var(--accent-rgb),.18);}
+body[data-exam="re"] #pricing{background:var(--white);}   /* boss 10-31: the blue cards blended into the grey-blue section; a white section lets them stand out */
 body[data-exam="re"] .price-card.pro .price-amount{color:var(--navy-mid);}
 body[data-exam="re"] .price-badge{background:var(--accent);}
 body[data-exam="re"] .price-grid .price-card.pro:hover, body[data-exam="re"] .price-grid .price-card.pro:focus-within{box-shadow:0 14px 34px rgba(var(--accent-rgb),.30);}
