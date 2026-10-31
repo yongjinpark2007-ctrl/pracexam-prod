@@ -377,7 +377,16 @@ section{padding:88px 0;}
 .sample-wr-btn .wr-arrow{flex:none; opacity:.7; font-weight:600;}
 @keyframes smpWrPulse{0%,100%{border-color:rgba(var(--navy-rgb),.18); box-shadow:0 0 0 0 rgba(var(--navy-mid-rgb),0);}
   50%{border-color:rgba(var(--navy-mid-rgb),.40); box-shadow:0 0 0 2px rgba(var(--navy-mid-rgb),.05),0 0 12px 2px rgba(var(--navy-mid-rgb),.10);}}
-@media(prefers-reduced-motion:reduce){.sample-wr-btn{animation:none;}}
+/* 2026-10-31 boss: same War Room box as the app explanation screen (app.html .exp-head #exp-topic-badge, final 10-27 design):
+   quiet grey box, slow 6s border pulse, a small grey dot in the top-right corner fading in step, no ↗ arrow.
+   No prefers-reduced-motion branch, same as the app (Chrome/Edge read that setting differently on one machine). */
+.sample-wr-btn{position:relative; background:rgba(0,0,0,.03); border:1px solid var(--border-clr); color:var(--text-mid);
+  padding-right:22px; animation:smpWrPulse 6s ease-in-out infinite;}
+.sample-wr-btn:hover{background:rgba(0,0,0,.03); border-color:var(--accent); color:var(--navy);}
+.sample-wr-btn .wr-arrow{display:none;}
+.sample-wr-btn::after{content:""; position:absolute; top:7px; right:7px; width:7px; height:7px; border-radius:50%;
+  background:rgba(var(--navy-mid-rgb),.55); animation:smpWrDotFade 6s ease-in-out infinite;}
+@keyframes smpWrDotFade{0%,100%{opacity:.08; transform:scale(.15);} 50%{opacity:.85; transform:scale(.9);}}
 @keyframes fade{from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);}}
 
 /* ── killer questions section ───────────────────────────── */
