@@ -3903,8 +3903,13 @@ async function confirmLogout(){
 try{
   if(new URLSearchParams(window.location.search).get('intent') === 'subscribe'){
     sessionStorage.setItem('pendingIntent', 'subscribe');
+    // Subscribe from the landing while signed in for the other exam (boss 2026-10-31): the add-exam card
+    // reloads the app, which would drop the intent. Keep it for one reload so the checkout opens after joining.
+    if(/[?&]join=1/.test(window.location.search)) sessionStorage.setItem('pendingIntentJoin', 'subscribe');
   }
 }catch(e){}
+function _joinWantsPay(){ try{ return sessionStorage.getItem('pendingIntentJoin') === 'subscribe'; }catch(e){ return false; } }
+function _joinCarryPay(){ try{ if(_joinWantsPay()){ sessionStorage.setItem('pendingIntent', 'subscribe'); sessionStorage.removeItem('pendingIntentJoin'); } }catch(e){} }
 
 // ── SESSION 초기화 (이메일 인증 링크 자동 로그인 + 기존 세션 복원) ──
 
@@ -4220,6 +4225,7 @@ async function reStartTrial(st){
     if(r.error){ console.warn('start_re_trial:', r.error); showToast(LANG === 'en' ? 'Could not start your free trial. Please try again or email hello@pracexam.com.' : '무료 체험을 시작하지 못했습니다. 다시 시도하시거나 hello@pracexam.com 으로 알려 주세요.'); return false; }
     var s = String(r.data || '').slice(3);
     if(RE_STATES[s]){ try { localStorage.setItem('pe_re_state', s); } catch(e){} }
+    _joinCarryPay();   // subscribe intent: the pricing / checkout opens after the reload
     location.replace('/re/app');
     return true;
   } catch(e){ console.warn('start_re_trial:', e); return false; }
@@ -4274,7 +4280,7 @@ function reAskState(){
       '<div class="je-note" style="margin:0 0 16px;">Your account covers this state only. To change it later, email hello@pracexam.com.</div>' +
       '<label class="je-terms"><input type="checkbox" id="re-enroll-terms"/> <span>I agree to the <a href="/terms.html" target="_blank">Terms</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</span></label>' +
       '<div class="je-note">PracExam is exam practice. It does not replace your state\'s required pre-license course. <a href="/re/exam-tips/#school" target="_blank">Learn more</a></div>' +
-      '<button class="lg-btn" onclick="reEnrollStart(this)">Start free trial</button>' +
+      '<button class="lg-btn" onclick="reEnrollStart(this)">' + (_joinWantsPay() ? 'Add Real Estate and continue to payment' : 'Start free trial') + '</button>' +
       '<div class="lg-err" id="re-enroll-err" style="display:block;"></div>' +
       '<div class="je-foot"><a class="lg-link" href="' + _joinBackHref('/re/') + '">Not now &mdash; go back</a></div>' +
     '</div>';
