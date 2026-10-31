@@ -4199,9 +4199,27 @@ function ambBadgeHtml(style){
   '</div>';
 }
 
+// Top-nav «Upgrade» for free-trial and expired users (boss 2026-10-31: new sign-ups had no visible way to subscribe).
+function _syncUpgradeNav(){
+  var show = !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
+  [['nav-settings','nav-upgrade','nav-btn'], ['mob-settings','mob-upgrade','']].forEach(function(x){
+    var anchor = document.getElementById(x[0]); if(!anchor) return;
+    var b = document.getElementById(x[1]);
+    if(!b){
+      b = document.createElement('button'); b.id = x[1];
+      b.className = anchor.className;
+      b.style.cssText = 'font-weight:700;color:var(--teal);';
+      b.onclick = function(){ try{ closeDrawer(); }catch(e){} showPricingModal(); };
+      anchor.parentNode.insertBefore(b, anchor);
+    }
+    b.innerHTML = '<span>' + t('upgrade_cta') + '</span>';
+    b.style.display = show ? '' : 'none';
+  });
+}
 function updateTrialStatusUI(){
   try{ updateMarketingConsentUI(); }catch(e){}   // 마케팅 토글도 함께 갱신 (early return 전에)
   try{ maybeShowMarketingModal(); }catch(e){}    // 옵트인 모달 (조건 충족 시 1회)
+  try{ _syncUpgradeNav(); }catch(e){}            // boss 2026-10-31: a visible way to subscribe from anywhere in the app
   var card = document.getElementById('settings-trial-status');
   var txt  = document.getElementById('trial-status-text');
   var act  = document.getElementById('trial-status-action');

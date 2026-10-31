@@ -1303,9 +1303,17 @@ function _knownOther(){
   try { localStorage.removeItem(_SB_KEY); } catch(e){}
   switchModal('signup');
 }
+function _sameExamSignedIn(){
+  try { var s = JSON.parse(localStorage.getItem(_SB_KEY) || 'null'); return !!(s && s.refresh_token && s.user && s.user.email) && !_knownEmail(); } catch(e){ return false; }
+}
 function openModal(which){
-  document.getElementById('modal-bg').classList.add('open');
   which = which || 'signup';
+  // boss 2026-10-31: signed in for this exam already -> no sign-up form; Subscribe goes to the checkout, Start Free to the app
+  if(which === 'signup' && _sameExamSignedIn()){
+    window.location.href = '/re/app' + (window._intent === 'subscribe' ? '?intent=subscribe' : '');
+    return;
+  }
+  document.getElementById('modal-bg').classList.add('open');
   var em = (which === 'signup') ? _knownEmail() : '';
   if(em){
     Array.prototype.forEach.call(document.querySelectorAll('#modal-known .known-email'), function(x){ x.textContent = em; });
