@@ -55,10 +55,16 @@
   }
 
   window.PE_EXAMS = EXAMS;
+  // Switching to the other exam happens on the hub (/) only (boss 2026-10-30): customers rarely study both,
+  // and a switch on every exam page sends people into the other exam for no reason.
+  // So a page that belongs to an exam (<body data-exam="ea|re">) draws no switch; the hub still can.
   function init(){
     var cur = document.body.getAttribute('data-exam');
     var sw = document.querySelectorAll('[data-exam-switch]');
-    for(var i = 0; i < sw.length; i++) renderSwitch(sw[i], cur);
+    for(var i = 0; i < sw.length; i++){
+      if(cur){ sw[i].innerHTML = ''; sw[i].style.display = 'none'; continue; }
+      renderSwitch(sw[i], cur);
+    }
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
