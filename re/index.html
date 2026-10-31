@@ -145,7 +145,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
 <link rel="stylesheet" href="/exam-palettes.css?v=20261031h">
-<link rel="stylesheet" href="/landing.css?v=20261031x">
+<link rel="stylesheet" href="/landing.css?v=20261031y">
 <link rel="stylesheet" href="/exam-switch.css?v=20261030">
 <link rel="stylesheet" href="/re/re.css?v=20261029v">
 <link rel="stylesheet" href="/videos.css?v=20261029">
@@ -609,6 +609,10 @@
       <div class="price-card featured" data-tag="Now">
         <div class="price-name"><span class="ko">무료</span><span class="en">Free</span></div>
         <div class="price-amount">$0 <span><span class="ko">/ 30일</span><span class="en">/ 30 days</span></span></div>
+        <div class="price-sub" style="font-size:13px; font-weight:600; min-height:20px; margin:-2px 0 14px; color:var(--text-muted);"><span class="ko">신용카드 없이 시작</span><span class="en">No credit card required</span></div>
+        <a class="btn btn-primary" style="width:100%; margin-bottom:18px;" href="/re/app?signup=1" onclick="startFree();return false;">
+          <span class="ko">무료로 시작하기</span><span class="en">Start Free</span>
+        </a>
         <p class="price-desc"><span class="ko">매일 꾸준히 부동산 시험을 준비하는 플랜</span>
           <span class="en">Perfect for getting started with daily license exam practice.</span></p>
         <ul class="price-list">
@@ -617,14 +621,15 @@
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">한·영 자세한 해설 &amp; 시험 공부 팁</span><span class="en">Detailed explanations &amp; exam tips</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">플래그 &amp; 복습 모드</span><span class="en">Flag &amp; review</span></span></li>
         </ul>
-        <a class="btn btn-primary" style="width:100%;" href="/re/app?signup=1" onclick="startFree();return false;">
-          <span class="ko">무료로 시작하기</span><span class="en">Start Free</span>
-        </a>
       </div>
 
       <div class="price-card">
         <div class="price-name"><span class="ko">Pro 월간</span><span class="en">Pro Monthly</span></div>
         <div class="price-amount">$29 <span><span class="ko">/ 월</span><span class="en">/ month</span></span></div>
+        <div class="price-sub" style="font-size:13px; font-weight:600; min-height:20px; margin:-2px 0 14px; color:var(--text-muted);"><span class="ko">언제든 해지 가능</span><span class="en">Cancel anytime</span></div>
+        <a class="btn btn-ghost" style="width:100%; margin-bottom:18px;" href="/re/app?signup=1" onclick="startSubscribe('m');return false;">
+          <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
+        </a>
         <p class="price-desc"><span class="ko">합격에 필요한 모든 기능을 담은 프리미엄 학습 플랜</span>
           <span class="en">For serious license candidates preparing for exam day.</span></p>
         <ul class="price-list">
@@ -633,10 +638,7 @@
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">상세한 학습 성과 분석</span><span class="en">Adaptive practice &amp; performance stats</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">취약 영역 분석 및 집중 복습</span><span class="en">Weak-area analysis & targeted review</span></span></li>
         </ul>
-        <a class="btn btn-ghost" style="width:100%;" href="/re/app?signup=1" onclick="startSubscribe('m');return false;">
-          <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
-        </a>
-        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:12px; text-align:center;">
+        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:auto; padding-top:14px; text-align:center;">
           <span class="ko">매월 자동결제 · 언제든 해지 · 14일 환불 보장</span>
           <span class="en">Auto-renews monthly · Cancel anytime · 14-day refund</span><br>
           <a href="/terms.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">이용약관</span><span class="en">Terms</span></a> ·
@@ -649,7 +651,10 @@
         <span class="price-badge"><span class="ko">가장 알뜰</span><span class="en">Best Value</span></span>
         <div class="price-name"><span class="ko">Pro 3개월</span><span class="en">Pro 3-Month</span></div>
         <div class="price-amount">$70 <span><span class="ko">/ 3개월</span><span class="en">/ 3 months</span></span></div>
-        <div style="font-size:13px; font-weight:600; color:var(--terracotta-deep); margin:-2px 0 10px;"><span class="ko">월 약 $23 · 월간보다 약 20% 절약</span><span class="en">About $23 a month · save about 20% vs monthly</span></div>
+        <div class="price-sub" style="font-size:13px; font-weight:600; min-height:20px; margin:-2px 0 14px; color:var(--terracotta-deep);"><span class="ko">월 약 $23 · 월간보다 약 20% 절약</span><span class="en">About $23 a month · save about 20% vs monthly</span></div>
+        <a class="btn btn-primary" style="width:100%; margin-bottom:18px;" href="/re/app?signup=1" onclick="startSubscribe('q');return false;">
+          <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
+        </a>
         <p class="price-desc"><span class="ko">합격에 필요한 모든 기능을 담은 프리미엄 학습 플랜</span>
           <span class="en">For serious license candidates preparing for exam day.</span></p>
         <ul class="price-list">
@@ -659,10 +664,7 @@
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">상세한 학습 성과 분석</span><span class="en">Adaptive practice &amp; performance stats</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">취약 영역 분석 및 집중 복습</span><span class="en">Weak-area analysis & targeted review</span></span></li>
         </ul>
-        <a class="btn btn-primary" style="width:100%;" href="/re/app?signup=1" onclick="startSubscribe('q');return false;">
-          <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
-        </a>
-        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:12px; text-align:center;">
+        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:auto; padding-top:14px; text-align:center;">
           <span class="ko">3개월마다 자동결제 · 언제든 해지 · 14일 환불 보장</span>
           <span class="en">Auto-renews every 3 months · Cancel anytime · 14-day refund</span><br>
           <a href="/terms.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">이용약관</span><span class="en">Terms</span></a> ·
