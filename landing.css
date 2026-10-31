@@ -619,6 +619,7 @@ section{padding:88px 0;}
   border:1px solid var(--border-clr); border-radius:var(--radius); padding:30px; background:var(--card-bg); display:flex; flex-direction:column;
 }
 .price-card.featured{border:1.5px solid var(--navy); background:var(--white); position:relative;}
+.price-card.monthly{border:1.5px solid var(--navy); background:var(--white);}   /* boss 2026-10-31: outline like the other two */
 .price-card.featured::before{
   content:attr(data-tag); position:absolute; top:-12px; left:24px;
   background:var(--navy); color:var(--white); font-size:11px; font-weight:700;
