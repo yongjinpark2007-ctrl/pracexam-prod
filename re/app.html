@@ -3704,7 +3704,7 @@ async function doResendConfirm(){
     var res = await sb.auth.resend({
       type: 'signup',
       email: email,
-      options: { emailRedirectTo: window.location.origin + '/app.html' }
+      options: { emailRedirectTo: window.location.origin + '/re/app' }   // RE (2026-10-30): was the EA app
     });
     if(res && res.error){ throw res.error; }
     ok.innerHTML = '✅ New confirmation link sent.<br>Check your inbox — and your spam/junk folder.';
