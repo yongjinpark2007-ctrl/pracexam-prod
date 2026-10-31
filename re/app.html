@@ -4790,54 +4790,79 @@ function peFetchPriceQ(){
   return _peQPromise;
 }
 
-// 모달이 열린 뒤에 값이 도착해도 그 자리에 채워 넣는다.
+// Upgrade pop-up, redesigned (boss 2026-10-31): two plan cards like the landing pricing (Monthly / 3-Month
+// «Best Value»), each with its own button, the benefits once below, then «Later». Prices are Paddle's
+// country-localized strings filled in when they arrive.
 function pePaintPrice(){
   var amt = document.getElementById('pricing-amt');
-  var btn = document.getElementById('pricing-sub-btn');
-  if(!_pePriceStr) return;
-  if(amt) amt.textContent = _pePriceStr;
-  if(btn) btn.textContent = t('pricing_subscribe_pre') + ' (' + _pePriceStr + ' ' + t('pricing_permonth') + ')';
+  if(amt && _pePriceStr) amt.textContent = _pePriceStr;
 }
 function pePaintPriceQ(){
-  var bq = document.getElementById('pricing-sub-btn-q');
   var aq = document.getElementById('pricing-amt-q');
   if(aq && _peQStr) aq.textContent = _peQStr;
-  if(bq && _peQStr) bq.textContent = t('pricing_subscribe_q') + ' (' + _peQStr + ' ' + t('pricing_per3m') + ')';
 }
-
-// 가격/혜택 안내 모달 — "구독하기" → openCheckout
+var _PM_C = { border:'#4F7CAC', tint:'#FFFFFF', price:'#2F5F8F', ink:'#10304C', shadow:'rgba(79,124,172,.25)', pulse:'rgba(79,124,172,.6)', check:'/check-mark-re.png?v=1' };
+function _pmCss(){
+  if(document.getElementById('pm-css')) return;
+  var s = document.createElement('style'); s.id = 'pm-css';
+  s.textContent =
+    '.pm-wrap{padding:.4rem 0 .2rem;text-align:center;}' +
+    '.pm-title{font-size:20px;font-weight:800;margin:0 0 .25rem;}' +
+    '.pm-sub{font-size:13px;color:var(--text-mid);margin:0 0 1rem;}' +
+    '.pm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 1rem;text-align:left;}' +
+    '.pm-grid.pm-one{grid-template-columns:minmax(0,1fr);}' +
+    '@media (max-width:440px){.pm-grid{grid-template-columns:minmax(0,1fr);}}' +
+    '.pm-card{position:relative;display:flex;flex-direction:column;gap:8px;padding:16px 14px 14px;border-radius:14px;' +
+      'border:2px solid ' + _PM_C.border + ';background:' + _PM_C.tint + ';transition:transform .15s, box-shadow .15s;}' +
+    '.pm-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px ' + _PM_C.shadow + ';}' +
+    '.pm-badge{position:absolute;top:-11px;left:12px;background:' + _PM_C.border + ';color:#fff;font-size:10.5px;font-weight:800;' +
+      'letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px;animation:pmPulse 1.8s ease-out infinite;}' +
+    '@keyframes pmPulse{0%{box-shadow:0 0 0 0 ' + _PM_C.pulse + ';}70%{box-shadow:0 0 0 9px rgba(0,0,0,0);}100%{box-shadow:0 0 0 0 rgba(0,0,0,0);}}' +
+    '.pm-name{font-size:13.5px;font-weight:700;color:var(--text-mid);}' +
+    '.pm-price{font-size:26px;font-weight:800;color:' + _PM_C.price + ';line-height:1.1;}' +
+    '.pm-price small{font-size:13px;font-weight:600;color:var(--text-mid);margin-left:4px;}' +
+    '.pm-btn{margin-top:4px;width:100%;border:1.5px solid ' + _PM_C.ink + ';background:#fff;color:' + _PM_C.ink + ';' +
+      'border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;}' +
+    '.pm-card:hover .pm-btn,.pm-btn:focus{background:' + _PM_C.ink + ';color:#fff;outline:none;}' +
+    '@media (hover:none){.pm-btn{background:' + _PM_C.ink + ';color:#fff;}}' +
+    '.pm-list{list-style:none;margin:0 auto 1rem;padding:0;display:inline-flex;flex-direction:column;gap:7px;text-align:left;}' +
+    '.pm-list li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--text-mid);}' +
+    '.pm-list li::before{content:"";flex:0 0 auto;width:16px;height:14px;margin-top:3px;background:url(' + _PM_C.check + ') center/contain no-repeat;}' +
+    '.pm-later{width:100%;}' +
+    '.pm-fine{font-size:11.5px;color:var(--text-mid);margin-top:10px;line-height:1.6;}';
+  document.head.appendChild(s);
+}
 function showPricingModal(){
   if(!SB_USER){ showToast(t('login_required')); return; }
   if(SB_USER.id === ADMIN_UID){ showToast(t('admin_no_pay')); return; }
   if(!S.reExam){ reAskState(); return; }   // RE: confirm the state before showing the price
   var mc = document.getElementById('modal-content');
   if(!mc) return;
+  _pmCss();
+  var en = (LANG === 'en'), q = !!PADDLE_PRICE_QUARTERLY;
+  var items = String(t('pricing_benefits')).split('<br>').map(function(x){ return x.replace(/^\s*•\s*/, ''); });
   mc.innerHTML =
-    '<div style="text-align:center;padding:1rem 0;">' +
-      '<div style="font-size:36px;margin-bottom:.4rem;">🚀</div>' +
-      '<div style="font-size:19px;font-weight:800;margin-bottom:.2rem;">' + t('pricing_title') + '</div>' +
-      (S.reExam ? '<div style="font-size:13.5px;font-weight:700;margin:.2rem 0;">' + reStateName(S.reExam.slice(3)) + (LANG === 'en' ? ' real estate exam' : ' 부동산 시험') + '</div>' +
-        '<div style="font-size:12px;color:var(--text-mid);margin-bottom:.2rem;">' + (LANG === 'en' ? 'To change your state, email hello@pracexam.com.' : '주 변경은 hello@pracexam.com 으로 요청해 주세요.') + '</div>' : '') +
-      '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' +
-        '<span id="pricing-amt">' + (_pePriceStr || '$29') + '</span> ' +
-        '<span style="font-size:15px;font-weight:700;">' + t('pricing_permonth') + '</span>' +
-        (PADDLE_PRICE_QUARTERLY ?   // boss 2026-10-31: show both plans in the headline
-          '<span style="font-size:15px;color:var(--text-mid);margin:0 8px;">·</span>' +
-          '<span id="pricing-amt-q">' + (_peQStr || '$70') + '</span> ' +
-          '<span style="font-size:15px;font-weight:700;">' + t('pricing_per3m') + '</span>' : '') +
+    '<div class="pm-wrap">' +
+      '<div class="pm-title">' + (en ? 'Upgrade to Pro' : 'Pro로 업그레이드') + '</div>' +
+      (S.reExam ? '<div class="pm-sub"><b>' + reStateName(S.reExam.slice(3)) + (en ? ' real estate exam' : ' 부동산 시험') + '</b> · '
+        + (en ? 'To change your state, email hello@pracexam.com.' : '주 변경은 hello@pracexam.com 으로 요청해 주세요.') + '</div>' : '') +
+      '<div class="pm-grid' + (q ? '' : ' pm-one') + '">' +
+        '<div class="pm-card">' +
+          '<div class="pm-name">' + (en ? 'Pro Monthly' : 'Pro 월간') + '</div>' +
+          '<div class="pm-price"><span id="pricing-amt">' + (_pePriceStr || '$29') + '</span><small>' + t('pricing_permonth') + '</small></div>' +
+          '<button class="pm-btn" id="pricing-sub-btn" onclick="openCheckout(\'m\')">' + (en ? 'Subscribe' : '구독하기') + '</button>' +
+        '</div>' +
+        (q ?
+        '<div class="pm-card">' +
+          '<span class="pm-badge">' + (en ? 'Best Value' : '가장 알뜰') + '</span>' +
+          '<div class="pm-name">' + (en ? 'Pro 3-Month' : 'Pro 3개월') + '</div>' +
+          '<div class="pm-price"><span id="pricing-amt-q">' + (_peQStr || '$70') + '</span><small>' + t('pricing_per3m') + '</small></div>' +
+          '<button class="pm-btn" id="pricing-sub-btn-q" onclick="openCheckout(\'q\')">' + (en ? 'Subscribe' : '구독하기') + '</button>' +
+        '</div>' : '') +
       '</div>' +
-      '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.9;margin:.75rem auto 1.1rem;text-align:left;display:inline-block;">' +
-        t('pricing_benefits') +
-      '</div>' +
-      '<button class="btn-navy" id="pricing-sub-btn" style="width:100%;margin-bottom:8px;" onclick="openCheckout()">' +
-        t('pricing_subscribe_pre') + ' (' + (_pePriceStr || '$29') + ' ' + t('pricing_permonth') + ')' +
-      '</button>' +
-      (PADDLE_PRICE_QUARTERLY ?
-        '<button class="btn-navy" id="pricing-sub-btn-q" style="width:100%;margin-bottom:8px;" onclick="openCheckout(\'q\')">' +
-          t('pricing_subscribe_q') + ' (' + (_peQStr || '$70') + ' ' + t('pricing_per3m') + ')' +
-        '</button>' : '') +
-      '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
-      '<div style="font-size:11.5px;color:var(--text-mid);margin-top:10px;line-height:1.6;">' + t(PADDLE_PRICE_QUARTERLY ? 'pricing_fineprint_q' : 'pricing_fineprint') + '</div>' +
+      '<ul class="pm-list">' + items.map(function(x){ return '<li><span>' + x + '</span></li>'; }).join('') + '</ul>' +
+      '<button class="btn-ghost pm-later" onclick="closeModal()">' + t('later') + '</button>' +
+      '<div class="pm-fine">' + t(q ? 'pricing_fineprint_q' : 'pricing_fineprint') + '</div>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
   peFetchPrice().then(pePaintPrice);      // 늦게 와도 그 자리에 채워 넣는다
