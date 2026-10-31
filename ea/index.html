@@ -155,7 +155,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
 <link rel="stylesheet" href="/videos.css?v=f9ce8e4eb2">
 <link rel="stylesheet" href="/exam-palettes.css?v=20261031h">
-<link rel="stylesheet" href="/landing.css?v=20261031w">
+<link rel="stylesheet" href="/landing.css?v=20261031x">
 <link rel="stylesheet" href="/exam-switch.css?v=20261030">
 </head>
 <body data-exam="ea">
@@ -711,12 +711,9 @@
         </button>
       </div>
 
-      <div class="price-card pro">
-        <div class="price-name"><span class="ko">Pro</span><span class="en">Pro</span></div>
-        <div style="display:flex; flex-wrap:wrap; align-items:baseline; column-gap:14px; row-gap:2px;">
-          <div class="price-amount">$29 <span><span class="ko">/ 월</span><span class="en">/ month</span></span></div>
-          <div class="price-amount">$70 <span><span class="ko">/ 3개월</span><span class="en">/ 3 months</span></span></div>
-        </div>
+      <div class="price-card">
+        <div class="price-name"><span class="ko">Pro 월간</span><span class="en">Pro Monthly</span></div>
+        <div class="price-amount">$29 <span><span class="ko">/ 월</span><span class="en">/ month</span></span></div>
         <p class="price-desc"><span class="ko">합격에 필요한 모든 기능을 담은 프리미엄 학습 플랜</span>
           <span class="en">For serious EA candidates preparing for exam day.</span></p>
         <ul class="price-list">
@@ -725,12 +722,38 @@
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">상세한 학습 성과 분석</span><span class="en">Adaptive practice &amp; performance stats</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">취약 영역 분석 및 집중 복습</span><span class="en">Weak-area analysis & targeted review</span></span></li>
         </ul>
-        <button class="btn btn-primary" style="width:100%;" onclick="startSubscribe()">
+        <button class="btn btn-ghost" style="width:100%;" onclick="startSubscribe('m')">
           <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
         </button>
         <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:12px; text-align:center;">
-          <span class="ko">고른 주기(매월 또는 3개월)마다 자동결제 · 언제든 해지 · 14일 환불 보장</span>
-          <span class="en">Auto-renews each billing period (monthly or every 3 months) · Cancel anytime · 14-day refund</span><br>
+          <span class="ko">매월 자동결제 · 언제든 해지 · 14일 환불 보장</span>
+          <span class="en">Auto-renews monthly · Cancel anytime · 14-day refund</span><br>
+          <a href="/terms.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">이용약관</span><span class="en">Terms</span></a> ·
+          <a href="/refund.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">환불정책</span><span class="en">Refunds</span></a> ·
+          <a href="/privacy.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">개인정보</span><span class="en">Privacy</span></a>
+        </p>
+      </div>
+
+      <div class="price-card pro">
+        <span class="price-badge"><span class="ko">가장 알뜰</span><span class="en">Best Value</span></span>
+        <div class="price-name"><span class="ko">Pro 3개월</span><span class="en">Pro 3-Month</span></div>
+        <div class="price-amount">$70 <span><span class="ko">/ 3개월</span><span class="en">/ 3 months</span></span></div>
+        <div style="font-size:13px; font-weight:600; color:var(--terracotta-deep); margin:-2px 0 10px;"><span class="ko">월 약 $23 · 월간보다 약 20% 절약</span><span class="en">About $23 a month · save about 20% vs monthly</span></div>
+        <p class="price-desc"><span class="ko">합격에 필요한 모든 기능을 담은 프리미엄 학습 플랜</span>
+          <span class="en">For serious EA candidates preparing for exam day.</span></p>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">월간과 같은 기능 · 3개월마다 결제</span><span class="en">Same features as Monthly · billed every 3 months</span></span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">모든 학습 모드 및 War Room 무제한 이용</span><span class="en">Unlimited access to all study modes & War Room</span></span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">실전 문제 5,000+ · 파트별 모의고사 3회</span><span class="en">5,000+ questions · 3 mock exams per part</span></span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">상세한 학습 성과 분석</span><span class="en">Adaptive practice &amp; performance stats</span></span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">취약 영역 분석 및 집중 복습</span><span class="en">Weak-area analysis & targeted review</span></span></li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%;" onclick="startSubscribe('q')">
+          <span class="ko">지금 구독하기</span><span class="en">Subscribe Now</span>
+        </button>
+        <p style="font-size:11.5px; color:var(--text-muted); line-height:1.7; margin-top:12px; text-align:center;">
+          <span class="ko">3개월마다 자동결제 · 언제든 해지 · 14일 환불 보장</span>
+          <span class="en">Auto-renews every 3 months · Cancel anytime · 14-day refund</span><br>
           <a href="/terms.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">이용약관</span><span class="en">Terms</span></a> ·
           <a href="/refund.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">환불정책</span><span class="en">Refunds</span></a> ·
           <a href="/privacy.html" style="color:var(--text-muted);text-decoration:underline;"><span class="ko">개인정보</span><span class="en">Privacy</span></a>
@@ -1389,8 +1412,9 @@ function startFree(){
   try{ sessionStorage.removeItem('pendingIntent'); }catch(e){}
   openModal('signup');
 }
-function startSubscribe(){
+function startSubscribe(plan){
   window._intent = 'subscribe';
+  try{ if(plan) sessionStorage.setItem('pendingPlan', plan); else sessionStorage.removeItem('pendingPlan'); }catch(e){}   // 3 cards (boss 2026-10-31)
   // 같은 탭이면 index→app.html 이동 후에도 유지된다(URL 파라미터가 없어도 app이 읽음).
   try{ sessionStorage.setItem('pendingIntent', 'subscribe'); }catch(e){}
   openModal('signup');

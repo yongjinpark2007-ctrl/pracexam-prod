@@ -4081,7 +4081,11 @@ function updateSyncStatus(){
           try{ sessionStorage.removeItem('pendingIntent'); }catch(e){}
           history.replaceState(null, '', window.location.pathname);
           if(SB_USER.id !== ADMIN_UID && !S.isPaid){
-            setTimeout(function(){ try{ showPricingModal(); }catch(e){} }, 500);
+            // Landing card chosen (boss 2026-10-31: Monthly / 3-Month cards): open that checkout directly.
+            var _plan = null; try{ _plan = sessionStorage.getItem('pendingPlan'); sessionStorage.removeItem('pendingPlan'); }catch(e){}
+            setTimeout(function(){ try{
+              if(_plan === 'm' || (_plan === 'q' && PADDLE_PRICE_QUARTERLY)) openCheckout(_plan); else showPricingModal();
+            }catch(e){} }, 500);
           }
         }
       }
