@@ -2808,6 +2808,7 @@ const ADMIN_UID = 'f80cf93f-066f-415d-8925-a2e848dccaa3';
 // Live 기본 환경이므로 Paddle.Environment.set 호출 없음(sandbox일 때만 set('sandbox')).
 // ⚠️ 아래 CLIENT_TOKEN 은 반드시 live_ 클라토큰으로 채워야 결제창이 열림.
 const PADDLE_CLIENT_TOKEN  = 'live_13e12161088dff9b5cd055f1aba';    // Live 클라이언트 토큰 (공개돼도 안전)
+const PADDLE_PRICE_QUARTERLY = 'pri_01m69ydxrb6bsmjgb946k67dar';   // Live $70 / 3 months, quantity 1 (boss 2026-10-31; webhook PRICE_TO_PLAN -> quarterly)
 const PADDLE_PRICE_MONTHLY = 'pri_01kxdeyzxqyph78xpzt81w2qxb';      // Live $29/월 · 수량1고정 (웹훅 PRICE_TO_PLAN·서버 상수와 동일)
 try{
   if(window.Paddle){
@@ -4398,13 +4399,13 @@ function applyReviewLock(){
 //   결제창만 연다. is_paid 는 우리가 못 켬 — 서명검증 웹훅(payment-webhook)만 켠다.
 //   카드정보는 Paddle 화면에서만 입력(우리 앱은 안 받음 · PCI 위임).
 // ══════════════════════════════════════════════════
-function openCheckout(){
+function openCheckout(plan){
   if(!SB_USER){ showToast(t('login_required')); return; }
   if(SB_USER.id === ADMIN_UID){ showToast(t('admin_no_pay')); return; }
   if(!window.Paddle){ showToast(t('checkout_unavailable')); return; }
   try{
     Paddle.Checkout.open({
-      items: [{ priceId: PADDLE_PRICE_MONTHLY, quantity: 1 }],
+      items: [{ priceId: (plan === 'q' && PADDLE_PRICE_QUARTERLY) ? PADDLE_PRICE_QUARTERLY : PADDLE_PRICE_MONTHLY, quantity: 1 }],
       customData: { user_id: SB_USER.id },              // 웹훅이 누구 결제인지 매칭하는 핵심
       customer: SB_USER.email ? { email: SB_USER.email } : undefined
     });
@@ -4468,6 +4469,23 @@ function peFetchPrice(){
   return _pePricePromise;
 }
 
+// 3-month price (boss 2026-10-31): same country-localized preview, kept apart from the monthly one.
+var _peQStr = null, _peQPromise = null;
+function peFetchPriceQ(){
+  if(!PADDLE_PRICE_QUARTERLY) return Promise.resolve(null);
+  if(_peQStr) return Promise.resolve(_peQStr);
+  if(_peQPromise) return _peQPromise;
+  if(!window.Paddle || typeof Paddle.PricePreview !== 'function') return Promise.resolve(null);
+  _peQPromise = Paddle.PricePreview({ items: [{ priceId: PADDLE_PRICE_QUARTERLY, quantity: 1 }] })
+    .then(function(res){
+      var li = res && res.data && res.data.details && res.data.details.lineItems;
+      if(li && li[0] && li[0].formattedTotals && li[0].formattedTotals.total) _peQStr = String(li[0].formattedTotals.total);
+      return _peQStr;
+    })
+    .catch(function(e){ console.warn('PricePreview(3-month) failed:', e); return null; });
+  return _peQPromise;
+}
+
 // 모달이 열린 뒤에 값이 도착해도 그 자리에 채워 넣는다.
 function pePaintPrice(){
   var amt = document.getElementById('pricing-amt');
@@ -4475,6 +4493,12 @@ function pePaintPrice(){
   if(!_pePriceStr) return;
   if(amt) amt.textContent = _pePriceStr;
   if(btn) btn.textContent = t('pricing_subscribe_pre') + ' (' + _pePriceStr + ' ' + t('pricing_permonth') + ')';
+}
+function pePaintPriceQ(){
+  var bq = document.getElementById('pricing-sub-btn-q');
+  var aq = document.getElementById('pricing-amt-q');
+  if(aq && _peQStr) aq.textContent = _peQStr;
+  if(bq && _peQStr) bq.textContent = t('pricing_subscribe_q') + ' (' + _peQStr + ' ' + t('pricing_per3m') + ')';
 }
 
 // 가격/혜택 안내 모달 — "구독하기" → openCheckout
@@ -4490,6 +4514,10 @@ function showPricingModal(){
       '<div style="font-size:26px;font-weight:800;color:var(--teal);margin:.35rem 0;">' +
         '<span id="pricing-amt">' + (_pePriceStr || '$29') + '</span> ' +
         '<span style="font-size:15px;font-weight:700;">' + t('pricing_permonth') + '</span>' +
+        (PADDLE_PRICE_QUARTERLY ?   // boss 2026-10-31: show both plans in the headline
+          '<span style="font-size:15px;color:var(--text-mid);margin:0 8px;">·</span>' +
+          '<span id="pricing-amt-q">' + (_peQStr || '$70') + '</span> ' +
+          '<span style="font-size:15px;font-weight:700;">' + t('pricing_per3m') + '</span>' : '') +
       '</div>' +
       '<div style="font-size:13.5px;color:var(--text-mid);line-height:1.9;margin:.75rem auto 1.1rem;text-align:left;display:inline-block;">' +
         t('pricing_benefits') +
@@ -4497,11 +4525,16 @@ function showPricingModal(){
       '<button class="btn-navy" id="pricing-sub-btn" style="width:100%;margin-bottom:8px;" onclick="openCheckout()">' +
         t('pricing_subscribe_pre') + ' (' + (_pePriceStr || '$29') + ' ' + t('pricing_permonth') + ')' +
       '</button>' +
+      (PADDLE_PRICE_QUARTERLY ?
+        '<button class="btn-navy" id="pricing-sub-btn-q" style="width:100%;margin-bottom:8px;" onclick="openCheckout(\'q\')">' +
+          t('pricing_subscribe_q') + ' (' + (_peQStr || '$70') + ' ' + t('pricing_per3m') + ')' +
+        '</button>' : '') +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
-      '<div style="font-size:11.5px;color:var(--text-mid);margin-top:10px;line-height:1.6;">' + t('pricing_fineprint') + '</div>' +
+      '<div style="font-size:11.5px;color:var(--text-mid);margin-top:10px;line-height:1.6;">' + t(PADDLE_PRICE_QUARTERLY ? 'pricing_fineprint_q' : 'pricing_fineprint') + '</div>' +
     '</div>';
   document.getElementById('modal-bg').classList.add('open');
   peFetchPrice().then(pePaintPrice);      // 늦게 와도 그 자리에 채워 넣는다
+  peFetchPriceQ().then(pePaintPriceQ);
 }
 
 // 유료 멤버 — 구독 상태 + 결제/해지 관리 안내 (설정 메뉴 대체 진입점)
@@ -5343,6 +5376,9 @@ var UI_TEXT = {
   pricing_benefits:{ko:'• 5,000+ 전 문항 무제한 풀이<br>• Part 1·2·3 전 영역<br>• 모든 문항 한국어·영어 해설<br>• 언제든 해지 · 14일 환불 보장', en:'• Unlimited access to 5,000+ questions<br>• All of Part 1, 2, 3<br>• Korean/English explanations<br>• Cancel anytime · 14-day money-back'},
   pricing_subscribe:{ko:'구독하기 ($29/월)', en:'Subscribe ($29/mo)'},
   pricing_subscribe_pre:{ko:'구독하기', en:'Subscribe'},
+  pricing_subscribe_q:{ko:'3개월 구독하기', en:'Subscribe for 3 months'},
+  pricing_per3m:{ko:'/ 3개월', en:'/ 3 months'},
+  pricing_fineprint_q:{ko:'고른 주기(매월 또는 3개월)마다 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews each billing period (monthly or every 3 months) · cancel anytime. Payments securely handled by Paddle.'},
   pricing_fineprint:{ko:'매월 자동결제 · 언제든 해지 가능. 결제는 Paddle이 안전하게 처리합니다.', en:'Auto-renews monthly · cancel anytime. Payments securely handled by Paddle.'},
   paid_until_label:{ko:'다음 결제일', en:'Renews'},
   pd_open_title:{ko:'결제가 처리되지 않았습니다',
