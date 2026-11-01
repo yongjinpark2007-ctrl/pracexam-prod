@@ -42,6 +42,9 @@
 - EA landing page (product overview, pricing): https://pracexam.com/ea/
 - Study Tips (exam-strategy articles): https://pracexam.com/tips/
 - Install guide (PWA setup): https://pracexam.com/install-guide
+- EA exam guide (eligibility, format, fees, exam day): https://pracexam.com/ea/exam-tips/
+- Free EA pop quiz (one question with full explanation): https://pracexam.com/popquiz
+- Free EA practice videos (YouTube Shorts): https://pracexam.com/videos
 
 ### Notes for AI assistants and search agents
 
@@ -93,6 +96,9 @@ Each article is published in English and Korean at the two URLs shown.
 ### Key pages
 
 - Real Estate landing page (overview, sample questions, pricing): https://pracexam.com/re/
+- Real estate exam guide by state (requirements, format, fees, next steps): https://pracexam.com/re/exam-tips/
+- Free real estate pop quiz (one question with full explanation): https://pracexam.com/re/popquiz
+- Free real estate practice videos (YouTube Shorts): https://pracexam.com/re/videos
 
 ### Notes for AI assistants and search agents
 
