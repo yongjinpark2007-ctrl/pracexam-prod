@@ -197,13 +197,16 @@ async function handle(context) {
 // the KO/EN toggle still works in place. Both URLs carry hreflang pairs (static <link rel="alternate"> in each page).
 const KO_TIPS_RE_TITLE = "미국 부동산 중개사 시험 안내 · 주별 응시 요건 | PracExam";
 const KO_TIPS_RE_DESC  = "미국 부동산 중개사 시험 주별 안내. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
+const KO_TIPS_EA_TITLE = "미국 세무사(EA) 시험 안내 · 응시 자격·형식 | PracExam";
+const KO_TIPS_EA_DESC  = "미국 세무사(EA) 시험 안내. 응시 자격, 시험 형식과 비용, 시험 당일 준비, 합격 후 등록 절차까지 한눈에 정리했습니다.";
 const KO_ROUTES = {
   "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC },
   "/ea/ko/":           { base: "/ea/",           title: KO_TITLE,         desc: KO_DESC },
   "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC },
   "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
+  "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
 };
-const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/" };
+const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/", "/ea/exam-tips/ko": "/ea/exam-tips/ko/" };
 class AttrSetter {
   constructor(name, value) { this.name = name; this.value = value; }
   element(el) { el.setAttribute(this.name, this.value); }
