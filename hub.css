@@ -360,3 +360,8 @@ header.nav{background:rgba(251,250,247,.9);border-bottom:1px solid var(--line)}
 .door{overflow:visible}
 /* 2026-10-26 boss: Korean words were split across lines (자/신). Break Korean only between words. */
 body{word-break:keep-all;overflow-wrap:break-word}
+/* ---- 2026-10-31 boss: a soft vertical divider between the EA and RE columns (desktop only) ---- */
+@media (min-width:761px){
+  .doors{position:relative}
+  .doors::before{content:"";position:absolute;top:8px;bottom:8px;left:50%;width:1px;transform:translateX(-.5px);background:rgba(16,48,76,.14);pointer-events:none}
+}
