@@ -1439,17 +1439,31 @@ $('apSetDir').addEventListener('click', async () => {
   alert(`저장 폴더를 '${h.name}' 로 지정했습니다.\n앞으로 [피드백 내보내기] 는 이 폴더에 바로 저장됩니다.`);
 });
 
-$('apImport').addEventListener('click', () => $('apFile').click());
+function apOpenText(text, fname){
+  let obj;
+  try { obj = JSON.parse(text); }
+  catch(err){ alert('JSON 형식이 아닙니다: ' + err.message); return; }
+  if (apSetProposal(obj, false, fname)){ S.currentId = null; loadApprovals(); }
+}
+/* 사장님 2026-11-01 — [제안 파일 열기] 는 언제나 claude proposal 폴더에서 연다.
+   브라우저는 경로 글자로 폴더를 못 고르므로, [저장 폴더] 로 지정해 둔 폴더(= claude proposal)를 startIn 으로 준다. */
+$('apImport').addEventListener('click', async () => {
+  if (typeof window.showOpenFilePicker !== 'function'){ $('apFile').click(); return; }
+  const dir = await apDirEnsure(true);
+  let hs;
+  try {
+    hs = await window.showOpenFilePicker(Object.assign(
+      { types:[{ description:'제안 JSON', accept:{ 'application/json':['.json'] } }] },
+      dir ? { startIn: dir } : { id:'claudeProposal' }));
+  } catch(e){ return; }                    // 사용자가 취소
+  const f = await hs[0].getFile();
+  apOpenText(await f.text(), f.name);
+});
 $('apFile').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0];
   if (!f) return;
   const rd = new FileReader();
-  rd.onload = () => {
-    let obj;
-    try { obj = JSON.parse(rd.result); }
-    catch(err){ alert('JSON 형식이 아닙니다: ' + err.message); return; }
-    if (apSetProposal(obj, false, f.name)){ S.currentId = null; loadApprovals(); }
-  };
+  rd.onload = () => apOpenText(rd.result, f.name);
   rd.readAsText(f, 'utf-8');
   e.target.value = '';
 });
