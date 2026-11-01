@@ -792,7 +792,7 @@ html, body {
   display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;transition:all .15s;
 }
 /* 문제·보기·해설 복사 방지 (관리자 제외 — 관리자면 loadFromCloud 에서 px-nocopy 를 뗀다) */
-html.px-nocopy .question-card,html.px-nocopy .explanation-card,html.px-nocopy #q-pills{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+html.px-nocopy .question-card,html.px-nocopy .explanation-card,html.px-nocopy #q-pills,html.px-nocopy .mk-qcard{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.px-nocopy .explanation-card input,html.px-nocopy .explanation-card textarea{-webkit-user-select:text;user-select:text;}
 .q-copy-btn:hover{background:rgba(16,48,76,.08);border-color:rgba(16,48,76,.3);color:var(--teal);}
 .q-copy-btn.copied{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2);color:#4ade80;}
@@ -5123,7 +5123,7 @@ document.documentElement.classList.add('px-nocopy');
     var t=e.target; if(t&&t.nodeType===3) t=t.parentElement;
     if(!t||!t.closest) return;
     if(t.closest('input,textarea,[contenteditable="true"]')) return;
-    if(t.closest('.question-card,.explanation-card,#q-pills')){
+    if(t.closest('.question-card,.explanation-card,#q-pills,.mk-qcard')){   // .mk-qcard = mock exam question (2026-10-31)
       e.preventDefault();
       pxLogCopyAttempt(e.type);
     }
@@ -5132,8 +5132,8 @@ document.documentElement.classList.add('px-nocopy');
 // 선택이 막혀 있으면 브라우저가 selectstart 를 안 보내고, 선택 없는 Ctrl+C 는 target 이 body 라 위 검사를 못 지난다.
 // 그래서 (1) 학습 화면이 떠 있을 때의 복사·잘라내기, (2) Ctrl+C/X/A 키, (3) 문제 위 마우스 드래그를 따로 잡는다.
 function _pxStudyVisible(){
-  var c=document.querySelector('.question-card');
-  return !!(c && c.offsetParent!==null);
+  var c=document.querySelector('.question-card'), m=document.querySelector('.mk-qcard');   // mock exam too (2026-10-31)
+  return !!((c && c.offsetParent!==null) || (m && m.offsetParent!==null));
 }
 ['copy','cut'].forEach(function(ev){
   document.addEventListener(ev,function(e){
