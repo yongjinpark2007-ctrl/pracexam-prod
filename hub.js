@@ -29,7 +29,12 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(levelDoors);
   document.getElementById('l-en').onclick = function(){ setLang('en'); };
   document.getElementById('l-ko').onclick = function(){ setLang('ko'); };
-  try { if (localStorage.getItem('ea_lang') === 'ko') setLang('ko'); } catch(e){}
+  // No saved choice (first visit, or an in-app browser like KakaoTalk with its own storage):
+  // Korean only when the phone/browser language is Korean, otherwise English (boss 2026-11-01).
+  var _saved = '';
+  try { _saved = localStorage.getItem('ea_lang') || ''; } catch(e){}
+  if (!_saved) { try { _saved = /^ko\b/i.test((navigator.languages && navigator.languages[0]) || navigator.language || '') ? 'ko' : ''; } catch(e){} }
+  if (_saved === 'ko') setLang('ko');
 
   // RE door: the covered states are shown as plain labels from /re-states.js — not selectable (boss 2026-10-24).
   // The state is chosen at RE sign-up instead.

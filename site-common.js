@@ -15,8 +15,11 @@ function setLang(lang){
   if (typeof window.onLangChange === 'function') { try { window.onLangChange(lang); } catch(e){} }
 }
 (function(){
-  var saved = 'en';
-  try { saved = localStorage.getItem('ea_lang') || 'en'; } catch(e){}
+  // No saved choice (first visit, or an in-app browser like KakaoTalk with its own storage):
+  // Korean only when the phone/browser language is Korean, otherwise English (boss 2026-11-01).
+  var saved = '';
+  try { saved = localStorage.getItem('ea_lang') || ''; } catch(e){}
+  if (!saved) { try { saved = /^ko\b/i.test((navigator.languages && navigator.languages[0]) || navigator.language || '') ? 'ko' : 'en'; } catch(e){ saved = 'en'; } }
   setLang(saved === 'ko' ? 'ko' : 'en');
 })();
 function toggleNavMenu(){
