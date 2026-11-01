@@ -192,10 +192,57 @@ async function handle(context) {
   return out;
 }
 
+// 2026-10-31 (boss): Korean entry URLs for Korean search. /ko/ · /ea/ko/ · /re/ko/ · /re/exam-tips/ko/ serve the SAME page as
+// the English URL, already switched to Korean (html lang, title, description, canonical). Nothing about the page itself changes:
+// the KO/EN toggle still works in place. Both URLs carry hreflang pairs (static <link rel="alternate"> in each page).
+const KO_TIPS_RE_TITLE = "미국 부동산 중개사 시험 안내 · 주별 응시 요건 | PracExam";
+const KO_TIPS_RE_DESC  = "미국 부동산 중개사 시험 주별 안내. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
+const KO_ROUTES = {
+  "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC },
+  "/ea/ko/":           { base: "/ea/",           title: KO_TITLE,         desc: KO_DESC },
+  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC },
+  "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
+};
+const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/" };
+class AttrSetter {
+  constructor(name, value) { this.name = name; this.value = value; }
+  element(el) { el.setAttribute(this.name, this.value); }
+}
+async function koRoute(context, route) {
+  const url = new URL(context.request.url);
+  const kourl = url.origin + url.pathname;
+  const baseUrl = new URL(route.base + url.search, url.origin);
+  const baseReq = new Request(baseUrl.toString(), context.request);
+  const ctx = Object.assign({}, context, { request: baseReq, next: () => context.env.ASSETS.fetch(baseReq) });
+  const response = await handle(ctx);
+  const ct = (response && response.headers.get("content-type")) || "";
+  if (!ct.includes("text/html") || response.status !== 200) return response;
+  const out = new HTMLRewriter()
+    .on("html",                                  new AttrSetter("lang", "ko"))
+    .on("html",                                  new AttrSetter("class", "lang-ko"))
+    .on("head", { element(el) { el.prepend("<script>try{localStorage.setItem('ea_lang','ko')}catch(e){}</script>", { html: true }); } })
+    .on("title",                                 new TitleRewriter(route.title))
+    .on('meta[name="description"]',              new MetaRewriter(route.desc))
+    .on('meta[property="og:title"]',             new MetaRewriter(route.title))
+    .on('meta[property="og:description"]',       new MetaRewriter(route.desc))
+    .on('meta[property="og:url"]',               new MetaRewriter(kourl))
+    .on('meta[property="og:locale"]',            new MetaRewriter("ko_KR"))
+    .on('meta[property="og:locale:alternate"]',  new MetaRewriter("en_US"))
+    .on('meta[name="twitter:title"]',            new MetaRewriter(route.title))
+    .on('meta[name="twitter:description"]',      new MetaRewriter(route.desc))
+    .on('link[rel="canonical"]',                 new AttrSetter("href", kourl))
+    .transform(response);
+  const res = new Response(out.body, out);
+  res.headers.delete("Vary");
+  return res;
+}
+
 // 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
 // Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
 export async function onRequest(context) {
-  const response = await handle(context);
+  const _p = new URL(context.request.url).pathname;
+  if (KO_REDIRECT[_p]) return Response.redirect(new URL(KO_REDIRECT[_p], context.request.url).toString(), 301);
+  const response = KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html")) return response;
   return new HTMLRewriter().onDocument({ comments(c) { c.remove(); } }).transform(response);
