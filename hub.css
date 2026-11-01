@@ -365,3 +365,16 @@ body{word-break:keep-all;overflow-wrap:break-word}
   .doors{position:relative}
   .doors::before{content:"";position:absolute;top:8px;bottom:8px;left:50%;width:1px;transform:translateX(-.5px);background:rgba(16,48,76,.14);pointer-events:none}
 }
+/* ---- 2026-10-31 boss (iPhone dark mode): login inputs had a fixed white background (#fff) while the text took the dark-theme
+   light ink, so typed text was white on white. Same for the login button (light ink background + white text).
+   Dark theme only: inputs use the dark page colour, buttons use navy with white text. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .login-card input{background:var(--bg);color:var(--ink);-webkit-text-fill-color:var(--ink)}
+  :root:not([data-theme="light"]) .login-card .btn,:root:not([data-theme="light"]) .btn-primary{background:#2F5F8F;color:#fff}
+  :root:not([data-theme="light"]) .login-card .btn:hover,:root:not([data-theme="light"]) .btn-primary:hover{background:#4F7CAC}
+  :root:not([data-theme="light"]) .lang-toggle button.active{background:#2F5F8F;color:#fff}
+}
+:root[data-theme="dark"] .login-card input{background:var(--bg);color:var(--ink);-webkit-text-fill-color:var(--ink)}
+:root[data-theme="dark"] .login-card .btn,:root[data-theme="dark"] .btn-primary{background:#2F5F8F;color:#fff}
+:root[data-theme="dark"] .login-card .btn:hover,:root[data-theme="dark"] .btn-primary:hover{background:#4F7CAC}
+:root[data-theme="dark"] .lang-toggle button.active{background:#2F5F8F;color:#fff}
