@@ -157,7 +157,7 @@ export async function onRequest(context) {
 
   // 🆕 2026-09-12 — AI 답변엔진(Perplexity 등)이 로그인 화면(/app)을 "제품 소개"로
   // 착각해 인용한 사고 뒤 조치. 로그인 화면·관리자 화면은 검색·AI 색인에서 제외한다.
-  const NOINDEX_PATHS = ["/app", "/app.html", "/review", "/admin"];
+  const NOINDEX_PATHS = ["/app", "/app.html", "/re/app", "/re/app.html", "/review", "/admin"];   // /re/app added 2026-10-31 (V2: the RE app is live)
   if (NOINDEX_PATHS.some(function(p){ return _url.pathname === p || _url.pathname.startsWith(p + "/"); })) {
     const noIndexResp = new Response(response.body, response);
     noIndexResp.headers.set("X-Robots-Tag", "noindex, nofollow");

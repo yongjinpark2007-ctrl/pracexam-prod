@@ -2,10 +2,12 @@ User-agent: *
 Allow: /
 Disallow: /app$
 Disallow: /app.html
+Disallow: /re/app$
+Disallow: /re/app.html
 Disallow: /admin
 Disallow: /review
-# /ea/ and /re/ are public landings (covered by Allow: /). /re/app is a coming-soon
-# placeholder that carries its own noindex meta.
+# /ea/ and /re/ are public landings (covered by Allow: /). /re/app is the RE study app
+# (live since 2026-10-31); like /app it is blocked here and sent with X-Robots-Tag noindex.
 
 Sitemap: https://pracexam.com/sitemap.xml
 
