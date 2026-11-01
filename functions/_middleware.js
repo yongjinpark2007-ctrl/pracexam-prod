@@ -147,7 +147,7 @@ async function withNoindex(next) {
   return out;
 }
 
-export async function onRequest(context) {
+async function handle(context) {
   const { request, next } = context;
   const gate = await testGate(context);
   if (gate && gate !== "pass") return gate;
@@ -190,4 +190,13 @@ export async function onRequest(context) {
   const out = new Response(rewritten.body, rewritten);
   out.headers.append("Vary", "User-Agent, Accept-Language");
   return out;
+}
+
+// 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
+// Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
+export async function onRequest(context) {
+  const response = await handle(context);
+  const ct = (response && response.headers.get("content-type")) || "";
+  if (!ct.includes("text/html")) return response;
+  return new HTMLRewriter().onDocument({ comments(c) { c.remove(); } }).transform(response);
 }
