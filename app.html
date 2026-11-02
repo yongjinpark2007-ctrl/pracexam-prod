@@ -4153,7 +4153,7 @@ function applyTrialLocks(limited){
 // 잠긴 옵션 클릭 시: 선택을 막고 업그레이드 안내 토스트
 function _trialLockGuard(btn){
   if(btn && btn.classList && btn.classList.contains('setup-locked')){
-    showToast(LANG === 'en' ? '🔒 Paid members only' : '🔒 유료 회원 전용 옵션입니다');
+    showToast(LANG === 'en' ? '🔒 Pro Members only' : '🔒 Pro 회원 전용 옵션입니다');
     return true;
   }
   return false;
@@ -4286,8 +4286,55 @@ function updateTrialStatusUI(){
       : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)');
     if(act) act.innerHTML = _upgradeBtn;
   } else {
-    card.style.display = 'none';
+    card.style.display = 'none'; return;
   }
+  _memBoth(txt, 'ea');
+}
+
+// ── Membership card: EA and RE on separate lines (boss 2026-11-01) ──
+// One account can be an RE paid member and an EA trial member at once. EA status lives in profiles,
+// RE status in entitlements (exam 're-<state>'). The line for the app in view keeps its own text.
+var _MEM_STATE_NAMES = {ca:'California', tx:'Texas', fl:'Florida', nj:'New Jersey', ny:'New York', il:'Illinois'};
+var _memSeq = 0;
+function _memLine(row, joined){
+  var en = LANG === 'en', loc = en ? 'en-US' : 'ko-KR', now = new Date();
+  function d(x){ return new Date(x).toLocaleDateString(loc) + (en ? '' : '까지'); }
+  if(!joined || !row) return en ? 'Not joined' : '가입하지 않음';
+  if(row.is_paid && (!row.paid_until || new Date(row.paid_until) > now)){
+    var pc = String(row.plan_code || '');
+    var plan = pc.slice(0, 4) === 'comp' ? (en ? 'Complimentary' : '증정')
+             : pc === 'quarterly' ? (en ? '3-Month' : '3개월권')
+             : pc === 'monthly' ? (en ? 'Monthly' : '월간') : '';
+    return (en ? '✅ Pro Member' : '✅ Pro 회원') + (plan ? ' · ' + plan : '') +
+           (row.paid_until ? (en ? ' · until ' : ' · ') + d(row.paid_until) : '');
+  }
+  if(row.trial_ends_at && new Date(row.trial_ends_at) > now)
+    return (en ? '🎁 Free trial · until ' : '🎁 무료 체험 · ') + d(row.trial_ends_at);
+  return en ? 'Trial ended' : '체험 종료';
+}
+async function _memBoth(txt, cur){
+  if(!txt || !SB_USER) return;
+  var seq = ++_memSeq, curText = txt.textContent, en = LANG === 'en';
+  var ea = null, re = null;
+  try { var p = await sb.from('profiles').select('is_paid,plan_code,paid_until,trial_ends_at,ea_enrolled').eq('id', SB_USER.id).maybeSingle(); if(!p.error) ea = p.data; } catch(e){}
+  try { var r = await sb.from('entitlements').select('exam,is_paid,plan_code,paid_until,trial_ends_at').eq('user_id', SB_USER.id).like('exam', 're-%').maybeSingle(); if(!r.error) re = r.data; } catch(e){}
+  if(seq !== _memSeq) return;   // a newer render started
+  var st = re && re.exam ? _MEM_STATE_NAMES[re.exam.slice(3)] : '';
+  var eaLabel = en ? 'EA exam' : 'EA 시험';
+  var reLabel = (en ? 'Real estate exam' : '부동산 시험') + (st ? ' · ' + st : '');
+  var eaJoined = !!ea && (ea.ea_enrolled !== false || ea.is_paid);
+  var rows = cur === 're'
+    ? [[reLabel, curText, true], [eaLabel, _memLine(ea, eaJoined), false]]
+    : [[eaLabel, curText, true], [reLabel, _memLine(re, !!re), false]];
+  txt.textContent = '';
+  rows.forEach(function(x){
+    var line = document.createElement('div');
+    line.style.cssText = 'margin-bottom:6px;' + (x[2] ? '' : 'opacity:.85;');
+    var b = document.createElement('b'); b.textContent = x[0]; b.style.color = 'var(--text-main)';
+    line.appendChild(b); line.appendChild(document.createElement('br'));
+    line.appendChild(document.createTextNode(x[1]));
+    txt.appendChild(line);
+  });
 }
 
 // ── 마케팅 수신 동의 토글 (결제MP §12-1b 방식 A) ──
@@ -5269,7 +5316,7 @@ var UI_TEXT = {
   pw_new:        {ko:'새 비밀번호 (6자 이상)', en:'New password (at least 6 characters)'},
   pw_new2:       {ko:'새 비밀번호 확인', en:'Confirm new password'},
   pw_btn:        {ko:'비밀번호 변경', en:'Change password'},
-  acct_type_paid:{ko:'유료 멤버십', en:'Paid membership'},
+  acct_type_paid:{ko:'Pro 회원', en:'Pro Member'},
   acct_type_admin:{ko:'관리자 계정', en:'Admin account'},
   acct_type_trial:{ko:'무료 체험', en:'Free trial'},
   acct_type_expired:{ko:'무료 (체험 종료)', en:'Free (trial ended)'},
@@ -5471,7 +5518,7 @@ var UI_TEXT = {
   sts_more:       {ko:'더 보기', en:'Show more'},
   // ── 무료 체험 / 멤버십 UI ──
   trial_banner:   {ko:'무료 체험 모드', en:'Free Trial'},
-  trial_paid:     {ko:'✅ 유료 멤버십 — 모든 문제 무제한 이용 가능', en:'✅ Paid membership — unlimited access to all questions'},
+  trial_paid:     {ko:'✅ Pro 회원 — 모든 문제 무제한 이용 가능', en:'✅ Pro Member — unlimited access to all questions'},
   trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다. 통계는 계속 확인할 수 있지만 푼 문제의 복습은 구독 중에만 가능합니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice. Your stats stay available, but reviewing past questions needs an active membership.'},
   quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
   quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 5 questions per day.<br>Upgrade now for unlimited practice.'},
@@ -10303,7 +10350,7 @@ function renderMockHub(){
       '<div style="font-size:13.5px;color:var(--text-muted);margin-top:3px;">'+mL('일시정지가 아닙니다 — 자리를 비운 시간도 차감됩니다 · 아래 "이어하기"로 계속하세요','Not a pause — time away is deducted · use “Resume” below')+'</div></div>';
   } else if(!paid){
     html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">'+
-      '🔒 '+mL('모의고사는 유료 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.','Mock exams are for paid members. You can preview the setup below.')+'</div>';
+      '🔒 '+mL('모의고사는 Pro 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.','Mock exams are for Pro Members. You can preview the setup below.')+'</div>';
   }
   // 파트 선택 (학습 part-picker 와 동일한 setup-icon-btn 스타일)
   var parts='';
@@ -10326,7 +10373,7 @@ function renderMockHub(){
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
       if(!paid){
-        return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 '+mL('유료 회원 전용 — 업그레이드','Paid only — Upgrade')+'</button>';
+        return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 '+mL('Pro 회원 전용 — 업그레이드','Pro Members only — Upgrade')+'</button>';
       }
       if(live && live.attemptId){
         return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockResume()">'+mL('이어하기','Resume')+'</button>'+
