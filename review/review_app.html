@@ -151,6 +151,12 @@ html,body{
   font-size:calc(14.5px * var(--fs));font-weight:700;white-space:nowrap;
 }
 .q-badge-gray{background:rgba(0,0,0,.03);color:var(--text-muted);}
+/* War Room 머리 줄 (2026-11-01 사장님 «패딩이 너무 많아 뚱뚱하게 자리를 많이 차지») — 문항 카드 틀을 빌리되 얇게 */
+.question-card.wr-headcard{padding:6px 10px;margin-bottom:6px;border-radius:10px;box-shadow:none}
+.wr-headcard .question-meta{margin-bottom:0;gap:5px}
+.wr-headcard .q-badge{min-height:24px;padding:1px 8px;font-size:calc(13px * var(--fs))}
+.wr-headcard .btn-sm{padding-top:3px;padding-bottom:3px}
+.wr-note.wr-note-thin{padding:3px 10px;margin-bottom:6px;line-height:1.5}
 .question-text{font-size:calc(21px * var(--fs));line-height:1.72;color:var(--text-main);font-weight:500;white-space:pre-wrap;}
 .options-list{display:flex;flex-direction:column;gap:0;margin:1.1rem -1.5rem 0;border-top:1px solid var(--border-clr);}
 .option-row{
@@ -863,16 +869,21 @@ function renderPoolSeg(){
 async function loadWarRoom(){
   $('qlist').innerHTML = '<div class="list-empty">불러오는 중…</div>';
   $('detail').innerHTML = '<div class="empty-detail">왼쪽 목록에서 항목을 선택하세요.</div>';
-  if (S.exam !== 'ea'){
-    S.rows = [];
-    $('qlist').innerHTML = '<div class="list-empty">War Room은 <b>EA</b> 전용입니다.<br><br>헤더에서 EA를 선택하세요.</div>';
-    renderStrip(); return;
+  /* 2026-11-01 사장님 «왜 부동산 War room 시트를 못 보나요?» — 시험별로 시트 번호 앞머리로 가른다.
+     EA = C+숫자(C1004) · NA = 전국 공통 N- · 주 탭 = 그 주(CA- 등) + 전국 공통 N- (고객 앱과 같은 묶음).
+     앞 판은 EA 가 아니면 막았고, EA 탭은 표 전체를 읽어 부동산 시트까지 섞어 보여 주었다. */
+  let wrScope;
+  if (S.exam === 'ea') wrScope = q => q.filter('outline_code', 'match', '^C[0-9]');
+  else if (S.exam === 're-national') wrScope = q => q.like('outline_code', 'N-%');
+  else {
+    const st = String(S.exam).replace(/^re-/, '').toUpperCase();
+    wrScope = q => q.or('outline_code.like.' + st + '-*,outline_code.like.N-*');
   }
   const PAGE = 1000;
   let rows = [], from = 0;
   for(;;){
-    const res = await sb.from('war_room_topics')
-      .select('outline_code, part, domain, title_ko, title_en, body_ko, body_en, is_free, status')
+    const res = await wrScope(sb.from('war_room_topics')
+      .select('outline_code, part, domain, title_ko, title_en, body_ko, body_en, is_free, status'))
       .order('part').order('sort_order')
       .range(from, from + PAGE - 1);
     if (res.error){
@@ -901,6 +912,7 @@ async function loadWarRoom(){
   buildFilters();
   renderList();
   renderStrip();
+  if (!S.rows.length) $('qlist').innerHTML = '<div class="list-empty">이 시험의 War Room 시트가 아직 DB 에 없습니다.</div>';
 }
 
 /* ── 승인 대기(Claude 제안 검토) ──────────────────────────────────────────────
@@ -1909,13 +1921,13 @@ function renderDetail(){
     const title = S.lang === 'en' ? (r.title_en || r.title_ko || '') : (r.title_ko || r.title_en || '');
     const body  = S.lang === 'en' ? (r.body_en || '') : (r.body_ko || '');
     mainHtml = `
-    <div class="question-card">
+    <div class="question-card wr-headcard">
       <div class="question-meta">
         <span class="q-badge">${esc(r.question_id)}</span>
         <span class="q-badge q-badge-gray">Part ${esc(r.part)}</span>
         ${r.topic ? `<span class="q-badge q-badge-gray">${esc(r.topic)}</span>` : ''}
         ${r.is_free ? '<span class="q-badge q-badge-gray">FREE</span>' : ''}
-        ${r.wr_status && r.wr_status !== 'published' ? `<span class="q-badge q-badge-gray">${esc(r.wr_status)}</span>` : ''}
+        ${S.exam === 'ea' && r.wr_status && r.wr_status !== 'published' ? `<span class="q-badge q-badge-gray">${esc(r.wr_status)}</span>` : ''}
         <span class="lang-toggle" style="margin-left:auto" title="단축키: L">
           <button data-lang="ko" class="${S.lang === 'ko' ? 'active' : ''}">KO</button>
           <button data-lang="en" class="${S.lang === 'en' ? 'active' : ''}">EN</button>
@@ -1925,8 +1937,7 @@ function renderDetail(){
       </div>
     </div>
     ${wrBackBar()}
-    <div class="wr-note">🖥 아래는 <b>실제 pracexam.com War Room 과 같은 화면</b>입니다 —
-      글꼴·크기·표·상자를 앱에서 값 그대로 옮겼습니다. (글자 크기 버튼은 여기에 안 걸립니다.)</div>
+    <div class="wr-note wr-note-thin">🖥 실제 앱 War Room 과 같은 화면입니다 (글자 크기 버튼은 안 걸림)</div>
     ${wrRealHtml(title, body)}`;
   } else {
     const opts = Array.isArray(r.options) ? r.options : [];
@@ -2759,10 +2770,6 @@ function wrCodeOf(r){
 async function wrJump(code, fromId){
   if (!await confirmDiscard()) return;
   const from = { pool: S.pool, id: fromId, label: fromId };
-  if (S.exam !== 'ea'){
-    alert('War Room 은 EA 전용입니다.');
-    return;
-  }
   S.wrFrom  = from;
   S.pool    = 'warroom';
   S.editing = false;
