@@ -4950,11 +4950,9 @@ async function fetchQuestionMetaRows(){
   // 관리자도 부팅 시엔 메타 컸럼만 로드 (본문은 adminBackfillContent 가 채움)
   const Q_TABLE = S.isAdminUser ? 'questions' : 'questions_meta';
   if (!S.isAdminUser) {
-    // Before launch only listed RE test accounts get in (re_testers · 2026-10-29); everyone else sees the admin-preview notice.
-    // Testers load the list through get_re_question_meta — my state + national, the same path customers will use at launch.
-    var _tester = false;
-    try { var _t = await sb.rpc('is_re_tester'); _tester = !_t.error && _t.data === true; } catch(e){ console.warn('is_re_tester:', e && e.message); }
-    if (!_tester) { var _ro = document.getElementById('re-admin-only'); if (_ro) _ro.classList.add('show'); return []; }
+    // V2 launch (boss 2026-11-01 «가입을 풀어야 합니다»): every logged-in customer gets in. get_re_question_meta returns only
+    // active questions to customers (inactive ones only to admins and re_testers), so the old tester gate and the
+    // admin-preview notice (#re-admin-only) are no longer used here.
     try { return await _reMetaRows(); } catch(e){ console.warn('[Load] get_re_question_meta:', e && e.message); return []; }
   }
   try{
