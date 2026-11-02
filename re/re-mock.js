@@ -55,7 +55,7 @@
         ' · <b>' + mL('남은', 'left') + ' ' + mockFmt(rem) + '</b> · ' + mL('만료 시 자동 제출', 'auto-submits at expiry') + '</div>';
     } else if(!paid){
       html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">' +
-        '🔒 ' + mL('모의고사는 유료 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.', 'Mock exams are for paid members. You can preview the setup below.') + '</div>';
+        '🔒 ' + mL('모의고사는 Pro 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.', 'Mock exams are for Pro Members. You can preview the setup below.') + '</div>';
     }
     var sets = '';
     [1, 2].forEach(function(p){
@@ -64,7 +64,7 @@
         '<div class="setup-icon-label">' + mL(p + '회', 'Set ' + p) + '</div></button>';
     });
     var cta;
-    if(!paid) cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 ' + mL('유료 회원 전용 — 업그레이드', 'Paid only — Upgrade') + '</button>';
+    if(!paid) cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 ' + mL('Pro 회원 전용 — 업그레이드', 'Pro Members only — Upgrade') + '</button>';
     else if(live && live.attemptId) cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockResume()">' + mL('이어하기', 'Resume') + '</button>' +
           '<button class="btn-ghost" style="width:100%;margin-top:8px;" onclick="mockStart()">' + mL('새 모의고사로 다시 시작', 'Start a new mock exam') + '</button>';
     else cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">' + mL('모의고사 시작', 'Start mock exam') + '</button>';
