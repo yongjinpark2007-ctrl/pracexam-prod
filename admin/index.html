@@ -422,9 +422,26 @@ var EXAM     = 'ea';            // 'ea' | 're'
 var RE_ENT   = {};              // user_id → entitlements 줄
 var RE_ERR   = null;            // admin_list_re_entitlements 를 못 읽었을 때의 글
 function reStateOf(e){ return String((e && e.exam) || '').replace(/^re-/, '').toUpperCase(); }
+/* 🔴 admin_list_customers 는 profiles.ea_enrolled = true 인 사람만 준다 — RE 만 가입한 고객은
+   ROWS 에 «없다». 그래서 RE 화면은 RE 함수(v2)가 주는 계정 칸으로 줄을 만들고,
+   ROWS 에 같은 사람이 있으면 그 칸(나라·Part 등)을 바탕으로 깐다. 학습량은 RE 문항만 센 값이다. */
+function rowById(uid){
+  for(var i = 0; i < ROWS.length; i++) if(String(ROWS[i].user_id) === String(uid)) return ROWS[i];
+  return null;
+}
 function reRow(r){
   var e = RE_ENT[r.user_id];
-  return Object.assign({}, r, {
+  var acct = {};
+  if(e.email !== undefined){
+    acct = { email: e.email, first_name: e.first_name, last_name: e.last_name, language: e.language,
+      signed_up_at: e.signed_up_at, confirmed_at: e.confirmed_at, confirmation_sent_at: e.confirmation_sent_at,
+      confirm_reminder_sent: e.confirm_reminder_sent, last_sign_in_at: e.last_sign_in_at,
+      marketing_consent: e.marketing_consent, referral_source: e.referral_source,
+      answered: e.answered, attempts: e.attempts, correct: e.correct, last_study: e.last_study,
+      parts: [], mock_parts: [] };
+  }
+  return Object.assign({}, r, acct, {
+    user_id: e.user_id,
     is_paid: !!e.is_paid, plan_code: e.plan_code, paid_until: e.paid_until,
     trial_ends_at: e.trial_ends_at, sub_canceled: !!e.sub_canceled,
     comp_program: null, re_state: reStateOf(e)
@@ -434,7 +451,11 @@ function eaRows(){
   return ROWS.filter(function(r){ return !RE_ENT[r.user_id] || r.is_paid; });
 }
 function reRows(){
-  return ROWS.filter(function(r){ return !!RE_ENT[r.user_id]; }).map(reRow);
+  return Object.keys(RE_ENT).map(function(uid){
+    var base = rowById(uid);
+    if(!base && RE_ENT[uid].email === undefined) return null;   // v1 SQL: 계정 칸이 없으면 못 그린다
+    return reRow(base || { user_id: uid });
+  }).filter(Boolean);
 }
 function viewRows(){ return EXAM === 're' ? reRows() : eaRows(); }
 function renderExamSeg(){
@@ -1514,9 +1535,7 @@ document.addEventListener('change', function(ev){
 
 /* ── 실제 실행 ────────────────────────────────────────────────────── */
 function rowOf(uid){
-  if(EXAM === 're' && RE_ENT[uid]){
-    for(var j = 0; j < ROWS.length; j++) if(String(ROWS[j].user_id) === String(uid)) return reRow(ROWS[j]);
-  }
+  if(EXAM === 're' && RE_ENT[uid]) return reRow(rowById(uid) || { user_id: uid });
   for(var i = 0; i < ROWS.length; i++) if(String(ROWS[i].user_id) === String(uid)) return ROWS[i];
   return null;
 }
