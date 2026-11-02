@@ -82,6 +82,13 @@ html,body{
   background:var(--card-bg);border-bottom:1px solid var(--border-clr);
   padding:11px 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:10px;
 }
+/* EA / RE 고객 나누기 (2026-11-02) */
+.exam-seg{display:flex;gap:6px;align-items:center;margin-bottom:10px;}
+.exam-seg button{font-family:inherit;cursor:pointer;background:#fff;border:1px solid var(--border-clr);
+  border-radius:999px;padding:6px 16px;font-weight:700;font-size:calc(13.5px * var(--fs));color:var(--text-muted);}
+.exam-seg button.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--text-main);}
+.exam-seg .cnt{font-weight:800;margin-left:4px;}
+.exam-seg .note{font-size:calc(12.5px * var(--fs));color:var(--text-muted);margin-left:6px;}
 .tiles{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
 .tiles-label{font-size:calc(12.5px * var(--fs));font-weight:700;color:var(--text-muted);
   letter-spacing:.02em;margin-right:2px;white-space:nowrap;}
@@ -312,6 +319,7 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
 
   <!-- ══════════════ 조작줄 ══════════════ -->
   <div id="toolbar" class="toolbar hide">
+    <div id="exam-seg" class="exam-seg"></div>
     <div id="tiles" class="tiles"></div>
     <div id="refstats" class="refstats"></div>
     <div class="fields">
@@ -405,6 +413,50 @@ var PROGRAMS = [];              // comp_programs ('demo' 제외)
 var SEL      = {};              // 선택한 user_id
 var OPEN     = null;            // 펼쳐 둔 user_id
 var BUCKET   = 'all';           // 타일 거르개
+/* EA / RE 고객 나누기 (2026-11-02)
+   RE(부동산) 이용권은 profiles 가 아니라 entitlements 표에 있다(고객 한 명에 한 줄 · exam='re-tx' 등).
+   RE 줄이 있는 고객 = RE 고객. EA 화면에는 RE 줄이 없거나 EA 결제(profiles.is_paid)가 있는 고객만 둔다.
+   RE 화면의 상태·플랜·만료는 entitlements 값으로 바꿔 보여 준다.
+   🔴 RE 화면에서는 기간 부여·회수를 막는다 — 그 단추들은 EA(profiles)를 고친다. */
+var EXAM     = 'ea';            // 'ea' | 're'
+var RE_ENT   = {};              // user_id → entitlements 줄
+var RE_ERR   = null;            // admin_list_re_entitlements 를 못 읽었을 때의 글
+function reStateOf(e){ return String((e && e.exam) || '').replace(/^re-/, '').toUpperCase(); }
+function reRow(r){
+  var e = RE_ENT[r.user_id];
+  return Object.assign({}, r, {
+    is_paid: !!e.is_paid, plan_code: e.plan_code, paid_until: e.paid_until,
+    trial_ends_at: e.trial_ends_at, sub_canceled: !!e.sub_canceled,
+    comp_program: null, re_state: reStateOf(e)
+  });
+}
+function eaRows(){
+  return ROWS.filter(function(r){ return !RE_ENT[r.user_id] || r.is_paid; });
+}
+function reRows(){
+  return ROWS.filter(function(r){ return !!RE_ENT[r.user_id]; }).map(reRow);
+}
+function viewRows(){ return EXAM === 're' ? reRows() : eaRows(); }
+function renderExamSeg(){
+  var box = $('exam-seg');
+  if(!box) return;
+  box.innerHTML =
+    '<button data-exam="ea"' + (EXAM === 'ea' ? ' class="on"' : '') + '>EA 고객<span class="cnt">' + eaRows().length + '</span></button>' +
+    '<button data-exam="re"' + (EXAM === 're' ? ' class="on"' : '') + '>부동산(RE) 고객<span class="cnt">' + (RE_ERR ? '?' : reRows().length) + '</span></button>' +
+    (EXAM === 're' && RE_ERR ? '<span class="note" style="color:var(--danger-color);">' + esc(RE_ERR) + '</span>'
+      : (EXAM === 're' ? '<span class="note">상태·플랜·만료는 부동산 이용권 기준입니다. 기간 부여는 아직 EA 만 됩니다.</span>' : ''));
+}
+async function loadReEnt(){
+  RE_ENT = {}; RE_ERR = null;
+  var r = await sb.rpc('admin_list_re_entitlements');
+  if(r.error){
+    RE_ERR = /function|does not exist|schema cache/i.test(String(r.error.message || ''))
+      ? 'RE 고객 목록용 SQL(admin_re_entitlements_2026-11-02.sql)을 아직 안 돌렸습니다'
+      : 'RE 고객을 못 읽었습니다: ' + rpcErr(r.error);
+    return;
+  }
+  (r.data || []).forEach(function(e){ RE_ENT[e.user_id] = e; });
+}
 var SORT     = { key:'signed', dir:-1 };
 
 /* 부여 메뉴 — 한 곳에서 관리한다. kind 가 어떤 RPC 를 부를지 정한다.
@@ -849,7 +901,7 @@ async function loadAll(){
   ROWS = r.data || [];
   OPEN = null;
   await loadLocations();   // 나라 칸 (미배포/오류면 «—»)
-  $('hdr-count').innerHTML = '<b>' + ROWS.length + '</b>명';
+  await loadReEnt();       // RE 고객 (SQL 미실행이면 RE 칸에 안내만)
   render();
   loadPayFails();   // 결제 실패 칸 (2026-08-20) — 실패가 없으면 스스로 숨는다
 }
@@ -930,7 +982,7 @@ function inBucket(r, b){
 /* ── 그리기 ───────────────────────────────────────────────────────── */
 function visibleRows(){
   var q = ($('q').value || '').trim().toLowerCase();
-  var out = ROWS.filter(function(r){ return matches(r, q) && inBucket(r, BUCKET); });
+  var out = viewRows().filter(function(r){ return matches(r, q) && inBucket(r, BUCKET); });
   var k = SORT.key, dir = SORT.dir;
   out.sort(function(a,b){
     var x, y;
@@ -963,8 +1015,9 @@ function visibleRows(){
 }
 
 function renderTiles(){
-  var c = { all:ROWS.length, paying:0, comp:0, trial:0, expired:0, unconf:0, noremind:0, soon:0 };
-  ROWS.forEach(function(r){
+  var VR = viewRows();
+  var c = { all:VR.length, paying:0, comp:0, trial:0, expired:0, unconf:0, noremind:0, soon:0 };
+  VR.forEach(function(r){
     c[statusOf(r)]++;
     if(!r.confirmed_at) c.unconf++;
     if(remindOverdue(r)) c.noremind++;
@@ -999,6 +1052,8 @@ function paintHeaders(){
 }
 
 function render(){
+  if(!SAMPLE) $('hdr-count').innerHTML = (EXAM === 're' ? '부동산(RE) ' : 'EA ') + '<b>' + viewRows().length + '</b>명';
+  renderExamSeg();
   renderTiles();
   renderRefStats();
   paintHeaders();
@@ -1016,8 +1071,9 @@ function render(){
 
     var line =
       '<tr class="r' + (OPEN === r.user_id ? ' open' : '') + '" data-uid="' + esc(r.user_id) + '">' +
+        (EXAM === 're' ? '<td></td>' :
         '<td><input type="checkbox" class="cb" data-uid="' + esc(r.user_id) + '"' +
-            (SEL[r.user_id] ? ' checked' : '') + '></td>' +
+            (SEL[r.user_id] ? ' checked' : '') + '></td>') +
         '<td class="who"><div class="em">' + esc(r.email) + '</div>' +
           '<div class="nm">' + esc(name || '이름 없음') + ' · ' + esc(r.language || '?') +
           (r.confirmed_at ? '' : ' · <b style="color:var(--flag-color);">메일 미확인</b>') +
@@ -1026,7 +1082,8 @@ function render(){
         '<td class="nowrap"><span class="badge ' + st + '">' + STATUS_LABEL[st] + '</span>' +
           (r.sub_canceled ? ' <span class="badge flagb">해지예약</span>' : '') + '</td>' +
         '<td class="nowrap">' + esc(locOf(r) || '—') + '</td>' +
-        '<td class="nowrap">' + (r.plan_code ? '<code>' + esc(r.plan_code) + '</code>' : '—') +
+        '<td class="nowrap">' + (r.re_state ? '<b>' + esc(r.re_state) + '</b> ' : '') +
+          (r.plan_code ? '<code>' + esc(r.plan_code) + '</code>' : (r.re_state ? '' : '—')) +
           (r.comp_program ? '<div class="sub2">' + esc(r.comp_program) + '</div>' : '') + '</td>' +
         '<td class="nowrap">' + short(un) + ' ' + ddayTag(un) + '</td>' +
         '<td class="nowrap">' + short(r.signed_up_at) +
@@ -1038,7 +1095,9 @@ function render(){
         '<td class="num">' + (r.answered || 0) + '문항' +
           (pct === null ? '' : ' · ' + pct + '%') +
           (partSummary(r) ? '<div class="sub2">' + partSummary(r) + '</div>' : '') + '</td>' +
-        '<td><select class="rowact" data-uid="' + esc(r.user_id) + '">' + actOpts + '</select></td>' +
+        (EXAM === 're'
+          ? '<td class="sub2" title="RE 기간 부여는 아직 없습니다">—</td>'
+          : '<td><select class="rowact" data-uid="' + esc(r.user_id) + '">' + actOpts + '</select></td>') +
       '</tr>';
 
     if(OPEN === r.user_id){
@@ -1338,8 +1397,8 @@ function renderRefStats(){
   if(!box) return;
   if(!hasRefCols()){ box.innerHTML = ''; return; }
 
-  var c = {}, answered = 0, ad = 0;
-  ROWS.forEach(function(r){
+  var c = {}, answered = 0, ad = 0, VR = viewRows();
+  VR.forEach(function(r){
     if(r.referral_source){ c[r.referral_source] = (c[r.referral_source] || 0) + 1; answered++; }
     if(r.ad_click) ad++;
   });
@@ -1359,7 +1418,7 @@ function renderRefStats(){
       return '<span class="rchip">' + esc(refLabel(k)) + ' <b>' + c[k] + '</b>' +
              '<span class="sub2"> · ' + Math.round(c[k] / answered * 100) + '%</span></span>';
     }).join('') +
-    '<span class="rchip muted">응답 <b>' + answered + '</b>명 / 전체 ' + ROWS.length + '명</span>';
+    '<span class="rchip muted">응답 <b>' + answered + '</b>명 / 전체 ' + VR.length + '명</span>';
   // 🔴 "이 중"이라고 쓰지 않는다 — 이건 응답자의 부분집합이 아니라 따로 센 값이다.
   //    (본인은 "강의"라고 답했는데 광고 클릭 기록이 남은 분이 실제로 있다.)
   if(ad > 0){
@@ -1390,6 +1449,14 @@ document.addEventListener('click', function(ev){
     return;
   }
 
+  // EA / RE 고르기 — 고르면 거르개·선택·펼침을 처음으로 돌린다
+  var ex = t.closest('[data-exam]');
+  if(ex){
+    var nx = ex.getAttribute('data-exam');
+    if(nx !== EXAM){ EXAM = nx; BUCKET = 'all'; SEL = {}; OPEN = null; render(); }
+    return;
+  }
+
   // 요약 타일 = 거르개
   var tile = t.closest('[data-bucket]');
   if(tile){ BUCKET = tile.getAttribute('data-bucket'); render(); return; }
@@ -1411,6 +1478,10 @@ document.addEventListener('click', function(ev){
 
   // 상세 안의 작업 단추
   var btn = t.closest('[data-act]');
+  if(btn && EXAM === 're' && btn.getAttribute('data-act') !== 'pwreset'){
+    $('top-msg').textContent = 'RE 고객에게는 아직 기간 부여·데모·메일 확인 처리를 할 수 없습니다 (EA 이용권만 바뀝니다).';
+    return;
+  }
   if(btn){
     var uid = btn.getAttribute('data-uid');
     var act = btn.getAttribute('data-act');
@@ -1443,6 +1514,9 @@ document.addEventListener('change', function(ev){
 
 /* ── 실제 실행 ────────────────────────────────────────────────────── */
 function rowOf(uid){
+  if(EXAM === 're' && RE_ENT[uid]){
+    for(var j = 0; j < ROWS.length; j++) if(String(ROWS[j].user_id) === String(uid)) return reRow(ROWS[j]);
+  }
   for(var i = 0; i < ROWS.length; i++) if(String(ROWS[i].user_id) === String(uid)) return ROWS[i];
   return null;
 }
@@ -1542,6 +1616,7 @@ function renderBulk(){
   }
 }
 function toggleAll(box){
+  if(EXAM === 're'){ box.checked = false; return; }   // RE 화면에서는 일괄 부여 없음
   var rows = visibleRows();
   if(box.checked) rows.forEach(function(r){ SEL[r.user_id] = true; });
   else            rows.forEach(function(r){ delete SEL[r.user_id]; });
@@ -1550,6 +1625,7 @@ function toggleAll(box){
 function clearSel(){ SEL = {}; render(); }
 
 async function runBulk(){
+  if(EXAM === 're') return;
   var ids = selIds();
   var a   = actionOf($('bulk-act').value);
   if(!ids.length || !a){ $('bulk-msg').textContent = '고객과 작업을 먼저 고르세요.'; return; }
