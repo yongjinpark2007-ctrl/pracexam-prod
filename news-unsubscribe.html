@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Weekly IRS News | PracExam</title>
+<style>
+  :root { --bg:#E0E7E9; --card:#ffffff; --ink:#232e30; --mid:#4b5759; --head:#354649; --accent:#b85f3f; --ok:#2f6b4f; --err:#9b2c2c; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Apple SD Gothic Neo','Malgun Gothic',Helvetica,Arial,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .card { width:100%; max-width:520px; background:var(--card); border-radius:14px; overflow:hidden; box-shadow:0 1px 3px rgba(53,70,73,.12); }
+  .top { background:var(--head); padding:20px 24px; color:#fff; font-weight:700; font-size:18px; letter-spacing:.01em; }
+  .body { padding:28px 24px 30px; }
+  h1 { margin:0 0 12px; font-size:22px; line-height:30px; }
+  p { margin:0 0 16px; font-size:16px; line-height:26px; color:var(--mid); }
+  button { appearance:none; border:0; background:var(--accent); color:#fff; font-size:16px; font-weight:700; padding:13px 26px; border-radius:10px; cursor:pointer; }
+  button[disabled] { opacity:.6; cursor:default; }
+  a { color:var(--accent); }
+  .ok { color:var(--ok); } .err { color:var(--err); }
+  .small { font-size:14px; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161d1e; --card:#1f2a2c; --ink:#e9f0f1; --mid:#b6c3c6; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">PracExam</div>
+  <div class="body" id="box">
+    <h1 id="t"></h1>
+    <p id="d"></p>
+    <p id="msg" class="small"></p>
+    <button id="btn" type="button" style="display:none"></button>
+    <p class="small" id="alt" style="margin-top:18px"></p>
+  </div>
+</div>
+<script>
+(function () {
+  var API = "https://ufrhvodruulpgnmudzwh.supabase.co/functions/v1/irs-news-optout";
+  var q = new URLSearchParams(location.search);
+  var u = q.get("u") || "", t = q.get("t") || "";
+  var ko = q.get("l") === "ko";
+  var S = ko ? {
+    title: "뉴스 수신 거부", desc: "주간 IRS 뉴스를 받지 않도록 설정합니다.",
+    btn: "뉴스 수신 거부", working: "처리 중입니다…", doneT: "수신 거부가 완료되었습니다", doneD: "앞으로 주간 IRS 뉴스를 보내지 않습니다.",
+    undo: "마음이 바뀌셨나요?", again: "다시 받기", backT: "다시 받도록 설정되었습니다", backD: "다음 주부터 주간 IRS 뉴스를 다시 보내 드립니다.",
+    bad: "이 링크를 사용할 수 없습니다. 메일에 있는 링크를 다시 눌러 주세요.", fail: "처리하지 못했습니다. 잠시 뒤 다시 시도해 주세요.", home: "PracExam으로 가기"
+  } : {
+    title: "Unsubscribe from IRS News", desc: "This turns off the weekly IRS news emails.",
+    btn: "Unsubscribe from IRS News", working: "Working…", doneT: "You are unsubscribed", doneD: "We will no longer send you the weekly IRS news.",
+    undo: "Changed your mind?", again: "Subscribe again", backT: "You are subscribed again", backD: "We will send you the weekly IRS news again starting next week.",
+    bad: "This link cannot be used. Please click the link in your email again.", fail: "We could not save that. Please try again in a moment.", home: "Go to PracExam"
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  function show(title, desc, cls) { $("t").textContent = title; $("d").textContent = desc || ""; $("msg").textContent = ""; $("msg").className = "small " + (cls || ""); }
+  function home() { $("alt").innerHTML = '<a href="https://pracexam.com">' + S.home + "</a>"; }
+  function post(action) {
+    return fetch(API + "?u=" + encodeURIComponent(u) + "&t=" + encodeURIComponent(t) + "&a=" + action, { method: "POST" })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j }; }); });
+  }
+  function offDone() {
+    show(S.doneT, S.doneD, "ok");
+    $("btn").style.display = "none";
+    $("alt").innerHTML = S.undo + ' <a href="#" id="again">' + S.again + "</a>";
+    $("again").addEventListener("click", function (e) {
+      e.preventDefault(); $("alt").textContent = S.working;
+      post("on").then(function (res) {
+        if (res.j && res.j.ok) { show(S.backT, S.backD, "ok"); home(); }
+        else { $("msg").textContent = S.fail; $("msg").className = "small err"; }
+      }).catch(function () { $("msg").textContent = S.fail; $("msg").className = "small err"; });
+    });
+  }
+  show(S.title, S.desc);
+  if (!u || !t) { show(S.title, ""); $("msg").textContent = S.bad; $("msg").className = "small err"; home(); return; }
+  fetch(API + "?u=" + encodeURIComponent(u) + "&t=" + encodeURIComponent(t))
+    .then(function (r) { return r.json().catch(function () { return {}; }); })
+    .then(function (j) {
+      if (!j || !j.ok) { $("msg").textContent = S.bad; $("msg").className = "small err"; home(); return; }
+      var b = $("btn"); b.textContent = S.btn; b.style.display = "inline-block";
+      b.addEventListener("click", function () {
+        b.disabled = true; $("msg").textContent = S.working; $("msg").className = "small";
+        post("off").then(function (res) {
+          if (res.j && res.j.ok) { offDone(); }
+          else { b.disabled = false; $("msg").textContent = S.fail; $("msg").className = "small err"; }
+        }).catch(function () { b.disabled = false; $("msg").textContent = S.fail; $("msg").className = "small err"; });
+      });
+    })
+    .catch(function () { $("msg").textContent = S.fail; $("msg").className = "small err"; });
+})();
+</script>
+</body>
+</html>
