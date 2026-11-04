@@ -1605,8 +1605,8 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 <script>
 /* ── RE app config (phase 1, 2026-10-24) — built from /app.html by build_re_app.py ── */
-var RE_STATES = { ca:'California', tx:'Texas', il:'Illinois', fl:'Florida', nj:'New Jersey', ny:'New York' };
-var RE_STATE_KO = { ca:'캘리포니아', tx:'텍사스', il:'일리노이', fl:'플로리다', nj:'뉴저지', ny:'뉴욕' };
+var RE_STATES = { ca:'California', wa:'Washington', tx:'Texas', il:'Illinois', fl:'Florida', nj:'New Jersey', ny:'New York' };
+var RE_STATE_KO = { ca:'캘리포니아', wa:'워싱턴', tx:'텍사스', il:'일리노이', fl:'플로리다', nj:'뉴저지', ny:'뉴욕' };
 var RE_STATE = (function(){
   var s = null;
   try { s = new URLSearchParams(location.search).get('state'); } catch(e){}
@@ -1879,7 +1879,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 <!-- ═══ DASHBOARD V2 ═══ -->
 <div id="screen-dashboard" class="screen active">
 <div class="re-statebar">State: <select onchange="reSetState(this.value)">
-  <option value="ca">California</option><option value="tx">Texas</option><option value="il">Illinois</option><option value="fl">Florida</option><option value="nj">New Jersey</option><option value="ny">New York</option>
+  <option value="ca">California</option><option value="wa">Washington</option><option value="tx">Texas</option><option value="il">Illinois</option><option value="fl">Florida</option><option value="nj">New Jersey</option><option value="ny">New York</option>
 </select><script>document.currentScript.previousElementSibling.value = RE_STATE;</script></div>
   <!-- Hero: Current Focus Part -->
   <div id="dash-hero"></div>
@@ -4516,7 +4516,7 @@ function updateTrialStatusUI(){
 // ── Membership card: EA and RE on separate lines (boss 2026-11-01) ──
 // One account can be an RE paid member and an EA trial member at once. EA status lives in profiles,
 // RE status in entitlements (exam 're-<state>'). The line for the app in view keeps its own text.
-var _MEM_STATE_NAMES = {ca:'California', tx:'Texas', fl:'Florida', nj:'New Jersey', ny:'New York', il:'Illinois'};
+var _MEM_STATE_NAMES = {ca:'California', wa:'Washington', tx:'Texas', fl:'Florida', nj:'New Jersey', ny:'New York', il:'Illinois'};
 var _memSeq = 0;
 function _memLine(row, joined){
   var en = LANG === 'en', loc = en ? 'en-US' : 'ko-KR', now = new Date();
@@ -11893,6 +11893,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
-<script src="/re/re-mock.js?v=20261102il"></script>
+<script src="/re/re-mock.js?v=20261104wa"></script>
 </body>
 </html>

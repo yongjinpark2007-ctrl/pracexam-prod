@@ -15,6 +15,7 @@
      NJ  PSI bulletin — Salesperson 110 questions, 70% (77 correct), 4 hours.
      NY  DOS — 1 1/2 hours. DOS does not publish the question count or the passing score.
      IL  PSI candidate information booklet — Broker: National 100 items, 150 min, 70% + State 40 items, 90 min, 75% (2026-11-02).
+     WA  PSI candidate information bulletin (3/28/2024) — Broker: National 100 items, 150 min + State 30 items, 90 min, scaled 70 on each (2026-11-04).
      FL  DBPR/Pearson VUE sales associate booklet — 100 multiple-choice questions, 3 1/2 hours, 75 points or higher (2026-10-29). */
 (function(){
   var FMT = {
@@ -23,6 +24,8 @@
                                                    en:['National 85 + State 50 questions · 4 hours', 'Pass each portion at 70% (real exam: 56 of 80 and 28 of 40 scored items)'] },
     il: { n:140, min:240, pct:70, statePct:75, portions:true, ko:['National 100 + 주 40문항 · 4시간 (National 2시간 30분 + 주 1시간 30분)', 'National은 70%, 주 부분은 75% 이상 맞혀야 합격 (PSI 기준)'],
                                                    en:['National 100 + State 40 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass National at 70% and State at 75% (PSI)'] },
+    wa: { n:130, min:240, pct:70, portions:true, ko:['National 100 + 주 30문항 · 4시간 (National 2시간 30분 + 주 1시간 30분)', 'National과 주 부분을 각각 70% 이상 맞혀야 합격 (PSI 환산 점수 70 기준)'],
+                                                   en:['National 100 + State 30 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass each portion at 70% (PSI scaled score of 70)'] },
     fl: { n:100, min:210, pct:75, portions:false, ko:['100문항 · 3시간 30분', '75점 이상이면 합격 (Florida DBPR 기준)'], en:['100 questions · 3 hours 30 minutes', 'Pass at 75 or more (Florida DBPR)'] },
     nj: { n:110, min:240, pct:70, portions:false, ko:['110문항 · 4시간', '70% (77문항) 이상이면 합격 (PSI 기준)'], en:['110 questions · 4 hours', 'Pass at 70% (77 correct) or more (PSI)'] },
     ny: { n:75,  min:90,  pct:70, portions:false, ko:['모의고사 75문항 · 1시간 30분(실제 시험 시간과 같음)', '실제 시험은 합격·불합격만 알려 줍니다 — 이 모의고사는 70%를 합격선으로 씁니다'], en:['Mock exam: 75 questions · 1 hour 30 minutes (same time as the real exam)', 'The real exam reports pass or fail only — this mock uses 70% as its pass line'] }

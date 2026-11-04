@@ -4,6 +4,7 @@
 (function(){
   var STATES = [
     { id:'ca', name:'California' },   // west to east (boss 2026-10-24)
+    { id:'wa', name:'Washington' },   // added 2026-11-04 (boss: «공식적으로 WA 서비스 진행»)
     { id:'tx', name:'Texas' },
     { id:'il', name:'Illinois' },     // added 2026-11-02
     { id:'fl', name:'Florida' },      // added 2026-10-29 (boss: «랜딩에 업데이트 하세요»)
