@@ -240,3 +240,20 @@ test('syncAll: RE vars unset = EA only, exactly as before; RE vars set = RE writ
   assert.ok(live.re && live.re.errors.length === 0);
   assert.deepEqual(writes.sort(), ['POST re_shorts_videos', 'POST shorts_videos']);
 });
+
+test('IRS Tax Tip title -> part 0 and topic after the colon (2026-11-04)', () => {
+  assert.equal(partFromTitle('IRS Tax Tip: Can You Deduct Your Car Loan Interest? | Tax Tip 2026-79'), 0);
+  assert.equal(partFromTitle('IRS TAX TIP: 자동차 대출 이자도 세금 공제가 될까요? | Tax Tip 2026-79'), 0);
+  assert.equal(topicFromTitle('IRS Tax Tip: Can You Deduct Your Car Loan Interest? | Tax Tip 2026-79'), 'Can You Deduct Your Car Loan Interest?');
+  assert.equal(partFromTitle('Enrolled Agent EA Exam: Filing Status | Part 2 Question'), 2);
+});
+
+test('PX line accepts part=0 and a Tax Tip video is indexed with part 0', () => {
+  assert.equal(parsePx('x\nPX: key=irs-tax-tip-2026-79-car-loan-interest; part=0; topic=Car Loan Interest').part, 0);
+  const r = indexLanguage([{ id: 'abc12345678', title: 'IRS Tax Tip: Can You Deduct Your Car Loan Interest? | Tax Tip 2026-79',
+    description: 'hello\nPX: key=irs-tax-tip-2026-79-car-loan-interest; topic=Car Loan Interest', publishedAt: '2026-11-05T00:00:00Z', privacyStatus: 'public' }], 'en');
+  assert.equal(r.skipped.length, 0);
+  const e = r.byKey.get('irs-tax-tip-2026-79-car-loan-interest');
+  assert.equal(e.part, 0);
+  assert.equal(e.topic, 'Car Loan Interest');
+});
