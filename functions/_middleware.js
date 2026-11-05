@@ -12,14 +12,14 @@
 //    낱말은 하나도 버리지 않고 붙여쓰기로만 줄였다 —
 //      "한글 해설"→"한글해설"(제목 41→40) · "대비 "를 덜고 "모든 문항에"→"전 문항"(설명 83→78).
 //    ⚠️ 여기를 고칠 때는 반드시 «글자 수를 세고» 넣을 것. 넘치면 검색 결과에서 잘린다.
-const KO_TITLE = "미국 세무사, EA, Enrolled Agent 시험 문제은행 · 한글 해설 5,000문항 | PracExam";
+const KO_TITLE = "미국 세무사, EA 시험 준비의 새로운 기준 | PracExam";
 const KO_DESC  = "차세대 시험 준비 플랫폼. 미국 세무사, EA, Enrolled Agent 시험 실전 문제 5,000+. Part 1·2·3 전 영역, 전 문항 한국어·영어 해설. 최신 세법 기준 EA 시험 온라인 문제은행.";  // 78자
 
 // 🆕 2026-10-24 — 루트가 «중립 허브»가 되고 EA 는 /ea/ 로 옮겼다. 위 EA 제목·설명은 /ea/ 가 그대로 이어받고(순위 신호 유지),
 //    허브(/)와 부동산(/re/)은 아래 자기 제목을 쓴다. 글자 수 기준(제목 40자 · 설명 80자)은 같다.
-const KO_HUB_TITLE = "PracExam | 미국 세무사, EA, 부동산 중개인, 라이센스, Real Estate 시험 문제은행";
+const KO_HUB_TITLE = "PracExam | 미국 세무사, EA, 부동산 시험 준비의 새로운 기준";
 const KO_HUB_DESC  = "차세대 시험 준비 플랫폼. 미국 세무사, EA, Enrolled Agent 시험과 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 실전 문제은행. 시험을 고르고 바로 연습하세요.";
-const KO_RE_TITLE  = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 문제은행 | PracExam";
+const KO_RE_TITLE  = "미국 부동산 중개인, 라이센스, 에이전트 시험 준비의 새로운 기준 | PracExam";
 const KO_RE_DESC   = "차세대 시험 준비 플랫폼. 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License, Broker 시험 실전 문제. National과 주별 문제, 캘리포니아·워싱턴·텍사스·일리노이·플로리다·뉴저지·뉴욕. California, Washington, Texas, Illinois, Florida, New Jersey, New York. 문항별 해설과 시험 팁.";
 
 // 경로 → 한글 제목·설명
