@@ -52,6 +52,7 @@ main.vp-main{max-width:1120px; padding:0 24px; margin:0 auto; flex:1 0 auto; wid
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 
 <style>
 :root{
@@ -76,9 +77,9 @@ main.vp-main{max-width:1120px; padding:0 24px; margin:0 auto; flex:1 0 auto; wid
   --terracotta-tint:   #FBF1EC;
   --terracotta-border: #EFD0C1;
   --terracotta-deep:   #b85f3f;
-  --font-serif:  'Poppins', 'Pretendard Variable', -apple-system, sans-serif;
+  --font-serif:  'Poppins', 'IBM Plex Sans KR','Pretendard Variable', -apple-system, sans-serif;
   --font-display:'DM Serif Display', Georgia, serif;
-  --font-sans:   'Inter', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:   'Inter', 'IBM Plex Sans KR','Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --radius:      14px;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -386,7 +387,7 @@ html{scrollbar-gutter:stable;}
     .et-main .et-card h3{margin:0;font-size:16.5px;line-height:1.35;color:var(--text-main);}
     .et-main .et-card p{grid-column:2;margin:2px 0 0;font-size:15px;line-height:1.55;color:var(--text-mid);}
     /* Korean text never in the serif display face (boss 2026-10-30: 명조체는 old해 보인다) */
-    .et-main .ko, .et-main .ko *{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif !important;}
+    .et-main .ko, .et-main .ko *{font-family:"IBM Plex Sans KR","Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif !important;}
     .et-main h1 .ko, .et-main h2 .ko{letter-spacing:-.02em;}
     html{overflow-x:clip;}
     .et-band{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding:64px 0;scroll-margin-top:60px;}

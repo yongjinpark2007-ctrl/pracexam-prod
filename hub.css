@@ -5,9 +5,9 @@
   --ea:#354649; --ea-acc:#6FA39E; --ea-tint:#EDF4F3;
   --re:#10304C; --re-acc:#4F7CAC; --re-tint:#E8EFF7;
   --cta:#DD8F75; --cta-deep:#B85F3F; --note-bg:#FFF8E8; --note-line:#E3C77A;
-  --f-display:'Poppins','Pretendard Variable','Noto Sans KR',-apple-system,sans-serif;
-  --f-body:'Inter','Pretendard Variable','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  --f-brand:'Poppins','Pretendard Variable','Noto Sans KR',-apple-system,sans-serif;
+  --f-display:'Poppins','IBM Plex Sans KR','Pretendard Variable','Noto Sans KR',-apple-system,sans-serif;
+  --f-body:'Inter','IBM Plex Sans KR','Pretendard Variable','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --f-brand:'Poppins','IBM Plex Sans KR','Pretendard Variable','Noto Sans KR',-apple-system,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121A1C; --surface:#1B2527; --ink:#E4EBEC; --ink-mid:#A9B6B8; --line:#2E3B3E;
