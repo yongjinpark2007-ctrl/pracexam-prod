@@ -432,7 +432,7 @@ document.addEventListener('keydown', function(e){
     meta.className = 'vp-meta';
     var pill = document.createElement('span');
     pill.className = 'vx-pill';
-    pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+    pill.textContent = PXVideos.pillOf(row, state.lang);
     var cur = PXVideos.usable(row, state.lang);
     function draw(l){
       PXVideos.stop();

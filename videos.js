@@ -58,7 +58,8 @@
       .map(function(s){ return s.replace(/\s+/g, ' ').trim(); })
       .filter(function(s){ return s && !/^[━─=\-\s]+$/.test(s); }).join(' ').slice(0, 300);
   }
-  function partText(row, l){ return cfg.partLabel ? cfg.partLabel(row.ea_part, l) : (UI[l].part + row.ea_part); }
+  // ea_part = 0 marks an IRS Tax Tip video (2026-11-04): the pill reads "IRS Tax Tip", not "EA Part N"
+  function partText(row, l){ if(Number(row.ea_part) === 0) return 'IRS Tax Tip'; return cfg.partLabel ? cfg.partLabel(row.ea_part, l) : (UI[l].part + row.ea_part); }
   function descOf(row, l){ return firstLine(row['description_' + l] || row['description_' + other(l)]); }
 
   // ── data ────────────────────────────────────────────────
@@ -286,6 +287,7 @@
   }
 
   window.PXVideos = {
+    pillOf: function(row, l){ return partText(row, l) + ' · ' + row.topic; },
     init: init, siteLang: siteLang, other: other, has: has, usable: usable,
     titleOf: titleOf, descOf: descOf, idOf: idOf, isLocked: isLocked,
     fetchRows: fetchRows, mount: mount, stop: stop, play: play,

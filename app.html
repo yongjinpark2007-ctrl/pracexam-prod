@@ -6282,7 +6282,7 @@ function ensureVideoLib(){
   _VID.ready = new Promise(function(res, rej){
     try{
       var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/videos.css?v=20261017'; document.head.appendChild(l);
-      var s = document.createElement('script'); s.src = '/videos.js?v=20261101p';
+      var s = document.createElement('script'); s.src = '/videos.js?v=20261104t';
       s.onload = function(){ _vidInit(); res(); };
       s.onerror = function(){ _VID.ready = null; rej(new Error('videos.js load failed')); };
       document.head.appendChild(s);
@@ -6334,7 +6334,7 @@ function renderDashVideos(){
         '</div>' +
       '</div>';
     el.setAttribute('data-lang', LANG);
-    document.getElementById('dv-pill').textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+    document.getElementById('dv-pill').textContent = PXVideos.pillOf(row, l);
     document.getElementById('dv-title').textContent = PXVideos.titleOf(row, l);
     document.getElementById('dv-desc').textContent = PXVideos.descOf(row, l) || '';
     PXVideos.mount(document.getElementById('dv-frame'), row, l);
@@ -6370,7 +6370,7 @@ function renderVideosScreen(keepRows){
       var h = document.createElement('h3'); h.textContent = PXVideos.titleOf(row, l);
       var meta = document.createElement('div'); meta.className = 'vp-meta';
       var pill = document.createElement('span'); pill.className = 'vx-pill';
-      pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+      pill.textContent = PXVideos.pillOf(row, LANG);
       meta.appendChild(pill);
       if(row.access === 'members' && !row.locked){
         var tag = document.createElement('span'); tag.className = 'vx-pill';
