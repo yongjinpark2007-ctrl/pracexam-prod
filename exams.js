@@ -9,7 +9,7 @@
      blurb : one line for the hub door            {ko, en}
      url   : landing page          app : practice app
      color : door accent (same as --accent in exam-palettes.css)
-   Names follow the drafts README: «미국 세무사 Enrolled Agent (EA)» / «미국 부동산 중개사 Real Estate Agent». */
+   Names follow the drafts README: «미국 세무사 Enrolled Agent (EA)» / «미국 부동산 중개인 Real Estate Agent». */
 (function(){
   var EXAMS = [
     { id:'ea', url:'/ea/', app:'/app', color:'#6FA39E',
@@ -18,7 +18,7 @@
       blurb:{ ko:'IRS EA 시험 Part 1·2·3 — 5,000개+ 실전 문제', en:'IRS Enrolled Agent exam, Parts 1–3 — 5,000+ practice questions' } },
     { id:'re', url:'/re/', app:'/re/app', color:'#4F7CAC',
       name:{ ko:'부동산', en:'Real Estate Agent' },
-      full:{ ko:'미국 부동산 중개사 Real Estate Agent', en:'Real Estate Agent' },
+      full:{ ko:'미국 부동산 중개인 Real Estate Agent', en:'Real Estate Agent' },
       blurb:{ ko:'National + 주(州) 시험 — 캘리포니아·워싱턴·텍사스·일리노이·플로리다·뉴저지·뉴욕', en:'National + state exams — CA, WA, TX, IL, FL, NJ, NY' } }
   ];
 
