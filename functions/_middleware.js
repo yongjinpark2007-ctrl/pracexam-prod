@@ -185,6 +185,7 @@ async function handle(context) {
     .on('meta[property="og:locale:alternate"]', new MetaRewriter("en_US"))
     .on('meta[name="twitter:title"]',       new MetaRewriter(copy.title))
     .on('meta[name="twitter:description"]', new MetaRewriter(copy.desc))
+    .on(new URL(request.url).pathname === "/" ? "[data-ko]" : "[data-ko-none]", new DataKoSwap())
     .transform(response);
 
   const out = new Response(rewritten.body, rewritten);
@@ -207,6 +208,11 @@ const KO_ROUTES = {
   "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
 };
 const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/", "/ea/exam-tips/ko": "/ea/exam-tips/ko/" };
+// 2026-11-05: the hub (/) keeps its Korean in data-ko attributes and fills it in with JS. Crawlers that do not run JS
+// (Naver Yeti) therefore saw English body text on /ko/. For the Korean hub, write the Korean text into the HTML itself.
+class DataKoSwap {
+  element(el) { const v = el.getAttribute("data-ko"); if (v !== null) el.setInnerContent(v); }
+}
 class AttrSetter {
   constructor(name, value) { this.name = name; this.value = value; }
   element(el) { el.setAttribute(this.name, this.value); }
@@ -234,6 +240,7 @@ async function koRoute(context, route) {
     .on('meta[name="twitter:title"]',            new MetaRewriter(route.title))
     .on('meta[name="twitter:description"]',      new MetaRewriter(route.desc))
     .on('link[rel="canonical"]',                 new AttrSetter("href", kourl))
+    .on(route.base === "/" ? "[data-ko]" : "[data-ko-none]", new DataKoSwap())
     .transform(response);
   const res = new Response(out.body, out);
   res.headers.delete("Vary");
