@@ -6351,9 +6351,9 @@ function renderVideosScreen(keepRows){
       return (_VID.part === 'all' || String(r.ea_part) === _VID.part) && PXVideos.usable(r, LANG);
     });
     var f = '<div class="vp-filters"><div><label>' + vidT('파트', 'Part') + '</label><span class="vx-toggle" role="group">' +
-      ['all', '1', '2', '3'].map(function(v){
+      ['all', '1', '2', '3', '0'].map(function(v){
         return '<button type="button" aria-pressed="' + (_VID.part === v) + '" onclick="vidSetPart(\'' + v + '\')">' +
-               (v === 'all' ? vidT('전체', 'All') : v) + '</button>';
+               (v === 'all' ? vidT('전체', 'All') : (v === '0' ? 'Tax Tip' : v)) + '</button>';
       }).join('') + '</span></div></div>';
     host.innerHTML = f + (list.length
       ? '<div class="vp-grid" id="vid-grid"></div>'

@@ -330,6 +330,7 @@ html{scrollbar-gutter:stable;}
         <button type="button" data-v="1" aria-pressed="false">1</button>
         <button type="button" data-v="2" aria-pressed="false">2</button>
         <button type="button" data-v="3" aria-pressed="false">3</button>
+        <button type="button" data-v="0" aria-pressed="false">Tax Tip</button>
       </span></div>
   </div>
 
@@ -405,7 +406,7 @@ document.addEventListener('keydown', function(e){
   var rows = [];
   var state = { part: 'all', lang: PXVideos.siteLang(), shown: 12 };   // 12 at a time (2026-10-30)
   var p = new URLSearchParams(location.search).get('part');
-  if (p === '1' || p === '2' || p === '3') state.part = p;
+  if (p === '0' || p === '1' || p === '2' || p === '3') state.part = p;
 
   function syncButtons(){
     ['part'].forEach(function(k){
