@@ -200,10 +200,18 @@ const KO_TIPS_RE_TITLE = "미국 부동산 중개인, 라이센스, 에이전트
 const KO_TIPS_RE_DESC  = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 주별 안내. 캘리포니아·워싱턴·텍사스·일리노이·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
 const KO_TIPS_EA_TITLE = "미국 세무사, Enrolled Agent · EA 시험 안내 · 응시 자격·형식 | PracExam";
 const KO_TIPS_EA_DESC  = "미국 세무사, Enrolled Agent · EA 시험 안내. 응시 자격, 시험 형식과 비용, 시험 당일 준비, 합격 후 등록 절차까지 한눈에 정리했습니다.";
+// 2026-11-05 (boss): SEO and AEO both use 라이센스. On the Korean URLs the structured data is Korean too.
+// The RE FAQ is the visible Korean FAQ in re/index.html word for word: keep the two in step.
+const KO_LD_RE_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"inLanguage\": \"ko\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"미국 부동산 라이센스, Real Estate License 시험이란 무엇인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"미국에서 부동산 거래를 중개하려면 주 정부가 발급하는 라이센스가 필요합니다. 라이센스를 받으려면 시험에 합격해야 하고, 시험은 모든 주에 공통인 National 부분과 각 주의 법을 다루는 State 부분으로 나뉘는 경우가 많습니다.\"}}, {\"@type\": \"Question\", \"name\": \"주마다 시험이 다른가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. 라이센스 요건과 시험 형식은 주마다 다릅니다. PracExam이 지원하는 주와 주별 요건은 시험 안내, Exam Tips에서 확인하실 수 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"부동산 에이전트, Real Estate Agent와 브로커, Broker는 어떻게 다른가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"일반적으로 에이전트는 브로커 밑에서 일하고, 브로커 라이센스는 독립적으로 중개업을 운영할 수 있는 상위 라이센스입니다. 세부 요건은 주마다 다릅니다.\"}}, {\"@type\": \"Question\", \"name\": \"한국어 해설로 공부할 수 있나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. PracExam의 모든 문제에 한국어와 영어 해설이 함께 있고, War Room의 이론 공부도 한글과 영어로 할 수 있어서 이해에 큰 도움이 됩니다. 시험 자체는 영어로 치르기 때문에, 한국어 해설로 이해하고 영어 용어도 함께 익히실 수 있습니다.\"}}]}";
+const KO_LD_RE_COURSE = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", "inLanguage": "ko",
+  name: "미국 부동산 라이센스, Real Estate License 시험 문제", description: KO_RE_DESC, url: "https://pracexam.com/re/ko/",
+  provider: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/" },
+  about: ["미국 부동산 라이센스 시험", "Real Estate License Exam"] });
+const KO_LD_HUB_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"inLanguage\": \"ko\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"PracExam은 무엇인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"PracExam은 두 가지 미국 자격시험을 위한 온라인 문제 은행입니다. 미국 세무사 · EA 시험과 미국 부동산 라이센스, Real Estate License 시험을 다룹니다. 모든 문제에 자세한 해설과 시험 팁이 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"어떤 시험을 다루나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"미국 세무사 · EA 시험 Part 1, 2, 3은 https://pracexam.com/ea/ko/ 에서, 미국 부동산 라이센스 시험의 National 부분과 State 부분은 https://pracexam.com/re/ko/ 에서 공부할 수 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"PracExam 요금은 얼마인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"30일 Quick Study로 시작할 수 있습니다. Pro는 월 $29 또는 3개월 $70이고, 14일 환불과 언제든 해지가 가능합니다. 시험별로 따로 구독합니다.\"}}, {\"@type\": \"Question\", \"name\": \"모의고사가 포함되어 있나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. Pro에는 실전 형식의 전체 모의고사와 토픽별 학습, Smart Study 모드, 토픽별 War Room 페이지가 포함됩니다.\"}}]}";
 const KO_ROUTES = {
-  "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC },
+  "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC, ld: { "hub-faq": KO_LD_HUB_FAQ } },
   "/ea/ko/":           { base: "/ea/",           title: KO_TITLE,         desc: KO_DESC },
-  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC },
+  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
   "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
   "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
 };
@@ -212,6 +220,10 @@ const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "
 // (Naver Yeti) therefore saw English body text on /ko/. For the Korean hub, write the Korean text into the HTML itself.
 class DataKoSwap {
   element(el) { const v = el.getAttribute("data-ko"); if (v !== null) el.setInnerContent(v); }
+}
+class LdSwap {
+  constructor(ld) { this.ld = ld || {}; }
+  element(el) { const v = this.ld[el.getAttribute("data-ld")]; if (v) el.setInnerContent(v, { html: true }); }
 }
 class AttrSetter {
   constructor(name, value) { this.name = name; this.value = value; }
@@ -241,6 +253,7 @@ async function koRoute(context, route) {
     .on('meta[name="twitter:description"]',      new MetaRewriter(route.desc))
     .on('link[rel="canonical"]',                 new AttrSetter("href", kourl))
     .on(route.base === "/" ? "[data-ko]" : "[data-ko-none]", new DataKoSwap())
+    .on("script[data-ld]",                       new LdSwap(route.ld))
     .transform(response);
   const res = new Response(out.body, out);
   res.headers.delete("Vary");
