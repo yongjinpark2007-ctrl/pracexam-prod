@@ -97,6 +97,13 @@ Each article is published in English and Korean at the two URLs shown.
 
 - Real Estate landing page (overview, sample questions, pricing): https://pracexam.com/re/
 - Real estate exam guide by state (requirements, format, fees, next steps): https://pracexam.com/re/exam-tips/
+- California real estate exam page in Korean: https://pracexam.com/re/ko/california/
+- Washington real estate exam page in Korean: https://pracexam.com/re/ko/washington/
+- Texas real estate exam page in Korean: https://pracexam.com/re/ko/texas/
+- Illinois real estate exam page in Korean: https://pracexam.com/re/ko/illinois/
+- Florida real estate exam page in Korean: https://pracexam.com/re/ko/florida/
+- New Jersey real estate exam page in Korean: https://pracexam.com/re/ko/new-jersey/
+- New York real estate exam page in Korean: https://pracexam.com/re/ko/new-york/
 - Free real estate pop quiz (one question with full explanation): https://pracexam.com/re/popquiz
 - Free real estate practice videos (YouTube Shorts): https://pracexam.com/re/videos
 

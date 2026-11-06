@@ -211,7 +211,7 @@ const KO_LD_HUB_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPa
 const KO_ROUTES = {
   "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC, ld: { "hub-faq": KO_LD_HUB_FAQ } },
   "/ea/ko/":           { base: "/ea/",           title: KO_TITLE,         desc: KO_DESC },
-  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, heroImg: "/re/img/hero-re-3.webp?v=134ab7aea3", heroAlt: "집 현관 앞에서 태블릿을 든 부동산 에이전트", ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
+  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, heroImg: "/re/img/hero-re-3.webp?v=134ab7aea3", heroAlt: "집 현관 앞에서 태블릿을 든 부동산 에이전트", heroImg2: "/re/img/hero-re-ko2.webp?v=b5707c2779", heroAlt2: "벽돌집 앞에 팔짱을 끼고 서 있는 부동산 에이전트", ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
   "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
   "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
 };
@@ -229,15 +229,15 @@ class AttrSetter {
   constructor(name, value) { this.name = name; this.value = value; }
   element(el) { el.setAttribute(this.name, this.value); }
 }
-// 2026-11-06 (boss): the Korean RE main page shows the same single photo as the Korean state pages. No rotation.
-class HeroOne {
-  constructor(src, alt) { this.src = src; this.alt = alt; this.n = 0; }
+// 2026-11-06 (boss): the Korean RE main page rotates only the two Korean photos used on the Korean state pages.
+class HeroKo {
+  constructor(route) { this.r = route; this.n = 0; }
   element(el) {
-    if (!this.src) return;
+    if (!this.r.heroImg) return;
     this.n += 1;
-    if (this.n > 1) { el.remove(); return; }
-    el.setAttribute("src", this.src);
-    el.setAttribute("alt", this.alt || "");
+    if (this.n === 1) { el.setAttribute("src", this.r.heroImg); el.setAttribute("alt", this.r.heroAlt); return; }
+    if (this.n === 2) { el.setAttribute("data-src", this.r.heroImg2); el.setAttribute("alt", this.r.heroAlt2); return; }
+    el.remove();
   }
 }
 async function koRoute(context, route) {
@@ -265,7 +265,7 @@ async function koRoute(context, route) {
     .on('link[rel="canonical"]',                 new AttrSetter("href", kourl))
     .on(route.base === "/" ? "[data-ko]" : "[data-ko-none]", new DataKoSwap())
     .on("script[data-ld]",                       new LdSwap(route.ld))
-    .on("#hero-rot img",                         new HeroOne(route.heroImg, route.heroAlt))
+    .on("#hero-rot img",                         new HeroKo(route))
     .transform(response);
   const res = new Response(out.body, out);
   res.headers.delete("Vary");
