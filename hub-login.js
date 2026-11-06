@@ -43,6 +43,8 @@
     if (!list.length) list = ['ea'];
     if (x && list.length > 1 && String(x.home || '').indexOf('re-') === 0) list = ['re', 'ea'];
     // Last app used comes first. It was really entered, so it counts even without an entitlement row (admin).
+    // px_seen_re keeps the RE button after a later visit to EA (accounts with RE access but no entitlement row).
+    try { if (uid && localStorage.getItem('px_seen_re') === uid && list.indexOf('re') < 0) list.push('re'); } catch(e){}
     var last = lastApp(uid);
     if (last) list = [last].concat(list.filter(function(k){ return k !== last; }));
     setBtn(bar, list[0]); paintTop(list[0]);

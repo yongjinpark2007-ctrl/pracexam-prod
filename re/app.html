@@ -1658,7 +1658,7 @@ async function reEnforceState(){
   document.body.appendChild(c); setTimeout(function(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }, 8000); } } catch(e){} })();
 // px_last_app (boss 2026-11-05): the hub puts the app last entered first. Set here because this runs only once the account is allowed in.
 function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove();
-  try{ if(SB_USER) localStorage.setItem('px_last_app', 're|' + SB_USER.id); }catch(e){} }
+  try{ if(SB_USER){ localStorage.setItem('px_last_app', 're|' + SB_USER.id); localStorage.setItem('px_seen_re', SB_USER.id); } }catch(e){} }
 </script>
 <div id="re-admin-only"><div class="box"><b>Real Estate practice app — admin preview</b><br>This test build is open to the administrator account only.<br>이 시험용 화면은 관리자 계정만 사용할 수 있습니다.<br><a href="/re/">Real Estate home</a><a href="/app">EA app</a></div></div>
 <style>
