@@ -1610,7 +1610,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 (function(){ try { if(/[?&]join=1/.test(location.search)){ var c = document.createElement('div'); c.id = 'join-cover';
   c.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--page-bg,#eef2f3);';
   document.body.appendChild(c); setTimeout(function(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }, 8000); } } catch(e){} })();
-function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }
+// px_last_app (boss 2026-11-05): the hub puts the app last entered first. Set here because this runs only once the account is allowed in.
+function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove();
+  try{ if(SB_USER) localStorage.setItem('px_last_app', 'ea|' + SB_USER.id); }catch(e){} }
 </script>
 <style>
 /* ── LOGIN GATE ── */

@@ -24,6 +24,12 @@
     var L = LBL[k]; a.href = L.href; a.setAttribute('data-ko', L.ko); a.setAttribute('data-en', L.en);
     a.textContent = (document.documentElement.lang === 'ko') ? L.ko : L.en;
   }
+  // The app this account last really entered on this browser, set by _joinCoverOff in the apps (boss 2026-11-05).
+  // The account id is in the value so a different account on the same browser does not inherit it.
+  function lastApp(uid){
+    try { var v = (localStorage.getItem('px_last_app') || '').split('|');
+      return (uid && v[1] === uid && (v[0] === 'ea' || v[0] === 're')) ? v[0] : ''; } catch(e){ return ''; }
+  }
   // Header button (boss 2026-11-05): for a signed-in visitor the login card has no form, so «Log In» did nothing.
   // It becomes «My Practice» and goes straight to the app. Runs before hub.js, whose scroll handler binds only to href="#login".
   var topBtn = null;
@@ -32,10 +38,13 @@
     topBtn.href = LBL[k].href; topBtn.setAttribute('data-ko', '내 연습'); topBtn.setAttribute('data-en', 'My Practice');
     topBtn.textContent = (document.documentElement.lang === 'ko') ? '내 연습' : 'My Practice';
   }
-  function paintResume(bar, x){
+  function paintResume(bar, x, uid){
     var list = !x ? ['ea', 're'] : [].concat(x.ea ? ['ea'] : [], x.re ? ['re'] : []);
     if (!list.length) list = ['ea'];
     if (x && list.length > 1 && String(x.home || '').indexOf('re-') === 0) list = ['re', 'ea'];
+    // Last app used comes first. It was really entered, so it counts even without an entitlement row (admin).
+    var last = lastApp(uid);
+    if (last) list = [last].concat(list.filter(function(k){ return k !== last; }));
     setBtn(bar, list[0]); paintTop(list[0]);
     if (list[1] && !document.getElementById('resume-bar-2')){
       var b2 = bar.cloneNode(false); b2.id = 'resume-bar-2'; b2.className = 'btn btn-ghost'; b2.style.marginTop = '8px';
@@ -51,10 +60,10 @@
     if (bar && sess && (sess.access_token || sess.refresh_token)){
       var card = document.getElementById('resume-card'), f = document.getElementById('hub-login');
       if (card){ card.hidden = false; if (f) f.hidden = true; } else bar.hidden = false;
-      topBtn = document.querySelector('.nav-actions a[href="#login"]'); paintTop('ea');
-      // EA and RE are separate sign-ups (2026-10-29): one button per exam this account has, home exam first.
       var uid = sess.user && sess.user.id;
-      examsOf(sess.access_token, uid).then(function(x){ paintResume(bar, x); }, function(){ paintResume(bar, null); });
+      topBtn = document.querySelector('.nav-actions a[href="#login"]'); paintTop(lastApp(uid) || 'ea');
+      // EA and RE are separate sign-ups (2026-10-29): one button per exam this account has, home exam first.
+      examsOf(sess.access_token, uid).then(function(x){ paintResume(bar, x, uid); }, function(){ paintResume(bar, null, uid); });
     }
     // «Log in with a different account» (and /?login for a direct look): show the login form instead.
     var sw = document.getElementById('resume-switch');
@@ -89,7 +98,8 @@
                  + '&token_type=bearer&type=signup';
         // go to the account's own app: RE-only or RE home -> /re/app, otherwise the EA app (2026-10-29)
         examsOf(d.access_token, d.user && d.user.id).then(function(x){ return x; }, function(){ return null; }).then(function(x){
-          var re = x && x.re && (!x.ea || String(x.home || '').indexOf('re-') === 0);
+          var last = lastApp(d.user && d.user.id);
+          var re = last ? last === 're' : (x && x.re && (!x.ea || String(x.home || '').indexOf('re-') === 0));
           window.location.href = (re ? '/re/app' : '/app.html') + hash;
         });
         return;
