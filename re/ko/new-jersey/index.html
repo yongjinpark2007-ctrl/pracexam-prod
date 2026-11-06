@@ -52,10 +52,16 @@
 .st-cta.st-navy .st-links a{color:#fff}
 .st-sec{padding:52px 0;border-top:1px solid var(--border-clr)}
 .st-sec h2{font-size:clamp(23px,3.4vw,30px);margin:0 0 20px;word-break:keep-all}
-.st-table{width:100%;border-collapse:collapse;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden}
-.st-table th,.st-table td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--border-clr);font-size:15px;line-height:1.5;vertical-align:top}
-.st-table tr:last-child th,.st-table tr:last-child td{border-bottom:0}
-.st-table th{width:32%;font-weight:700;color:var(--text-muted)}
+.st-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.st-fact{background:var(--accent-tint);border:1px solid var(--accent-border,var(--border-clr));border-radius:14px;padding:18px 14px;text-align:center}
+.st-fact .k{display:block;font-size:13px;font-weight:700;color:var(--text-muted)}
+.st-fact strong{display:block;font-family:var(--font-serif);font-size:clamp(26px,3.2vw,32px);font-weight:700;line-height:1.25;color:var(--navy);margin:6px 0 4px;white-space:nowrap}
+.st-fact .s{display:block;font-size:13px;line-height:1.45;color:var(--text-muted);word-break:keep-all}
+.st-rows{display:grid;grid-template-columns:repeat(2,1fr);column-gap:32px;margin:0;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:6px 20px}
+.st-row{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--border-clr)}
+.st-rows .st-row:nth-last-child(-n+2){border-bottom:0}
+.st-row dt{flex:0 0 96px;font-size:14px;font-weight:700;color:var(--text-muted)}
+.st-row dd{margin:0;font-size:15px;line-height:1.5;word-break:keep-all}
 .st-src{font-size:13px;color:var(--text-muted);margin:10px 0 0}
 .st-src a,.st-links a{color:var(--navy);text-decoration:underline;text-underline-offset:3px}
 .st-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
@@ -87,7 +93,7 @@
 .st-cta .lead{color:var(--text-muted);margin:0 0 20px}
 .st-links{font-size:15px;margin-top:20px;color:var(--text-muted);line-height:1.9}
 @media (max-width:640px){.st-flow{grid-template-columns:1fr}.st-flow li,.st-flow li:nth-child(4){grid-column:auto}.st-flow li+li::before,.st-flow li:nth-child(4)::before{content:'↓';left:50%;top:-25px;transform:translateX(-50%)}}
-@media (max-width:640px){.st-grid{grid-template-columns:1fr}.st-table th{width:38%}}
+@media (max-width:640px){.st-grid{grid-template-columns:1fr}.st-facts{grid-template-columns:repeat(2,1fr)}.st-rows{grid-template-columns:1fr}.st-rows .st-row:nth-last-child(2){border-bottom:1px solid var(--border-clr)}}
 </style>
 </head>
 <body data-exam="re">
@@ -139,7 +145,8 @@
 
 <section class="st-sec st-white" id="exam"><div class="wrap">
   <h2>뉴저지 부동산 시험 한눈에 보기</h2>
-  <table class="st-table"><tbody><tr><th scope="row">면허 기관</th><td>New Jersey Real Estate Commission</td></tr><tr><th scope="row">시험 기관</th><td>PSI</td></tr><tr><th scope="row">사전교육</th><td>75시간</td></tr><tr><th scope="row">문항 수</th><td>110문항</td></tr><tr><th scope="row">시험 시간</th><td>4시간</td></tr><tr><th scope="row">합격선</th><td>70%, 110문항 중 77문항</td></tr><tr><th scope="row">미채점 문항</th><td>5~10문항이 더 나올 수 있고, 시험 시간에 포함</td></tr><tr><th scope="row">응시료</th><td>$38</td></tr><tr><th scope="row">계산기</th><td>휴대용 계산기 반입 금지</td></tr></tbody></table>
+  <div class="st-facts"><div class="st-fact"><span class="k">문항 수</span><strong>110문항</strong><span class="s">미채점 5~10문항 추가 가능</span></div><div class="st-fact"><span class="k">시험 시간</span><strong>4시간</strong><span class="s">미채점 문항도 시간에 포함</span></div><div class="st-fact"><span class="k">합격선</span><strong>70%</strong><span class="s">110문항 중 77문항</span></div><div class="st-fact"><span class="k">응시료</span><strong>$38</strong><span class="s">PSI 예약 시 납부</span></div></div>
+  <dl class="st-rows"><div class="st-row"><dt>면허 기관</dt><dd>New Jersey Real Estate Commission</dd></div><div class="st-row"><dt>시험 기관</dt><dd>PSI</dd></div><div class="st-row"><dt>사전교육</dt><dd>75시간</dd></div><div class="st-row"><dt>계산기</dt><dd>휴대용 계산기 반입 금지</dd></div></dl>
   <p class="st-src">출처: <a href="https://test-takers.psiexams.com/api/content/bulletin/1667" target="_blank" rel="noopener noreferrer">PSI 뉴저지 시험 안내문, 2026년 2월 1일 판</a>. 응시 전 공식 안내를 다시 확인하세요.</p>
 </div></section>
 

@@ -52,10 +52,16 @@
 .st-cta.st-navy .st-links a{color:#fff}
 .st-sec{padding:52px 0;border-top:1px solid var(--border-clr)}
 .st-sec h2{font-size:clamp(23px,3.4vw,30px);margin:0 0 20px;word-break:keep-all}
-.st-table{width:100%;border-collapse:collapse;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden}
-.st-table th,.st-table td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--border-clr);font-size:15px;line-height:1.5;vertical-align:top}
-.st-table tr:last-child th,.st-table tr:last-child td{border-bottom:0}
-.st-table th{width:32%;font-weight:700;color:var(--text-muted)}
+.st-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.st-fact{background:var(--accent-tint);border:1px solid var(--accent-border,var(--border-clr));border-radius:14px;padding:18px 14px;text-align:center}
+.st-fact .k{display:block;font-size:13px;font-weight:700;color:var(--text-muted)}
+.st-fact strong{display:block;font-family:var(--font-serif);font-size:clamp(26px,3.2vw,32px);font-weight:700;line-height:1.25;color:var(--navy);margin:6px 0 4px;white-space:nowrap}
+.st-fact .s{display:block;font-size:13px;line-height:1.45;color:var(--text-muted);word-break:keep-all}
+.st-rows{display:grid;grid-template-columns:repeat(2,1fr);column-gap:32px;margin:0;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:6px 20px}
+.st-row{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--border-clr)}
+.st-rows .st-row:nth-last-child(-n+2){border-bottom:0}
+.st-row dt{flex:0 0 96px;font-size:14px;font-weight:700;color:var(--text-muted)}
+.st-row dd{margin:0;font-size:15px;line-height:1.5;word-break:keep-all}
 .st-src{font-size:13px;color:var(--text-muted);margin:10px 0 0}
 .st-src a,.st-links a{color:var(--navy);text-decoration:underline;text-underline-offset:3px}
 .st-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
@@ -87,7 +93,7 @@
 .st-cta .lead{color:var(--text-muted);margin:0 0 20px}
 .st-links{font-size:15px;margin-top:20px;color:var(--text-muted);line-height:1.9}
 @media (max-width:640px){.st-flow{grid-template-columns:1fr}.st-flow li,.st-flow li:nth-child(4){grid-column:auto}.st-flow li+li::before,.st-flow li:nth-child(4)::before{content:'↓';left:50%;top:-25px;transform:translateX(-50%)}}
-@media (max-width:640px){.st-grid{grid-template-columns:1fr}.st-table th{width:38%}}
+@media (max-width:640px){.st-grid{grid-template-columns:1fr}.st-facts{grid-template-columns:repeat(2,1fr)}.st-rows{grid-template-columns:1fr}.st-rows .st-row:nth-last-child(2){border-bottom:1px solid var(--border-clr)}}
 </style>
 </head>
 <body data-exam="re">
@@ -139,7 +145,8 @@
 
 <section class="st-sec st-white" id="exam"><div class="wrap">
   <h2>텍사스 부동산 시험 한눈에 보기</h2>
-  <table class="st-table"><tbody><tr><th scope="row">면허 기관</th><td>Texas Real Estate Commission, TREC</td></tr><tr><th scope="row">시험 기관</th><td>Pearson VUE</td></tr><tr><th scope="row">사전교육</th><td>180시간</td></tr><tr><th scope="row">National</th><td>85문항, 80문항 채점, 150분</td></tr><tr><th scope="row">State</th><td>50문항, 40문항 채점, 90분</td></tr><tr><th scope="row">합격선</th><td>National 56문항, State 28문항 이상</td></tr><tr><th scope="row">채점</th><td>두 부분을 따로 채점, 떨어진 부분만 재응시</td></tr><tr><th scope="row">응시료</th><td>$43</td></tr><tr><th scope="row">계산기</th><td>제공하지 않음, 금융 계산기 지참 가능</td></tr></tbody></table>
+  <div class="st-facts"><div class="st-fact"><span class="k">National</span><strong>85문항</strong><span class="s">80문항 채점, 150분</span></div><div class="st-fact"><span class="k">State</span><strong>50문항</strong><span class="s">40문항 채점, 90분</span></div><div class="st-fact"><span class="k">합격 문항 수</span><strong>56 · 28</strong><span class="s">National 56, State 28 이상</span></div><div class="st-fact"><span class="k">응시료</span><strong>$43</strong><span class="s">시험 1회 기준</span></div></div>
+  <dl class="st-rows"><div class="st-row"><dt>면허 기관</dt><dd>Texas Real Estate Commission, TREC</dd></div><div class="st-row"><dt>시험 기관</dt><dd>Pearson VUE</dd></div><div class="st-row"><dt>사전교육</dt><dd>180시간</dd></div><div class="st-row"><dt>채점</dt><dd>두 부분을 따로 채점, 떨어진 부분만 재응시</dd></div><div class="st-row"><dt>합격 유효 기간</dt><dd>합격한 부분은 합격일부터 1년</dd></div><div class="st-row"><dt>계산기</dt><dd>제공하지 않음, 금융 계산기 지참 가능</dd></div></dl>
   <p class="st-src">출처: <a href="https://www.trec.texas.gov/become-licensed/sales-agent" target="_blank" rel="noopener noreferrer">TREC 세일즈 에이전트 안내</a>. 응시 전 공식 안내를 다시 확인하세요.</p>
 </div></section>
 
