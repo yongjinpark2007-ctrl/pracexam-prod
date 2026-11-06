@@ -37,17 +37,8 @@
 <link rel="stylesheet" href="/exam-switch.css?v=92317555cb">
 <link rel="stylesheet" href="/re/re.css?v=20261029v">
 <style>
-.st-hero{padding:72px 0 56px;background:linear-gradient(180deg,var(--accent-tint),transparent)}
-.st-hero .wrap,.st-sec .wrap{max-width:920px}
-.st-hero h1{font-size:clamp(32px,5.4vw,50px);line-height:1.2;margin:14px 0 16px;word-break:keep-all}
-.st-hero h1 em{font-style:normal;color:var(--accent-hover)}
-.st-hero .lead{font-size:18px;line-height:1.7;max-width:640px;margin:0 0 26px;color:var(--text-muted);word-break:keep-all}
-.st-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px}
-.st-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0}
-.st-stat{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;padding:16px}
-.st-stat dd{margin:0;font-size:26px;font-weight:800;color:var(--navy)}
-.st-stat dt{font-size:14px;color:var(--text-muted);margin-top:2px}
-.st-stat{display:flex;flex-direction:column-reverse;justify-content:flex-end}
+.st-stats-grid{grid-template-columns:repeat(4,1fr)}
+.st-sec .wrap{max-width:920px}
 .st-sec{padding:52px 0;border-top:1px solid var(--border-clr)}
 .st-sec h2{font-size:clamp(23px,3.4vw,30px);margin:0 0 20px;word-break:keep-all}
 .st-table{width:100%;border-collapse:collapse;background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;overflow:hidden}
@@ -81,7 +72,7 @@
 .st-cta{text-align:center}
 .st-cta .lead{color:var(--text-muted);margin:0 0 20px}
 .st-links{font-size:15px;margin-top:20px;color:var(--text-muted);line-height:1.9}
-@media (max-width:640px){.st-hero{padding:48px 0 40px}.st-stats{grid-template-columns:1fr}.st-grid{grid-template-columns:1fr}.st-table th{width:38%}}
+@media (max-width:640px){.st-stats-grid{grid-template-columns:repeat(2,1fr)}.st-grid{grid-template-columns:1fr}.st-table th{width:38%}}
 </style>
 </head>
 <body data-exam="re">
@@ -111,16 +102,25 @@
   </div>
 </header>
 <main>
-<section class="st-hero"><div class="wrap">
-  <span class="eyebrow">New Jersey · 판매원 Salesperson</span>
-  <h1>뉴저지 부동산 시험,<br><em>한글 해설로 쉽게 공부하세요</em></h1>
-  <p class="lead">학습과 시험 준비, 문제 풀이를 한글 해설로 쉽게. 뉴저지 주 문제와 전국 공통 문제를 주제별로 풀고, 모의고사로 마무리합니다.</p>
-  <div class="st-actions">
-    <a class="btn btn-primary btn-lg" href="/re/ko/?state=nj&signup=1">30일 무료로 시작</a>
-    <a class="btn btn-ghost btn-lg" href="#sample">예제 문제 보기</a>
+<section class="hero"><div class="wrap hero-wrap">
+  <div class="hero-left">
+    <span class="eyebrow">New Jersey · 판매원 Salesperson</span>
+    <h1 style="margin-top:14px;">뉴저지 부동산 시험,<br><em>한글 해설로 쉽게 공부하세요</em></h1>
+    <p class="lead">학습과 시험 준비, 문제 풀이를 한글 해설로 쉽게. 뉴저지 주 문제와 전국 공통 문제를 주제별로 풀고, 모의고사로 마무리합니다.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="/re/ko/?state=nj&signup=1">30일 무료로 시작</a>
+      <a class="btn btn-accent btn-lg" href="#sample">예제 문제 보기</a>
+    </div>
+    <div class="hero-note">
+      <img class="hero-note-icon" src="/icon-192.png" alt="" width="34" height="34">
+      <span>설치형 웹앱 — 언제 어디서나 학습</span>
+      <a class="hero-note-link" href="/install-guide.html?exam=re">설치 방법 →</a>
+    </div>
   </div>
-  <dl class="st-stats"><div class="st-stat"><dt>뉴저지 주 문제</dt><dd>1,200+</dd></div><div class="st-stat"><dt>전국 공통 문제</dt><dd>4,400+</dd></div><div class="st-stat"><dt>뉴저지 War Room 주제</dt><dd>31개</dd></div></dl>
+  <div class="hero-demo" id="hero-rot"><img class="hero-photo rot-active" src="/re/img/hero-re.jpg?v=efaff17fa3" width="1200" height="800" alt="태블릿을 든 부동산 에이전트가 부부에게 집을 보여 주는 모습" fetchpriority="high"><img class="hero-photo" data-src="/re/img/hero-re-2.webp?v=20261101" width="1200" height="800" alt="매물 앞에 서 있는 부동산 에이전트" loading="lazy"><img class="hero-photo" data-src="/re/img/hero-re-3.webp?v=134ab7aea3" width="1200" height="800" alt="집 현관 앞에서 태블릿을 든 부동산 에이전트" loading="lazy"></div>
 </div></section>
+
+<section class="stats"><div class="wrap stats-grid st-stats-grid"><div><div class="stat-num">1,200+</div><div class="stat-label">뉴저지 주 문제</div></div><div><div class="stat-num">4,400+</div><div class="stat-label">전국 공통 문제</div></div><div><div class="stat-num">31개</div><div class="stat-label">뉴저지 War Room 주제</div></div><div><div class="stat-num">30일</div><div class="stat-label">Quick Study 모드 무료 이용</div></div></div></section>
 
 <section class="st-sec" id="exam"><div class="wrap">
   <h2>뉴저지 부동산 시험 한눈에 보기</h2>
@@ -131,6 +131,11 @@
 <section class="st-sec"><div class="wrap">
   <h2>뉴저지 시험에서 챙길 주제</h2>
   <div class="st-grid"><div class="st-card"><h3>변호사 검토 기간 3영업일</h3><span class="st-term" lang="en">Attorney Review</span><p>계약 서명 뒤 누가, 언제, 어떻게 계약을 끝낼 수 있는지 묻습니다.</p></div><div class="st-card"><h3>다섯 가지 중개 관계와 CIS</h3><span class="st-term" lang="en">Brokerage Relationships</span><p>중개 관계의 종류와 소비자 안내문을 함께 익힙니다.</p></div><div class="st-card"><h3>신탁계좌와 혼합 금지</h3><span class="st-term" lang="en">Trust Account</span><p>고객의 돈을 어떻게 맡고 언제까지 넣어야 하는지 정리합니다.</p></div><div class="st-card"><h3>부동산 보증기금</h3><span class="st-term" lang="en">Guaranty Fund</span><p>면허인의 횡령 피해를 보상받는 절차를 순서대로 봅니다.</p></div><div class="st-card"><h3>차별금지법과 주택</h3><span class="st-term" lang="en">Law Against Discrimination</span><p>주택 거래에서 금지되는 차별 행위를 다룹니다.</p></div><div class="st-card"><h3>부동산 이전 수수료</h3><span class="st-term" lang="en">Realty Transfer Fee</span><p>뉴저지 거래에서 내는 이전 수수료를 다룹니다.</p></div></div>
+</div></section>
+
+<section class="st-sec"><div class="wrap">
+  <h2>PracExam으로 이렇게 공부합니다</h2>
+  <div class="st-grid"><div class="st-card"><h3>주제별 문제와 한글 해설</h3><p>왜 그 답이 정답이고 다른 보기는 왜 아닌지 한글 해설로 이해합니다.</p></div><div class="st-card"><h3>War Room으로 이론 정리</h3><p>막히는 주제는 해설에서 바로 War Room을 열어 규칙과 표, 함정을 확인합니다.</p></div><div class="st-card"><h3>시험 팁으로 핵심 정리</h3><p>문제마다 시험에서 알아볼 포인트를 시험 팁으로 정리합니다.</p></div><div class="st-card"><h3>모의고사로 실전 연습</h3><p>뉴저지 시험 형식의 모의고사로 실전처럼 마무리합니다.</p></div></div>
 </div></section>
 
 <section class="st-sec" id="sample"><div class="wrap">
@@ -163,7 +168,7 @@
   <h2>뉴저지 부동산 시험, 오늘 시작하세요</h2>
   <p class="lead">학습과 시험 준비, 문제 풀이를 한글 해설로 쉽게.</p>
   <a class="btn btn-primary btn-lg" href="/re/ko/?state=nj&signup=1">30일 무료로 시작</a>
-  <p class="st-links"><a href="/re/ko/texas/">텍사스 부동산 시험</a> · <a href="/re/exam-tips/ko/">주별 시험 안내</a></p>
+  <p class="st-links"><a href="/re/ko/texas/">텍사스 부동산 시험</a> · <a href="/re/exam-tips/ko/">주별 시험 안내</a> · <a href="/re/ko/">PracExam 더 알아보기</a></p>
 </div></section>
 </main>
 <footer><div class="wrap footer-inner">
@@ -176,5 +181,14 @@
 <script src="/re-states.js?v=81bc29e462"></script>
 <script src="/site-common.js?v=7218f33678"></script>
 <script>try{PE_RE_STATE.set('nj')}catch(e){}</script>
+<script>
+(function(){
+  var root=document.getElementById('hero-rot'); if(!root) return;
+  var slides=Array.prototype.slice.call(root.querySelectorAll('.hero-photo'));
+  function load(){ slides.forEach(function(img){ if(img.dataset.src) img.src=img.dataset.src; }); }
+  if(document.readyState==='complete') setTimeout(load,300); else window.addEventListener('load',function(){ setTimeout(load,300); });
+  var i=0; setInterval(function(){ slides[i].classList.remove('rot-active'); i=(i+1)%slides.length; slides[i].classList.add('rot-active'); },15000);
+})();
+</script>
 </body>
 </html>
