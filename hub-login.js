@@ -18,8 +18,8 @@
       return { ea: p.ea_enrolled !== false, re: v[1].length > 0, home: p.home_exam || 'ea' };
     });
   }
-  var LBL = { ea: { href: '/app',    ko: '내 EA 연습으로 이동 →',     en: 'Go to my EA practice →' },
-              re: { href: '/re/app', ko: '내 부동산 연습으로 이동 →', en: 'Go to my Real Estate practice →' } };
+  var LBL = { ea: { href: '/app',    ko: '내 EA 학습으로 이동 →',     en: 'Go to my EA practice →' },
+              re: { href: '/re/app', ko: '내 부동산 학습으로 이동 →', en: 'Go to my Real Estate practice →' } };
   function setBtn(a, k){
     var L = LBL[k]; a.href = L.href; a.setAttribute('data-ko', L.ko); a.setAttribute('data-en', L.en);
     a.textContent = (document.documentElement.lang === 'ko') ? L.ko : L.en;
@@ -35,8 +35,8 @@
   var topBtn = null;
   function paintTop(k){
     if (!topBtn) return;
-    topBtn.href = LBL[k].href; topBtn.setAttribute('data-ko', '내 연습'); topBtn.setAttribute('data-en', 'My Practice');
-    topBtn.textContent = (document.documentElement.lang === 'ko') ? '내 연습' : 'My Practice';
+    topBtn.href = LBL[k].href; topBtn.setAttribute('data-ko', '내 학습'); topBtn.setAttribute('data-en', 'My Practice');
+    topBtn.textContent = (document.documentElement.lang === 'ko') ? '내 학습' : 'My Practice';
   }
   function paintResume(bar, x, uid){
     var list = !x ? ['ea', 're'] : [].concat(x.ea ? ['ea'] : [], x.re ? ['re'] : []);

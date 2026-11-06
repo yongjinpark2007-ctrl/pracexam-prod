@@ -80,8 +80,8 @@
       for(var i = 0; i < links.length; i++){
         var a = links[i], h = a.getAttribute('href');
         if(h !== '/app' && h !== '/app.html' && h !== '/re/app') continue;
-        if(a.querySelector('.ko')) a.innerHTML = bi({ ko:'내 연습', en:'My Practice' });   // both languages, the toggle switches them
-        else a.textContent = (document.documentElement.lang === 'ko') ? '내 연습' : 'My Practice';   // tips pages: one language per URL
+        if(a.querySelector('.ko')) a.innerHTML = bi({ ko:'내 학습', en:'My Practice' });   // both languages, the toggle switches them
+        else a.textContent = (document.documentElement.lang === 'ko') ? '내 학습' : 'My Practice';   // tips pages: one language per URL
       }
     }catch(e){}
   }
