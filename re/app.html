@@ -794,6 +794,8 @@ html, body {
 /* 문제·보기·해설 복사 방지 (관리자 제외 — 관리자면 loadFromCloud 에서 px-nocopy 를 뗀다) */
 html.px-nocopy .question-card,html.px-nocopy .explanation-card,html.px-nocopy #q-pills,html.px-nocopy .mk-qcard{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.px-nocopy .explanation-card input,html.px-nocopy .explanation-card textarea{-webkit-user-select:text;user-select:text;}
+/* 인쇄 방지 (관리자 제외) — 인쇄 미리보기·PDF 저장에 본문이 안 나온다 (2026-11-05) */
+@media print{html.px-nocopy body{display:none!important;}html.px-nocopy::before{content:'Printing is not available.';display:block;padding:40px;font:16px sans-serif;}}
 .q-copy-btn:hover{background:rgba(16,48,76,.08);border-color:rgba(16,48,76,.3);color:var(--teal);}
 .q-copy-btn.copied{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2);color:#4ade80;}
 
@@ -5201,6 +5203,23 @@ document.addEventListener('keydown',function(e){
   if(k==='a') e.preventDefault();
   pxLogCopyAttempt('key_'+k);
 },true);
+// War Room 복사 시도 기록 + 인쇄 방지 (2026-11-05). 선택이 막혀 있으면 copy 이벤트가 본문에 안 오므로 키로 잡는다.
+function _pxWrActive(){ var s=document.getElementById('screen-warroom'); return !!(s&&s.classList.contains('active')); }
+function _pxWrQid(){ return (typeof WR!=='undefined'&&WR.cur)?('WR:'+WR.cur):'WR'; }
+document.addEventListener('keydown',function(e){
+  if(!document.documentElement.classList.contains('px-nocopy')) return;
+  if(!(e.ctrlKey||e.metaKey)) return;
+  var k=(e.key||'').toLowerCase();
+  if(k==='p'){ e.preventDefault(); if(_pxWrActive()) pxLogCopyAttempt('wr_print',_pxWrQid()); else pxLogCopyAttempt('print'); return; }
+  if((k==='c'||k==='x'||k==='a')&&_pxWrActive()){
+    var t=e.target; if(t&&t.closest&&t.closest('input,textarea,[contenteditable="true"]')) return;
+    pxLogCopyAttempt('wr_key_'+k,_pxWrQid());
+  }
+},true);
+window.addEventListener('beforeprint',function(){
+  if(!document.documentElement.classList.contains('px-nocopy')) return;
+  if(_pxWrActive()) pxLogCopyAttempt('wr_print',_pxWrQid()); else pxLogCopyAttempt('print');
+});
 (function(){
   var down=null;
   document.addEventListener('mousedown',function(e){
@@ -5215,11 +5234,11 @@ document.addEventListener('keydown',function(e){
 })();
 // 복사 시도 기록: 문항·종류별로 세션당 1번만 서버에 보낸다. RPC 가 아직 없어도 조용히 넘어간다.
 var _PX_COPY_LOGGED = {};
-function pxLogCopyAttempt(kind){
+function pxLogCopyAttempt(kind,qidOverride){
   try{
     if(!SB_USER || SB_USER.id === ADMIN_UID) return;
     var b = document.getElementById('q-id-badge');
-    var qid = (b && b.textContent ? b.textContent.replace('#','').trim() : '');
+    var qid = qidOverride || (b && b.textContent ? b.textContent.replace('#','').trim() : '');
     var key = kind + '|' + qid;
     if(_PX_COPY_LOGGED[key]) return;
     _PX_COPY_LOGGED[key] = true;
@@ -11388,7 +11407,9 @@ function _wrBuildShell(rows, preferCode){
     +'<button id="wr-next" onclick="wrNav(1)">'+(_wrLang()==='en'?'Next':'다음')+'<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div></main></div>';
   var guard=document.getElementById('wr-content');
   if(S.isAdminUser){ guard.classList.add('wr-admin-unlocked'); }
-  else { ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();}); }); }
+  else { ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();pxLogCopyAttempt('wr_'+ev,_pxWrQid());}); });
+    var _wd=null; guard.addEventListener('mousedown',function(e){ _wd=(e.button===0)?{x:e.clientX,y:e.clientY}:null; });
+    guard.addEventListener('mousemove',function(e){ if(!_wd||e.buttons!==1) return; if(Math.abs(e.clientX-_wd.x)+Math.abs(e.clientY-_wd.y)>24){ _wd=null; pxLogCopyAttempt('wr_drag_select',_pxWrQid()); } }); }
   _wrSetPart(WR.curPart, preferCode);
 }
 function _wrRenderDomains(p){
