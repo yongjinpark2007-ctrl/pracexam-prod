@@ -66,5 +66,29 @@
       renderSwitch(sw[i], cur);
     }
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  // Header «Log In» for a visitor already signed in on this browser (boss 2026-11-06): customers leave the app for
+  // Exam Tips or Study Tips, then had to press Log In to get back. On every landing, tips, video and quiz page it
+  // becomes «My Practice» and opens the app last used (px_last_app, set by the apps), otherwise this page's own app.
+  // The hub is not touched here: its button is href="#login" and hub-login.js paints it.
+  function paintPractice(){
+    try{
+      var raw = localStorage.getItem('sb-ufrhvodruulpgnmudzwh-auth-token');
+      var sess = raw && JSON.parse(raw);
+      if(!sess || !(sess.access_token || sess.refresh_token)) return;
+      var uid = sess.user && sess.user.id;
+      var v = (localStorage.getItem('px_last_app') || '').split('|');
+      var app = '';
+      for(var k = 0; k < EXAMS.length; k++){ if(uid && v[1] === uid && v[0] === EXAMS[k].id) app = EXAMS[k].app; }
+      var links = document.querySelectorAll('.nav-actions a.btn-ghost');
+      for(var i = 0; i < links.length; i++){
+        var a = links[i], h = a.getAttribute('href');
+        if(h !== '/app' && h !== '/app.html' && h !== '/re/app') continue;
+        if(app) a.setAttribute('href', app);
+        if(a.querySelector('.ko')) a.innerHTML = bi({ ko:'내 연습', en:'My Practice' });   // both languages, the toggle switches them
+        else a.textContent = (document.documentElement.lang === 'ko') ? '내 연습' : 'My Practice';   // tips pages: one language per URL
+      }
+    }catch(e){}
+  }
+  function start(){ init(); paintPractice(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
