@@ -11770,13 +11770,19 @@ var _WR_RELW=null, _WR_RELDF=null;
 // 「교육 플랜」·「유산설계」·「은퇴플랜 분배」·「적격플랜 대출」을 전부 끌어왔다. 무관함).
 // plan·plans 는 원래 가중치 1(약함)이지만 topic 에 걸리면 그 약한 값으로도 헛짚으므로 함께 뺀다.
 var WR_REL_STOP=['plan','plans','planning','플랜'];
+// 🔴 2026-11-07 — the WR_RELW1/2/3 lists above are EA tax words copied from the EA app. Real estate
+// words (title, cloud, mortgage, easement…) got weight 0, so the fallback chips were picked by chance
+// (boss report on RE-N-3871). RE now weighs every word of the RE sheet titles themselves; _wrRelDF
+// already divides by how many titles share a word. The fallback runs only when questions.related_topics is empty.
+var WR_RE_STOP=['and','the','for','with','from','vs','of','or','in','on','to','a','an','its','plan','plans','planning','플랜'];
 function _wrRelW(){
   if(_WR_RELW) return _WR_RELW;
+  if(!WR.rows || !WR.rows.length) return {};      // rows not loaded yet: do not cache an empty table
   _WR_RELW={};
-  [[3,WR_RELW3],[2,WR_RELW2],[1,WR_RELW1]].forEach(function(p){
-    p[1].split(' ').forEach(function(w){ if(w) _WR_RELW[w]=p[0]; });
+  WR.rows.forEach(function(r){
+    _wrRelToks((r.title_en||'')+' '+(r.title_ko||'')).forEach(function(t){ _WR_RELW[t]=1; });
   });
-  WR_REL_STOP.forEach(function(w){ delete _WR_RELW[w]; });
+  WR_RE_STOP.forEach(function(w){ delete _WR_RELW[w]; });
   return _WR_RELW;
 }
 function _wrRelToks(s){
