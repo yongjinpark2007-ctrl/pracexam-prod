@@ -61,7 +61,7 @@
         ' · <b>' + mL('남은', 'left') + ' ' + mockFmt(rem) + '</b> · ' + mL('만료 시 자동 제출', 'auto-submits at expiry') + '</div>';
     } else if(!paid){
       html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">' +
-        '🔒 ' + mL('모의고사는 Pro 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.', 'Mock exams are for Pro Members. You can preview the setup below.') + '</div>';
+        '🔒 ' + mL('모의고사는 Pro 회원 전용입니다.', 'Mock exams are for Pro Members.') + '</div>';
     }
     var sets = '';
     [1, 2].forEach(function(p){
