@@ -1826,11 +1826,11 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
       <button class="nav-btn" onclick="openStudy()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="nav_study">Study</span></button>
       <button class="nav-btn" id="nav-mock" onclick="showScreen('mock');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="nav_mock">Mock Exam</span></button>
       <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
+        <button class="nav-btn" id="nav-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Weak Areas</span></button>
       <div class="nav-more-wrap" id="nav-more-wrap">
         <button class="nav-btn" id="nav-more" type="button" aria-haspopup="true" aria-expanded="false" onclick="toggleNavMore(event)"><span data-i18n="nav_more">더보기</span>&nbsp;▾</button>
         <div class="nav-more-menu" id="nav-more-menu">
         <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
-        <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
         <button class="nav-btn" id="nav-videos" onclick="showScreen('videos');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="nav_videos">동영상</span></button>
         <button class="nav-btn" id="nav-exam-tips" type="button" onclick="openTipsPage('exam')"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg><span>Exam Tips</span></button>
         <button class="nav-btn" id="nav-upgrade-item" type="button" style="display:none;" onclick="showPricingModal()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg><span data-i18n="nav_upgrade">업그레이드</span></button>
@@ -1855,8 +1855,8 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   <button class="mobile-nav-item" id="mob-study" onclick="openStudy()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="mob_study">Study</span></button>
   <button class="mobile-nav-item" id="mob-mock" onclick="showScreen('mock');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="mob_mock">Mock Exam</span></button>
   <button class="mobile-nav-item" id="mob-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
+  <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Weak Areas</span></button>
   <button class="mobile-nav-item" id="mob-review" onclick="showScreen('bookmarks');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="mob_review">Review</span></button>
-  <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
   <button class="mobile-nav-item" id="mob-videos" onclick="showScreen('videos');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="mob_videos">동영상</span></button>
   <button class="mobile-nav-item" id="mob-exam-tips" type="button" onclick="openTipsPage('exam')"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg><span>Exam Tips</span></button>
   <button class="mobile-nav-item" id="mob-settings" onclick="showScreen('settings');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
@@ -2242,7 +2242,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 <!-- ═══ STATISTICS (Phase 4 완료 — 2026-06-13) ═══ -->
 <div id="screen-statistics" class="screen">
   <div style="margin-bottom:1.25rem;">
-    <div class="section-title" data-i18n="sts_title">Statistics</div>
+    <div class="section-title" data-i18n="sts_title">Weak Areas</div>
     <div style="font-size:13px;color:var(--text-muted);" data-i18n="sts_subtitle">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
   </div>
 
@@ -5565,7 +5565,7 @@ var UI_TEXT = {
   mock_submit_grade: {ko:'제출하고 채점', en:'Submit & grade'},
   mock_banner_resume:{ko:'이어하기', en:'Resume'},
   nav_review:    {ko:'복습',     en:'Review'},
-  nav_statistics:{ko:'통계',     en:'Statistics'},
+  nav_statistics:{ko:'약점분석', en:'Weak Areas'},
   mob_dashboard: {ko:'대시보드', en:'Dashboard'},
   // 앱 푸터 (2026-08-18) — 로그인 «후» 화면에는 푸터가 아예 없다는 지적을 받아 추가했다.
   //   (.app-footer CSS 는 예전부터 있었는데 정작 <footer> 요소가 빠져 있었다)
@@ -5576,7 +5576,7 @@ var UI_TEXT = {
   ft_contact: {ko:'문의',            en:'Contact'},
   mob_study:     {ko:'학습',     en:'Study'},
   mob_review:    {ko:'복습',     en:'Review'},
-  mob_statistics:{ko:'통계',     en:'Statistics'},
+  mob_statistics:{ko:'약점분석', en:'Weak Areas'},
   mob_settings:  {ko:'설정',     en:'Settings'},
   nav_videos:    {ko:'동영상',   en:'Videos'},
   nav_more:      {ko:'더보기',   en:'More'},
@@ -5765,7 +5765,7 @@ var UI_TEXT = {
   rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   // ── Statistics ──
-  sts_title:      {ko:'통계',    en:'Statistics'},
+  sts_title:      {ko:'약점분석', en:'Weak Areas'},
   sts_subtitle:   {ko:'학습 추세 · National·주별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy for National and state · topic analysis'},
   sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
   sts_trend_n:    {ko:'점수 추세 (최근 {n}세션)', en:'Score Trend (last {n} sessions)'},
@@ -6253,7 +6253,8 @@ function showScreen(name){
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   // «More» menu (2026-10-31): Videos and My Account sit inside it, so highlight the «More» button for them
-  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:4,videos:4,settings:4};   // 4 = «More» (2026-10-31: Review and Statistics moved in too)
+  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,statistics:4,bookmarks:5,videos:5,settings:5};   // boss 2026-11-07: 약점분석 next to War Room, 5 = «More»
+  //   // 4 = «More» (2026-10-31: Review and Statistics moved in too)
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
   if(name==='anomaly'){ var _na=document.getElementById('nav-anomaly'); if(_na) _na.classList.add('active'); }   // by id: buttons inside «More» shift the numbers
   const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',videos:'mob-videos',settings:'mob-settings',anomaly:'mob-anomaly'};
