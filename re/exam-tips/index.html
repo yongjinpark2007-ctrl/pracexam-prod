@@ -401,6 +401,18 @@ html{scrollbar-gutter:stable;}
     .et-main .et-band .sec-head p{margin:0;font-size:16px;line-height:1.7;color:var(--text-mid);}
     .et-band .et-acc:first-of-type{border-top:1px solid var(--border-clr);}
     .et-band .et-top{margin-top:0;}
+    .et-band.et-end{background:var(--navy);padding:52px 0;text-align:center;margin-bottom:0;}
+    .et-end-in{max-width:920px;margin:0 auto;padding:0 24px;}
+    .et-main .et-end h2{font-family:var(--font-serif);font-size:clamp(23px,3.4vw,30px);line-height:1.3;color:#fff;margin:0 0 12px;font-weight:700;}
+    .et-main .et-end p.et-end-lead{color:#fff;font-size:16px;margin:0 0 20px;}
+    .et-end-others{margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.18);}
+    .et-main .et-end p.et-end-t{margin:0 0 12px;font-size:14px;font-weight:600;color:rgba(255,255,255,.8);}
+    .et-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+    .et-pills a{white-space:nowrap;padding:7px 15px;border:1px solid rgba(255,255,255,.38);border-radius:999px;font-size:14px;font-weight:600;line-height:1.3;color:#fff;text-decoration:none;transition:background .15s;}
+    .et-pills a:hover{background:rgba(255,255,255,.14);}
+    .et-end-links{margin-top:18px;}
+    .et-end-links a{white-space:nowrap;font-size:14px;font-weight:600;color:rgba(255,255,255,.88);text-decoration:none;}
+    .et-end-links a:hover{color:#fff;}
     @media (max-width:640px){ .et-band{padding:44px 0;} .et-inner{padding:0 18px;} }
   </style>
 
@@ -679,7 +691,19 @@ html{scrollbar-gutter:stable;}
     </div>
   </section>
   <div class="na-cta"><div><h3><span class="ko">배운 내용을 문제로 연습해 보세요</span><span class="en">Put this into practice</span></h3><p><span class="ko">실제 시험과 같은 형식의 문제로 매일 연습하세요. 30일 동안 매일 무료 문제 5개를 풀 수 있고, 카드 등록은 필요 없습니다.</span><span class="en">Practice every day with questions in the real exam format. Five free questions a day for 30 days — no card needed.</span></p></div><a class="btn btn-lg" href="/re/?signup=1"><span class="ko">무료 문제 풀어 보기</span><span class="en">Try free questions</span></a></div>
-  <p class="et-back"><a href="/re/"><span class="ko">← PracExam 부동산 홈으로</span><span class="en">← Back to PracExam Real Estate</span></a></p>
+  <section class="et-band et-end">
+    <div class="et-end-in">
+      <h2><span class="ko">미국 부동산 시험, 오늘 시작하세요</span><span class="en">Start Preparing for Your State Exam Today</span></h2>
+      <p class="et-end-lead"><span class="ko">학습과 시험 준비, 문제 풀이를 한글 해설로 쉽게.</span><span class="en">Practice questions, detailed explanations and mock exams for your state.</span></p>
+      <a class="btn btn-accent btn-lg ko" href="/re/ko/?signup=1">30일 무료로 시작</a><a class="btn btn-accent btn-lg en" href="/re/?signup=1">Start Free for 30 Days</a>
+      <div class="et-end-others">
+        <p class="et-end-t"><span class="ko">주별 시험 보기</span><span class="en">State Exams</span></p>
+        <nav class="et-pills ko" aria-label="주별 시험"><a href="/re/ko/california/">캘리포니아</a><a href="/re/ko/washington/">워싱턴주</a><a href="/re/ko/texas/">텍사스</a><a href="/re/ko/illinois/">일리노이</a><a href="/re/ko/florida/">플로리다</a><a href="/re/ko/new-jersey/">뉴저지</a><a href="/re/ko/new-york/">뉴욕</a></nav>
+        <nav class="et-pills en" aria-label="State exams"><a href="/re/california/">California</a><a href="/re/washington/">Washington</a><a href="/re/texas/">Texas</a><a href="/re/illinois/">Illinois</a><a href="/re/florida/">Florida</a><a href="/re/new-jersey/">New Jersey</a><a href="/re/new-york/">New York</a></nav>
+        <nav class="et-end-links"><a class="ko" href="/re/ko/">PracExam 더 알아보기</a><a class="en" href="/re/">Learn More About PracExam</a></nav>
+      </div>
+    </div>
+  </section>
   <script>
   (function(){
     function openHash(){ var id=(location.hash||'').slice(1); if(!id) return; var el=document.getElementById(id);
