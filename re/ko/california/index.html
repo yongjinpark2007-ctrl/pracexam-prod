@@ -49,8 +49,14 @@
 .st-navy{background:var(--navy);border-top:0}
 .st-navy h2{color:#fff}
 .st-cta.st-navy .lead{color:#fff}
-.st-cta.st-navy .st-links{color:rgba(255,255,255,.85)}
-.st-cta.st-navy .st-links a{color:#fff}
+.st-others{margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.18)}
+.st-cta.st-navy .st-others-t{margin:0 0 12px;font-size:14px;font-weight:600;color:rgba(255,255,255,.8)}
+.st-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.st-pills a{white-space:nowrap;padding:7px 15px;border:1px solid rgba(255,255,255,.38);border-radius:999px;font-size:14px;font-weight:600;line-height:1.3;color:#fff;text-decoration:none;transition:background .15s}
+.st-pills a:hover{background:rgba(255,255,255,.14)}
+.st-more-links{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 26px;margin-top:18px}
+.st-more-links a{white-space:nowrap;font-size:14px;font-weight:600;color:rgba(255,255,255,.88);text-decoration:none}
+.st-more-links a:hover{color:#fff}
 .st-sec{padding:52px 0;border-top:1px solid var(--border-clr)}
 .st-sec h2{font-size:clamp(23px,3.4vw,30px);margin:0 0 20px;word-break:keep-all}
 .st-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
@@ -64,7 +70,7 @@
 .st-row dt{flex:0 0 96px;font-size:14px;font-weight:700;color:var(--text-muted)}
 .st-row dd{margin:0;font-size:15px;line-height:1.5;word-break:keep-all}
 .st-src{font-size:11px;line-height:1.5;color:var(--text-muted);opacity:.85;margin:8px 0 0}
-.st-src a,.st-links a{color:var(--navy);text-decoration:underline;text-underline-offset:3px}
+.st-src a{color:var(--navy);text-decoration:underline;text-underline-offset:3px}
 .st-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .st-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:12px;padding:18px}
 .st-card h3{font-size:17px;margin:0 0 2px;word-break:keep-all}
@@ -92,7 +98,6 @@
 .st-faq p{margin:8px 0 0;line-height:1.7;color:var(--text-muted);word-break:keep-all}
 .st-cta{text-align:center}
 .st-cta .lead{color:var(--text-muted);margin:0 0 20px}
-.st-links{font-size:15px;margin-top:20px;color:var(--text-muted);line-height:1.9}
 @media (max-width:640px){.st-flow{grid-template-columns:1fr}.st-flow li,.st-flow li:nth-child(4){grid-column:auto}.st-flow li+li::before,.st-flow li:nth-child(4)::before{content:'↓';left:50%;top:-25px;transform:translateX(-50%)}}
 @media (max-width:640px){.st-grid{grid-template-columns:1fr}.st-facts{grid-template-columns:repeat(2,1fr)}.st-rows{grid-template-columns:1fr}.st-rows .st-row:nth-last-child(2){border-bottom:1px solid var(--border-clr)}}
 </style>
@@ -195,7 +200,11 @@ D: 회복계정은 면허인의 방어 비용을 내주지 않습니다. 판결 
   <h2>캘리포니아 부동산 시험, 오늘 시작하세요</h2>
   <p class="lead">학습과 시험 준비, 문제 풀이를 한글 해설로 쉽게.</p>
   <a class="btn btn-accent btn-lg" href="/re/ko/?state=ca&signup=1">30일 무료로 시작</a>
-  <p class="st-links"><a href="/re/ko/washington/">워싱턴주 부동산 시험</a> · <a href="/re/ko/texas/">텍사스 부동산 시험</a> · <a href="/re/ko/illinois/">일리노이 부동산 시험</a> · <a href="/re/ko/florida/">플로리다 부동산 시험</a> · <a href="/re/ko/new-jersey/">뉴저지 부동산 시험</a> · <a href="/re/ko/new-york/">뉴욕 부동산 시험</a> · <a href="/re/exam-tips/ko/">주별 시험 안내</a> · <a href="/re/ko/">PracExam 더 알아보기</a></p>
+  <div class="st-others">
+    <p class="st-others-t">다른 주 시험 보기</p>
+    <nav class="st-pills" aria-label="다른 주 시험"><a href="/re/ko/washington/">워싱턴주</a><a href="/re/ko/texas/">텍사스</a><a href="/re/ko/illinois/">일리노이</a><a href="/re/ko/florida/">플로리다</a><a href="/re/ko/new-jersey/">뉴저지</a><a href="/re/ko/new-york/">뉴욕</a></nav>
+    <nav class="st-more-links" aria-label="더 보기"><a href="/re/exam-tips/ko/">주별 시험 안내</a><a href="/re/ko/">PracExam 더 알아보기</a></nav>
+  </div>
 </div></section>
 </main>
 <footer><div class="wrap footer-inner">
