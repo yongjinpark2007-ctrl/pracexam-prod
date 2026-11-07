@@ -20,7 +20,7 @@ const KO_DESC  = "차세대 시험 준비 플랫폼. 미국 세무사, Enrolled 
 const KO_HUB_TITLE = "PracExam | 미국 세무사 · EA, 부동산 시험 준비의 새로운 기준";
 const KO_HUB_DESC  = "차세대 시험 준비 플랫폼. 미국 세무사, Enrolled Agent · EA 시험과 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 실전 문제은행. 시험을 고르고 바로 연습하세요.";
 const KO_RE_TITLE  = "미국 부동산 중개인, 라이센스, 에이전트 시험 준비의 새로운 기준 | PracExam";
-const KO_RE_DESC   = "차세대 시험 준비 플랫폼. 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License, Broker 시험 실전 문제. National과 주별 문제, 캘리포니아·워싱턴·텍사스·일리노이·플로리다·뉴저지·뉴욕. California, Washington, Texas, Illinois, Florida, New Jersey, New York. 문항별 해설과 시험 팁.";
+const KO_RE_DESC   = "차세대 시험 준비 플랫폼. 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License, Broker 시험 실전 문제. National과 주별 문제, 캘리포니아·워싱턴주·텍사스·일리노이·플로리다·뉴저지·뉴욕. California, Washington, Texas, Illinois, Florida, New Jersey, New York. 문항별 해설과 시험 팁.";
 
 // 경로 → 한글 제목·설명
 function koCopy(url) {
@@ -197,7 +197,7 @@ async function handle(context) {
 // the English URL, already switched to Korean (html lang, title, description, canonical). Nothing about the page itself changes:
 // the KO/EN toggle still works in place. Both URLs carry hreflang pairs (static <link rel="alternate"> in each page).
 const KO_TIPS_RE_TITLE = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 안내 · 주별 응시 요건 | PracExam";
-const KO_TIPS_RE_DESC  = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 주별 안내. 캘리포니아·워싱턴·텍사스·일리노이·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
+const KO_TIPS_RE_DESC  = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 주별 안내. 캘리포니아·워싱턴주·텍사스·일리노이·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
 const KO_TIPS_EA_TITLE = "미국 세무사, Enrolled Agent · EA 시험 안내 · 응시 자격·형식 | PracExam";
 const KO_TIPS_EA_DESC  = "미국 세무사, Enrolled Agent · EA 시험 안내. 응시 자격, 시험 형식과 비용, 시험 당일 준비, 합격 후 등록 절차까지 한눈에 정리했습니다.";
 // 2026-11-05 (boss): SEO and AEO both use 라이센스. On the Korean URLs the structured data is Korean too.
