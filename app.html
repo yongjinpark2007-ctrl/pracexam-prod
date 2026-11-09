@@ -8211,9 +8211,39 @@ function getPool(){
 function _chunk(arr, n){ var out=[]; for(var i=0;i<arr.length;i+=n){ out.push(arr.slice(i,i+n)); } return out; }
 function _findQ(id){ return S.questions.find(function(x){ return x.id === id; }); }
 
+// Admin (2026-11-08, boss «로딩이 오래 걸린다»): fetch only the rows this quiz needs instead of waiting for the
+// whole-bank backfill (RE CA admin waited for about 22 MB / 6,000 rows before the first question).
+// The backfill still runs in the background for admin tools (QC by id etc.).
+function _adminFill(q, r){
+  q.text = r.text; q.options = r.options; q.correct = r.correct;
+  q.explanation = r.explanation || ''; q.explanationEn = r.explanation_en || '';
+  q.wrongReasons = r.wrongreasons || ''; q.taxUpdate2025 = r.taxupdate2025 || '';
+  q.examTip = r.examtip || ''; q.examTipEn = r.examtip_en || r.exam_tip_en || '';
+}
+async function _adminFetchRows(ids){
+  var byId = {};
+  S.questions.forEach(function(x){ byId[x.id] = x; });
+  var need = (ids || []).filter(function(id){ var q = byId[id]; return q && (!q.text || q.correct == null); });
+  if(!need.length) return true;
+  try{
+    var results = await Promise.all(_chunk(need, 100).map(function(g){
+      return sb.from('questions').select('*').in('question_id', g);
+    }));
+    results.forEach(function(res){
+      if(res.error) throw res.error;
+      (res.data || []).forEach(function(r){ var q = byId[r.question_id]; if(q) _adminFill(q, r); });
+    });
+    return true;
+  }catch(e){
+    console.warn('[Admin] direct fetch failed, waiting for backfill:', e && e.message);
+    try{ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; }catch(_e){}
+    return true;
+  }
+}
+
 // 본문(text, options)만 — 미제출 문제용. RPC: get_question_payload (최대 100/콜)
 async function prefetchPayloads(ids){
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows(ids); }
   if(reviewLocked()){ showReviewLockedModal(); return false; }   // 만료 고객: 문제 본문 로드 금지
   var need = (ids||[]).filter(function(id){ var q=_findQ(id); return q && !q.text; });
   if(!need.length) return true;
@@ -8234,7 +8264,7 @@ async function prefetchPayloads(ids){
 // 본문+정답+해설 — 이미 푼 문제(복습/북마크/잠금)용. RPC: get_review_payload (최대 200/콜)
 var LAST_REVIEW_ERR = '';
 async function prefetchReview(ids){
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows(ids); }
   if(reviewLocked()){ showReviewLockedModal(); return false; }   // 만료 고객: 정답·해설 로드 금지
   LAST_REVIEW_ERR = '';
   try{
@@ -8262,12 +8292,12 @@ async function prefetchReview(ids){
 // 단건 보장: 미제출 → payload / 제출·복습 → review
 async function ensurePayload(q){
   if(q && q.text) return true;
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows([q.id]); }
   return await prefetchPayloads([q.id]);
 }
 async function ensureAnswerData(q){
   if(q && q.correct != null && q.text) return true;
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows([q.id]); }
   return await prefetchReview([q.id]);
 }
 
