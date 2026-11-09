@@ -824,8 +824,7 @@ html{scrollbar-gutter:stable;}
 }
 
 /* Free terms under the hero buttons + sign-up box after the samples (boss 2026-11-08) */
-.hero-free{margin:-8px 0 18px;font-size:14px;font-weight:700;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.hero-free .ck{color:#16a34a;font-weight:800;}
+.hero-free{margin:-8px 0 12px;font-size:15px;font-weight:600;color:var(--text-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .sample-cta{max-width:640px;margin:28px auto 0;text-align:center;padding:22px 20px;border:1px solid rgba(0,0,0,.08);border-radius:14px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04);}
 .sample-cta h3{margin:0 0 6px;font-size:19px;}
 .sample-cta p{margin:0 0 14px;color:var(--text-muted);font-size:15px;line-height:1.6;}
