@@ -11042,6 +11042,18 @@ if ('serviceWorker' in navigator) {
 .wr-parts{display:flex;gap:6px;margin-bottom:8px;}
 .wr-ptab{flex:1;text-align:center;font:inherit;font-size:12px;font-weight:700;padding:7px 4px;border:1px solid rgba(53,70,73,.12);border-radius:8px;background:#fff;color:#4E5C66;cursor:pointer;}
 .wr-ptab.active{background:#354649;color:#fff;border-color:#354649;}
+/* War Room sheet flags (2026-11-08) */
+.wr-ftab{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;font:inherit;font-size:12px;font-weight:700;padding:7px 10px;margin:0 0 8px;border:1px solid rgba(245,158,11,.35);border-radius:8px;background:rgba(245,158,11,.06);color:var(--flag-color,#d97706);cursor:pointer;}
+.wr-ftab .lb{display:inline-flex;align-items:center;gap:6px;}
+.wr-ftab svg{width:12px;height:12px;}
+.wr-ftab .c{font-size:10px;font-weight:700;border-radius:20px;padding:1px 8px;background:rgba(245,158,11,.14);color:inherit;}
+.wr-ftab.active{background:var(--flag-color,#d97706);border-color:var(--flag-color,#d97706);color:#fff;}
+.wr-ftab.active .c{background:rgba(255,255,255,.25);}
+.wr-title.wr-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.wr-title-row .wr-flag-btn{flex:0 0 auto;margin-top:4px;letter-spacing:0;}
+.wr-fl{display:inline-flex;vertical-align:-1px;margin-right:5px;color:var(--flag-color,#d97706);}
+.wr-fl svg{width:11px;height:11px;}
+.wr-flag-hint{font-size:12px;color:#4E5C66;padding:10px 6px;line-height:1.6;}
 .wr-dom-empty{font-size:12px;color:#4E5C66;padding:4px 10px 12px;line-height:1.5;}
 .wr-dom-list{display:none;padding-bottom:4px;}
 .wr-dom.open .wr-dom-list{display:block;}
@@ -11156,6 +11168,7 @@ async function renderWarRoom(preferCode){
     if(!rows.length){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room content is coming soon.':'War Room 콘텐츠가 곧 제공됩니다.')+'</div>'; return; }
     WR.rows=rows;
     _wrBuildShell(rows, preferCode||undefined);
+    _wrLoadFlags().then(_wrFlagsRepaint);
     // 🔴 2026-09-14 — 언어 토글 시 재렌더하던 «클릭 전용» 훅을 지웠다. 헤더 버튼을 «클릭」할
     // 때만 걸려서, L 단축키처럼 setLang() 을 직접 부르는 경로는 못 봤다(사용자 실측 — War Room
     // 본문이 안 바뀜). 이제 applyLang() 안에서 «언어가 바뀌는 모든 경로»를 한 곳에서 잡는다.
@@ -11181,7 +11194,7 @@ function _wrBuildShell(rows, preferCode){
     +'<div class="wr-search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>'
     +'<input id="wr-search" type="text" autocomplete="off" placeholder="'+(_wrLang()==='en'?'Search all parts and text…':'전체 파트·본문 검색…')+'" oninput="_wrSearchInput()" onkeydown="_wrSearchKey(event)">'
     +'<button class="clr" id="wr-search-clear" onclick="_wrSearchClear()" aria-label="clear">✕</button></div>'
-    +'<div class="wr-parts">'+tabs+'</div><div id="wr-doms"></div></aside>'
+    +'<div class="wr-parts">'+tabs+'</div><button class="wr-ftab" id="wr-ftab" onclick="_wrShowFlagged()"></button><div id="wr-doms"></div></aside>'
     +'<main class="wr-sheet"><div class="wr-protected" id="wr-content"></div>'
     +'<div class="wr-nav"><button id="wr-prev" onclick="wrNav(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>'+(_wrLang()==='en'?'Prev':'이전')+'</button>'
     +'<span class="pos" id="wr-pos"></span>'
@@ -11203,7 +11216,7 @@ function _wrRenderDomains(p){
     if(pop){
       list.forEach(function(r){
         var lk=r.locked?'<span class="lk">🔒 </span>':'';
-        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span></div>';
+        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrFlMark(r.outline_code)+_wrEsc(_wrT(r))+'</span></div>';
       });
     } else { inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>'; }
     html+='<div class="wr-dom'+opened+'"><div class="wr-dom-head" onclick="_wrToggleDom(this.parentNode)"><span>'+_wrEsc(label)+'</span><span class="rt"><span class="c">'+(pop?list.length:cnt)+'</span>'+chev+'</span></div><div class="wr-dom-list">'+inner+'</div></div>';
@@ -11265,6 +11278,7 @@ function _wrFetchBody(nq){
   }catch(e){ return Promise.resolve(null); }
 }
 function _wrPaintSearch(nq){
+  if(WR.flagView){ WR.flagView=false; _wrPaintFtab(); document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===WR.curPart); }); }
   var lang=_wrLang(), body=_WR_BODY[nq]||null, html='', total=0, codes=[];
   [1,2,3].forEach(function(p){
     var buck=(WR.byPart&&WR.byPart[p])||{};
@@ -11305,10 +11319,13 @@ function _wrSearchClear(){
 }
 // 검색을 접고 목차로 돌아간다 — 지금 보던 토픽 표시와 이전/다음 차례를 되돌린다
 function _wrExitSearch(){
+  WR.flagView=false;
+  document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===WR.curPart); });
   WR.searchOrder=null;
   WR.searchTerm=null;
   _wrUnhighlight(document.getElementById('wr-content'));
   _wrRenderDomains(WR.curPart);
+  _wrPaintFtab();
   WR.order=_wrPartOrder(WR.curPart);
   if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
   _wrUpdateNav();
@@ -11339,13 +11356,14 @@ function _wrSearchKey(e){
 function _wrGo(p, code){
   if(p!==WR.curPart){
     WR.curPart=p;   // 파트 표는 바꾸되 목차를 다시 그리지 않는다 (그리면 결과가 지워진다)
-    document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
+    if(!WR.flagView) document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
   }
   WR.order=(WR.searchOrder&&WR.searchOrder.length)?WR.searchOrder.slice():_wrPartOrder(p);
   wrShow(code);
 }
 function _wrSetPart(p, preferCode){
   WR.curPart=p;
+  WR.flagView=false; _wrPaintFtab();
   var _si=document.getElementById('wr-search');
   if(_si&&_si.value){ _si.value=''; var _sc=document.getElementById('wr-search-clear'); if(_sc)_sc.style.display='none'; }
   document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
@@ -11401,7 +11419,7 @@ async function wrShow(code){
     // 무료 회원: 예전에는 잠금 카드만 떠서 본문이 한 글자도 안 보였다(사용자 지적 2026-08-08).
     // 서버가 본문을 통째로 안 주므로 앞부분만 잘라 주는 RPC 를 따로 부른다.
     // 그 RPC 가 아직 없어도 옛 화면이 그대로 뜨도록 실패를 삼킨다 — 배포 순서에 매이지 않게.
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+    content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
     var peek='';
     try{
       var pres=await sb.rpc('get_war_room_preview',{p_code:code});
@@ -11416,7 +11434,7 @@ async function wrShow(code){
     var _n=(WR.rows||[]).length;
     var _desc=_n?(en?('Read all '+_n+' topics in full.'):('주제 '+_n+'개를 모두 볼 수 있습니다.'))
                 :(en?'Read every topic in full.':'주제 전체를 볼 수 있습니다.');
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div>'+peek
+    content.innerHTML=_wrTitleHtml(title, code)+''+peek
       +'<div class="wr-gate'+(peek?' peeked':'')+'"><div class="card"><div style="font-size:22px;">🔒</div>'
       // Trial members: any 5 different sheets a day, then this card (boss 2026-11-07). The server decides; this line only explains why.
       +((!S.isPaid && !S.trialExpired && S.trialEndsAt)?'<p class="wr-daily" style="font-weight:700;margin:6px 0 2px;">'+(en?'You have read your 5 free sheets for today. You can read 5 more tomorrow.':'오늘 무료 5장을 모두 보셨습니다. 내일 다시 5장을 볼 수 있습니다.')+'</p>':'')
@@ -11434,7 +11452,7 @@ async function wrShow(code){
     try{ if(_fmP) _fmP.scrollIntoView({block:'center',behavior:'smooth'}); else window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
     return;
   }
-  content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+  content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
   var _fm=null;
   try{
     var res=await sb.rpc('get_war_room_topic',{p_code:code});
@@ -11443,13 +11461,13 @@ async function wrShow(code){
     // No text back = today's 5 free sheets are used up (or the trial just ended): show the lock card instead of a blank page
     if(!d && row && !row.locked){ row.locked=true; return wrShow(code); }
     var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
+    content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
     _wrPostProcess(content);
     // 🆕 2026-09-04 — 검색으로 들어온 토픽은 그 검색어를 본문에 노란 표시(사용자 지적: 검색 결과를
     // 열어도 본문 어디에 있는지 찾기 힘들다). review_app 의 <mark class="ap-mk"> 와 같은 배색.
     if(WR.searchTerm && WR.searchOrder && WR.searchOrder.length) _fm=_wrHighlightBody(content.querySelector('.wr-body'), WR.searchTerm);
     _wrRenderRelated(content, code);
-  }catch(e){ content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; _wrRenderRelated(content, code); }
+  }catch(e){ content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; _wrRenderRelated(content, code); }
   _wrUpdateNav(); _wrCloseTocMobile();
   try{ if(_fm) _fm.scrollIntoView({block:'center',behavior:'smooth'}); else window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
 }
@@ -11490,6 +11508,122 @@ function _wrHighlightBody(root, term){
   });
   return first;
 }
+// ─── War Room sheet flags (boss 2026-11-08) ───
+// A member flags a sheet with the button next to its title. The «Flagged sheets» button in the index lists every
+// flagged sheet across all parts, and prev/next flips inside that list (like search results).
+// Saved per user in table war_room_flags (RLS: own rows only, supabase/war_room_flags_2026-11-08.sql).
+// Until that table exists the flags stay in this browser (localStorage) and move to the server the first time it answers.
+var WR_FLAG_PARTS = [1,2,3];
+function _wrPartTag(p){ return 'P'+p; }
+var WR_FLAG_SVG_OFF='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+var WR_FLAG_SVG_ON='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+WR.flags = Object.create(null); WR.flagView = false; WR.flagsServer = false;
+function _wrFlagKey(){ return 'px_wr_flags_' + ((typeof SB_USER!=='undefined' && SB_USER && SB_USER.id) || 'anon'); }
+function _wrFlagLocalGet(){ try{ var a=JSON.parse(localStorage.getItem(_wrFlagKey())||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function _wrFlagLocalSet(){ try{ localStorage.setItem(_wrFlagKey(), JSON.stringify(Object.keys(WR.flags))); }catch(e){} }
+function _wrFlagLocalClear(){ try{ localStorage.removeItem(_wrFlagKey()); }catch(e){} }
+async function _wrLoadFlags(){
+  var flags = Object.create(null), local = _wrFlagLocalGet();
+  try{
+    if(!SB_USER) throw new Error('no user');
+    var res = await sb.from('war_room_flags').select('outline_code').eq('user_id', SB_USER.id);
+    if(res.error) throw res.error;
+    WR.flagsServer = true;
+    (res.data||[]).forEach(function(r){ flags[r.outline_code]=1; });
+    var up = local.filter(function(c){ return !flags[c]; });
+    up.forEach(function(c){ flags[c]=1; });
+    if(up.length){
+      var ins = await sb.from('war_room_flags').upsert(up.map(function(c){ return { user_id: SB_USER.id, outline_code: c }; }), { onConflict: 'user_id,outline_code' });
+      if(!ins.error) _wrFlagLocalClear();
+    } else if(local.length){ _wrFlagLocalClear(); }
+  }catch(e){
+    WR.flagsServer = false;
+    local.forEach(function(c){ flags[c]=1; });
+  }
+  WR.flags = flags;
+}
+function _wrFlaggedList(){
+  var out=[];
+  WR_FLAG_PARTS.forEach(function(p){
+    var buck=(WR.byPart&&WR.byPart[p])||{};
+    (WR_SKELETON[p]||[]).forEach(function(row){ (buck[row[0]]||[]).forEach(function(r){ if(WR.flags[r.outline_code]) out.push({ p:p, r:r, dom:row }); }); });
+  });
+  return out;
+}
+function _wrFlMark(code){ return WR.flags[code] ? '<span class="wr-fl">'+WR_FLAG_SVG_ON+'</span>' : ''; }
+function _wrFlagBtnHtml(code){
+  var on=!!WR.flags[code], en=(_wrLang()==='en');
+  return '<button type="button" class="q-flag-btn wr-flag-btn'+(on?' flagged':'')+'" id="wr-flag-btn" onclick="_wrToggleFlag(\''+code+'\')">'
+    +(on?WR_FLAG_SVG_ON:WR_FLAG_SVG_OFF)+' '+(on?(en?'Flagged':'플래그됨'):(en?'Flag':'플래그'))+'</button>';
+}
+function _wrTitleHtml(title, code){
+  return '<div class="wr-title wr-title-row"><span>'+_wrEsc(title)+'</span>'+(code?_wrFlagBtnHtml(code):'')+'</div>';
+}
+function _wrPaintFtab(){
+  var b=document.getElementById('wr-ftab'); if(!b) return;
+  var n=_wrFlaggedList().length, en=(_wrLang()==='en');
+  b.classList.toggle('active', !!WR.flagView);
+  b.innerHTML='<span class="lb">'+WR_FLAG_SVG_ON+(en?'Flagged sheets':'플래그한 시트')+'</span><span class="c">'+n+'</span>';
+}
+function _wrShowFlagged(){
+  if(WR.flagView){ _wrExitSearch(); return; }   // second press = back to the index
+  var inp=document.getElementById('wr-search');
+  if(inp && inp.value){ inp.value=''; var c=document.getElementById('wr-search-clear'); if(c) c.style.display='none'; }
+  WR.searchTerm=null;
+  _wrUnhighlight(document.getElementById('wr-content'));
+  WR.flagView=true;
+  document.querySelectorAll('.wr-ptab').forEach(function(b){ b.classList.remove('active'); });
+  _wrPaintFlagged();
+}
+function _wrPaintFlagged(){
+  var lang=_wrLang(), en=(lang==='en'), list=_wrFlaggedList(), html='', codes=[];
+  list.forEach(function(it){
+    var r=it.r; codes.push(r.outline_code);
+    var lk=r.locked?'<span class="lk">🔒 </span>':'';
+    html+='<div class="wr-topic-link wr-sr" id="wr-nav-'+r.outline_code+'" onclick="_wrGo('+it.p+',\''+r.outline_code+'\')">'+lk
+      +'<span><span class="wr-sr-pb">'+_wrEsc(_wrPartTag(it.p))+'</span>'+_wrEsc(_wrT(r))
+      +'<span class="wr-sr-dom">'+_wrEsc(lang==='ko'?it.dom[1]:it.dom[0])+'</span></span></div>';
+  });
+  var el=document.getElementById('wr-doms'); if(!el) return;
+  el.innerHTML = list.length
+    ? '<div class="wr-sr-count">'+(en?(list.length+' flagged sheet'+(list.length>1?'s':'')):('플래그한 시트 '+list.length+'개'))+'</div>'+html
+    : '<div class="wr-flag-hint">'+(en?'No flagged sheets yet. Press "Flag" next to a sheet title to keep it here.':'아직 플래그한 시트가 없습니다. 시트 제목 옆 "플래그"를 누르면 여기에 모입니다.')+'</div>';
+  WR.searchOrder = list.length ? codes : null;
+  if(list.length){
+    WR.order = codes.slice();
+    if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
+  }
+  _wrPaintFtab(); _wrUpdateNav();
+}
+function _wrFlagsRepaint(){
+  var b=document.getElementById('wr-flag-btn');
+  if(b && WR.cur) b.outerHTML=_wrFlagBtnHtml(WR.cur);
+  if(WR.flagView){ _wrPaintFlagged(); return; }
+  document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){
+    var code=n.id.replace('wr-nav-',''), m=n.querySelector('.wr-fl'), sp=n.lastElementChild;
+    if(WR.flags[code] && !m && sp) sp.insertAdjacentHTML('afterbegin', _wrFlMark(code));
+    else if(!WR.flags[code] && m) m.remove();
+  });
+  _wrPaintFtab();
+}
+async function _wrToggleFlag(code){
+  if(!code) return;
+  var on=!WR.flags[code];
+  if(on) WR.flags[code]=1; else delete WR.flags[code];
+  _wrFlagsRepaint();
+  if(WR.flagsServer && SB_USER){
+    try{
+      var res = on
+        ? await sb.from('war_room_flags').upsert({ user_id: SB_USER.id, outline_code: code }, { onConflict: 'user_id,outline_code' })
+        : await sb.from('war_room_flags').delete().eq('user_id', SB_USER.id).eq('outline_code', code);
+      if(res.error) throw res.error;
+    }catch(e){
+      if(on) delete WR.flags[code]; else WR.flags[code]=1;
+      _wrFlagsRepaint();
+      if(typeof showToast==='function') showToast(_wrLang()==='en'?'⚠️ Could not save the flag. Please try again.':'⚠️ 플래그를 저장하지 못했습니다. 다시 눌러 주세요.');
+    }
+  } else { _wrFlagLocalSet(); }
+}
 function _wrUpdateNav(){
   var i=WR.order.indexOf(WR.cur);
   var p=document.getElementById('wr-prev'), n=document.getElementById('wr-next'), pos=document.getElementById('wr-pos');
@@ -11498,7 +11632,7 @@ function _wrUpdateNav(){
   // 지금 보는 토픽이 이 차례 안에 없을 수 있다(검색 결과에 없는 것을 보던 중) — 그때는 개수만 보인다
   var _txt=(i<0)?(WR.order.length+(en?' results':'개 결과')):((i+1)+' / '+WR.order.length);
   if(pos)pos.innerHTML=_txt+'<span class="k">'
-    +(_inSr?(en?'in results · ← →':'검색 결과 안 · ← →'):(en?'← → to flip':'← → 키로 넘기기'))+'</span>';
+    +(WR.flagView?(en?'in flagged · ← →':'플래그 안 · ← →'):_inSr?(en?'in results · ← →':'검색 결과 안 · ← →'):(en?'← → to flip':'← → 키로 넘기기'))+'</span>';
 }
 function wrNav(dir){ var i=WR.order.indexOf(WR.cur); if(i<0)i=0; var j=i+dir; if(j<0||j>=WR.order.length)return; wrShow(WR.order[j]); }
 // ── 렌더 후처리 (2026-07-30) ──
