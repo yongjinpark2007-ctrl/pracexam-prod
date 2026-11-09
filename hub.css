@@ -381,3 +381,5 @@ body{word-break:keep-all;overflow-wrap:break-word}
 /* Free-trial line under the hero button, same look as the EA/RE landings (boss 2026-11-08) */
 .hub-free{margin:14px 0 0;font-size:15px;font-weight:600;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .hub-free img{width:22px;height:auto;flex:none}
+.door-free{margin:14px 0 0;font-size:14px;font-weight:600;color:var(--ink-mid);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.door-free img{width:20px;height:auto;flex:none}
