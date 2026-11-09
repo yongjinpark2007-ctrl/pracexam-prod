@@ -1778,7 +1778,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
          after the first login the app calls start_re_trial(state) → entitlements re-<state> with 30 days free. -->
     <div id="lg-view-signup" style="display:none;">
       <div style="font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:4px;">Create your free account</div>
-      <div style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:14px;">30-day free trial, 5 questions a day. No card needed.</div>
+      <div style="font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:14px;">30-day free trial, 10 questions a day. No card needed.</div>
       <div class="lg-label">Select your exam state</div>
       <select class="lg-input" id="su-state"></select>
       <div style="font-size:12px;color:var(--text-mid);line-height:1.5;margin:8px 0 4px;">Your account covers this state only. To change it later, email hello@pracexam.com.</div>
@@ -4326,7 +4326,7 @@ function reAskState(){
 }
 // 체험(무료, 미결제) 사용자인지 — Admin/유료 결제자는 false
 function isTrialLimited(){
-  // RE: the 30-day trial works like EA — 5 questions a day; subscribers are unlimited (boss 2026-10-29)
+  // RE: the 30-day trial works like EA — 10 questions a day; subscribers are unlimited (boss 2026-10-29)
   return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
 }
 
@@ -4393,11 +4393,11 @@ function updateTrialQuotaBanner(){
   if(!el) return;
   // 체험(무료) 유저에게만 배너 노출. 유료·관리자·비로그인 → 숨김(멤버십은 '내 계정'에서 관리).
   if(!isTrialLimited()){ el.style.display = 'none'; return; }
-  const left = Math.max(0, 5 - (S.dailyUsed || 0));
+  const left = Math.max(0, 10 - (S.dailyUsed || 0));
   el.style.display = '';
   el.innerHTML = ((LANG === 'en')
-    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 5 Quick questions per day · remaining today: <strong>' + left + '</strong>')
-    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 5문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
+    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 10 Quick questions per day · remaining today: <strong>' + left + '</strong>')
+    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 10문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
     ' <button class="btn-navy" style="margin-left:8px;padding:4px 14px;font-size:12.5px;vertical-align:middle;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-align:center;line-height:1.4;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';   // centered (boss 2026-10-31)
 }
 
@@ -4419,7 +4419,7 @@ function showDailyQuotaModal(){
 // 새 세션 시작 전 종합 체크 (체험 만료 + 일일 한도)
 function canStartQuiz(){
   if(!checkTrialAccess()) return false;
-  if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return false; }
+  if(isTrialLimited() && (S.dailyUsed || 0) >= 10){ showDailyQuotaModal(); return false; }
   return true;
 }
 
@@ -4512,12 +4512,12 @@ function updateTrialStatusUI(){
     if(act) act.innerHTML = _upgradeBtn;
   } else if(S.trialEndsAt){
     var daysLeft = Math.max(0, Math.ceil((new Date(S.trialEndsAt) - new Date()) / (1000*60*60*24)));
-    var qLeft = Math.max(0, 5 - (S.dailyUsed || 0));
+    var qLeft = Math.max(0, 10 - (S.dailyUsed || 0));
     var _endLoc = (LANG === 'en') ? 'en-US' : 'ko-KR';
     var _endDate = new Date(S.trialEndsAt).toLocaleDateString(_endLoc);
     txt.textContent = (LANG === 'en')
-      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (5/day, Quick mode)')
-      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)');
+      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (10/day, Quick mode)')
+      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 10문제, Quick 모드)');
     if(act) act.innerHTML = _upgradeBtn;
   } else {
     card.style.display = 'none'; return;
@@ -5800,7 +5800,7 @@ var UI_TEXT = {
   trial_paid:     {ko:'✅ Pro 회원 — 모든 문제 무제한 이용 가능', en:'✅ Pro Member — unlimited access to all questions'},
   trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice.'},
   quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
-  quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 5 questions per day.<br>Upgrade now for unlimited practice.'},
+  quota_body:     {ko:'무료 체험은 하루 10문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 10 questions per day.<br>Upgrade now for unlimited practice.'},
   // ── 결제 / 업그레이드 (Phase 4) ──
   upgrade_cta:    {ko:'🚀 업그레이드', en:'🚀 Upgrade'},
   upgrade_now:    {ko:'🚀 지금 업그레이드하고 무제한', en:'🚀 Upgrade now for unlimited'},
@@ -9172,7 +9172,7 @@ function selectOption(i,btn){
 }
 
 async function autoTimeout(){
-  if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
+  if(isTrialLimited() && (S.dailyUsed || 0) >= 10){ showDailyQuotaModal(); return; }
   const q=curQ(); if(!q) return;
   S.submitted=true; clearInterval(S.timerInt);
 
@@ -9259,7 +9259,7 @@ async function submitAnswer(){
   if(S.submitted||S.selected===null) return;
   if(S.reviewMode){ return revealReviewAnswer(); }   // 복습 = 로컬 채점 (한도 무관)
   // UX 사전 차단 (서버가 최종 권위). 트라이얼 일일 한도.
-  if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
+  if(isTrialLimited() && (S.dailyUsed || 0) >= 10){ showDailyQuotaModal(); return; }
   const q=curQ(); if(!q) return;
   const chosen=S.selected;
 

@@ -496,7 +496,7 @@ async function doRevoke(){
 
   const ok = confirm('이 계정의 무료 이용을 지금 즉시 회수합니다.\n\n' +
     '  대상: ' + (CUR.account.email || '') + '\n\n' +
-    '바로 무료 회원(하루 5문제)으로 내려갑니다. 진행할까요?');
+    '바로 무료 회원(하루 10문제)으로 내려갑니다. 진행할까요?');
   if(!ok) return;
 
   msg('g2-msg', '회수 중…', true);
