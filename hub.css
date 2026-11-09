@@ -378,3 +378,6 @@ body{word-break:keep-all;overflow-wrap:break-word}
 :root[data-theme="dark"] .login-card .btn,:root[data-theme="dark"] .btn-primary{background:#2F5F8F;color:#fff}
 :root[data-theme="dark"] .login-card .btn:hover,:root[data-theme="dark"] .btn-primary:hover{background:#4F7CAC}
 :root[data-theme="dark"] .lang-toggle button.active{background:#2F5F8F;color:#fff}
+/* Free-trial line under the hero button, same look as the EA/RE landings (boss 2026-11-08) */
+.hub-free{margin:14px 0 0;font-size:15px;font-weight:600;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hub-free img{width:22px;height:auto;flex:none}
