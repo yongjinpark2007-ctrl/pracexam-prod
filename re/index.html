@@ -1430,7 +1430,8 @@ function switchModal(which){
 // popquiz.html 등 외부 페이지에서 ?signup=1 로 들어오면 가입 모달 자동 오픈
 (function(){
   try{
-    if(new URLSearchParams(location.search).get('signup') === '1') startFree();
+    var _q = new URLSearchParams(location.search);
+    if(_q.get('signup') === '1'){ var _pl = _q.get('plan'); if(_pl === 'm' || _pl === 'q') startSubscribe(_pl); else startFree(); }   // plan from state-page pricing (2026-11-09)
   }catch(e){}
 })();
 
