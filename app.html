@@ -7488,7 +7488,7 @@ function renderDashHero(focusPart){
           heroRing(accPct, accuracyColor(accPct),
                    t('hero_goal') + ' ' + EXAM_READY_THRESHOLD + '%',
                    t('dash_accuracy'),
-                   tCorrect + ' / ' + uCorrect(tAttempts) +
+                   uCorrect(tCorrect) + ' / ' + tAttempts +   // «556 correct / 1048» (boss 2026-11-10)
                      '<span class="hr-dim">' + t('dash_incl_rep') + '</span>',
                    EXAM_READY_THRESHOLD, false,
                    t('dash_accuracy') + ' ' + accPct + '%') +
