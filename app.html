@@ -4110,7 +4110,7 @@ function isTrialLimited(){
   return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
 }
 
-// Study Setup 화면을 Quick(5문제) 전용으로 단순화 — 체험 사용자 한정
+// Study Setup 화면을 체험 사용자용으로 단순화 — 문제 수 5 또는 10 (2026-11-10, 하루 10문제)
 function applyTrialSetupRestrictions(){
   const limited = isTrialLimited();
   const adv = document.getElementById('setup-advanced-options');
@@ -4122,7 +4122,10 @@ function applyTrialSetupRestrictions(){
 
   if(limited){
     // 무료 고정: 문제수 5·반복 무제한. Part는 자유(All/1/2/3), 범위는 전체·Unseen만 허용.
-    S.count = 5; S.repeatFilter = 'all';
+    // 2026-11-10: trial = 10 a day, so 5 or 10 may be picked (boss). Anything else falls back to 5.
+    if(S.count !== 5 && S.count !== 10) S.count = 5;
+    S.repeatFilter = 'all';
+    document.querySelectorAll('#setup-count-grid .setup-count-card').forEach(function(b){ var n = parseInt((b.querySelector('.setup-count-num')||{}).textContent, 10); b.classList.toggle('selected', n === S.count); });
     if(S.subset !== 'all' && S.subset !== 'unseen') S.subset = 'unseen';
     if(S.setupMode !== 'normal' && S.setupMode !== 'tpiq') S.setupMode = 'tpiq';
     if(S.mode !== 'normal' && S.mode !== 'tpiq') S.mode = S.setupMode;
@@ -4138,10 +4141,10 @@ function applyTrialSetupRestrictions(){
 }
 
 // 무료 체험 잠금: 허용 옵션만 활성, 나머지는 보이되 선택 불가(🔒).
-// 허용 = 문제수 '5/Quick', 학습모드 '일반'·'스마트(TPIQ)'.
+// 허용 = 문제수 '5/Quick'·'10/Standard', 학습모드 '일반'·'스마트(TPIQ)'.
 function applyTrialLocks(limited){
   var groups = [
-    ['#setup-count-grid .setup-count-card', [0]],       // 5 / Quick
+    ['#setup-count-grid .setup-count-card', [0,1]],     // 5 / Quick, 10 / Standard (trial 10 a day, 2026-11-10)
     ['#mode-row .setup-icon-btn',           [0,1]],      // Smart(TPIQ), Normal — 2026-08-20 자리 맞바꿈
     ['#part-row .setup-icon-btn',           [0,1,2]],    // Part: 1·2·3 모두 허용 (All 은 2026-08-21 삭제)
     ['#subset-row .setup-icon-btn',         [0,2]],      // 범위: Unseen(0)·Random(2) 허용 — 2026-08-20 자리 이동
