@@ -1447,19 +1447,27 @@ function refRow(r){
     return '<dt>알게 된 경로</dt><dd class="sub2">' +
            '<code>admin_list_customers</code> 를 새로 배포하면 여기 나옵니다.</dd>';
   }
-  var parts = [];
+  // 2026-11-11: two separate lines. «본인 응답» = what the customer picked at sign-up (may be anything);
+  // «들어온 길» = what the link itself recorded (ad click id, utm). A Google Korean-ad sign-up who picked «네이버»
+  // used to show as «네이버 · 광고 클릭으로 들어옴» and was read as a Naver ad (we run no Naver ads).
+  var said = '';
   if(r.referral_source){
-    var lab = esc(refLabel(r.referral_source));
-    if(r.referral_source === 'other' && r.referral_note) lab += ' — “' + esc(r.referral_note) + '”';
-    parts.push(lab);
+    said = esc(refLabel(r.referral_source));
+    if(r.referral_source === 'other' && r.referral_note) said += ' — “' + esc(r.referral_note) + '”';
   }
-  if(r.ad_click)         parts.push('광고 클릭으로 들어옴');
-  else if(r.utm_source)  parts.push('링크 표시 <code>' + esc(r.utm_source) + '</code>');
-  if(!parts.length){
-    return '<dt>알게 된 경로</dt><dd class="sub2">기록 없음 ' +
-           '<span class="sub2">(안 고르셨거나, 묻기 전에 가입한 분입니다)</span></dd>';
+  var came = '';
+  var src = r.utm_source ? String(r.utm_source) : '';
+  var srcName = ({google:'Google', naver:'네이버', facebook:'Facebook', instagram:'Instagram', youtube:'YouTube'})[src.toLowerCase()] || src;
+  if(r.ad_click){
+    came = (srcName ? esc(srcName) : 'Google') + ' 광고 클릭';
+    if(r.utm_campaign) came += ' · 캠페인 <code>' + esc(r.utm_campaign) + '</code>';
+    if(r.utm_term)     came += ' · 검색어 «' + esc(r.utm_term) + '»';
+  } else if(src){
+    came = '링크 표시 <code>' + esc(src) + '</code>';
   }
-  return '<dt>알게 된 경로</dt><dd>' + parts.join(' · ') + '</dd>';
+  var h = '<dt>본인 응답</dt><dd>' + (said || '<span class="sub2">기록 없음 (안 고르셨거나, 묻기 전에 가입한 분입니다)</span>') + '</dd>';
+  h += '<dt>들어온 길</dt><dd>' + (came || '<span class="sub2">광고·링크 표시 없음</span>') + '</dd>';
+  return h;
 }
 
 /* 조작줄 아래 한 줄 — 고른 사람만 모수로 잡아 경로별 인원을 센다.
