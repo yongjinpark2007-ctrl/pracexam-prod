@@ -1333,6 +1333,11 @@ async function loadMails(uid, a){
   }
   var m = r.data || {}, ea = m.ea || {}, re = m.re || [], log = m.log || [];
   var h = '';
+  // Blackout (2026-11-11): refunded customers get no mail of any kind after the refund notice
+  if(ea.blacklisted_at){
+    h += '<div style="color:var(--flag-color);font-weight:700;margin-bottom:4px;">⛔ Blackout — 메일 전부 중단 (' +
+         d(ea.blacklisted_at, true) + ' · ' + esc(ea.blacklist_reason || '') + ')</div>';
+  }
   if(ea.enrolled !== false){
     h += '<div><b>EA</b> · 가입 환영 ' + flag(ea.signup_welcome_sent) + ' · 3일째 할인 ' + flag(ea.promo_email_sent) +
          ' · 5일째 War Room ' + flag(ea.warroom_email_sent) + ' · 체험 종료 3일 전 ' + flag(ea.trial_soon_email_sent) +
