@@ -1,9 +1,8 @@
-/* EA app — customer review form + 30-Day Pro Pass screen (DESIGN STAGE, 2026-11-13).
-   Boss decisions 2026-11-12: EA only · paid and trial users with 250+ questions solved · one pass per review,
-   valid 12 months · reward = publish consent + real answers (Q2, Q3 each 30+ characters), never tied to sentiment ·
-   pass can be used by the reviewer or gifted to a never-paid new account · refunded customers (Blackout) see nothing.
-   🔴 Design stage: shown only on test hosts. Nothing is saved; the pass codes are SAMPLE codes.
-      Wiring to customer_reviews / pro_passes / the redeem RPC comes after the boss's design OK and Jay's SQL. */
+/* EA app — customer review form + 30-Day Pro Pass (wired 2026-11-13 to supabase/sql/reviews_pro_pass_2026-11-13.sql).
+   Boss decisions 2026-11-12/13: EA only · 250+ EA questions answered · not refunded (Blackout) · one review per account ·
+   pass when the reviewer agrees to publish and Q2/Q3 reach the minimum (KO screen 40, EN screen 80 letters/digits),
+   whatever the review says · pass valid 12 months, own use or gift to a never-paid account.
+   🔴 Test hosts only until the boss's end-to-end test and the legal check. */
 (function(){
   'use strict';
   var host = location.hostname;
@@ -117,7 +116,7 @@
     return bg;
   }
   function closeReview(){ if (bg) bg.classList.remove('open'); }
-  function body(html){ modal().querySelector('#rvm-body').innerHTML = '<span class="rvm-sample">SAMPLE · DESIGN</span>' + html; bg.classList.add('open'); }
+  function body(html){ modal().querySelector('#rvm-body').innerHTML = html; bg.classList.add('open'); }
 
   function rulesBox(){   // wording by the boss 2026-11-13
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 증정 내용', 'How the 30-Day Pro Pass works') + '</b><ul>'
@@ -169,22 +168,65 @@
     document.getElementById('rvm-submit').onclick = submit;
   }
 
+  // ── server (supabase/sql/reviews_pro_pass_2026-11-13.sql): submit_review · redeem_pro_pass · my_review_info ──
+  var INFO = null;
+  function rpc(name, args){
+    try { return sb.rpc(name, args).then(function(r){ if (r.error) throw r.error; return r.data; }); }
+    catch(e){ return Promise.reject(e); }
+  }
+  function loadInfo(){
+    try { if (!SB_USER) return Promise.resolve(null); } catch(e){ return Promise.resolve(null); }
+    return rpc('my_review_info', { p_exam: 'ea' }).then(function(d){ INFO = d && d.ok ? d : null; refreshUi(); return INFO; })
+      .catch(function(e){ console.warn('my_review_info', e && e.message); INFO = null; refreshUi(); return null; });
+  }
+  function isAdmin(){ try { return SB_USER && SB_USER.id === ADMIN_UID; } catch(e){ return false; } }
+  function canReview(){ return !!(INFO && (INFO.can_review || (isAdmin() && !INFO.has_review && !INFO.blackout))); }
+
+  var REASONS = {
+    login:      ['로그인 후 이용해 주세요.', 'Please log in first.'],
+    exam:       ['EA 시험 리뷰만 받을 수 있습니다.', 'Reviews are open for the EA exam only.'],
+    blackout:   ['이 계정은 리뷰를 남길 수 없습니다.', 'This account cannot leave a review.'],
+    not_enough: ['250문항 이상 풀면 리뷰를 남길 수 있습니다.', 'You can write a review after answering 250 questions.'],
+    already:    ['이미 리뷰를 남기셨습니다. 감사합니다.', 'You have already left a review. Thank you.'],
+    too_short:  ['2번과 3번 답변의 글자 수가 부족합니다.', 'Answers 2 and 3 are too short.'],
+    name:       ['후기에 표시할 이름을 적어 주세요.', 'Please enter the name to show on your review.'],
+    bad_input:  ['입력 내용을 다시 확인해 주세요.', 'Please check your answers.'],
+    invalid:    ['코드를 찾을 수 없습니다. 다시 확인해 주세요.', 'We could not find that code. Please check it.'],
+    used:       ['이미 사용된 코드입니다.', 'This code has already been used.'],
+    expired:    ['사용 기한이 지난 코드입니다.', 'This code has expired.'],
+    not_new:    ['선물받은 코드는 PracExam에서 결제한 적이 없는 계정에서만 쓸 수 있습니다.', 'Gifted codes work only on accounts that have never paid for PracExam.'],
+    gift_used:  ['선물받은 코드는 계정당 한 번만 쓸 수 있습니다.', 'A gifted code can be used only once per account.']
+  };
+  function reasonText(r){ var x = REASONS[r]; return x ? L(x[0], x[1]) : L('잠시 후 다시 시도해 주세요.', 'Please try again in a moment.'); }
+
   function submit(){
     var q2 = document.getElementById('rvm-q2').value.trim(), q3 = document.getElementById('rvm-q3').value.trim();
     var consent = document.getElementById('rvm-q5').checked, err = document.getElementById('rvm-err');
+    var nameEl = document.getElementById('rvm-name');
     if (!q2 || !q3){ err.textContent = L('2번과 3번 질문에 답변을 입력해 주세요.', 'Please answer questions 2 and 3.'); return; }
-    if (consent && !document.getElementById('rvm-name').value.trim()){ err.textContent = L('후기에 표시할 이름을 적어 주세요.', 'Please enter the name to show on your review.'); document.getElementById('rvm-name').focus(); return; }
+    if (consent && !nameEl.value.trim()){ err.textContent = reasonText('name'); nameEl.focus(); return; }
     if (consent && (realLen(q2) < minChars() || realLen(q3) < minChars())){
       err.textContent = L('게시에 동의하셨으므로 2번과 3번 답변을 각각 ' + minChars() + '자 이상 써 주세요.', 'Because you agreed to publish, answers 2 and 3 must each be at least ' + minChars() + ' characters.');
       (realLen(q2) < minChars() ? document.getElementById('rvm-q2') : document.getElementById('rvm-q3')).focus();
       return;
     }
-    // DESIGN STAGE: nothing is saved. passed = checked parts.
-    done(consent);
+    var btn = document.getElementById('rvm-submit'); btn.disabled = true; err.textContent = '';
+    var passed = [].map.call(document.querySelectorAll('input[name="rvm-pass"]:checked'), function(x){ return +x.value; });
+    var showState = document.getElementById('rvm-q6').checked;
+    rpc('submit_review', {
+      p_exam: 'ea', p_ui_lang: en() ? 'en' : 'ko', p_passed: passed,
+      p_studying: document.getElementById('rvm-studying').checked,
+      p_helped: q2, p_advice: q3, p_improve: document.getElementById('rvm-q4').value.trim() || null,
+      p_consent: consent, p_display_name: consent ? nameEl.value.trim() : null,
+      p_show_state: showState, p_state: showState ? document.getElementById('rvm-state').value : null
+    }).then(function(d){
+      if (!d || !d.ok){ btn.disabled = false; err.textContent = reasonText(d && d.reason); return; }
+      done(d.pass_code || null); loadInfo();
+    }).catch(function(e){ btn.disabled = false; console.warn('submit_review', e && e.message); err.textContent = reasonText(); });
   }
 
-  function done(withPass){
-    if (!withPass){
+  function done(code){
+    if (!code){
       body('<h3 id="rvm-title">' + L('소중한 리뷰를 남겨 주셔서 감사합니다', 'Thank you for your review') + '</h3>'
         + '<p class="rvm-sub">' + L('보내 주신 의견은 PracExam 서비스 개선에 활용하겠습니다. 게시에 동의하지 않으셔서 이번에는 이용권이 발급되지 않았습니다.', 'We read every review and use it to improve PracExam. No pass was issued because you did not agree to publish.') + '</p>'
         + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('닫기', 'Close') + '</button></div>');
@@ -192,36 +234,41 @@
     }
     body('<h3 id="rvm-title">' + L('감사합니다! 30-Day Pro Pass가 발급되었습니다', 'Thank you! Here is your 30-Day Pro Pass') + '</h3>'
       + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 쓸 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'This code is valid for 12 months. You can use it now, save it in Settings for later, or gift it to a new account that has never paid for PracExam.') + '</p>'
-      + '<div class="rvm-code">PASS-SAMP-LE01</div>'
+      + '<div class="rvm-code">' + esc(code) + '</div>'
       + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 사용하기', 'Use now') + '</button>'
       + '<button class="btn-ghost" type="button" id="rvm-gift">' + L('선물하기', 'Gift') + '</button>'
       + '<button class="btn-ghost" type="button" id="rvm-later">' + L('나중에 사용하기', 'Use later') + '</button></div>');
-    document.getElementById('rvm-use').onclick = function(){ closeReview(); toast(L('(테스트) 실제로는 Pro 30일 이용 권한이 활성화됩니다.', '(Test) In the live version this opens 30 days of Pro.')); };
-    document.getElementById('rvm-gift').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){} setTimeout(function(){ var b = document.querySelector('[data-rvp-gift="PASS-SAMP-LE01"]'); if (b) b.click(); }, 50); };
+    document.getElementById('rvm-use').onclick = function(){ redeem(code, function(){ closeReview(); }); };
+    document.getElementById('rvm-gift').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){}
+      setTimeout(function(){ var b = document.querySelector('[data-rvp-gift="' + code + '"]'); if (b) b.click(); }, 400); };
     document.getElementById('rvm-later').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){} };
   }
 
+  function redeem(code, after){
+    rpc('redeem_pro_pass', { p_code: code }).then(function(d){
+      if (!d || !d.ok){ toast(reasonText(d && d.reason)); return; }
+      if (d.result === 'queued') toast(L('구독 기간이 끝나면 30일 Pro가 이어서 시작됩니다.', 'Your 30 days of Pro will start when your current paid period ends.'));
+      else toast(L('Pro 30일이 열렸습니다. ' + fmt(String(d.until).slice(0, 10)) + '까지 이용하실 수 있습니다.', '30 days of Pro are now open, until ' + fmt(String(d.until).slice(0, 10)) + '.'));
+      try { loadTrialStatus(); } catch(e){}
+      loadInfo(); if (after) after();
+    }).catch(function(e){ console.warn('redeem_pro_pass', e && e.message); toast(reasonText()); });
+  }
+
   function toast(m){ try { showToast(m); } catch(e){ alert(m); } }
-  function copy(code){
-    try { navigator.clipboard.writeText(code).then(function(){ toast(L('코드가 복사되었습니다', 'Code copied')); }); } catch(e){ toast(code); }
+  function copy(text){
+    try { navigator.clipboard.writeText(text).then(function(){ toast(L('복사되었습니다', 'Copied')); }); } catch(e){ toast(text); }
   }
 
   function openReview(){
-    // Boss 2026-11-13: no gate screen, the form opens at once. Live: the menu item is shown only to users with
-    // MIN_SOLVED+ questions answered (and never to refunded customers), so nobody reaches the form early.
+    // Boss 2026-11-13: no gate screen, the form opens at once. The menu item is shown only to users who can review
+    // (250+ EA questions, not Blackout, no review yet), and the server checks the same again.
+    if (INFO && INFO.has_review){ toast(reasonText('already')); return; }
     form();
   }
   window.pxOpenReview = openReview;
 
-  // ── Settings: 30-Day Pro Pass card (v2, 2026-11-13) ──
-  // Layout: what a pass is (one line) → my passes (status chip, expiry, Use / Gift) or an empty state → redeem a gifted code.
-  // Billing wording stays neutral until the Paddle check (design doc 5-1).
-  var SAMPLE_PASSES = [
-    { code: 'PASS-SAMP-LE01', status: 'unused', expires: '2027-11-13' },
-    { code: 'PASS-SAMP-LE02', status: 'gifted', expires: '2027-10-02', used: '2026-10-20' }
-  ];
-  var showEmpty = false;
-  function fmt(d){ var p = d.split('-'); return en() ? (['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+p[1]-1] + ' ' + (+p[2]) + ', ' + p[0]) : (p[0] + '년 ' + (+p[1]) + '월 ' + (+p[2]) + '일'); }
+  // ── Settings: 30-Day Pro Pass card ──
+  function fmt(d){ var p = String(d).slice(0, 10).split('-'); return en() ? (['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+p[1]-1] + ' ' + (+p[2]) + ', ' + p[0]) : (p[0] + '년 ' + (+p[1]) + '월 ' + (+p[2]) + '일'); }
   function giftText(code, exp){
     return en()
       ? 'Here is a free 30-day PracExam Pro pass for the EA exam: ' + code + '\nSign up at https://pracexam.com/ea/, then go to Settings > 30-Day Pro Pass and enter the code.\nIt works on an account that has never paid for PracExam. Use it by ' + fmt(exp) + '.'
@@ -234,29 +281,28 @@
       card = document.createElement('div'); card.id = 'rvp-card'; card.className = 'rvp-card';
       host.insertBefore(card, document.getElementById('settings-data-mgmt') || null);
     }
-    var list = showEmpty ? [] : SAMPLE_PASSES;
+    var list = (INFO && INFO.passes) || [];
     var rows = list.map(function(p){
-      var chip = p.status === 'unused' ? '<span class="rvp-chip ok">' + L('사용 가능', 'Available') + '</span>'
-               : '<span class="rvp-chip done">' + (p.status === 'gifted' ? L('선물함', 'Gifted') : L('사용함', 'Used')) + '</span>';
-      var meta = p.status === 'unused' ? L(fmt(p.expires) + '까지 사용 가능', 'Use by ' + fmt(p.expires))
-               : L(fmt(p.used) + '에 사용됨', 'Used on ' + fmt(p.used));
+      var chip, meta;
+      if (p.status === 'unused'){ chip = '<span class="rvp-chip ok">' + L('사용 가능', 'Available') + '</span>'; meta = L(fmt(p.expires_at) + '까지 사용 가능', 'Use by ' + fmt(p.expires_at)); }
+      else if (p.status === 'queued'){ chip = '<span class="rvp-chip done">' + L('대기 중', 'Queued') + '</span>'; meta = L('구독 기간이 끝나면 30일이 이어서 시작됩니다.', 'Starts when your current paid period ends.'); }
+      else if (p.mode === 'gift'){ chip = '<span class="rvp-chip done">' + L('선물함', 'Gifted') + '</span>'; meta = p.used_at ? L(fmt(p.used_at) + '에 사용됨', 'Used on ' + fmt(p.used_at)) : ''; }
+      else { chip = '<span class="rvp-chip done">' + L('사용함', 'Used') + '</span>'; meta = p.applied_until ? L(fmt(p.applied_until) + '까지 Pro', 'Pro until ' + fmt(p.applied_until)) : ''; }
       var btns = p.status === 'unused'
-        ? '<div class="rvp-btns"><button class="btn-navy" type="button" data-rvp-use="' + p.code + '">' + L('내 계정에 사용', 'Use on my account') + '</button><button class="btn-ghost" type="button" data-rvp-gift="' + p.code + '" data-exp="' + p.expires + '">' + L('선물하기', 'Gift') + '</button></div>'
+        ? '<div class="rvp-btns"><button class="btn-navy" type="button" data-rvp-use="' + esc(p.code) + '">' + L('내 계정에 사용', 'Use on my account') + '</button><button class="btn-ghost" type="button" data-rvp-gift="' + esc(p.code) + '" data-exp="' + esc(p.expires_at) + '">' + L('선물하기', 'Gift') + '</button></div>'
         : '';
-      return '<div class="rvp-row"><div><div class="rvp-code">' + p.code + chip + '</div><div class="rvp-meta">' + meta + '</div></div>' + btns + '<div class="rvp-gift" id="gift-' + p.code + '" hidden></div></div>';
+      return '<div class="rvp-row"><div><div class="rvp-code">' + esc(p.code) + chip + '</div><div class="rvp-meta">' + meta + '</div></div>' + btns + '<div class="rvp-gift" id="gift-' + esc(p.code) + '" hidden></div></div>';
     }).join('');
     var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 푼 뒤 리뷰를 쓰면 받을 수 있습니다.', 'You do not have any passes yet. Answer at least 250 questions, then write a review to get one.')
-      + ' <a href="#" id="rvp-write" style="color:var(--teal);font-weight:700;">' + L('리뷰 작성하기', 'Write a Review') + '</a></div>';
-    card.innerHTML = '<span style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;color:#fff;background:#dc2626;border-radius:4px;padding:2px 7px;margin-bottom:8px;">SAMPLE · DESIGN</span>'
-      + '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
+      + (canReview() ? ' <a href="#" id="rvp-write" style="color:var(--teal);font-weight:700;">' + L('리뷰 작성하기', 'Write a Review') + '</a>' : '') + '</div>';
+    card.innerHTML = '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
       + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('이용권 하나로 Pro를 30일 동안 쓸 수 있습니다. 리뷰를 쓰면 하나를 드립니다.', 'One pass gives you 30 days of Pro. You get one for writing a review.') + '</div>'
       + '<div class="rvp-sec" style="border-top:none;padding-top:4px;margin-top:8px;">' + L('내 이용권', 'My passes') + '</div>'
       + (list.length ? rows : empty)
       + '<div class="rvp-sec">' + L('선물받은 코드 등록', 'Redeem a gifted code') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
-      + '<p class="rvp-note">' + L('선물받은 코드는 PracExam 결제 이력이 없는 계정에서만 등록할 수 있습니다. 각 코드는 한 번만 사용할 수 있습니다.', 'Gifted codes can only be redeemed on accounts that have never paid for PracExam. Each code can only be used once.') + '</p>'
-      + '<p class="rvp-note" style="margin-top:4px;"><a href="#" id="rvp-toggle" style="color:var(--text-muted);">' + (showEmpty ? '(테스트) 이용권 있는 화면 보기' : '(테스트) 이용권 없는 화면 보기') + '</a></p>';
-    card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ toast(L('(테스트) 실제로는 Pro 30일 이용 권한이 활성화됩니다.', '(Test) In the live version this opens 30 days of Pro.')); }; });
+      + '<p class="rvp-note">' + L('선물받은 코드는 PracExam 결제 이력이 없는 계정에서만 등록할 수 있습니다. 각 코드는 한 번만 사용할 수 있습니다.', 'Gifted codes can only be redeemed on accounts that have never paid for PracExam. Each code can only be used once.') + '</p>';
+    card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ b.disabled = true; redeem(b.getAttribute('data-rvp-use')); }; });
     card.querySelectorAll('[data-rvp-gift]').forEach(function(b){ b.onclick = function(){
       var code = b.getAttribute('data-rvp-gift'), box = document.getElementById('gift-' + code), msg = giftText(code, b.getAttribute('data-exp'));
       box.hidden = !box.hidden; if (box.hidden) return;
@@ -264,11 +310,18 @@
       box.querySelector('button').onclick = function(){ copy(msg); };
     }; });
     var w = card.querySelector('#rvp-write'); if (w) w.onclick = function(e){ e.preventDefault(); openReview(); };
-    card.querySelector('#rvp-toggle').onclick = function(e){ e.preventDefault(); showEmpty = !showEmpty; renderPassCard(); };
     card.querySelector('#rvp-redeem-btn').onclick = function(){
       var v = card.querySelector('#rvp-input').value.trim().toUpperCase();
-      toast(/^PASS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v) ? L('(테스트) 실제 환경에서는 서버가 코드 유효성을 확인합니다.', '(Test) In the live version the server checks the code.') : L('코드 형식을 다시 한번 확인해 주세요. (예: PASS-7K3M-Q9TX)', 'Please check the code format. Example: PASS-7K3M-Q9TX'));
+      if (!/^PASS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v)){ toast(L('코드 형식을 다시 한번 확인해 주세요. (예: PASS-7K3M-Q9TX)', 'Please check the code format. Example: PASS-7K3M-Q9TX')); return; }
+      redeem(v, function(){ card.querySelector('#rvp-input').value = ''; });
     };
+  }
+
+  function refreshUi(){
+    addMenus();
+    var show = canReview();
+    ['nav-review', 'mob-review-write'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; });
+    renderPassCard();
   }
 
   // keep labels in step with the app language and the Settings screen
@@ -277,9 +330,14 @@
     window[name] = function(){ var r = orig.apply(this, arguments); try { after.apply(this, arguments); } catch(e){} return r; };
   }
   function start(){
-    addMenus(); renderPassCard();
-    hook('setLang', function(){ addMenus(); renderPassCard(); });
-    hook('showScreen', function(n){ if (n === 'settings') renderPassCard(); });
+    refreshUi();
+    hook('setLang', function(){ refreshUi(); });
+    hook('showScreen', function(n){ if (n === 'settings') loadInfo(); });
+    // wait for login, then ask the server once
+    var tries = 0, t = setInterval(function(){
+      var ok = false; try { ok = !!SB_USER; } catch(e){}
+      if (ok || ++tries > 60){ clearInterval(t); if (ok) loadInfo(); }
+    }, 1000);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
