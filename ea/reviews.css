@@ -206,3 +206,5 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 
 /* buttons use the site's .btn .btn-ghost (boss 2026-11-13: design consistency) */
 #reviews .rv-more{margin-top:18px;}
+/* boss 2026-11-14: with only a few cards (no loop), fill from the center: 1 → middle, 2 → middle two, 3 → middle three */
+#reviews .rv-carousel[data-loop="0"] .rv-track{justify-content:center; overflow-x:visible;}
