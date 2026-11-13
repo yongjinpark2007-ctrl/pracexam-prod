@@ -135,3 +135,8 @@ a.rv-card{text-decoration:none; color:inherit; cursor:pointer; transition:box-sh
 a.rv-card:hover{box-shadow:0 10px 26px rgba(var(--navy-rgb),.16); transform:translateY(-2px);}
 a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-card.rv-flash{box-shadow:0 0 0 3px var(--accent), 0 10px 26px rgba(var(--navy-rgb),.16); transition:box-shadow .3s;}
+/* landing cards: slightly smaller text (boss 2026-11-13) */
+#reviews .rv-text{font-size:14.5px; line-height:1.6;}
+#reviews .rv-advice{font-size:13px;}
+#reviews .rv-foot{font-size:12px;}
+#reviews .rv-name{font-size:12.5px;}
