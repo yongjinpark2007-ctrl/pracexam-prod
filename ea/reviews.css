@@ -208,3 +208,6 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 #reviews .rv-more{margin-top:18px;}
 /* boss 2026-11-14: with only a few cards (no loop), fill from the center: 1 → middle, 2 → middle two, 3 → middle three */
 #reviews .rv-carousel[data-loop="0"] .rv-track{justify-content:center; overflow-x:visible;}
+/* boss 2026-11-14: light buttons keep their border on hover (the shared .btn-ghost hover paints the border the same
+   color as the hover background, so the outline vanished) */
+.rv-more .btn-ghost:hover, .rv-back .btn-ghost:hover{border-color:var(--navy-mid, #4d6164);}
