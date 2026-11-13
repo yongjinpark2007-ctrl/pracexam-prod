@@ -12,6 +12,7 @@
 - Each exam lives under its own folder: /<exam>/ for the landing page and /<exam>/app for the practice app.
 - Web app for desktop and mobile; installable as a PWA.
 - Questions are written for the real exam format, each with an answer explanation and an exam tip.
+- Operator: PracExam is a DBA of dxd investment group LLC. https://dxdgroup.com is the parent company's site; it is not a separate exam prep service. All PracExam courses, accounts and support are at https://pracexam.com/ .
 
 ## Enrolled Agent (EA)
 
