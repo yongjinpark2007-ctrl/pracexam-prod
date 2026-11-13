@@ -125,7 +125,7 @@
     var nm = displayName();
     body('<h3 id="rvm-title">' + L('리뷰 작성하기', 'Write a Review') + '</h3>'
       + '<p class="rvm-sub">' + L('솔직한 후기를 들려주세요. 좋았던 점과 아쉬웠던 점 모두 서비스 개선에 큰 도움이 됩니다.', 'Please share your honest feedback. Hearing what you liked and what we can improve helps us make PracExam better.') + '</p>'
-      + '<div class="rvm-f"><span class="q" style="display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">1. ' + L('합격한 파트를 모두 선택해 주세요.', 'Which parts have you passed? Check all that apply.') + '</span>'
+      + '<div class="rvm-f" style="margin-bottom:26px;"><span class="q" style="display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">1. ' + L('합격한 파트를 모두 선택해 주세요.', 'Which parts have you passed? Check all that apply.') + '</span>'
       +   '<div class="rvm-parts">' + [1,2,3].map(function(n){ return '<label><input type="checkbox" name="rvm-pass" value="' + n + '">Part ' + n + '</label>'; }).join('') + '</div>'
       +   '<div class="rvm-count" style="text-align:left;">' + L('아직 합격한 파트가 없다면 선택하지 않고 넘어가세요. 「학습 중」으로 표시됩니다. 합격 여부는 회원님이 응답하신 내용 그대로 표시됩니다.', 'Leave all unchecked if you have not passed any parts yet. You will be shown as Currently studying. Pass results are shown as self-reported.') + '</div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q2">2. ' + L('PracExam에서 가장 도움이 되었던 점과 그 이유는 무엇인가요?', 'What helped you most in PracExam, and why?') + '</label>'
