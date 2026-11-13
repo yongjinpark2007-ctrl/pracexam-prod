@@ -11,6 +11,7 @@
   if (!IS_TEST) return;   // not live on pracexam.com until wired and approved
 
   var MIN_SOLVED = 250;
+  function realLen(t){ return String(t || '').replace(/[\s\u3131-\u318E]/g, '').length; }
   function minChars(){ return en() ? 100 : 40; }   // boss 2026-11-13: KO screen 40, EN screen 100
   var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 
@@ -118,7 +119,7 @@
 
   function counter(id, outId){
     var t = document.getElementById(id), o = document.getElementById(outId);
-    function upd(){ var n = t.value.trim().length; o.textContent = n + L(' / 최소 ' + minChars() + '자', ' / min ' + minChars()); o.classList.toggle('ok', n >= minChars()); }
+    function upd(){ var n = realLen(t.value); o.textContent = n + L(' / 최소 ' + minChars() + '자', ' / min ' + minChars()); o.classList.toggle('ok', n >= minChars()); }
     t.addEventListener('input', upd); upd();
   }
 
@@ -164,9 +165,9 @@
     var consent = document.getElementById('rvm-q5').checked, err = document.getElementById('rvm-err');
     if (!q2 || !q3){ err.textContent = L('2번과 3번 질문에 답변을 입력해 주세요.', 'Please answer questions 2 and 3.'); return; }
     if (consent && !document.getElementById('rvm-name').value.trim()){ err.textContent = L('후기에 표시할 이름을 적어 주세요.', 'Please enter the name to show on your review.'); document.getElementById('rvm-name').focus(); return; }
-    if (consent && (q2.length < minChars() || q3.length < minChars())){
+    if (consent && (realLen(q2) < minChars() || realLen(q3) < minChars())){
       err.textContent = L('게시에 동의하셨으므로 2번과 3번 답변을 각각 ' + minChars() + '자 이상 써 주세요.', 'Because you agreed to publish, answers 2 and 3 must each be at least ' + minChars() + ' characters.');
-      (q2.length < minChars() ? document.getElementById('rvm-q2') : document.getElementById('rvm-q3')).focus();
+      (realLen(q2) < minChars() ? document.getElementById('rvm-q2') : document.getElementById('rvm-q3')).focus();
       return;
     }
     // DESIGN STAGE: nothing is saved. passed = checked parts.
