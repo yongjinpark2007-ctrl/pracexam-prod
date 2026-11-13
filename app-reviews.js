@@ -352,7 +352,10 @@
       + (list.length ? rows : empty)
       + '<div class="rvp-sec">' + L('선물받은 코드 등록', 'Redeem a gifted code') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
-      + '<p class="rvp-note">' + L('친구에게 선물받은 코드는 PracExam을 처음 이용하는 계정(결제한 적 없는 계정)에서만 등록할 수 있습니다. 리뷰를 쓰시고 직접 받은 내 코드는 위의 「내 계정에 사용」을 누르시면 되고, 구독 중이시면 다음 결제일이 30일 뒤로 미뤄집니다.', 'A code you received as a gift works only on an account that is new to PracExam and has never paid. For your own code from your review, use «Use on my account» above; if you are subscribed, your next billing date moves 30 days later.') + '</p>';
+      + '<p class="rvp-note">' + (list.length
+          ? L('친구에게 선물받은 코드는 PracExam을 처음 이용하는 계정(결제한 적 없는 계정)에서만 등록할 수 있습니다. 리뷰를 쓰시고 직접 받은 내 코드는 위의 「내 계정에 사용」을 누르시면 되고, 구독 중이시면 다음 결제일이 30일 뒤로 미뤄집니다.', 'A code you received as a gift works only on an account that is new to PracExam and has never paid. For your own code from your review, use «Use on my account» above; if you are subscribed, your next billing date moves 30 days later.')
+          : L('친구에게 선물받은 코드는 PracExam을 처음 이용하는 계정(결제한 적 없는 계정)에서만 등록할 수 있습니다.', 'A code you received as a gift works only on an account that is new to PracExam and has never paid.'))
+        + '</p>';   // boss 2026-11-14: the «Use on my account» hint only when the user has a pass
     card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ b.disabled = true; redeem(b.getAttribute('data-rvp-use')); }; });
     card.querySelectorAll('[data-rvp-gift]').forEach(function(b){ b.onclick = function(){
       var code = b.getAttribute('data-rvp-gift'), box = document.getElementById('gift-' + code), msg = giftText(code, b.getAttribute('data-exp'));
