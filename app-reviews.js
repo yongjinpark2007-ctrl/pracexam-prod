@@ -228,8 +228,8 @@
     invalid:    ['코드를 찾을 수 없습니다. 다시 확인해 주세요.', 'We could not find that code. Please check it.'],
     used:       ['이미 사용된 코드입니다.', 'This code has already been used.'],
     expired:    ['사용 기한이 지난 코드입니다.', 'This code has expired.'],
-    not_new:    ['선물받은 이용권은 PracExam에서 결제한 적이 없는 계정에서만 쓸 수 있습니다.', 'Gifted codes work only on accounts that have never paid for PracExam.'],
-    gift_used:  ['선물받은 이용권은 계정당 한 번만 쓸 수 있습니다.', 'A gifted code can be used only once per account.'],
+    not_new:    ['선물받은 이용권은 PracExam에서 결제한 적이 없는 계정에서만 쓸 수 있습니다.', 'Gifted passes work only on accounts that have never paid for PracExam.'],
+    gift_used:  ['선물받은 이용권은 계정당 한 번만 쓸 수 있습니다.', 'A gifted pass can be used only once per account.'],
     needs_payment: ['이 이용권은 첫 결제 후에 사용하실 수 있습니다.', 'This pass can be used after your first payment.']
   };
   function reasonText(r){ var x = REASONS[r]; return x ? L(x[0], x[1]) : L('잠시 후 다시 시도해 주세요.', 'Please try again in a moment.'); }
@@ -349,15 +349,15 @@
         : '';
       return '<div class="rvp-row"><div><div class="rvp-code">' + esc(p.code) + chip + '</div><div class="rvp-meta">' + meta + '</div></div>' + btns + '<div class="rvp-gift" id="gift-' + esc(p.code) + '" hidden></div></div>';
     }).join('');
-    var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have any passes yet. Study at least 250 questions and leave a review to receive one.')
+    var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 250 questions and leave a review to receive one.')
       + '</div>' + (canReview() ? '<div style="margin-top:10px;"><button class="btn-navy" type="button" id="rvp-write" style="padding:9px 18px;font-size:14.5px;">' + L('리뷰 작성하기', 'Write a Review') + '</button></div>' : '');   // boss 2026-11-14: a button, not a link
     card.innerHTML = '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
       + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('하나의 이용권으로 Pro를 30일 동안 사용할 수 있습니다.', 'One pass gives you 30 days of Pro.') + '</div>'
       + '<div class="rvp-sec" style="border-top:none;padding-top:4px;margin-top:8px;">' + L('내 이용권', 'My pass') + '</div>'
       + (list.length ? rows : empty)
-      + '<div class="rvp-sec">' + L('선물받은 이용권 등록', 'Redeem a gifted code') + '</div>'
+      + '<div class="rvp-sec">' + L('선물받은 이용권 등록', 'Redeem a gifted pass') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
-      + '<p class="rvp-note">' + L('선물받은 이용권은 PracExam을 처음 이용하는 계정에서 등록할 수 있습니다.', 'Gifted codes are for accounts that are new to PracExam.') + '</p>'
+      + '<p class="rvp-note">' + L('선물받은 이용권은 PracExam을 처음 이용하는 계정에서 등록할 수 있습니다.', 'Gifted passes are for accounts that are new to PracExam.') + '</p>'
       + '<p class="rvp-note">' + L('자세한 이용권 약관은 ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">여기</a>' + '를 참조하세요.', 'For the full pass terms, see ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">here</a>' + '.') + '</p>';   // boss 2026-11-14: «자세한 이용권 약관은 여기를 참조하세요»
     card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ b.disabled = true; redeem(b.getAttribute('data-rvp-use')); }; });
     card.querySelectorAll('[data-rvp-gift]').forEach(function(b){ b.onclick = function(){
