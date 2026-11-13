@@ -4300,8 +4300,8 @@ function updateTrialStatusUI(){
     var _endLoc = (LANG === 'en') ? 'en-US' : 'ko-KR';
     var _endDate = new Date(S.trialEndsAt).toLocaleDateString(_endLoc);
     txt.textContent = (LANG === 'en')
-      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (10/day, Quick mode)')
-      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 10문제, Quick 모드)');
+      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (10/day)')
+      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 10문제)');
     if(act) act.innerHTML = _upgradeBtn;
   } else {
     card.style.display = 'none'; return;
