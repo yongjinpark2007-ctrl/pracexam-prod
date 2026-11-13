@@ -19,6 +19,14 @@ body[data-exam="ea"] .stats .stat-num{font-size:clamp(20px,2.2vw,27px);}
 body[data-exam="ea"] .stats .stat-label{margin-top:6px; line-height:1.4;}
 @media (max-width:760px){ body[data-exam="ea"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} body[data-exam="ea"] .stats-grid > div + div{border-left:none;} }
 /* samples «미리 풀어보기» (boss 2026-11-13): a quiet background that matches neither neighbour
-   (above = War Room light-teal gradient, below = pricing grey-teal). Warm ivory; the white question card stays crisp. */
-body[data-exam="ea"] .samples{background:linear-gradient(180deg,#FBF8F3 0%,#F5EFE7 100%); border-top:none; border-bottom:none;}
-body[data-exam="ea"] .samples .sample-card{box-shadow:0 4px 18px rgba(120,90,60,.10);}
+   (above = War Room light-teal gradient, below = pricing grey-teal). Ivory was rejected. Options for the boss (test switcher):
+   s1 soft blue-grey · s2 white with a faint dot grid · s3 pale slate gradient · s4 plain white */
+body[data-exam="ea"] .samples{border-top:none; border-bottom:none;}
+body[data-exam="ea"] .samples .sample-card{box-shadow:0 4px 18px rgba(var(--navy-rgb),.10);}
+body[data-exam="ea"] .samples.sbg-1{background:linear-gradient(180deg,#F1F5F9 0%,#E8EEF5 100%);}
+body[data-exam="ea"] .samples.sbg-2{background-color:#FBFCFC; background-image:radial-gradient(rgba(var(--navy-rgb),.10) 1px, transparent 1.2px); background-size:18px 18px;}
+body[data-exam="ea"] .samples.sbg-3{background:linear-gradient(180deg,#F7F9FA 0%,#EDF1F3 100%);}
+body[data-exam="ea"] .samples.sbg-4{background:#fff;}
+.sbg-pick{display:flex; justify-content:center; gap:6px; flex-wrap:wrap; margin:-20px 0 22px;}
+.sbg-pick button{font:600 12px var(--font-sans); padding:4px 10px; border-radius:999px; border:1px solid var(--border-strong); background:#fff; color:var(--text-main); cursor:pointer;}
+.sbg-pick button[aria-pressed="true"]{background:var(--navy); color:#fff;}
