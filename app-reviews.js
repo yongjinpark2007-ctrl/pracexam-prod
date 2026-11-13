@@ -84,6 +84,8 @@
     + '.rvp-gift{width:100%;background:var(--page-bg,#f4f6f6);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;color:var(--text-main);margin-top:8px;}'
     + '.rvp-gift textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;min-height:96px;padding:8px 10px;border:1px solid var(--border-clr);border-radius:8px;margin:6px 0;}'
     + '.rvp-sec{font-size:14px;font-weight:700;color:var(--text-muted);margin:18px 0 6px;padding-top:14px;border-top:1px solid var(--border-clr);}'
+    + '.rvp-row{border-bottom:none !important;}.rvp-row + .rvp-row{border-top:1px solid var(--border-clr);}'   // boss 2026-11-14: no double line
+    + '.rvp-sec.rvp-split{border-top:2px solid rgba(53,70,73,.35);margin-top:20px;padding-top:16px;}'   // darker divider between «My pass» and «from a friend»
     + '.rvp-note{font-size:13.5px;color:var(--text-muted);line-height:1.6;margin-top:10px;}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -363,7 +365,7 @@
       + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('하나의 이용권으로 Pro를 30일 동안 사용할 수 있습니다.', 'One pass gives you 30 days of Pro.') + '</div>'
       + '<div class="rvp-sec" style="border-top:none;padding-top:4px;margin-top:8px;">' + L('내 이용권', 'My pass') + '</div>'
       + (list.length ? rows : empty)
-      + '<div class="rvp-sec">' + L('친구에게서 받은 이용권 등록', 'Redeem a pass from a friend') + '</div>'
+      + '<div class="rvp-sec rvp-split">' + L('친구에게서 받은 이용권 등록', 'Redeem a pass from a friend') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
       + '<p class="rvp-note">' + L('친구에게서 받은 이용권은 PracExam을 처음 이용하는 계정에서 등록할 수 있습니다.', 'Passes from a friend are for accounts that are new to PracExam.') + '</p>'
       + '<p class="rvp-note">' + L('자세한 이용권 약관은 ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">여기</a>' + '를 참조하세요.', 'For the full pass terms, see ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">here</a>' + '.') + '</p>';   // boss 2026-11-14: «자세한 이용권 약관은 여기를 참조하세요»
