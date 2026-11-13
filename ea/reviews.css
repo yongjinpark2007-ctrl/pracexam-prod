@@ -106,3 +106,17 @@
 .rv-bg-pick{display:flex; justify-content:center; gap:6px; margin:0 0 14px; flex-wrap:wrap;}
 .rv-bg-pick button{font:600 12px var(--font-sans); padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.15); color:#fff; cursor:pointer;}
 .rv-bg-pick button[aria-pressed="true"]{background:#fff; color:#222;}
+
+/* 6 War Room style (boss 2026-11-13: «밝은 느낌이지만 흰색 박스는 잘 보이는») — same gradient + soft circles as .tpiq-section */
+#reviews.rv-bg-6{background:linear-gradient(180deg, var(--navy-light) 0%, #cde3e1 100%); position:relative; overflow:hidden;}
+#reviews.rv-bg-6::before{content:''; position:absolute; top:-140px; left:-100px; width:380px; height:380px; border-radius:50%; background:rgba(var(--accent-rgb),.12); pointer-events:none;}
+#reviews.rv-bg-6::after{content:''; position:absolute; bottom:-180px; right:-120px; width:420px; height:420px; border-radius:50%; background:rgba(var(--navy-rgb),.06); pointer-events:none;}
+#reviews.rv-bg-6 .wrap{position:relative; z-index:1;}
+#reviews.rv-bg-6 .rv-head .eyebrow{color:var(--accent);}
+#reviews.rv-bg-6 .rv-head h2{color:var(--text-main);}
+#reviews.rv-bg-6 .rv-card{box-shadow:0 8px 24px rgba(var(--navy-rgb),.10);}
+#reviews.rv-bg-6 .rv-nav button{background:var(--white,#fff); border-color:var(--border-strong); color:var(--navy);}
+#reviews.rv-bg-6 .rv-nav button:hover{background:var(--navy-light);}
+#reviews.rv-bg-6 .rv-disclose-foot a{color:var(--navy);}
+#reviews.rv-bg-6 .rv-bg-pick button{border-color:var(--border-strong); background:rgba(255,255,255,.6); color:var(--text-main);}
+#reviews.rv-bg-6 .rv-bg-pick button[aria-pressed="true"]{background:var(--navy); color:#fff;}
