@@ -22,9 +22,7 @@
   function passBadge(r){
     var p = (r.passed || []).filter(function(n){ return n >= 1 && n <= 3; }).sort();
     if (!p.length) return '';
-    var ko = p.length === 3 ? '전 파트 합격' : 'Part ' + p.join('·') + ' 합격';
-    var en = p.length === 3 ? 'Passed all 3' : 'Passed Part' + (p.length > 1 ? 's ' + p.join(' & ') : ' ' + p[0]);
-    return '<span class="rv-pass" title="Self-reported · 본인 응답">' + bi(ko, en) + '</span>';
+    return '<span class="rv-pass" title="Passed · self-reported / 합격 · 본인 응답"><img src="/check-mark.png" alt="" width="14" height="14">Part ' + p.join('·') + '</span>';
   }
   function dateText(d){
     var m = /^(\d{4})-(\d{2})/.exec(d || '');
@@ -35,7 +33,7 @@
   var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="5 12.5 10 17 19 7"></polyline></svg>';
   function card(r, clamp){
     var vt = r.subscriber ? 'Verified Subscriber · 구독 회원 인증' : 'Verified User · 회원 인증';
-    var meta = [ r.state ? esc(r.state) : '', dateText(r.date) ].filter(Boolean).join(' · ');
+    var meta = [ r.subscriber ? 'Verified Subscriber' : 'Verified User', r.state ? esc(r.state) : '', dateText(r.date) ].filter(Boolean).join(' · ');
     var init = esc(String(r.name || '?').trim().charAt(0).toUpperCase());
     var tag = clamp ? 'a' : 'article';
     var link = clamp ? ' href="' + (document.documentElement.className.indexOf('lang-ko') > -1 ? '/ea/reviews/ko/' : '/ea/reviews/') + '#' + key(r) + '" data-rv-link' : ' id="' + key(r) + '"';
@@ -43,7 +41,7 @@
       + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + esc(r.helped) + '</p>'
       + (r.advice ? '<p class="rv-advice"><b>' + 'To Future EAs:' + '</b> ' + esc(r.advice) + '</p>' : '')
       + '<div class="rv-foot"><span class="rv-av" aria-hidden="true">' + init + '</span>'
-      +   '<span class="rv-who"><span class="rv-name">' + esc(r.name) + '</span><span class="rv-check" title="' + vt + '" aria-label="' + vt + '">' + CHECK + '</span>'
+      +   '<span class="rv-who"><span class="rv-name">' + esc(r.name) + '</span>'
       +   '<span class="rv-meta">' + meta + '</span></span>' + passBadge(r) + '</div>'
       + '</' + tag + '>';
   }

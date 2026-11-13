@@ -161,3 +161,8 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
   color:var(--terracotta-deep,#b85f3f); background:var(--terracotta-tint,#fbf1ec); border:1px solid var(--terracotta-border,#efd0c1); cursor:help;}
 #reviews .rv-foot{font-size:12px;}
 .rv-meta{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+/* footer v4 (boss 2026-11-13): words «Verified …», state and date in small text, shown in full (no ellipsis);
+   pass pill = logo check mark + «Part 1» */
+.rv-meta{white-space:normal; overflow:visible; text-overflow:clip; font-size:10.5px; line-height:1.4; color:var(--text-muted);}
+.rv-pass{display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 8px 2px 5px;}
+.rv-pass img{width:14px; height:14px; display:block;}
