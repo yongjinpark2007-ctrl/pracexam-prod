@@ -22,7 +22,7 @@
     var p = { p1: '1', p2: '2', p3: '3' }[r.result];
     if (p) return '<span class="rv-badge pass">' + bi('Part ' + p + ' 합격 · 본인 응답', 'Passed Part ' + p + ' (self-reported)') + '</span>';
     if (r.result === 'all') return '<span class="rv-badge pass">' + bi('세 파트 모두 합격 · 본인 응답', 'Passed all 3 parts (self-reported)') + '</span>';
-    return '<span class="rv-badge study">' + bi('공부 중', 'Currently studying') + '</span>';
+    return '<span class="rv-badge study">' + bi('학습 중', 'Currently studying') + '</span>';
   }
 
   function dateText(d){
@@ -42,7 +42,7 @@
       + (r.sample ? '<span class="rv-sample-tag">SAMPLE</span>' : '')
       + '<div class="rv-quote-mark" aria-hidden="true">&ldquo;</div>'
       + '<p class="rv-text">' + esc(r.helped) + '</p>'
-      + (r.advice ? '<div class="rv-advice"><span class="rv-advice-label">' + bi('이제 시작하는 분께', 'To someone just starting') + '</span><p>' + esc(r.advice) + '</p></div>' : '')
+      + (r.advice ? '<div class="rv-advice"><span class="rv-advice-label">' + bi('새로 시작하시는 분들께', 'To someone just starting') + '</span><p>' + esc(r.advice) + '</p></div>' : '')
       + '<div class="rv-foot">'
       +   '<div class="rv-who"><span class="rv-avatar" aria-hidden="true">' + esc(initial) + '</span>'
       +     '<span><span class="rv-name">' + esc(r.name) + '</span><br><span class="rv-meta">' + meta + '</span></span></div>'
@@ -77,7 +77,7 @@
 
   function sampleBanner(list){
     if (!list.some(function(r){ return r.sample; })) return '';
-    return '<div class="rv-sample-banner">' + bi('디자인 확인용 SAMPLE 리뷰입니다. 실제 고객 리뷰가 아닙니다.', 'SAMPLE reviews for design review only. These are not real customer reviews.') + '</div>';
+    return '<div class="rv-sample-banner">' + bi('디자인 확인용 샘플(SAMPLE) 후기입니다. 실제 고객 리뷰가 아닙니다.', 'SAMPLE reviews for design review only. These are not real customer reviews.') + '</div>';
   }
 
   // ── EA landing section ──
