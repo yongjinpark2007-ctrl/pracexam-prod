@@ -130,6 +130,17 @@
       box.querySelectorAll('.rv-carousel').forEach(carousel);
     }
     sec.hidden = false;
+    // TEST ONLY: background options for the boss to compare (2026-11-13). Remove after the choice.
+    if (IS_TEST){
+      var names = ['1 진한 청록','2 테라코타','3 중간 청록','4 딥 인디고','5 머스터드 골드'];
+      var pick = document.createElement('div'); pick.className = 'rv-bg-pick';
+      pick.innerHTML = names.map(function(n, i){ return '<button type="button" data-bg="' + (i + 1) + '">' + n + '</button>'; }).join('');
+      function setBg(k){ for (var j = 1; j <= 5; j++) sec.classList.toggle('rv-bg-' + j, String(j) === String(k));
+        pick.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-bg') === String(k))); }); }
+      pick.addEventListener('click', function(e){ var b = e.target.closest('button'); if (b) setBg(b.getAttribute('data-bg')); });
+      var head = sec.querySelector('.rv-head'); head.parentNode.insertBefore(pick, head.nextSibling);
+      setBg(new URLSearchParams(location.search).get('rvbg') || 2);
+    }
   }
 
   // ── /ea/reviews/ page ──

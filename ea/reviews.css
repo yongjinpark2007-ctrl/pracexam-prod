@@ -96,3 +96,13 @@
 #reviews .rv-sample-banner{background:rgba(255,255,255,.92);}
 /* continuous drift: no snapping, no smooth-scroll fighting the animation */
 #reviews .rv-track{scroll-snap-type:none; scroll-behavior:auto;}
+
+/* background options for the boss to compare (test site switcher in reviews.js) */
+#reviews.rv-bg-1{background:var(--navy,#354649);}                                   /* 1 navy (current) */
+#reviews.rv-bg-2{background:linear-gradient(135deg,#C97A5F 0%,#B85F3F 100%);}       /* 2 terracotta (EA warm accent) */
+#reviews.rv-bg-3{background:linear-gradient(135deg,#6FA39E 0%,#4F837E 100%);}       /* 3 mid teal (EA accent) */
+#reviews.rv-bg-4{background:linear-gradient(135deg,#2B3A55 0%,#1E2A40 100%);}       /* 4 deep indigo */
+#reviews.rv-bg-5{background:linear-gradient(135deg,#B8924A 0%,#9A7536 100%);}       /* 5 muted gold */
+.rv-bg-pick{display:flex; justify-content:center; gap:6px; margin:0 0 14px; flex-wrap:wrap;}
+.rv-bg-pick button{font:600 12px var(--font-sans); padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.15); color:#fff; cursor:pointer;}
+.rv-bg-pick button[aria-pressed="true"]{background:#fff; color:#222;}
