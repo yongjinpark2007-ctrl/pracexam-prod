@@ -40,7 +40,7 @@
     return '<' + tag + link + ' class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
       + '<div class="rv-quote-mark" aria-hidden="true">&ldquo;</div>'
       + '<p class="rv-text">' + esc(r.helped) + '</p>'
-      + (r.advice ? '<p class="rv-advice"><b>' + bi('후배들께:', 'To Future EAs:') + '</b> ' + esc(r.advice) + '</p>' : '')
+      + (r.advice ? '<p class="rv-advice"><b>' + 'To Future EAs:' + '</b> ' + esc(r.advice) + '</p>' : '')
       + '<div class="rv-foot">' + who + '<span class="rv-badges"><span class="ok">' + verified + '</span> · ' + passedText(r) + '</span></div>'
       + '</' + tag + '>';
   }
