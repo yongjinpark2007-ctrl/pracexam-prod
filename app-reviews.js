@@ -349,7 +349,13 @@
         : '';
       return '<div class="rvp-row"><div><div class="rvp-code">' + esc(p.code) + chip + '</div><div class="rvp-meta">' + meta + '</div></div>' + btns + '<div class="rvp-gift" id="gift-' + esc(p.code) + '" hidden></div></div>';
     }).join('');
-    var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 250 questions and leave a review to receive one.')
+    // boss 2026-11-14: the empty-state text follows where the customer is
+    var emptyMsg = canReview()
+      ? L('이제 리뷰를 남기실 수 있습니다. 리뷰를 남겨 주시면 30-Day Pro Pass를 드립니다.', 'You can now leave a review. Leave one and receive a 30-Day Pro Pass.')
+      : (INFO && INFO.has_review)
+        ? L('리뷰를 남겨 주셔서 감사합니다. 게시에 동의하지 않으셔서 이용권은 발급되지 않았습니다.', 'Thank you for your review. No pass was issued because you did not agree to publish it.')
+        : L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 250 questions and leave a review to receive one.');
+    var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + emptyMsg
       + '</div>' + (canReview() ? '<div style="margin-top:10px;"><button class="btn-navy" type="button" id="rvp-write" style="padding:9px 18px;font-size:14.5px;">' + L('리뷰 작성하기', 'Write a Review') + '</button></div>' : '');   // boss 2026-11-14: a button, not a link
     card.innerHTML = '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
       + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('하나의 이용권으로 Pro를 30일 동안 사용할 수 있습니다.', 'One pass gives you 30 days of Pro.') + '</div>'
