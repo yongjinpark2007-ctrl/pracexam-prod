@@ -128,7 +128,7 @@
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 증정 내용', 'How the 30-Day Pro Pass works') + '</b><ul>'
       + '<li>' + L('리뷰 게시에 동의하시고 2번과 3번 항목을 각각 ' + minChars() + '자 이상 작성하시면 리뷰 내용에 상관없이 30-Day Pro Pass 코드를 증정합니다.', 'Agree to publish and write at least ' + minChars() + ' characters each for questions 2 and 3, and you receive a 30-Day Pro Pass code, whatever your review says.') + '</li>'
       + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam이 처음인 친구, 동료에게 선물하실 수 있습니다.', 'Use the code yourself within 12 months, or give it to a friend or colleague who is new to PracExam.') + '</li>'
-      + '</ul></div>';
+      + '</ul><a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--text-muted);">' + L('이용권 조건 자세히 보기', 'Pass terms in detail') + '</a></div>';
   }
 
   function counter(id, outId){
@@ -357,10 +357,8 @@
       + (list.length ? rows : empty)
       + '<div class="rvp-sec">' + L('선물받은 코드 등록', 'Redeem a gifted code') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
-      + '<p class="rvp-note">' + (list.length
-          ? L('친구에게 선물받은 코드는 PracExam을 처음 이용하는 계정(결제한 적 없는 계정)에서만 등록할 수 있습니다. 리뷰를 쓰시고 직접 받은 내 코드는 위의 「내 계정에 사용」을 누르시면 되고, 구독 중이시면 다음 결제일이 30일 뒤로 미뤄집니다.', 'A code you received as a gift works only on an account that is new to PracExam and has never paid. For your own code from your review, use «Use on my account» above; if you are subscribed, your next billing date moves 30 days later.')
-          : L('친구에게 선물받은 코드는 PracExam을 처음 이용하는 계정(결제한 적 없는 계정)에서만 등록할 수 있습니다.', 'A code you received as a gift works only on an account that is new to PracExam and has never paid.'))
-        + '</p>';   // boss 2026-11-14: the «Use on my account» hint only when the user has a pass
+      + '<p class="rvp-note">' + L('선물받은 코드는 PracExam을 처음 이용하는 계정에서 등록할 수 있습니다.', 'Gifted codes are for accounts that are new to PracExam.') + '</p>'
+      + '<p style="margin-top:10px;"><a class="btn-ghost" style="display:inline-block;text-decoration:none;padding:8px 14px;font-size:14px;" href="/terms.html#pro-pass" target="_blank" rel="noopener">' + L('이용권 조건 자세히 보기', 'Pass terms in detail') + '</a></p>';   // boss 2026-11-14: details live in Terms §7
     card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ b.disabled = true; redeem(b.getAttribute('data-rvp-use')); }; });
     card.querySelectorAll('[data-rvp-gift]').forEach(function(b){ b.onclick = function(){
       var code = b.getAttribute('data-rvp-gift'), box = document.getElementById('gift-' + code), msg = giftText(code, b.getAttribute('data-exp'));
