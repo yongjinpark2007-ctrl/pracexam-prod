@@ -181,3 +181,6 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-foot > .rv-meta{grid-column:1 / span 2;}
 /* boss 2026-11-13: meta line smaller still */
 .rv-foot > .rv-meta{font-size:9.5px; letter-spacing:.01em;}
+/* boss 2026-11-13: pass pill smaller */
+.rv-pass{font-size:9.5px; padding:1px 6px 1px 4px; gap:3px;}
+.rv-pass img{width:11px; height:11px;}
