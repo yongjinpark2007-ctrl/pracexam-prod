@@ -38,7 +38,6 @@
     var tag = clamp ? 'a' : 'article';
     var link = clamp ? ' href="' + (document.documentElement.className.indexOf('lang-ko') > -1 ? '/ea/reviews/ko/' : '/ea/reviews/') + '#' + key(r) + '" data-rv-link' : ' id="' + key(r) + '"';
     return '<' + tag + link + ' class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
-      + (r.sample ? '<span class="rv-sample-tag">SAMPLE</span>' : '')
       + '<div class="rv-quote-mark" aria-hidden="true">&ldquo;</div>'
       + '<p class="rv-text">' + esc(r.helped) + '</p>'
       + (r.advice ? '<p class="rv-advice"><b>' + bi('후배들께:', 'To Future EAs:') + '</b> ' + esc(r.advice) + '</p>' : '')
@@ -71,6 +70,7 @@
   }
 
   function sampleBanner(list){
+    return '';   // boss 2026-11-13: no banner, the test site shows the samples as the real thing would look
     if (!list.some(function(r){ return r.sample; })) return '';
     return '<div class="rv-sample-banner">' + bi('디자인 확인용 샘플(SAMPLE) 후기입니다. 실제 고객 리뷰가 아닙니다.', 'SAMPLE reviews for design review only. These are not real customer reviews.') + '</div>';
   }
