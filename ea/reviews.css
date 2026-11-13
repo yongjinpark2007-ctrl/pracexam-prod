@@ -199,3 +199,7 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-foot > .rv-meta{font-size:12px; transform:scale(.82); transform-origin:left center; width:122%; white-space:nowrap;}
 .rv-pass{font-size:12px; transform:scale(.82); transform-origin:right center; padding:2px 8px 2px 5px; gap:4px;}
 .rv-pass img{width:14px; height:14px;}
+/* boss 2026-11-13: taller cards, more room between the review and the name block */
+#reviews .rv-card{padding:24px 20px 20px; min-height:300px;}
+.rv-foot{margin-top:auto; padding-top:14px;}
+.rv-advice{margin-bottom:14px;}
