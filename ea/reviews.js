@@ -31,16 +31,19 @@
     return m ? bi(m[1] + '년 ' + parseInt(m[2], 10) + '월', MON_EN[parseInt(m[2], 10) - 1] + ' ' + m[1]) : '';
   }
 
+  function key(r){ return 'rv-' + (r.id || (String(r.name || '') + '-' + String(r.date || ''))).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function card(r, clamp){
     var verified = r.subscriber ? bi('✓ 구독 회원 인증', '✓ Verified Subscriber') : bi('✓ 회원 인증', '✓ Verified User');
     var who = [ '<span class="rv-name">' + esc(r.name) + '</span>', r.state ? esc(r.state) : '', dateText(r.date) ].filter(Boolean).join(' · ');
-    return '<article class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
+    var tag = clamp ? 'a' : 'article';
+    var link = clamp ? ' href="' + (document.documentElement.className.indexOf('lang-ko') > -1 ? '/ea/reviews/ko/' : '/ea/reviews/') + '#' + key(r) + '" data-rv-link' : ' id="' + key(r) + '"';
+    return '<' + tag + link + ' class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
       + (r.sample ? '<span class="rv-sample-tag">SAMPLE</span>' : '')
       + '<div class="rv-quote-mark" aria-hidden="true">&ldquo;</div>'
       + '<p class="rv-text">' + esc(r.helped) + '</p>'
-      + (r.advice ? '<p class="rv-advice"><b>' + bi('새로 시작하시는 분들께:', 'To someone just starting:') + '</b> ' + esc(r.advice) + '</p>' : '')
+      + (r.advice ? '<p class="rv-advice"><b>' + bi('한마디:', 'Advice:') + '</b> ' + esc(r.advice) + '</p>' : '')
       + '<div class="rv-foot">' + who + '<span class="rv-badges"><span class="ok">' + verified + '</span> · ' + passedText(r) + '</span></div>'
-      + '</article>';
+      + '</' + tag + '>';
   }
 
   function sortReviews(list){
@@ -106,9 +109,14 @@
 
   var ARROW_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg>';
   var ARROW_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg>';
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[data-rv-link]'); if (!a) return;
+    var ko = document.documentElement.className.indexOf('lang-ko') > -1;
+    a.href = a.getAttribute('href').replace(/^\/ea\/reviews\/(ko\/)?/, ko ? '/ea/reviews/ko/' : '/ea/reviews/');
+  }, true);
   function carouselHtml(cls, list){
     return '<div class="rv-carousel ' + cls + '" aria-roledescription="carousel">'
-      + '<div class="rv-track" tabindex="0">' + list.map(function(r){ return card(r, true); }).join('') + list.map(function(r){ return card(r, true).replace('<article ', '<article aria-hidden="true" '); }).join('') + '</div>'
+      + '<div class="rv-track" tabindex="0">' + list.map(function(r){ return card(r, true); }).join('') + list.map(function(r){ return card(r, true).replace('<a ', '<a aria-hidden="true" tabindex="-1" '); }).join('') + '</div>'
       + '<div class="rv-nav"><button type="button" data-rv-prev aria-label="Previous">' + ARROW_L + '</button><button type="button" data-rv-next aria-label="Next">' + ARROW_R + '</button></div>'
       + '</div>';
   }
@@ -135,6 +143,8 @@
     var ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     box.innerHTML = all.map(function(r){ return card(r, false); }).join('');
+    if (location.hash){ var t = document.getElementById(location.hash.slice(1));
+      if (t){ setTimeout(function(){ t.scrollIntoView({ block: 'center' }); t.classList.add('rv-flash'); setTimeout(function(){ t.classList.remove('rv-flash'); }, 2600); }, 60); } }
     var empty = document.getElementById('rv-empty');
     if (empty) empty.hidden = all.length > 0;
     document.querySelectorAll('[data-rv-filter]').forEach(function(btn){

@@ -129,3 +129,9 @@
 #reviews.rv-bg-6 .rv-head{position:relative;}
 #reviews.rv-bg-6 .rv-head::before{content:''; position:absolute; top:-6px; left:calc(50% - 190px); width:46px; height:46px; border-radius:50%; background:rgba(var(--accent-rgb),.18); pointer-events:none;}
 @media (max-width:640px){ #reviews.rv-bg-6 .rv-head::before{display:none;} }
+
+/* landing cards are links to the full review (boss 2026-11-13) */
+a.rv-card{text-decoration:none; color:inherit; cursor:pointer; transition:box-shadow .15s, transform .15s;}
+a.rv-card:hover{box-shadow:0 10px 26px rgba(var(--navy-rgb),.16); transform:translateY(-2px);}
+a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
+.rv-card.rv-flash{box-shadow:0 0 0 3px var(--accent), 0 10px 26px rgba(var(--navy-rgb),.16); transition:box-shadow .3s;}
