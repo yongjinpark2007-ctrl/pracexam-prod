@@ -173,3 +173,9 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-foot > .rv-name{grid-column:2; font-weight:700; color:var(--text-main); font-size:13px; line-height:1.3; min-width:0;}
 .rv-foot > .rv-pass{grid-column:3; grid-row:1;}
 .rv-foot > .rv-meta{grid-column:2 / span 2; grid-row:2;}
+/* footer v6: drop the initial circle so «Verified Subscriber · CA · 2026.10» fits on one line */
+.rv-foot{grid-template-columns:minmax(0,1fr) auto; column-gap:8px;}
+.rv-foot .rv-av{display:none;}
+.rv-foot > .rv-name{grid-column:1;}
+.rv-foot > .rv-pass{grid-column:2;}
+.rv-foot > .rv-meta{grid-column:1 / span 2;}
