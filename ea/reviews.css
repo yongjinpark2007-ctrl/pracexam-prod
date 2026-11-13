@@ -166,3 +166,10 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-meta{white-space:normal; overflow:visible; text-overflow:clip; font-size:10.5px; line-height:1.4; color:var(--text-muted);}
 .rv-pass{display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 8px 2px 5px;}
 .rv-pass img{width:14px; height:14px; display:block;}
+/* footer v5: [initial] Name ........ [✓ Part 1]
+              Verified Subscriber · NJ · 2026.10   (one line, full width under the name and the pill) */
+.rv-foot{display:grid; grid-template-columns:30px minmax(0,1fr) auto; column-gap:10px; row-gap:1px; align-items:center;}
+.rv-foot .rv-av{grid-row:1 / span 2;}
+.rv-foot > .rv-name{grid-column:2; font-weight:700; color:var(--text-main); font-size:13px; line-height:1.3; min-width:0;}
+.rv-foot > .rv-pass{grid-column:3; grid-row:1;}
+.rv-foot > .rv-meta{grid-column:2 / span 2; grid-row:2;}

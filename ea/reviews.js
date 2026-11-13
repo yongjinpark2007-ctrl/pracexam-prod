@@ -41,8 +41,8 @@
       + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + esc(r.helped) + '</p>'
       + (r.advice ? '<p class="rv-advice"><b>' + 'To Future EAs:' + '</b> ' + esc(r.advice) + '</p>' : '')
       + '<div class="rv-foot"><span class="rv-av" aria-hidden="true">' + init + '</span>'
-      +   '<span class="rv-who"><span class="rv-name">' + esc(r.name) + '</span>'
-      +   '<span class="rv-meta">' + meta + '</span></span>' + passBadge(r) + '</div>'
+      +   '<span class="rv-name">' + esc(r.name) + '</span>' + passBadge(r)
+      +   '<span class="rv-meta">' + meta + '</span></div>'
       + '</' + tag + '>';
   }
 
