@@ -145,21 +145,7 @@
     });
   }
 
-  // TEST ONLY (2026-11-13): background options for the «미리 풀어보기» band. Remove after the boss picks one.
-  function samplesPicker(){
-    var sec = document.getElementById('samples'); if (!sec || !IS_TEST) return;
-    var names = ['1 연한 블루그레이','2 흰 바탕 + 점무늬','3 연한 슬레이트','4 흰색'];
-    var pick = document.createElement('div'); pick.className = 'sbg-pick';
-    pick.innerHTML = names.map(function(n, i){ return '<button type="button" data-k="' + (i + 1) + '">' + n + '</button>'; }).join('');
-    function set(k){ for (var j = 1; j <= 4; j++) sec.classList.toggle('sbg-' + j, String(j) === String(k));
-      pick.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-k') === String(k))); }); }
-    pick.addEventListener('click', function(e){ var b = e.target.closest('button'); if (b) set(b.getAttribute('data-k')); });
-    var head = sec.querySelector('.sec-head'); if (head) head.parentNode.insertBefore(pick, head.nextSibling);
-    set(1);
-  }
-
   function start(){
-    samplesPicker();
     var sec = document.getElementById('reviews'), page = document.getElementById('rv-all');
     if (!sec && !page) return;
     loadReviews().then(function(list){
