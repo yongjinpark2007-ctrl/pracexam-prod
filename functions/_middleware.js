@@ -89,7 +89,7 @@ function isRoot(url) {
 //    engines never list a copy of pracexam.com (duplicate content would hurt pracexam.com SEO).
 //  - Only the SHA-256 of the password is in this public repo. A Cloudflare env var GATE_PASSWORD_SHA256 overrides it.
 // ---------------------------------------------------------------------------
-const GATE_HOST_RE = /(^|\.)dxdgroup\.com$/i;
+const GATE_HOST_RE = /^test\.pracexam\.com$|(^|\.)dxdgroup\.com$/i;   // 2026-11-12: test site moving to test.pracexam.com (apex pracexam.com never matches)
 const GATE_DEFAULT_SHA256 = "bdff1fb817fce0908117140656e4c3ee1077ba44c4d4fa41679996f328424b0e";
 const GATE_COOKIE = "pe_test_gate";
 
