@@ -18,13 +18,13 @@
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function bi(ko, en){ return '<span class="ko">' + ko + '</span><span class="en">' + en + '</span>'; }
 
-  function passedText(r){
+  // Pass badge (boss 2026-11-13: the footer was cluttered). One short pill; «self-reported» moves to the tooltip.
+  function passBadge(r){
     var p = (r.passed || []).filter(function(n){ return n >= 1 && n <= 3; }).sort();
-    if (!p.length) return bi('학습 중', 'Currently studying');
-    if (p.length === 3) return '<span class="pass">' + bi('세 파트 모두 합격 (본인 응답)', 'Passed all 3 parts (self-reported)') + '</span>';
-    var ko = 'Part ' + p.join(', ') + ' 합격 (본인 응답)';
-    var en = 'Passed Part' + (p.length > 1 ? 's ' + p.join(' & ') : ' ' + p[0]) + ' (self-reported)';
-    return '<span class="pass">' + bi(ko, en) + '</span>';
+    if (!p.length) return '';
+    var ko = p.length === 3 ? '전 파트 합격' : 'Part ' + p.join('·') + ' 합격';
+    var en = p.length === 3 ? 'Passed all 3' : 'Passed Part' + (p.length > 1 ? 's ' + p.join(' & ') : ' ' + p[0]);
+    return '<span class="rv-pass" title="Self-reported · 본인 응답">' + bi(ko, en) + '</span>';
   }
   function dateText(d){
     var m = /^(\d{4})-(\d{2})/.exec(d || '');
@@ -32,15 +32,19 @@
   }
 
   function key(r){ return 'rv-' + (r.id || (String(r.name || '') + '-' + String(r.date || ''))).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="5 12.5 10 17 19 7"></polyline></svg>';
   function card(r, clamp){
-    var verified = r.subscriber ? bi('✓ 구독 회원 인증', '✓ Verified Subscriber') : bi('✓ 회원 인증', '✓ Verified User');
-    var who = [ '<span class="rv-name">' + esc(r.name) + '</span>', r.state ? esc(r.state) : '', dateText(r.date) ].filter(Boolean).join(' · ');
+    var vt = r.subscriber ? 'Verified Subscriber · 구독 회원 인증' : 'Verified User · 회원 인증';
+    var meta = [ r.state ? esc(r.state) : '', dateText(r.date) ].filter(Boolean).join(' · ');
+    var init = esc(String(r.name || '?').trim().charAt(0).toUpperCase());
     var tag = clamp ? 'a' : 'article';
     var link = clamp ? ' href="' + (document.documentElement.className.indexOf('lang-ko') > -1 ? '/ea/reviews/ko/' : '/ea/reviews/') + '#' + key(r) + '" data-rv-link' : ' id="' + key(r) + '"';
     return '<' + tag + link + ' class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
       + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + esc(r.helped) + '</p>'
       + (r.advice ? '<p class="rv-advice"><b>' + 'To Future EAs:' + '</b> ' + esc(r.advice) + '</p>' : '')
-      + '<div class="rv-foot">' + who + '<span class="rv-badges"><span class="ok">' + verified + '</span> · ' + passedText(r) + '</span></div>'
+      + '<div class="rv-foot"><span class="rv-av" aria-hidden="true">' + init + '</span>'
+      +   '<span class="rv-who"><span class="rv-name">' + esc(r.name) + '</span><span class="rv-check" title="' + vt + '" aria-label="' + vt + '">' + CHECK + '</span>'
+      +   '<span class="rv-meta">' + meta + '</span></span>' + passBadge(r) + '</div>'
       + '</' + tag + '>';
   }
 
