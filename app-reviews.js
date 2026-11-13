@@ -15,7 +15,7 @@
     var x = String(t || '').replace(/[^\p{L}\p{N}]/gu, '').replace(/[\u3131-\u318E]/g, '');
     return x.replace(/(.)\1{2,}/gu, '$1').length;
   }
-  function minChars(){ return en() ? 100 : 40; }   // boss 2026-11-13: KO screen 40, EN screen 100
+  function minChars(){ return en() ? 80 : 40; }   // boss 2026-11-13: KO screen 40, EN screen 80
   var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 
   function en(){ try { return LANG === 'en'; } catch(e){ return true; } }
