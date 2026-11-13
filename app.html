@@ -794,6 +794,8 @@ html, body {
 /* 문제·보기·해설 복사 방지 (관리자 제외 — 관리자면 loadFromCloud 에서 px-nocopy 를 뗀다) */
 html.px-nocopy .question-card,html.px-nocopy .explanation-card,html.px-nocopy #q-pills,html.px-nocopy .mk-qcard{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.px-nocopy .explanation-card input,html.px-nocopy .explanation-card textarea{-webkit-user-select:text;user-select:text;}
+/* 인쇄 방지 (관리자 제외) — 인쇄 미리보기·PDF 저장에 본문이 안 나온다 (2026-11-05) */
+@media print{html.px-nocopy body{display:none!important;}html.px-nocopy::before{content:'Printing is not available.';display:block;padding:40px;font:16px sans-serif;}}
 .q-copy-btn:hover{background:rgba(53,70,73,.08);border-color:rgba(53,70,73,.3);color:var(--teal);}
 .q-copy-btn.copied{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.2);color:#4ade80;}
 
@@ -1608,7 +1610,9 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 (function(){ try { if(/[?&]join=1/.test(location.search)){ var c = document.createElement('div'); c.id = 'join-cover';
   c.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--page-bg,#eef2f3);';
   document.body.appendChild(c); setTimeout(function(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }, 8000); } } catch(e){} })();
-function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove(); }
+// px_last_app (boss 2026-11-05): the hub puts the app last entered first. Set here because this runs only once the account is allowed in.
+function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x.remove();
+  try{ if(SB_USER) localStorage.setItem('px_last_app', 'ea|' + SB_USER.id); }catch(e){} }
 </script>
 <style>
 /* ── LOGIN GATE ── */
@@ -1748,12 +1752,14 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
       <button class="nav-btn" onclick="openStudy()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="nav_study">Study</span></button>
       <button class="nav-btn" id="nav-mock" onclick="showScreen('mock');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="nav_mock">Mock Exam</span></button>
       <button class="nav-btn" id="nav-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
+        <button class="nav-btn" id="nav-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Weak Topics</span></button>
       <div class="nav-more-wrap" id="nav-more-wrap">
         <button class="nav-btn" id="nav-more" type="button" aria-haspopup="true" aria-expanded="false" onclick="toggleNavMore(event)"><span data-i18n="nav_more">더보기</span>&nbsp;▾</button>
         <div class="nav-more-menu" id="nav-more-menu">
         <button class="nav-btn" onclick="showScreen('bookmarks');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="nav_review">Review</span></button>
-        <button class="nav-btn" onclick="showScreen('statistics');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="nav_statistics">Statistics</span></button>
         <button class="nav-btn" id="nav-videos" onclick="showScreen('videos');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="nav_videos">동영상</span></button>
+        <button class="nav-btn" id="nav-exam-tips" type="button" onclick="openTipsPage('exam')"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg><span>Exam Tips</span></button>
+        <button class="nav-btn" id="nav-study-tips" type="button" onclick="openTipsPage('study')"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg><span>Study Tips</span></button>
         <button class="nav-btn" id="nav-upgrade-item" type="button" style="display:none;" onclick="showPricingModal()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg><span data-i18n="nav_upgrade">업그레이드</span></button>
         <button class="nav-btn" id="nav-settings" onclick="showScreen('settings');closeDrawer()"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
         </div>
@@ -1776,9 +1782,11 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   <button class="mobile-nav-item" id="mob-study" onclick="openStudy()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="mob_study">Study</span></button>
   <button class="mobile-nav-item" id="mob-mock" onclick="showScreen('mock');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L20 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="mob_mock">Mock Exam</span></button>
   <button class="mobile-nav-item" id="mob-warroom" onclick="showScreen('warroom');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>War Room</span></button>
+  <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Weak Topics</span></button>
   <button class="mobile-nav-item" id="mob-review" onclick="showScreen('bookmarks');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="mob_review">Review</span></button>
-  <button class="mobile-nav-item" id="mob-statistics" onclick="showScreen('statistics');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><span data-i18n="mob_statistics">Statistics</span></button>
   <button class="mobile-nav-item" id="mob-videos" onclick="showScreen('videos');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg><span data-i18n="mob_videos">동영상</span></button>
+  <button class="mobile-nav-item" id="mob-exam-tips" type="button" onclick="openTipsPage('exam')"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg><span>Exam Tips</span></button>
+  <button class="mobile-nav-item" id="mob-study-tips" type="button" onclick="openTipsPage('study')"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg><span>Study Tips</span></button>
   <button class="mobile-nav-item" id="mob-settings" onclick="showScreen('settings');closeDrawer()"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
   <button class="mobile-nav-item" id="mob-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="mob-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="nav_admin">관리자</span></button>
 </div>
@@ -2159,7 +2167,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 <!-- ═══ STATISTICS (Phase 4 완료 — 2026-06-13) ═══ -->
 <div id="screen-statistics" class="screen">
   <div style="margin-bottom:1.25rem;">
-    <div class="section-title" data-i18n="sts_title">Statistics</div>
+    <div class="section-title" data-i18n="sts_title">Weak Topics</div>
     <div style="font-size:13px;color:var(--text-muted);" data-i18n="sts_subtitle">학습 추세 · Part별 누적 성취도 · 토픽별 분석</div>
   </div>
 
@@ -2232,7 +2240,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 }
 </style>
 <div id="screen-videos" class="screen">
-  <div class="section-title" data-i18n="vid_title">동영상 EA 문제 풀이</div>
+  <div class="section-title" data-i18n="vid_title">EA 문제풀이 & TAX TIP</div>
   <div id="vid-body"></div>
   <div style="text-align:center;margin:1.5rem 0 .5rem;"><button class="btn-ghost" onclick="showScreen('dashboard')" data-i18n="vid_back">← 대시보드로 돌아가기</button></div>
 </div>
@@ -4102,7 +4110,7 @@ function isTrialLimited(){
   return !!SB_USER && SB_USER.id !== ADMIN_UID && !S.isPaid;
 }
 
-// Study Setup 화면을 Quick(5문제) 전용으로 단순화 — 체험 사용자 한정
+// Study Setup 화면을 체험 사용자용으로 단순화 — 문제 수 5 또는 10 (2026-11-10, 하루 10문제)
 function applyTrialSetupRestrictions(){
   const limited = isTrialLimited();
   const adv = document.getElementById('setup-advanced-options');
@@ -4114,7 +4122,10 @@ function applyTrialSetupRestrictions(){
 
   if(limited){
     // 무료 고정: 문제수 5·반복 무제한. Part는 자유(All/1/2/3), 범위는 전체·Unseen만 허용.
-    S.count = 5; S.repeatFilter = 'all';
+    // 2026-11-10: trial = 10 a day, so 5 or 10 may be picked (boss). Anything else falls back to 5.
+    if(S.count !== 5 && S.count !== 10) S.count = 5;
+    S.repeatFilter = 'all';
+    document.querySelectorAll('#setup-count-grid .setup-count-card').forEach(function(b){ var n = parseInt((b.querySelector('.setup-count-num')||{}).textContent, 10); b.classList.toggle('selected', n === S.count); });
     if(S.subset !== 'all' && S.subset !== 'unseen') S.subset = 'unseen';
     if(S.setupMode !== 'normal' && S.setupMode !== 'tpiq') S.setupMode = 'tpiq';
     if(S.mode !== 'normal' && S.mode !== 'tpiq') S.mode = S.setupMode;
@@ -4130,10 +4141,10 @@ function applyTrialSetupRestrictions(){
 }
 
 // 무료 체험 잠금: 허용 옵션만 활성, 나머지는 보이되 선택 불가(🔒).
-// 허용 = 문제수 '5/Quick', 학습모드 '일반'·'스마트(TPIQ)'.
+// 허용 = 문제수 '5/Quick'·'10/Standard', 학습모드 '일반'·'스마트(TPIQ)'.
 function applyTrialLocks(limited){
   var groups = [
-    ['#setup-count-grid .setup-count-card', [0]],       // 5 / Quick
+    ['#setup-count-grid .setup-count-card', [0,1]],     // 5 / Quick, 10 / Standard (trial 10 a day, 2026-11-10)
     ['#mode-row .setup-icon-btn',           [0,1]],      // Smart(TPIQ), Normal — 2026-08-20 자리 맞바꿈
     ['#part-row .setup-icon-btn',           [0,1,2]],    // Part: 1·2·3 모두 허용 (All 은 2026-08-21 삭제)
     ['#subset-row .setup-icon-btn',         [0,2]],      // 범위: Unseen(0)·Random(2) 허용 — 2026-08-20 자리 이동
@@ -4153,7 +4164,7 @@ function applyTrialLocks(limited){
 // 잠긴 옵션 클릭 시: 선택을 막고 업그레이드 안내 토스트
 function _trialLockGuard(btn){
   if(btn && btn.classList && btn.classList.contains('setup-locked')){
-    showToast(LANG === 'en' ? '🔒 Paid members only' : '🔒 유료 회원 전용 옵션입니다');
+    showToast(LANG === 'en' ? '🔒 Pro Members only' : '🔒 Pro 회원 전용 옵션입니다');
     return true;
   }
   return false;
@@ -4165,11 +4176,11 @@ function updateTrialQuotaBanner(){
   if(!el) return;
   // 체험(무료) 유저에게만 배너 노출. 유료·관리자·비로그인 → 숨김(멤버십은 '내 계정'에서 관리).
   if(!isTrialLimited()){ el.style.display = 'none'; return; }
-  const left = Math.max(0, 5 - (S.dailyUsed || 0));
+  const left = Math.max(0, 10 - (S.dailyUsed || 0));
   el.style.display = '';
   el.innerHTML = ((LANG === 'en')
-    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 5 Quick questions per day · remaining today: <strong>' + left + '</strong>')
-    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 5문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
+    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 10 Quick questions per day · remaining today: <strong>' + left + '</strong>')
+    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 10문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
     ' <button class="btn-navy" style="margin-left:8px;padding:4px 14px;font-size:12.5px;vertical-align:middle;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-align:center;line-height:1.4;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';   // centered (boss 2026-10-31)
 }
 
@@ -4191,7 +4202,7 @@ function showDailyQuotaModal(){
 // 새 세션 시작 전 종합 체크 (체험 만료 + 일일 한도)
 function canStartQuiz(){
   if(!checkTrialAccess()) return false;
-  if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return false; }
+  if(isTrialLimited() && (S.dailyUsed || 0) >= 10){ showDailyQuotaModal(); return false; }
   return true;
 }
 
@@ -4215,6 +4226,13 @@ function ambBadgeHtml(style){
   '</div>';
 }
 
+// Exam Tips / Study Tips from the app (boss 2026-11-05): members who log straight in to the app never saw these landing-menu pages.
+// New tab, so a study session in progress is not lost. The URL follows the app language: Study Tips has one URL per language.
+function openTipsPage(kind){
+  var ko = (LANG === 'ko');
+  var url = (kind === 'study') ? (ko ? '/tips/ko/' : '/tips/') : (ko ? '/ea/exam-tips/ko/' : '/ea/exam-tips/?lang=en');
+  closeNavMore(); closeDrawer(); window.open(url, '_blank', 'noopener');
+}
 // «More» menu (boss 2026-10-31)
 function toggleNavMore(ev){ if(ev) ev.stopPropagation(); var w = document.getElementById('nav-more-wrap'); if(!w) return;
   var open = !w.classList.contains('open'); w.classList.toggle('open', open);
@@ -4278,16 +4296,63 @@ function updateTrialStatusUI(){
     if(act) act.innerHTML = _upgradeBtn;
   } else if(S.trialEndsAt){
     var daysLeft = Math.max(0, Math.ceil((new Date(S.trialEndsAt) - new Date()) / (1000*60*60*24)));
-    var qLeft = Math.max(0, 5 - (S.dailyUsed || 0));
+    var qLeft = Math.max(0, 10 - (S.dailyUsed || 0));
     var _endLoc = (LANG === 'en') ? 'en-US' : 'ko-KR';
     var _endDate = new Date(S.trialEndsAt).toLocaleDateString(_endLoc);
     txt.textContent = (LANG === 'en')
-      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (5/day, Quick mode)')
-      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 5문제, Quick 모드)');
+      ? ('🎁 Free trial — ' + daysLeft + ' days left (ends ' + _endDate + ') · remaining today: ' + qLeft + ' (10/day, Quick mode)')
+      : ('🎁 무료 체험 중 — ' + daysLeft + '일 남음 (종료일: ' + _endDate + ') · 오늘 남은 문제: ' + qLeft + '개 (하루 10문제, Quick 모드)');
     if(act) act.innerHTML = _upgradeBtn;
   } else {
-    card.style.display = 'none';
+    card.style.display = 'none'; return;
   }
+  _memBoth(txt, 'ea');
+}
+
+// ── Membership card: EA and RE on separate lines (boss 2026-11-01) ──
+// One account can be an RE paid member and an EA trial member at once. EA status lives in profiles,
+// RE status in entitlements (exam 're-<state>'). The line for the app in view keeps its own text.
+var _MEM_STATE_NAMES = {ca:'California', tx:'Texas', fl:'Florida', nj:'New Jersey', ny:'New York', il:'Illinois'};
+var _memSeq = 0;
+function _memLine(row, joined){
+  var en = LANG === 'en', loc = en ? 'en-US' : 'ko-KR', now = new Date();
+  function d(x){ return new Date(x).toLocaleDateString(loc) + (en ? '' : '까지'); }
+  if(!joined || !row) return en ? 'Not joined' : '가입하지 않음';
+  if(row.is_paid && (!row.paid_until || new Date(row.paid_until) > now)){
+    var pc = String(row.plan_code || '');
+    var plan = pc.slice(0, 4) === 'comp' ? (en ? 'Complimentary' : '증정')
+             : pc === 'quarterly' ? (en ? '3-Month' : '3개월권')
+             : pc === 'monthly' ? (en ? 'Monthly' : '월간') : '';
+    return (en ? '✅ Pro Member' : '✅ Pro 회원') + (plan ? ' · ' + plan : '') +
+           (row.paid_until ? (en ? ' · until ' : ' · ') + d(row.paid_until) : '');
+  }
+  if(row.trial_ends_at && new Date(row.trial_ends_at) > now)
+    return (en ? '🎁 Free trial · until ' : '🎁 무료 체험 · ') + d(row.trial_ends_at);
+  return en ? 'Trial ended' : '체험 종료';
+}
+async function _memBoth(txt, cur){
+  if(!txt || !SB_USER) return;
+  var seq = ++_memSeq, curText = txt.textContent, en = LANG === 'en';
+  var ea = null, re = null;
+  try { var p = await sb.from('profiles').select('is_paid,plan_code,paid_until,trial_ends_at,ea_enrolled').eq('id', SB_USER.id).maybeSingle(); if(!p.error) ea = p.data; } catch(e){}
+  try { var r = await sb.from('entitlements').select('exam,is_paid,plan_code,paid_until,trial_ends_at').eq('user_id', SB_USER.id).like('exam', 're-%').maybeSingle(); if(!r.error) re = r.data; } catch(e){}
+  if(seq !== _memSeq) return;   // a newer render started
+  var st = re && re.exam ? _MEM_STATE_NAMES[re.exam.slice(3)] : '';
+  var eaLabel = en ? 'EA exam' : 'EA 시험';
+  var reLabel = (en ? 'Real estate exam' : '부동산 시험') + (st ? ' · ' + st : '');
+  var eaJoined = !!ea && (ea.ea_enrolled !== false || ea.is_paid);
+  var rows = cur === 're'
+    ? [[reLabel, curText, true], [eaLabel, _memLine(ea, eaJoined), false]]
+    : [[eaLabel, curText, true], [reLabel, _memLine(re, !!re), false]];
+  txt.textContent = '';
+  rows.forEach(function(x){
+    var line = document.createElement('div');
+    line.style.cssText = 'margin-bottom:6px;' + (x[2] ? '' : 'opacity:.85;');
+    var b = document.createElement('b'); b.textContent = x[0]; b.style.color = 'var(--text-main)';
+    line.appendChild(b); line.appendChild(document.createElement('br'));
+    line.appendChild(document.createTextNode(x[1]));
+    txt.appendChild(line);
+  });
 }
 
 // ── 마케팅 수신 동의 토글 (결제MP §12-1b 방식 A) ──
@@ -4402,8 +4467,8 @@ function checkTrialAccess(){
       '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + (LANG === 'en' ? 'Your free trial has ended' : '무료 체험이 종료되었습니다') + '</div>' +
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
         (LANG === 'en'
-          ? 'Upgrade to unlock unlimited practice.<br>Your stats stay available, but past questions are locked.'
-          : '업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.<br>통계는 계속 보실 수 있지만 푼 문제의 복습은 구독 중에만 가능합니다.') +
+          ? 'Upgrade to unlock unlimited practice.'
+          : '업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.') +
       '</div>' +
       '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
@@ -4429,8 +4494,8 @@ function showReviewLockedModal(){
       '<div style="font-size:18px;font-weight:700;margin-bottom:.5rem;">' + (LANG === 'en' ? 'Your membership has ended' : '멤버십이 종료되었습니다') + '</div>' +
       '<div style="font-size:14px;color:var(--text-mid);line-height:1.7;margin-bottom:1.25rem;">' +
         (LANG === 'en'
-          ? 'Renew to review questions and explanations again.<br>Your stats and progress stay available.'
-          : '다시 구독하면 문제와 해설을 다시 볼 수 있습니다.<br>통계와 학습 기록은 계속 보실 수 있습니다.') +
+          ? 'Renew to review questions and explanations again.<br>Weak Topics and your progress stay available.'
+          : '다시 구독하면 문제와 해설을 다시 볼 수 있습니다.<br>약점보강과 학습 기록은 계속 보실 수 있습니다.') +
       '</div>' +
       '<button class="btn-navy" style="width:100%;margin-bottom:8px;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>' +
       '<button class="btn-ghost" style="width:100%;" onclick="closeModal()">' + t('later') + '</button>' +
@@ -4457,8 +4522,8 @@ function applyReviewLock(){
         '<div class="empty-icon">🔒</div>' +
         '<div class="empty-title">' + (LANG === 'en' ? 'Review is for active members' : '복습은 구독 중인 회원 전용입니다') + '</div>' +
         '<div class="empty-sub" style="margin-bottom:12px;">' + (LANG === 'en'
-          ? 'Renew to open your past questions and explanations. Stats stay available.'
-          : '다시 구독하면 푼 문제와 해설을 볼 수 있습니다. 통계는 계속 확인하실 수 있습니다.') + '</div>' +
+          ? 'Renew to open your past questions and explanations.'
+          : '다시 구독하면 푼 문제와 해설을 볼 수 있습니다.') + '</div>' +
         '<button class="btn-navy" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';
     }
   }
@@ -4909,6 +4974,23 @@ document.addEventListener('keydown',function(e){
   if(k==='a') e.preventDefault();
   pxLogCopyAttempt('key_'+k);
 },true);
+// War Room 복사 시도 기록 + 인쇄 방지 (2026-11-05). 선택이 막혀 있으면 copy 이벤트가 본문에 안 오므로 키로 잡는다.
+function _pxWrActive(){ var s=document.getElementById('screen-warroom'); return !!(s&&s.classList.contains('active')); }
+function _pxWrQid(){ return (typeof WR!=='undefined'&&WR.cur)?('WR:'+WR.cur):'WR'; }
+document.addEventListener('keydown',function(e){
+  if(!document.documentElement.classList.contains('px-nocopy')) return;
+  if(!(e.ctrlKey||e.metaKey)) return;
+  var k=(e.key||'').toLowerCase();
+  if(k==='p'){ e.preventDefault(); if(_pxWrActive()) pxLogCopyAttempt('wr_print',_pxWrQid()); else pxLogCopyAttempt('print'); return; }
+  if((k==='c'||k==='x'||k==='a')&&_pxWrActive()){
+    var t=e.target; if(t&&t.closest&&t.closest('input,textarea,[contenteditable="true"]')) return;
+    pxLogCopyAttempt('wr_key_'+k,_pxWrQid());
+  }
+},true);
+window.addEventListener('beforeprint',function(){
+  if(!document.documentElement.classList.contains('px-nocopy')) return;
+  if(_pxWrActive()) pxLogCopyAttempt('wr_print',_pxWrQid()); else pxLogCopyAttempt('print');
+});
 (function(){
   var down=null;
   document.addEventListener('mousedown',function(e){
@@ -4923,11 +5005,11 @@ document.addEventListener('keydown',function(e){
 })();
 // 복사 시도 기록: 문항·종류별로 세션당 1번만 서버에 보낸다. RPC 가 아직 없어도 조용히 넘어간다.
 var _PX_COPY_LOGGED = {};
-function pxLogCopyAttempt(kind){
+function pxLogCopyAttempt(kind,qidOverride){
   try{
     if(!SB_USER || SB_USER.id === ADMIN_UID) return;
     var b = document.getElementById('q-id-badge');
-    var qid = (b && b.textContent ? b.textContent.replace('#','').trim() : '');
+    var qid = qidOverride || (b && b.textContent ? b.textContent.replace('#','').trim() : '');
     var key = kind + '|' + qid;
     if(_PX_COPY_LOGGED[key]) return;
     _PX_COPY_LOGGED[key] = true;
@@ -5239,7 +5321,7 @@ var UI_TEXT = {
   mock_submit_grade: {ko:'제출하고 채점', en:'Submit & grade'},
   mock_banner_resume:{ko:'이어하기', en:'Resume'},
   nav_review:    {ko:'복습',     en:'Review'},
-  nav_statistics:{ko:'통계',     en:'Statistics'},
+  nav_statistics:{ko:'약점보강', en:'Weak Topics'},
   mob_dashboard: {ko:'대시보드', en:'Dashboard'},
   // 앱 푸터 (2026-08-18) — 로그인 «후» 화면에는 푸터가 아예 없다는 지적을 받아 추가했다.
   //   (.app-footer CSS 는 예전부터 있었는데 정작 <footer> 요소가 빠져 있었다)
@@ -5250,13 +5332,13 @@ var UI_TEXT = {
   ft_contact: {ko:'문의',            en:'Contact'},
   mob_study:     {ko:'학습',     en:'Study'},
   mob_review:    {ko:'복습',     en:'Review'},
-  mob_statistics:{ko:'통계',     en:'Statistics'},
+  mob_statistics:{ko:'약점보강', en:'Weak Topics'},
   mob_settings:  {ko:'설정',     en:'Settings'},
   nav_videos:    {ko:'동영상',   en:'Videos'},
   nav_more:      {ko:'더보기',   en:'More'},
   nav_upgrade:   {ko:'업그레이드', en:'Upgrade'},
   mob_videos:    {ko:'동영상',   en:'Videos'},
-  vid_title:     {ko:'동영상 EA 문제 풀이', en:'EA Practice Question Videos'},
+  vid_title:     {ko:'EA 문제풀이 & TAX TIP', en:'EA Practice Questions & Tax Tips'},
   vid_back:      {ko:'← 대시보드로 돌아가기', en:'← Back to dashboard'},
   nav_account:   {ko:'내 계정',  en:'My Account'},
   nav_settings:  {ko:'설정',     en:'Settings'},
@@ -5269,7 +5351,7 @@ var UI_TEXT = {
   pw_new:        {ko:'새 비밀번호 (6자 이상)', en:'New password (at least 6 characters)'},
   pw_new2:       {ko:'새 비밀번호 확인', en:'Confirm new password'},
   pw_btn:        {ko:'비밀번호 변경', en:'Change password'},
-  acct_type_paid:{ko:'유료 멤버십', en:'Paid membership'},
+  acct_type_paid:{ko:'Pro 회원', en:'Pro Member'},
   acct_type_admin:{ko:'관리자 계정', en:'Admin account'},
   acct_type_trial:{ko:'무료 체험', en:'Free trial'},
   acct_type_expired:{ko:'무료 (체험 종료)', en:'Free (trial ended)'},
@@ -5414,7 +5496,7 @@ var UI_TEXT = {
   // 🔴 옛 문구는 «거짓»이었다 — 카드를 눌러도 학습이 시작되지 않는다(dashSetFocusPart 는
   //    히어로 포커스만 바꾼다). 진짜 시작은 히어로 CTA 뿐이다. 사장님 문구로 교체(2026-09-21).
   dash_allparts:  {ko:'Part 선택', en:'Part Selection'},
-  dash_recent:    {ko:'최근 학습', en:'Recent'},
+  dash_recent:    {ko:'최근 학습', en:'Recent Study'},
   dash_recent_empty_t: {ko:'아직 세션 없음', en:'No sessions yet'},
   dash_recent_empty_s: {ko:'Study 탭에서 학습을 시작하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   dash_weak_more:  {ko:'약점 보강 · ', en:'Weak Topics · '},
@@ -5422,7 +5504,7 @@ var UI_TEXT = {
   // ── Review / Bookmarks ──
   review_title:   {ko:'복습',    en:'Review'},
   rev_tab_flagged:{ko:'플래그 문제', en:'Flagged'},
-  rev_tab_sessions:{ko:'최근 세션', en:'Recent Sessions'},
+  rev_tab_sessions:{ko:'최근 세션', en:'Recent Studies'},
   bm_empty_t:     {ko:'플래그된 문제 없음', en:'No flagged questions'},
   bm_empty_s:     {ko:'학습 중 어려운 문제에 ⚑ 플래그를 달면 여기서 복습할 수 있습니다', en:'Flag tough questions with ⚑ during study to review them here'},
   bm_load_fail:   {ko:'(본문 로드 실패 — 다시 열어주세요)', en:'(Failed to load — please reopen)'},
@@ -5439,7 +5521,7 @@ var UI_TEXT = {
   rev_sess_empty_t:{ko:'세션 기록 없음', en:'No session records'},
   rev_sess_empty_s:{ko:'Study 탭에서 학습을 완료하면 여기에 기록됩니다', en:'Sessions you complete in Study appear here'},
   // ── Statistics ──
-  sts_title:      {ko:'통계',    en:'Statistics'},
+  sts_title:      {ko:'약점보강', en:'Weak Topics'},
   sts_subtitle:   {ko:'학습 추세 · Part별 누적 성취도 · 토픽별 분석', en:'Trends · cumulative accuracy by part · topic analysis'},
   sts_trend_title:{ko:'점수 추세 (최근 20세션)', en:'Score Trend (last 20 sessions)'},
   sts_trend_n:    {ko:'점수 추세 (최근 {n}세션)', en:'Score Trend (last {n} sessions)'},
@@ -5471,10 +5553,10 @@ var UI_TEXT = {
   sts_more:       {ko:'더 보기', en:'Show more'},
   // ── 무료 체험 / 멤버십 UI ──
   trial_banner:   {ko:'무료 체험 모드', en:'Free Trial'},
-  trial_paid:     {ko:'✅ 유료 멤버십 — 모든 문제 무제한 이용 가능', en:'✅ Paid membership — unlimited access to all questions'},
-  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다. 통계는 계속 확인할 수 있지만 푼 문제의 복습은 구독 중에만 가능합니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice. Your stats stay available, but reviewing past questions needs an active membership.'},
+  trial_paid:     {ko:'✅ Pro 회원 — 모든 문제 무제한 이용 가능', en:'✅ Pro Member — unlimited access to all questions'},
+  trial_expired:  {ko:'🔒 무료 체험이 종료되었습니다. 업그레이드하면 모든 문제를 무제한으로 풀 수 있습니다.', en:'🔒 Your free trial has ended. Upgrade to unlock unlimited practice.'},
   quota_title:    {ko:'오늘의 학습 한도를 모두 사용했습니다', en:"You've used today's practice limit"},
-  quota_body:     {ko:'무료 체험은 하루 5문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 5 questions per day.<br>Upgrade now for unlimited practice.'},
+  quota_body:     {ko:'무료 체험은 하루 10문제까지 이용 가능합니다.<br>지금 업그레이드하면 무제한으로 풀 수 있어요.', en:'The free trial allows up to 10 questions per day.<br>Upgrade now for unlimited practice.'},
   // ── 결제 / 업그레이드 (Phase 4) ──
   upgrade_cta:    {ko:'🚀 업그레이드', en:'🚀 Upgrade'},
   upgrade_now:    {ko:'🚀 지금 업그레이드하고 무제한', en:'🚀 Upgrade now for unlimited'},
@@ -5503,8 +5585,8 @@ var UI_TEXT = {
                 en:'Your card was not charged successfully. Please check your card details.'},
   pd_paused_title:{ko:'계정이 일시중지되었습니다',
                    en:'Your account is paused'},
-  pd_paused_body:{ko:'결제가 확인되지 않아 유료 이용이 일시중지되었습니다. 결제가 완료되면 바로 다시 이용하실 수 있습니다.',
-                  en:'We could not confirm your payment, so paid access is paused. It resumes as soon as payment goes through.'},
+  pd_paused_body:{ko:'결제가 확인되지 않아 Pro 이용이 일시중지되었습니다. 결제가 완료되면 바로 다시 이용하실 수 있습니다.',
+                  en:'We could not confirm your payment, so Pro access is paused. It resumes as soon as payment goes through.'},
   pd_btn:{ko:'결제수단 확인하기', en:'Check payment method'},
   manage_billing: {ko:'결제·해지 관리: 구매 시 받은 Paddle 영수증 메일 또는 hello@pracexam.com', en:'Manage/cancel billing: your Paddle receipt email or hello@pracexam.com'},
   member_active:  {ko:'멤버십 이용 중', en:'Membership active'},
@@ -5925,8 +6007,10 @@ function showScreen(name){
   document.getElementById('screen-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   // «More» menu (2026-10-31): Videos and My Account sit inside it, so highlight the «More» button for them
-  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,bookmarks:4,statistics:4,videos:4,settings:4,anomaly:10};   // 4 = «More» (2026-10-31: Review and Statistics moved in too)
+  const map={dashboard:0,'quiz-setup':1,mock:2,warroom:3,statistics:4,bookmarks:5,videos:5,settings:5};   // boss 2026-11-07: 약점보강 next to War Room, 5 = «More»
+  //   // 4 = «More» (2026-10-31: Review and Statistics moved in too)
   if(map[name]!==undefined) document.querySelectorAll('.nav-btn')[map[name]].classList.add('active');
+  if(name==='anomaly'){ var _na=document.getElementById('nav-anomaly'); if(_na) _na.classList.add('active'); }   // by id: buttons inside «More» shift the numbers
   const mobMap={dashboard:'mob-dashboard','quiz-setup':'mob-study',mock:'mob-mock',warroom:'mob-warroom',bookmarks:'mob-review',statistics:'mob-statistics',videos:'mob-videos',settings:'mob-settings',anomaly:'mob-anomaly'};
   document.querySelectorAll('.mobile-nav-item').forEach(b=>b.classList.remove('active'));
   if(mobMap[name]) { const el=document.getElementById(mobMap[name]); if(el) el.classList.add('active'); }
@@ -6235,7 +6319,7 @@ function ensureVideoLib(){
   _VID.ready = new Promise(function(res, rej){
     try{
       var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/videos.css?v=20261017'; document.head.appendChild(l);
-      var s = document.createElement('script'); s.src = '/videos.js?v=20261017';
+      var s = document.createElement('script'); s.src = '/videos.js?v=20261104t';
       s.onload = function(){ _vidInit(); res(); };
       s.onerror = function(){ _VID.ready = null; rej(new Error('videos.js load failed')); };
       document.head.appendChild(s);
@@ -6275,7 +6359,7 @@ function renderDashVideos(){
         '<div class="fs-grid">' +
           '<div class="fs-media"><div class="vx-frame" id="dv-frame"></div></div>' +
           '<div class="fs-text">' +
-            '<span class="dv-eyebrow">' + vidT('동영상 EA 문제 풀이', 'EA Practice Question Videos') + '</span>' +
+            '<span class="dv-eyebrow">' + vidT('EA 문제풀이 & TAX TIP', 'EA Practice Questions & Tax Tips') + '</span>' +
             '<h2 id="dv-title"></h2>' +
             '<div><span class="vx-pill" id="dv-pill"></span></div>' +
             '<p class="fs-desc" id="dv-desc" style="margin-top:12px;"></p>' +
@@ -6287,7 +6371,7 @@ function renderDashVideos(){
         '</div>' +
       '</div>';
     el.setAttribute('data-lang', LANG);
-    document.getElementById('dv-pill').textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+    document.getElementById('dv-pill').textContent = PXVideos.pillOf(row, l);
     document.getElementById('dv-title').textContent = PXVideos.titleOf(row, l);
     document.getElementById('dv-desc').textContent = PXVideos.descOf(row, l) || '';
     PXVideos.mount(document.getElementById('dv-frame'), row, l);
@@ -6304,9 +6388,9 @@ function renderVideosScreen(keepRows){
       return (_VID.part === 'all' || String(r.ea_part) === _VID.part) && PXVideos.usable(r, LANG);
     });
     var f = '<div class="vp-filters"><div><label>' + vidT('파트', 'Part') + '</label><span class="vx-toggle" role="group">' +
-      ['all', '1', '2', '3'].map(function(v){
+      ['all', '1', '2', '3', '0'].map(function(v){
         return '<button type="button" aria-pressed="' + (_VID.part === v) + '" onclick="vidSetPart(\'' + v + '\')">' +
-               (v === 'all' ? vidT('전체', 'All') : v) + '</button>';
+               (v === 'all' ? vidT('전체', 'All') : (v === '0' ? 'Tax Tip' : v)) + '</button>';
       }).join('') + '</span></div></div>';
     host.innerHTML = f + (list.length
       ? '<div class="vp-grid" id="vid-grid"></div>'
@@ -6323,7 +6407,7 @@ function renderVideosScreen(keepRows){
       var h = document.createElement('h3'); h.textContent = PXVideos.titleOf(row, l);
       var meta = document.createElement('div'); meta.className = 'vp-meta';
       var pill = document.createElement('span'); pill.className = 'vx-pill';
-      pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+      pill.textContent = PXVideos.pillOf(row, LANG);
       meta.appendChild(pill);
       if(row.access === 'members' && !row.locked){
         var tag = document.createElement('span'); tag.className = 'vx-pill';
@@ -7404,7 +7488,7 @@ function renderDashHero(focusPart){
           heroRing(accPct, accuracyColor(accPct),
                    t('hero_goal') + ' ' + EXAM_READY_THRESHOLD + '%',
                    t('dash_accuracy'),
-                   tCorrect + ' / ' + uCorrect(tAttempts) +
+                   uCorrect(tCorrect) + ' / ' + tAttempts +   // «556 correct / 1048» (boss 2026-11-10)
                      '<span class="hr-dim">' + t('dash_incl_rep') + '</span>',
                    EXAM_READY_THRESHOLD, false,
                    t('dash_accuracy') + ' ' + accPct + '%') +
@@ -8130,9 +8214,39 @@ function getPool(){
 function _chunk(arr, n){ var out=[]; for(var i=0;i<arr.length;i+=n){ out.push(arr.slice(i,i+n)); } return out; }
 function _findQ(id){ return S.questions.find(function(x){ return x.id === id; }); }
 
+// Admin (2026-11-08, boss «로딩이 오래 걸린다»): fetch only the rows this quiz needs instead of waiting for the
+// whole-bank backfill (RE CA admin waited for about 22 MB / 6,000 rows before the first question).
+// The backfill still runs in the background for admin tools (QC by id etc.).
+function _adminFill(q, r){
+  q.text = r.text; q.options = r.options; q.correct = r.correct;
+  q.explanation = r.explanation || ''; q.explanationEn = r.explanation_en || '';
+  q.wrongReasons = r.wrongreasons || ''; q.taxUpdate2025 = r.taxupdate2025 || '';
+  q.examTip = r.examtip || ''; q.examTipEn = r.examtip_en || r.exam_tip_en || '';
+}
+async function _adminFetchRows(ids){
+  var byId = {};
+  S.questions.forEach(function(x){ byId[x.id] = x; });
+  var need = (ids || []).filter(function(id){ var q = byId[id]; return q && (!q.text || q.correct == null); });
+  if(!need.length) return true;
+  try{
+    var results = await Promise.all(_chunk(need, 100).map(function(g){
+      return sb.from('questions').select('*').in('question_id', g);
+    }));
+    results.forEach(function(res){
+      if(res.error) throw res.error;
+      (res.data || []).forEach(function(r){ var q = byId[r.question_id]; if(q) _adminFill(q, r); });
+    });
+    return true;
+  }catch(e){
+    console.warn('[Admin] direct fetch failed, waiting for backfill:', e && e.message);
+    try{ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; }catch(_e){}
+    return true;
+  }
+}
+
 // 본문(text, options)만 — 미제출 문제용. RPC: get_question_payload (최대 100/콜)
 async function prefetchPayloads(ids){
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows(ids); }
   if(reviewLocked()){ showReviewLockedModal(); return false; }   // 만료 고객: 문제 본문 로드 금지
   var need = (ids||[]).filter(function(id){ var q=_findQ(id); return q && !q.text; });
   if(!need.length) return true;
@@ -8153,7 +8267,7 @@ async function prefetchPayloads(ids){
 // 본문+정답+해설 — 이미 푼 문제(복습/북마크/잠금)용. RPC: get_review_payload (최대 200/콜)
 var LAST_REVIEW_ERR = '';
 async function prefetchReview(ids){
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows(ids); }
   if(reviewLocked()){ showReviewLockedModal(); return false; }   // 만료 고객: 정답·해설 로드 금지
   LAST_REVIEW_ERR = '';
   try{
@@ -8181,12 +8295,12 @@ async function prefetchReview(ids){
 // 단건 보장: 미제출 → payload / 제출·복습 → review
 async function ensurePayload(q){
   if(q && q.text) return true;
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows([q.id]); }
   return await prefetchPayloads([q.id]);
 }
 async function ensureAnswerData(q){
   if(q && q.correct != null && q.text) return true;
-  if(S.isAdminUser){ if(ADMIN_BACKFILL) await ADMIN_BACKFILL; return true; }
+  if(S.isAdminUser){ return await _adminFetchRows([q.id]); }
   return await prefetchReview([q.id]);
 }
 
@@ -8809,7 +8923,7 @@ function selectOption(i,btn){
 }
 
 async function autoTimeout(){
-  if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
+  if(isTrialLimited() && (S.dailyUsed || 0) >= 10){ showDailyQuotaModal(); return; }
   const q=curQ(); if(!q) return;
   S.submitted=true; clearInterval(S.timerInt);
 
@@ -8896,7 +9010,7 @@ async function submitAnswer(){
   if(S.submitted||S.selected===null) return;
   if(S.reviewMode){ return revealReviewAnswer(); }   // 복습 = 로컬 채점 (한도 무관)
   // UX 사전 차단 (서버가 최종 권위). 트라이얼 일일 한도.
-  if(isTrialLimited() && (S.dailyUsed || 0) >= 5){ showDailyQuotaModal(); return; }
+  if(isTrialLimited() && (S.dailyUsed || 0) >= 10){ showDailyQuotaModal(); return; }
   const q=curQ(); if(!q) return;
   const chosen=S.selected;
 
@@ -10303,7 +10417,7 @@ function renderMockHub(){
       '<div style="font-size:13.5px;color:var(--text-muted);margin-top:3px;">'+mL('일시정지가 아닙니다 — 자리를 비운 시간도 차감됩니다 · 아래 "이어하기"로 계속하세요','Not a pause — time away is deducted · use “Resume” below')+'</div></div>';
   } else if(!paid){
     html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">'+
-      '🔒 '+mL('모의고사는 유료 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.','Mock exams are for paid members. You can preview the setup below.')+'</div>';
+      '🔒 '+mL('모의고사는 Pro 회원 전용입니다.','Mock exams are for Pro Members.')+'</div>';
   }
   // 파트 선택 (학습 part-picker 와 동일한 setup-icon-btn 스타일)
   var parts='';
@@ -10326,7 +10440,7 @@ function renderMockHub(){
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
       if(!paid){
-        return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 '+mL('유료 회원 전용 — 업그레이드','Paid only — Upgrade')+'</button>';
+        return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 '+mL('Pro 회원 전용 — 업그레이드','Pro Members only — Upgrade')+'</button>';
       }
       if(live && live.attemptId){
         return '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockResume()">'+mL('이어하기','Resume')+'</button>'+
@@ -10931,6 +11045,18 @@ if ('serviceWorker' in navigator) {
 .wr-parts{display:flex;gap:6px;margin-bottom:8px;}
 .wr-ptab{flex:1;text-align:center;font:inherit;font-size:12px;font-weight:700;padding:7px 4px;border:1px solid rgba(53,70,73,.12);border-radius:8px;background:#fff;color:#4E5C66;cursor:pointer;}
 .wr-ptab.active{background:#354649;color:#fff;border-color:#354649;}
+/* War Room sheet flags (2026-11-08) */
+.wr-ftab{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;font:inherit;font-size:12px;font-weight:700;padding:7px 10px;margin:0 0 8px;border:1px solid rgba(245,158,11,.35);border-radius:8px;background:rgba(245,158,11,.06);color:var(--flag-color,#d97706);cursor:pointer;}
+.wr-ftab .lb{display:inline-flex;align-items:center;gap:6px;}
+.wr-ftab svg{width:12px;height:12px;}
+.wr-ftab .c{font-size:10px;font-weight:700;border-radius:20px;padding:1px 8px;background:rgba(245,158,11,.14);color:inherit;}
+.wr-ftab.active{background:var(--flag-color,#d97706);border-color:var(--flag-color,#d97706);color:#fff;}
+.wr-ftab.active .c{background:rgba(255,255,255,.25);}
+.wr-title.wr-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.wr-title-row .wr-flag-btn{flex:0 0 auto;margin-top:4px;letter-spacing:0;}
+.wr-fl{display:inline-flex;vertical-align:-1px;margin-right:5px;color:var(--flag-color,#d97706);}
+.wr-fl svg{width:11px;height:11px;}
+.wr-flag-hint{font-size:12px;color:#4E5C66;padding:10px 6px;line-height:1.6;}
 .wr-dom-empty{font-size:12px;color:#4E5C66;padding:4px 10px 12px;line-height:1.5;}
 .wr-dom-list{display:none;padding-bottom:4px;}
 .wr-dom.open .wr-dom-list{display:block;}
@@ -11045,6 +11171,7 @@ async function renderWarRoom(preferCode){
     if(!rows.length){ mount.innerHTML='<div class="wr-empty">'+(_wrLang()==='en'?'War Room content is coming soon.':'War Room 콘텐츠가 곧 제공됩니다.')+'</div>'; return; }
     WR.rows=rows;
     _wrBuildShell(rows, preferCode||undefined);
+    _wrLoadFlags().then(_wrFlagsRepaint);
     // 🔴 2026-09-14 — 언어 토글 시 재렌더하던 «클릭 전용» 훅을 지웠다. 헤더 버튼을 «클릭」할
     // 때만 걸려서, L 단축키처럼 setLang() 을 직접 부르는 경로는 못 봤다(사용자 실측 — War Room
     // 본문이 안 바뀜). 이제 applyLang() 안에서 «언어가 바뀌는 모든 경로»를 한 곳에서 잡는다.
@@ -11070,14 +11197,16 @@ function _wrBuildShell(rows, preferCode){
     +'<div class="wr-search"><svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>'
     +'<input id="wr-search" type="text" autocomplete="off" placeholder="'+(_wrLang()==='en'?'Search all parts and text…':'전체 파트·본문 검색…')+'" oninput="_wrSearchInput()" onkeydown="_wrSearchKey(event)">'
     +'<button class="clr" id="wr-search-clear" onclick="_wrSearchClear()" aria-label="clear">✕</button></div>'
-    +'<div class="wr-parts">'+tabs+'</div><div id="wr-doms"></div></aside>'
+    +'<div class="wr-parts">'+tabs+'</div><button class="wr-ftab" id="wr-ftab" onclick="_wrShowFlagged()"></button><div id="wr-doms"></div></aside>'
     +'<main class="wr-sheet"><div class="wr-protected" id="wr-content"></div>'
     +'<div class="wr-nav"><button id="wr-prev" onclick="wrNav(-1)"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>'+(_wrLang()==='en'?'Prev':'이전')+'</button>'
     +'<span class="pos" id="wr-pos"></span>'
     +'<button id="wr-next" onclick="wrNav(1)">'+(_wrLang()==='en'?'Next':'다음')+'<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div></main></div>';
   var guard=document.getElementById('wr-content');
   if(S.isAdminUser){ guard.classList.add('wr-admin-unlocked'); }
-  else { ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();}); }); }
+  else { ['contextmenu','copy','cut','dragstart','selectstart'].forEach(function(ev){ guard.addEventListener(ev,function(e){e.preventDefault();pxLogCopyAttempt('wr_'+ev,_pxWrQid());}); });
+    var _wd=null; guard.addEventListener('mousedown',function(e){ _wd=(e.button===0)?{x:e.clientX,y:e.clientY}:null; });
+    guard.addEventListener('mousemove',function(e){ if(!_wd||e.buttons!==1) return; if(Math.abs(e.clientX-_wd.x)+Math.abs(e.clientY-_wd.y)>24){ _wd=null; pxLogCopyAttempt('wr_drag_select',_pxWrQid()); } }); }
   _wrSetPart(WR.curPart, preferCode);
 }
 function _wrRenderDomains(p){
@@ -11090,7 +11219,7 @@ function _wrRenderDomains(p){
     if(pop){
       list.forEach(function(r){
         var lk=r.locked?'<span class="lk">🔒 </span>':'';
-        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrEsc(_wrT(r))+'</span></div>';
+        inner+='<div class="wr-topic-link" id="wr-nav-'+r.outline_code+'" onclick="wrShow(\''+r.outline_code+'\')">'+lk+'<span>'+_wrFlMark(r.outline_code)+_wrEsc(_wrT(r))+'</span></div>';
       });
     } else { inner='<div class="wr-dom-empty">'+(lang==='en'?'Coming soon':'곧 추가됩니다')+' ('+cnt+')</div>'; }
     html+='<div class="wr-dom'+opened+'"><div class="wr-dom-head" onclick="_wrToggleDom(this.parentNode)"><span>'+_wrEsc(label)+'</span><span class="rt"><span class="c">'+(pop?list.length:cnt)+'</span>'+chev+'</span></div><div class="wr-dom-list">'+inner+'</div></div>';
@@ -11152,6 +11281,7 @@ function _wrFetchBody(nq){
   }catch(e){ return Promise.resolve(null); }
 }
 function _wrPaintSearch(nq){
+  if(WR.flagView){ WR.flagView=false; _wrPaintFtab(); document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===WR.curPart); }); }
   var lang=_wrLang(), body=_WR_BODY[nq]||null, html='', total=0, codes=[];
   [1,2,3].forEach(function(p){
     var buck=(WR.byPart&&WR.byPart[p])||{};
@@ -11192,10 +11322,13 @@ function _wrSearchClear(){
 }
 // 검색을 접고 목차로 돌아간다 — 지금 보던 토픽 표시와 이전/다음 차례를 되돌린다
 function _wrExitSearch(){
+  WR.flagView=false;
+  document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===WR.curPart); });
   WR.searchOrder=null;
   WR.searchTerm=null;
   _wrUnhighlight(document.getElementById('wr-content'));
   _wrRenderDomains(WR.curPart);
+  _wrPaintFtab();
   WR.order=_wrPartOrder(WR.curPart);
   if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
   _wrUpdateNav();
@@ -11226,13 +11359,14 @@ function _wrSearchKey(e){
 function _wrGo(p, code){
   if(p!==WR.curPart){
     WR.curPart=p;   // 파트 표는 바꾸되 목차를 다시 그리지 않는다 (그리면 결과가 지워진다)
-    document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
+    if(!WR.flagView) document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
   }
   WR.order=(WR.searchOrder&&WR.searchOrder.length)?WR.searchOrder.slice():_wrPartOrder(p);
   wrShow(code);
 }
 function _wrSetPart(p, preferCode){
   WR.curPart=p;
+  WR.flagView=false; _wrPaintFtab();
   var _si=document.getElementById('wr-search');
   if(_si&&_si.value){ _si.value=''; var _sc=document.getElementById('wr-search-clear'); if(_sc)_sc.style.display='none'; }
   document.querySelectorAll('.wr-ptab').forEach(function(b,i){ b.classList.toggle('active',(i+1)===p); });
@@ -11288,7 +11422,7 @@ async function wrShow(code){
     // 무료 회원: 예전에는 잠금 카드만 떠서 본문이 한 글자도 안 보였다(사용자 지적 2026-08-08).
     // 서버가 본문을 통째로 안 주므로 앞부분만 잘라 주는 RPC 를 따로 부른다.
     // 그 RPC 가 아직 없어도 옛 화면이 그대로 뜨도록 실패를 삼킨다 — 배포 순서에 매이지 않게.
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+    content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
     var peek='';
     try{
       var pres=await sb.rpc('get_war_room_preview',{p_code:code});
@@ -11303,10 +11437,14 @@ async function wrShow(code){
     var _n=(WR.rows||[]).length;
     var _desc=_n?(en?('Read all '+_n+' topics in full.'):('주제 '+_n+'개를 모두 볼 수 있습니다.'))
                 :(en?'Read every topic in full.':'주제 전체를 볼 수 있습니다.');
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div>'+peek
-      +'<div class="wr-gate'+(peek?' peeked':'')+'"><div class="card"><div style="font-size:22px;">🔒</div><h4>'
-      +(peek?(en?'Full access is for Pro members':'전체 내용은 Pro 회원 전용입니다')
-             :(en?'Pro members only':'Pro 회원 전용입니다'))+'</h4><p>'+_desc+'</p>'
+    content.innerHTML=_wrTitleHtml(title, code)+''+peek
+      +'<div class="wr-gate'+(peek?' peeked':'')+'"><div class="card"><div style="font-size:22px;">🔒</div>'
+      // Trial members: any 5 different sheets a day, then this card (boss 2026-11-07). The server decides; this line only explains why.
+      +((!S.isPaid && !S.trialExpired && S.trialEndsAt)?'<p class="wr-daily" style="font-weight:700;margin:6px 0 2px;">'+(en?'You have read your 10 free sheets for today. You can read 10 more tomorrow.':'오늘 무료 10장을 모두 보셨습니다. 내일 다시 10장을 볼 수 있습니다.')+'</p>':'')
+      +'<h4>'
+      // Two lines set by the boss 2026-11-07
+      +(en?'Pro members only.':'Pro 회원 전용입니다.')+'</h4><p>'
+      +(en?'Join Pro to keep studying.':'Pro 회원 가입하고 학습을 이어서 계속하세요')+'</p>'
       +'<button id="wr-gate-up">'+(en?'Upgrade to Pro':'Pro로 업그레이드')+'</button></div></div>';
     var _up=document.getElementById('wr-gate-up');
     if(_up) _up.onclick=function(){ if(typeof showPricingModal==='function') showPricingModal(); };
@@ -11317,20 +11455,22 @@ async function wrShow(code){
     try{ if(_fmP) _fmP.scrollIntoView({block:'center',behavior:'smooth'}); else window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
     return;
   }
-  content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
+  content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-loading">'+(_wrLang()==='en'?'Loading…':'불러오는 중…')+'</div>';
   var _fm=null;
   try{
     var res=await sb.rpc('get_war_room_topic',{p_code:code});
     if(res.error) throw res.error;
     var d=Array.isArray(res.data)?res.data[0]:res.data;
+    // No text back = today's 10 free sheets are used up (or the trial just ended): show the lock card instead of a blank page
+    if(!d && row && !row.locked){ row.locked=true; return wrShow(code); }
     var body=d?(_wrLang()==='en'?(d.body_en||d.body_ko):(d.body_ko||d.body_en)):'';
-    content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
+    content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-body">'+_wrNbspJoin(body||'')+'</div>';
     _wrPostProcess(content);
     // 🆕 2026-09-04 — 검색으로 들어온 토픽은 그 검색어를 본문에 노란 표시(사용자 지적: 검색 결과를
     // 열어도 본문 어디에 있는지 찾기 힘들다). review_app 의 <mark class="ap-mk"> 와 같은 배색.
     if(WR.searchTerm && WR.searchOrder && WR.searchOrder.length) _fm=_wrHighlightBody(content.querySelector('.wr-body'), WR.searchTerm);
     _wrRenderRelated(content, code);
-  }catch(e){ content.innerHTML='<div class="wr-title">'+_wrEsc(title)+'</div><div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; _wrRenderRelated(content, code); }
+  }catch(e){ content.innerHTML=_wrTitleHtml(title, code)+'<div class="wr-empty">'+(_wrLang()==='en'?'Could not load.':'불러오지 못했습니다.')+'</div>'; _wrRenderRelated(content, code); }
   _wrUpdateNav(); _wrCloseTocMobile();
   try{ if(_fm) _fm.scrollIntoView({block:'center',behavior:'smooth'}); else window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
 }
@@ -11371,6 +11511,122 @@ function _wrHighlightBody(root, term){
   });
   return first;
 }
+// ─── War Room sheet flags (boss 2026-11-08) ───
+// A member flags a sheet with the button next to its title. The «Flagged sheets» button in the index lists every
+// flagged sheet across all parts, and prev/next flips inside that list (like search results).
+// Saved per user in table war_room_flags (RLS: own rows only, supabase/war_room_flags_2026-11-08.sql).
+// Until that table exists the flags stay in this browser (localStorage) and move to the server the first time it answers.
+var WR_FLAG_PARTS = [1,2,3];
+function _wrPartTag(p){ return 'P'+p; }
+var WR_FLAG_SVG_OFF='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+var WR_FLAG_SVG_ON='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>';
+WR.flags = Object.create(null); WR.flagView = false; WR.flagsServer = false;
+function _wrFlagKey(){ return 'px_wr_flags_' + ((typeof SB_USER!=='undefined' && SB_USER && SB_USER.id) || 'anon'); }
+function _wrFlagLocalGet(){ try{ var a=JSON.parse(localStorage.getItem(_wrFlagKey())||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function _wrFlagLocalSet(){ try{ localStorage.setItem(_wrFlagKey(), JSON.stringify(Object.keys(WR.flags))); }catch(e){} }
+function _wrFlagLocalClear(){ try{ localStorage.removeItem(_wrFlagKey()); }catch(e){} }
+async function _wrLoadFlags(){
+  var flags = Object.create(null), local = _wrFlagLocalGet();
+  try{
+    if(!SB_USER) throw new Error('no user');
+    var res = await sb.from('war_room_flags').select('outline_code').eq('user_id', SB_USER.id);
+    if(res.error) throw res.error;
+    WR.flagsServer = true;
+    (res.data||[]).forEach(function(r){ flags[r.outline_code]=1; });
+    var up = local.filter(function(c){ return !flags[c]; });
+    up.forEach(function(c){ flags[c]=1; });
+    if(up.length){
+      var ins = await sb.from('war_room_flags').upsert(up.map(function(c){ return { user_id: SB_USER.id, outline_code: c }; }), { onConflict: 'user_id,outline_code' });
+      if(!ins.error) _wrFlagLocalClear();
+    } else if(local.length){ _wrFlagLocalClear(); }
+  }catch(e){
+    WR.flagsServer = false;
+    local.forEach(function(c){ flags[c]=1; });
+  }
+  WR.flags = flags;
+}
+function _wrFlaggedList(){
+  var out=[];
+  WR_FLAG_PARTS.forEach(function(p){
+    var buck=(WR.byPart&&WR.byPart[p])||{};
+    (WR_SKELETON[p]||[]).forEach(function(row){ (buck[row[0]]||[]).forEach(function(r){ if(WR.flags[r.outline_code]) out.push({ p:p, r:r, dom:row }); }); });
+  });
+  return out;
+}
+function _wrFlMark(code){ return WR.flags[code] ? '<span class="wr-fl">'+WR_FLAG_SVG_ON+'</span>' : ''; }
+function _wrFlagBtnHtml(code){
+  var on=!!WR.flags[code], en=(_wrLang()==='en');
+  return '<button type="button" class="q-flag-btn wr-flag-btn'+(on?' flagged':'')+'" id="wr-flag-btn" onclick="_wrToggleFlag(\''+code+'\')">'
+    +(on?WR_FLAG_SVG_ON:WR_FLAG_SVG_OFF)+' '+(on?(en?'Flagged':'플래그됨'):(en?'Flag':'플래그'))+'</button>';
+}
+function _wrTitleHtml(title, code){
+  return '<div class="wr-title wr-title-row"><span>'+_wrEsc(title)+'</span>'+(code?_wrFlagBtnHtml(code):'')+'</div>';
+}
+function _wrPaintFtab(){
+  var b=document.getElementById('wr-ftab'); if(!b) return;
+  var n=_wrFlaggedList().length, en=(_wrLang()==='en');
+  b.classList.toggle('active', !!WR.flagView);
+  b.innerHTML='<span class="lb">'+WR_FLAG_SVG_ON+(en?'Flagged sheets':'플래그한 시트')+'</span><span class="c">'+n+'</span>';
+}
+function _wrShowFlagged(){
+  if(WR.flagView){ _wrExitSearch(); return; }   // second press = back to the index
+  var inp=document.getElementById('wr-search');
+  if(inp && inp.value){ inp.value=''; var c=document.getElementById('wr-search-clear'); if(c) c.style.display='none'; }
+  WR.searchTerm=null;
+  _wrUnhighlight(document.getElementById('wr-content'));
+  WR.flagView=true;
+  document.querySelectorAll('.wr-ptab').forEach(function(b){ b.classList.remove('active'); });
+  _wrPaintFlagged();
+}
+function _wrPaintFlagged(){
+  var lang=_wrLang(), en=(lang==='en'), list=_wrFlaggedList(), html='', codes=[];
+  list.forEach(function(it){
+    var r=it.r; codes.push(r.outline_code);
+    var lk=r.locked?'<span class="lk">🔒 </span>':'';
+    html+='<div class="wr-topic-link wr-sr" id="wr-nav-'+r.outline_code+'" onclick="_wrGo('+it.p+',\''+r.outline_code+'\')">'+lk
+      +'<span><span class="wr-sr-pb">'+_wrEsc(_wrPartTag(it.p))+'</span>'+_wrEsc(_wrT(r))
+      +'<span class="wr-sr-dom">'+_wrEsc(lang==='ko'?it.dom[1]:it.dom[0])+'</span></span></div>';
+  });
+  var el=document.getElementById('wr-doms'); if(!el) return;
+  el.innerHTML = list.length
+    ? '<div class="wr-sr-count">'+(en?(list.length+' flagged sheet'+(list.length>1?'s':'')):('플래그한 시트 '+list.length+'개'))+'</div>'+html
+    : '<div class="wr-flag-hint">'+(en?'No flagged sheets yet. Press "Flag" next to a sheet title to keep it here.':'아직 플래그한 시트가 없습니다. 시트 제목 옆 "플래그"를 누르면 여기에 모입니다.')+'</div>';
+  WR.searchOrder = list.length ? codes : null;
+  if(list.length){
+    WR.order = codes.slice();
+    if(WR.cur) document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){ n.classList.toggle('active', n.id==='wr-nav-'+WR.cur); });
+  }
+  _wrPaintFtab(); _wrUpdateNav();
+}
+function _wrFlagsRepaint(){
+  var b=document.getElementById('wr-flag-btn');
+  if(b && WR.cur) b.outerHTML=_wrFlagBtnHtml(WR.cur);
+  if(WR.flagView){ _wrPaintFlagged(); return; }
+  document.querySelectorAll('#wr-doms .wr-topic-link').forEach(function(n){
+    var code=n.id.replace('wr-nav-',''), m=n.querySelector('.wr-fl'), sp=n.lastElementChild;
+    if(WR.flags[code] && !m && sp) sp.insertAdjacentHTML('afterbegin', _wrFlMark(code));
+    else if(!WR.flags[code] && m) m.remove();
+  });
+  _wrPaintFtab();
+}
+async function _wrToggleFlag(code){
+  if(!code) return;
+  var on=!WR.flags[code];
+  if(on) WR.flags[code]=1; else delete WR.flags[code];
+  _wrFlagsRepaint();
+  if(WR.flagsServer && SB_USER){
+    try{
+      var res = on
+        ? await sb.from('war_room_flags').upsert({ user_id: SB_USER.id, outline_code: code }, { onConflict: 'user_id,outline_code' })
+        : await sb.from('war_room_flags').delete().eq('user_id', SB_USER.id).eq('outline_code', code);
+      if(res.error) throw res.error;
+    }catch(e){
+      if(on) delete WR.flags[code]; else WR.flags[code]=1;
+      _wrFlagsRepaint();
+      if(typeof showToast==='function') showToast(_wrLang()==='en'?'⚠️ Could not save the flag. Please try again.':'⚠️ 플래그를 저장하지 못했습니다. 다시 눌러 주세요.');
+    }
+  } else { _wrFlagLocalSet(); }
+}
 function _wrUpdateNav(){
   var i=WR.order.indexOf(WR.cur);
   var p=document.getElementById('wr-prev'), n=document.getElementById('wr-next'), pos=document.getElementById('wr-pos');
@@ -11379,7 +11635,7 @@ function _wrUpdateNav(){
   // 지금 보는 토픽이 이 차례 안에 없을 수 있다(검색 결과에 없는 것을 보던 중) — 그때는 개수만 보인다
   var _txt=(i<0)?(WR.order.length+(en?' results':'개 결과')):((i+1)+' / '+WR.order.length);
   if(pos)pos.innerHTML=_txt+'<span class="k">'
-    +(_inSr?(en?'in results · ← →':'검색 결과 안 · ← →'):(en?'← → to flip':'← → 키로 넘기기'))+'</span>';
+    +(WR.flagView?(en?'in flagged · ← →':'플래그 안 · ← →'):_inSr?(en?'in results · ← →':'검색 결과 안 · ← →'):(en?'← → to flip':'← → 키로 넘기기'))+'</span>';
 }
 function wrNav(dir){ var i=WR.order.indexOf(WR.cur); if(i<0)i=0; var j=i+dir; if(j<0||j>=WR.order.length)return; wrShow(WR.order[j]); }
 // ── 렌더 후처리 (2026-07-30) ──

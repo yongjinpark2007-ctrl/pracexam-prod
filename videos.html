@@ -49,6 +49,7 @@ main.vp-main{max-width:1120px; padding:0 24px; margin:0 auto; flex:1 0 auto; wid
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 
 <style>
 :root{
@@ -73,9 +74,9 @@ main.vp-main{max-width:1120px; padding:0 24px; margin:0 auto; flex:1 0 auto; wid
   --terracotta-tint:   #FBF1EC;
   --terracotta-border: #EFD0C1;
   --terracotta-deep:   #b85f3f;
-  --font-serif:  'Poppins', 'Pretendard Variable', -apple-system, sans-serif;
+  --font-serif:  'Poppins', 'IBM Plex Sans KR','Pretendard Variable', -apple-system, sans-serif;
   --font-display:'DM Serif Display', Georgia, serif;
-  --font-sans:   'Inter', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:   'Inter', 'IBM Plex Sans KR','Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --radius:      14px;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -280,7 +281,7 @@ html{scrollbar-gutter:stable;}
    (사용자: "로고가 계속 움직임"). 로고도 가로 크기를 적어 두었다. */
 @media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
 </style>
-<link rel="stylesheet" href="/exam-switch.css?v=20261030"><script src="/exams.js?v=20261030b" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "PracExam", "item": "https://pracexam.com/"}, {"@type": "ListItem", "position": 2, "name": "EA Exam", "item": "https://pracexam.com/ea/"}, {"@type": "ListItem", "position": 3, "name": "EA Practice Videos", "item": "https://pracexam.com/videos"}]}</script>
+<link rel="stylesheet" href="/exam-switch.css?v=20261030"><script src="/exams.js?v=20261106d" defer></script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "PracExam", "item": "https://pracexam.com/"}, {"@type": "ListItem", "position": 2, "name": "EA Exam", "item": "https://pracexam.com/ea/"}, {"@type": "ListItem", "position": 3, "name": "EA Practice Videos", "item": "https://pracexam.com/videos"}]}</script>
 </head>
 <body data-exam="ea">
 <!-- ══ 머리줄 — sync_nav.js 가 index.html 에서 찍어 넣는다. 손으로 고치지 말 것 ══ -->
@@ -315,7 +316,7 @@ html{scrollbar-gutter:stable;}
 <main class="vp-main">
   <div class="vp-head">
     <h1 style="margin-top:0;font-size:clamp(26px,2.6vw,32px);line-height:1.28;font-weight:800;">
-      <span class="ko">동영상 EA 문제 풀이</span><span class="en">EA Practice Question Videos</span>
+      <span class="ko">EA 문제풀이 & TAX TIP</span><span class="en">EA Practice Questions & Tax Tips</span>
     </h1>
     <p>
       <span class="ko">EA 시험 문제를 짧은 영상으로 풀어 드립니다.</span>
@@ -330,6 +331,7 @@ html{scrollbar-gutter:stable;}
         <button type="button" data-v="1" aria-pressed="false">1</button>
         <button type="button" data-v="2" aria-pressed="false">2</button>
         <button type="button" data-v="3" aria-pressed="false">3</button>
+        <button type="button" data-v="0" aria-pressed="false">Tax Tip</button>
       </span></div>
   </div>
 
@@ -405,7 +407,7 @@ document.addEventListener('keydown', function(e){
   var rows = [];
   var state = { part: 'all', lang: PXVideos.siteLang(), shown: 12 };   // 12 at a time (2026-10-30)
   var p = new URLSearchParams(location.search).get('part');
-  if (p === '1' || p === '2' || p === '3') state.part = p;
+  if (p === '0' || p === '1' || p === '2' || p === '3') state.part = p;
 
   function syncButtons(){
     ['part'].forEach(function(k){
@@ -432,7 +434,7 @@ document.addEventListener('keydown', function(e){
     meta.className = 'vp-meta';
     var pill = document.createElement('span');
     pill.className = 'vx-pill';
-    pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+    pill.textContent = PXVideos.pillOf(row, state.lang);
     var cur = PXVideos.usable(row, state.lang);
     function draw(l){
       PXVideos.stop();

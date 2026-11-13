@@ -30,13 +30,15 @@
 })();
 </script>
 
-<!-- ===== 유입 출처 갈무리 (UTM·gclid) — «우리 것» ===== 
-     2026-08-29: Google Ads 태그(gtag)를 걷어냈다 — 광고 종료(사용자 지시).
-     그래서 이제 제3자 광고 쿠키를 심지 않는다 = privacy.html §4 의 약속과 다시 맞는다.
-     🔴 아래 pe_attrib 는 남긴다 — Google 것이 아니라 우리 localStorage 에 담아
-        우리 서버로 보내는 자체 기록이다(가입 때 refAttrib 으로 쓴다).
-     ↩ 광고를 다시 켜면 태그와 «동의 받는 장치» 를 함께 넣는다. -->
+<!-- ===== Google Ads sign-up conversion (2026-11-08, boss: ads back on, measure sign-ups) =====
+     Same IDs as the July 2026 tag. privacy.html section 4 updated the same day to say Google Ads cookies are used.
+     pe_attrib below is our own first-party record and stays. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18345651711"></script>
 <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18345651711');
   (function(){ try{ var p=new URLSearchParams(location.search),keep={};
     ['gclid','utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){ if(p.get(k)) keep[k]=p.get(k); });
     if(Object.keys(keep).length){ keep._ts=Date.now(); localStorage.setItem('pe_attrib', JSON.stringify(keep)); }
@@ -51,7 +53,7 @@
 <link rel="apple-touch-icon" href="/re/img/re-apple-touch-icon.png">
 <link rel="manifest" href="/re/manifest.json"><!-- RE web app (2026-10-29): own scope /re/, the EA manifest.json is untouched -->
 <title>Real Estate License Exam Practice Questions | PracExam</title>
-<meta name="description" content="Real estate license exam practice questions for the national portion and your state portion (California, Texas, Florida, New Jersey, New York), with detailed explanations and exam tips.">
+<meta name="description" content="Next-generation exam prep platform. Real estate license exam practice questions for the national portion and your state portion (California, Washington, Texas, Illinois, Florida, New Jersey, New York), with detailed explanations and exam tips.">
 <link rel="canonical" href="https://pracexam.com/re/">
 <link rel="alternate" hreflang="en" href="https://pracexam.com/re/" />
 <link rel="alternate" hreflang="ko" href="https://pracexam.com/re/ko/" />
@@ -61,7 +63,7 @@
 <meta property="og:site_name" content="PracExam">
 <meta property="og:url" content="https://pracexam.com/re/">
 <meta property="og:title" content="Real Estate License Exam Practice Questions | PracExam">
-<meta property="og:description" content="Real estate license exam practice questions for the national portion and your state portion (California, Texas, Florida, New Jersey, New York), with detailed explanations and exam tips.">
+<meta property="og:description" content="Next-generation exam prep platform. Real estate license exam practice questions for the national portion and your state portion (California, Washington, Texas, Illinois, Florida, New Jersey, New York), with detailed explanations and exam tips.">
 <meta property="og:image" content="https://pracexam.com/og-re.jpg?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -69,15 +71,15 @@
 <meta property="og:locale:alternate" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Real Estate License Exam Practice Questions | PracExam">
-<meta name="twitter:description" content="Real estate license exam practice questions for the national portion and your state portion (California, Texas, Florida, New Jersey, New York), with detailed explanations and exam tips.">
+<meta name="twitter:description" content="Next-generation exam prep platform. Real estate license exam practice questions for the national portion and your state portion (California, Washington, Texas, Illinois, Florida, New Jersey, New York), with detailed explanations and exam tips.">
 <meta name="twitter:image" content="https://pracexam.com/og-re.jpg?v=3">
 
-<script type="application/ld+json">
+<script type="application/ld+json" data-ld="re-course">
 {
   "@context": "https://schema.org",
   "@type": "Course",
   "name": "Real Estate License Exam Practice Questions",
-  "description": "Real estate license exam practice questions for the national portion and your state portion (California, Texas, Florida, New Jersey, New York), with detailed explanations and exam tips.",
+  "description": "Real estate license exam practice questions for the national portion and your state portion (California, Washington, Texas, Illinois, Florida, New Jersey, New York), with detailed explanations and exam tips.",
   "url": "https://pracexam.com/re/",
   "provider": {
     "@type": "Organization",
@@ -87,6 +89,7 @@
   "about": [
     "National real estate license exam",
     "California real estate license exam",
+    "Illinois real estate license exam",
     "Florida real estate license exam",
     "New York real estate license exam",
     "Texas real estate license exam",
@@ -94,7 +97,7 @@
   ]
 }
 </script>
-<script type="application/ld+json">
+<script type="application/ld+json" data-ld="re-faq">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -112,7 +115,7 @@
       "name": "Which states does PracExam cover?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "PracExam covers California, Texas, Florida, New Jersey and New York, each with national and state-specific questions."
+        "text": "PracExam covers California, Washington, Texas, Illinois, Florida, New Jersey and New York, each with national and state-specific questions."
       }
     },
     {
@@ -147,11 +150,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/exam-palettes.css?v=20261031h">
-<link rel="stylesheet" href="/landing.css?v=20261031zh">
-<link rel="stylesheet" href="/exam-switch.css?v=20261030">
+<link rel="stylesheet" href="/landing.css?v=20261108b">
+<link rel="stylesheet" href="/exam-switch.css?v=92317555cb">
 <link rel="stylesheet" href="/re/re.css?v=20261029v">
-<link rel="stylesheet" href="/videos.css?v=20261029">
+<link rel="stylesheet" href="/videos.css?v=f9ce8e4eb2">
 </head>
 <body data-exam="re">
 
@@ -209,13 +213,14 @@
 <section class="hero">
   <div class="wrap hero-wrap">
     <div class="hero-left">
-      <span class="eyebrow"><span class="ko">2026 부동산 중개사 시험 대비 · National + 주(州) 시험</span><span class="en">2026 REAL ESTATE LICENSE EXAM PREP · NATIONAL + STATE</span></span>
-      <h1 style="margin-top:14px;"><span class="ko">Master the<br><span style="white-space:nowrap">Real Estate</span> Agent Exam<br><em>Your Ultimate State Exam Finisher</em></span><span class="en">Master the<br><span style="white-space:nowrap">Real Estate</span> Agent Exam<br><em>Your Ultimate State Exam Finisher</em></span></h1>
+      <span class="eyebrow"><span class="ko">2026 부동산 중개인 시험 대비 · National + 주별 시험</span><span class="en">2026 REAL ESTATE LICENSE EXAM PREP · NATIONAL + STATE</span></span>
+      <h1 style="margin-top:14px;"><span class="ko">미국 부동산 라이센스 시험 합격, 이제 기준이 바뀝니다.<br><em>주별 실전 문제로 합격까지 단번에.</em></span><span class="en">Master the<br><span style="white-space:nowrap">Real Estate</span> Agent Exam<br><em>Your Ultimate State Exam Finisher</em></span></h1>
       <p class="lead"><span class="ko">최신 출제 경향을 꿰뚫는 130개 이상의 핵심 주제와 5,000문항 이상의 압도적인 실전 문제은행을 만나보세요. 문제마다 제공되는 상세한 해설과 실전 꿀팁, 집중 이론 학습을 위한 주제별 특별 공간 'War Room'이 여러분을 확실한 합격의 길로 안내합니다.</span><span class="en">Conquer your state license exam with 130+ core topics reflecting the latest trends and a massive bank of 5,000+ practice questions. With detailed explanations and practical tips for every question, plus our exclusive War Room hubs for intensive theory review, we give you a clear roadmap to a passing score.</span></p>
       <div class="hero-actions">
         <a class="btn btn-primary btn-lg" id="re-start" href="/re/app?signup=1" onclick="var s=document.getElementById('su-state'),r=document.getElementById('re-state');if(s&&r&&r.value)s.value=r.value;startFree();return false;"><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></a>
         <a href="#samples" class="btn btn-accent btn-lg"><span class="ko">샘플 문제 풀어보기</span><span class="en">Try Sample Questions</span></a>
       </div>
+      <p class="hero-free"><img class="hero-note-icon" src="/icon-192.png" alt="" width="34" height="34"><span class="ko">카드 등록 없이 30일 무료 · 매일 10문제</span><span class="en">No credit card · 30 days free · 10 questions a day</span></p>
       <div class="hero-note">
         <img class="hero-note-icon" src="/icon-192.png" alt="" width="34" height="34">
         <span class="ko">설치형 웹앱 — 언제 어디서나 학습</span>
@@ -227,7 +232,8 @@
     </div>
     <div class="hero-demo" id="hero-rot">
       <img class="hero-photo rot-active" src="/re/img/hero-re.jpg?v=efaff17fa3" width="1200" height="800" alt="Real estate agent holding a tablet while a couple tours a home" fetchpriority="high">
-      <img class="hero-photo" data-src="/re/img/hero-re-2.webp?v=20261030" width="1200" height="800" alt="Real estate agent standing in front of a house for sale" loading="lazy">
+      <img class="hero-photo" data-src="/re/img/hero-re-2.webp?v=20261101" width="1200" height="800" alt="Real estate agent standing in front of a house for sale" loading="lazy">
+      <img class="hero-photo" data-src="/re/img/hero-re-3.webp?v=134ab7aea3" width="1200" height="800" alt="Smiling real estate agent holding a tablet at a home's front door" loading="lazy">
     </div>
   </div>
 </section>
@@ -254,6 +260,39 @@
     <div>
       <div class="stat-num"><span class="ko">30일</span><span class="en">30 Days</span></div>
       <div class="stat-label"><span class="ko">Quick Study 모드 무료 이용</span><span class="en">Free Quick Study Mode Access</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Korean-only state links (English /re/ hides .ko) -->
+<section class="en" id="states-en" style="padding:34px 0;border-bottom:1px solid var(--border-clr);">
+  <div class="wrap" style="text-align:center;">
+    <h2 style="font-size:22px;margin:0 0 14px;">Exam Guide by State</h2>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a class="btn btn-ghost" href="/re/california/">California</a>
+      <a class="btn btn-ghost" href="/re/washington/">Washington State</a>
+      <a class="btn btn-ghost" href="/re/texas/">Texas</a>
+      <a class="btn btn-ghost" href="/re/illinois/">Illinois</a>
+      <a class="btn btn-ghost" href="/re/florida/">Florida</a>
+      <a class="btn btn-ghost" href="/re/new-jersey/">New Jersey</a>
+      <a class="btn btn-ghost" href="/re/new-york/">New York</a>
+      <a class="btn btn-ghost" href="/re/exam-tips/">All States</a>
+    </div>
+  </div>
+</section>
+
+<section class="ko" id="states-ko" style="padding:34px 0;border-bottom:1px solid var(--border-clr);">
+  <div class="wrap" style="text-align:center;">
+    <h2 style="font-size:22px;margin:0 0 14px;">주별 시험 안내</h2>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a class="btn btn-ghost" href="/re/ko/california/">캘리포니아</a>
+      <a class="btn btn-ghost" href="/re/ko/washington/">워싱턴주</a>
+      <a class="btn btn-ghost" href="/re/ko/texas/">텍사스</a>
+      <a class="btn btn-ghost" href="/re/ko/illinois/">일리노이</a>
+      <a class="btn btn-ghost" href="/re/ko/florida/">플로리다</a>
+      <a class="btn btn-ghost" href="/re/ko/new-jersey/">뉴저지</a>
+      <a class="btn btn-ghost" href="/re/ko/new-york/">뉴욕</a>
+      <a class="btn btn-ghost" href="/re/exam-tips/ko/">전체 주 안내</a>
     </div>
   </div>
 </section>
@@ -582,6 +621,11 @@
         <span class="ko" data-open="접기 ▴" data-closed="나머지 문제 더 보기 ▾">나머지 문제 더 보기 ▾</span><span class="en" data-open="Show fewer ▴" data-closed="See 2 more questions ▾">See 2 more questions ▾</span>
       </button>
     </div>
+    <div class="sample-cta">
+      <h3><span class="ko">문제가 마음에 드셨나요?</span><span class="en">Like these questions?</span></h3>
+      <p><span class="ko">지금 가입하고 30일 동안 매일 10문제를 무료로 풀어 보세요. 카드 등록은 필요 없습니다.</span><span class="en">Sign up and practice 10 free questions a day for 30 days. No credit card needed.</span></p>
+      <a class="btn btn-primary btn-lg" href="#" onclick="var b=document.getElementById('re-start');if(b)b.click();return false;"><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></a>
+    </div>
     <script>
     (function(){
       var btn = document.getElementById('samples-toggle'), box = document.getElementById('sample-questions-mount');
@@ -619,7 +663,7 @@
           <span class="en">Perfect for getting started with daily license exam practice.</span></p>
         <ul class="price-list">
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">30일간 매일 Quick Study 모드</span><span class="en">Quick Study Mode for 30 days </span></span></li>
-          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">National·주 문제에서 매일 5문제 무료 제공</span><span class="en">5 free questions daily across national and state</span></span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">National·주 문제에서 매일 10문제 무료 제공</span><span class="en">10 free questions daily across national and state</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">한·영 자세한 해설 &amp; 시험 공부 팁</span><span class="en">Detailed explanations &amp; exam tips</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">플래그 &amp; 복습 모드</span><span class="en">Flag &amp; review</span></span></li>
         </ul>
@@ -697,6 +741,33 @@
 </section>
 
 <!-- ═══ ABOUT (사업자 정보 고지 — 광고 심사용, 강조 최소화) ═══ -->
+<!-- ═══ FAQ (visible, KO/EN) — 2026-11-05: 한국어 검색어(미국 부동산 · 라이센스 · 에이전트 · 중개사)가 «본문»에 나오게 한다 ═══ -->
+<section id="faq" style="padding:36px 0;">
+  <div class="wrap" style="max-width:840px;">
+    <h2 style="font-size:22px; margin:0 0 14px;"><span class="ko">미국 부동산 라이센스, Real Estate License 시험 자주 묻는 질문</span><span class="en">Real estate license exam FAQ</span></h2>
+    <details style="border-top:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">미국 부동산 라이센스, Real Estate License 시험이란 무엇인가요?</span><span class="en">What is the real estate license exam?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">미국에서 부동산 거래를 중개하려면 주 정부가 발급하는 라이센스가 필요합니다. 라이센스를 받으려면 시험에 합격해야 하고, 시험은 모든 주에 공통인 National 부분과 각 주의 법을 다루는 State 부분으로 나뉘는 경우가 많습니다.</span><span class="en">To help clients buy or sell property in the U.S. you need a license from the state. You must pass the exam, which in many states has a National portion and a State portion.</span></p>
+      <p style="margin:6px 0 0;"><a href="/re/exam-tips/#what" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+    <details style="border-top:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">주마다 시험이 다른가요?</span><span class="en">Is the exam different in each state?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">네. 라이센스 요건과 시험 형식은 주마다 다릅니다. PracExam이 지원하는 주와 주별 요건은 시험 안내, Exam Tips에서 확인하실 수 있습니다.</span><span class="en">Yes. License requirements and exam format vary by state. See Exam Tips for the states PracExam supports and each state's requirements.</span></p>
+      <p style="margin:6px 0 0;"><a href="/re/exam-tips/#compare" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+    <details style="border-top:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">부동산 에이전트, Real Estate Agent와 브로커, Broker는 어떻게 다른가요?</span><span class="en">What is the difference between an agent and a broker?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">일반적으로 에이전트는 브로커 밑에서 일하고, 브로커 라이센스는 독립적으로 중개업을 운영할 수 있는 상위 라이센스입니다. 세부 요건은 주마다 다릅니다.</span><span class="en">In general an agent works under a broker, while a broker license lets you run a brokerage on your own. Details vary by state.</span></p>
+      <p style="margin:6px 0 0;"><a href="/re/exam-tips/#what" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+    <details style="border-top:1px solid var(--border-clr); border-bottom:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">한국어 해설로 공부할 수 있나요?</span><span class="en">Does every question come with an explanation?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">네. PracExam의 모든 문제에 한국어와 영어 해설이 함께 있고, War Room의 이론 공부도 한글과 영어로 할 수 있어서 이해에 큰 도움이 됩니다. 한국어 해설로 쉽게 이해하고 영어 용어도 함께 익히실 수 있습니다.</span><span class="en">Yes. Every question has a detailed explanation, and the War Room lets you study the real estate law and theory behind each topic in depth.</span></p>
+      <p style="margin:6px 0 0;"><a href="/re/exam-tips/#tips" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+  </div>
+</section>
+
 <section id="about">
   <div class="wrap">
     <div class="about-strip">
@@ -706,7 +777,7 @@
              모델 검수로 되돌리지 말 것. 「PracExam이 무슨 뜻인가」를 한국 방문자에게
              알려 주려고 앞의 두 문장을 더하셨다 —
              *"영어권에서는 친숙하겠지만 한국에서는 익숙치 않은 말인데"* -->
-        <span class="ko">영어권에서 중요한 시험을 앞두고 실전 감각을 익히기 위해 치르는 연습문제, 모의고사를 ‘Practice Exam’, 줄여서 ‘PracExam’이라고 부릅니다. 이 이름 그대로 PracExam은 미국 부동산 중개사(Real Estate) 자격시험을 준비하는 여러분이 실전 스타일의 문제를 연습하고 자신 있게 합격할 수 있도록 돕는 온라인 시험 준비 플랫폼입니다.</span>
+        <span class="ko">영어권에서 중요한 시험을 앞두고 실전 감각을 익히기 위해 치르는 연습문제, 모의고사를 ‘Practice Exam’, 줄여서 ‘PracExam’이라고 부릅니다. 이 이름 그대로 PracExam은 미국 부동산 중개인(Real Estate) 자격시험을 준비하는 여러분이 실전 스타일의 문제를 연습하고 자신 있게 합격할 수 있도록 돕는 온라인 시험 준비 플랫폼입니다.</span>
         <span class="en">PracExam is an online exam-preparation platform for U.S. licensing exams: the IRS Enrolled Agent exam and the real estate license exam.</span>
       </p>
 
@@ -817,7 +888,7 @@
         <span class="ko">먼저 계정을 만들면 결제 화면으로 이어집니다. (이메일 인증 후 자동 연결)</span>
         <span class="en">Create your account first — you'll be taken to checkout right after (via the email confirmation link).</span>
       </div>
-      <label for="su-state"><span class="ko">시험 응시 주</span><span class="en">Your exam state</span></label>
+      <label for="su-state"><span class="ko">시험 볼 주를 선택하세요</span><span class="en">Select your exam state</span></label>
       <select id="su-state"></select>
       <p class="su-consent-note" style="margin-top:6px;">
         <span class="ko">이 계정은 해당 주에만 적용됩니다. 나중에 변경하시려면 hello@pracexam.com으로 이메일을 보내 주세요.</span>
@@ -1008,9 +1079,9 @@
   </div>
 </div>
 
-<script src="/exams.js?v=20261030b" defer></script>
-<script src="/re-states.js?v=1117e76b78"></script>
-<script src="/site-common.js?v=20261101a"></script>
+<script src="/exams.js?v=20261106d" defer></script>
+<script src="/re-states.js?v=81bc29e462"></script>
+<script src="/site-common.js?v=7218f33678"></script>
 <script>
 // ════════════════════════════════════════════════════════════════
 // SAMPLE QUESTIONS — App 문제풀이 화면과 동일한 구조로 렌더링
@@ -1226,7 +1297,7 @@ renderSampleQuestions();
   sel.addEventListener('change',function(){ PE_RE_STATE.set(sel.value); apply(); });
 })();
 </script>
-<script src="/videos.js?v=20261029" defer></script>
+<script src="/videos.js?v=20261101p" defer></script>
 <script>
 // ── Featured Short (RE · 2026-10-29): the latest RE short. A failure or 0 videos hides the band. ──
 window.addEventListener('DOMContentLoaded', function(){
@@ -1359,7 +1430,8 @@ function switchModal(which){
 // popquiz.html 등 외부 페이지에서 ?signup=1 로 들어오면 가입 모달 자동 오픈
 (function(){
   try{
-    if(new URLSearchParams(location.search).get('signup') === '1') startFree();
+    var _q = new URLSearchParams(location.search);
+    if(_q.get('signup') === '1'){ var _pl = _q.get('plan'); if(_pl === 'm' || _pl === 'q') startSubscribe(_pl); else startFree(); }   // plan from state-page pricing (2026-11-09)
   }catch(e){}
 })();
 
@@ -1560,7 +1632,8 @@ function doSignup(){
       // remembered for the first app visit after confirming, in case the metadata was not saved.
       // Only for a NEW account, with its email: an existing (EA) account must pass the RE Terms card (2026-10-30).
       try { localStorage.setItem('pe_re_signup', JSON.stringify({ state: reState, email: String(email).toLowerCase(), at: Date.now() })); } catch(e){}
-      // (2026-08-29: Google Ads 전환 보고를 걷어냈다 — 광고 종료)
+      // Google Ads conversion: free sign-up succeeded (2026-11-08)
+      try{ gtag('event','conversion',{ send_to:'AW-18345651711/z9OnCN2y1NUcEP_b8atE' }); }catch(e){}
       // 확인 대기 화면으로 전환 + 확인 여부 감지 시작.
       // 만에 하나 그 화면이 깨지더라도 가입 자체는 성공했으므로, 예전 안내 문구로 물러선다.
       try {

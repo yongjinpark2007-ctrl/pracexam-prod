@@ -41,7 +41,7 @@ PracExam questions are calibrated at the 'High' difficulty tier of the actual EA
 Sign up now and enjoy daily access to Quick Study Mode at no cost. Perfect for getting started with daily EA exam practice.
 
 * **Price:** $0
-* 5 free questions daily across all Parts
+* 10 free questions daily across all Parts
 * Detailed explanations & exam tips
 * Flag & review features included
 

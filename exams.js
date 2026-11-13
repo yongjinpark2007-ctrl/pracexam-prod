@@ -9,17 +9,17 @@
      blurb : one line for the hub door            {ko, en}
      url   : landing page          app : practice app
      color : door accent (same as --accent in exam-palettes.css)
-   Names follow the drafts README: «미국 세무사 Enrolled Agent (EA)» / «미국 부동산 중개사 Real Estate Agent». */
+   Names follow the drafts README: «미국 세무사 Enrolled Agent (EA)» / «미국 부동산 중개인 Real Estate Agent». */
 (function(){
   var EXAMS = [
     { id:'ea', url:'/ea/', app:'/app', color:'#6FA39E',
       name:{ ko:'EA', en:'Enrolled Agent' },
-      full:{ ko:'미국 세무사 Enrolled Agent (EA)', en:'Enrolled Agent' },   // switch list = same name as the button (boss 2026-10-30)
+      full:{ ko:'미국 세무사, Enrolled Agent · EA', en:'Enrolled Agent' },   // switch list = same name as the button (boss 2026-10-30)
       blurb:{ ko:'IRS EA 시험 Part 1·2·3 — 5,000개+ 실전 문제', en:'IRS Enrolled Agent exam, Parts 1–3 — 5,000+ practice questions' } },
     { id:'re', url:'/re/', app:'/re/app', color:'#4F7CAC',
       name:{ ko:'부동산', en:'Real Estate Agent' },
-      full:{ ko:'미국 부동산 중개사 Real Estate Agent', en:'Real Estate Agent' },
-      blurb:{ ko:'National + 주(州) 시험 — 캘리포니아·텍사스·플로리다·뉴저지·뉴욕', en:'National + state exams — CA, TX, FL, NJ, NY' } }
+      full:{ ko:'미국 부동산 중개인 Real Estate Agent', en:'Real Estate Agent' },
+      blurb:{ ko:'National + 주(州) 시험 — 캘리포니아·워싱턴주·텍사스·일리노이·플로리다·뉴저지·뉴욕', en:'National + state exams — CA, WA, TX, IL, FL, NJ, NY' } }
   ];
 
   function bi(o){ return '<span class="ko">' + o.ko + '</span><span class="en">' + o.en + '</span>'; }
@@ -66,5 +66,25 @@
       renderSwitch(sw[i], cur);
     }
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  // Header «Log In» for a visitor already signed in on this browser (boss 2026-11-06): customers leave the app for
+  // Exam Tips or Study Tips, then had to press Log In to get back. On every landing, tips, video and quiz page it
+  // becomes «My Practice». The link stays as written: each page opens its own exam's app (boss 2026-11-06: following
+  // the last app used threw people from the Real Estate landing into EA). Only the hub follows the last app used:
+  // its button is href="#login" and hub-login.js paints it.
+  function paintPractice(){
+    try{
+      var raw = localStorage.getItem('sb-ufrhvodruulpgnmudzwh-auth-token');
+      var sess = raw && JSON.parse(raw);
+      if(!sess || !(sess.access_token || sess.refresh_token)) return;
+      var links = document.querySelectorAll('.nav-actions a.btn-ghost');
+      for(var i = 0; i < links.length; i++){
+        var a = links[i], h = a.getAttribute('href');
+        if(h !== '/app' && h !== '/app.html' && h !== '/re/app') continue;
+        if(a.querySelector('.ko')) a.innerHTML = bi({ ko:'내 학습', en:'My Practice' });   // both languages, the toggle switches them
+        else a.textContent = (document.documentElement.lang === 'ko') ? '내 학습' : 'My Practice';   // tips pages: one language per URL
+      }
+    }catch(e){}
+  }
+  function start(){ init(); paintPractice(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();

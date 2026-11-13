@@ -30,13 +30,15 @@
 })();
 </script>
 
-<!-- ===== 유입 출처 갈무리 (UTM·gclid) — «우리 것» ===== 
-     2026-08-29: Google Ads 태그(gtag)를 걷어냈다 — 광고 종료(사용자 지시).
-     그래서 이제 제3자 광고 쿠키를 심지 않는다 = privacy.html §4 의 약속과 다시 맞는다.
-     🔴 아래 pe_attrib 는 남긴다 — Google 것이 아니라 우리 localStorage 에 담아
-        우리 서버로 보내는 자체 기록이다(가입 때 refAttrib 으로 쓴다).
-     ↩ 광고를 다시 켜면 태그와 «동의 받는 장치» 를 함께 넣는다. -->
+<!-- ===== Google Ads sign-up conversion (2026-11-08, boss: ads back on, measure sign-ups) =====
+     Same IDs as the July 2026 tag. privacy.html section 4 updated the same day to say Google Ads cookies are used.
+     pe_attrib below is our own first-party record and stays. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18345651711"></script>
 <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18345651711');
   (function(){ try{ var p=new URLSearchParams(location.search),keep={};
     ['gclid','utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function(k){ if(p.get(k)) keep[k]=p.get(k); });
     if(Object.keys(keep).length){ keep._ts=Date.now(); localStorage.setItem('pe_attrib', JSON.stringify(keep)); }
@@ -71,7 +73,7 @@
      ⚠️ 값만 넣으면 됩니다. 태그 전체를 붙여넣지 마십시오.
      ─────────────────────────────────────────────────────────────── -->
 <meta name="msvalidate.01"            content="69755E41A5C3F4B3F142BD9EF014FD1D">
-<meta name="naver-site-verification"  content="REPLACE_WITH_YOUR_NAVER_VERIFICATION_CODE">
+<meta name="naver-site-verification"  content="dd617b121fc523408248e5f19f4d086e94733ed8">
 
 <!-- ===== Favicon (2026-07-01) ===== -->
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -79,7 +81,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>EA Practice Questions 2026 | Enrolled Agent Exam Prep | PracExam</title>
-<meta name="description" content="5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 &amp; 3 on 2025 tax law for the 2026 exam.">
+<meta name="description" content="Next-generation exam prep platform. 5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 &amp; 3 on 2025 tax law for the 2026 exam.">
 <link rel="canonical" href="https://pracexam.com/ea/">
 <link rel="alternate" hreflang="en" href="https://pracexam.com/ea/" />
 <link rel="alternate" hreflang="ko" href="https://pracexam.com/ea/ko/" />
@@ -90,7 +92,7 @@
 <meta property="og:site_name" content="PracExam">
 <meta property="og:url" content="https://pracexam.com/ea/">
 <meta property="og:title" content="EA Practice Questions 2026 | Enrolled Agent Exam Prep | PracExam">
-<meta property="og:description" content="5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 &amp; 3 on 2025 tax law for the 2026 exam.">
+<meta property="og:description" content="Next-generation exam prep platform. 5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 &amp; 3 on 2025 tax law for the 2026 exam.">
 <meta property="og:image" content="https://pracexam.com/og-ea.jpg?v=1">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -100,7 +102,7 @@
 <!-- ── Twitter / X Card ── -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="EA Practice Questions 2026 | Enrolled Agent Exam Prep | PracExam">
-<meta name="twitter:description" content="5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 &amp; 3 on 2025 tax law for the 2026 exam.">
+<meta name="twitter:description" content="Next-generation exam prep platform. 5,000+ IRS Enrolled Agent (EA) exam practice questions with detailed explanations and exam tips. Covers Parts 1, 2 &amp; 3 on 2025 tax law for the 2026 exam.">
 <meta name="twitter:image" content="https://pracexam.com/og-ea.jpg?v=1">
 
 <!-- ── FAQ Schema (JSON-LD) ── -->
@@ -127,10 +129,10 @@
     },
     {
       "@type": "Question",
-      "name": "Are the practice questions available in Korean?",
+      "name": "Does every question come with an explanation?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. PracExam provides bilingual Korean and English explanations for every question, so Korean-speaking candidates can study for the EA exam in either language."
+        "text": "Yes. Every question has a detailed explanation, and the War Room lets you study the tax law and theory behind each topic in depth."
       }
     },
     {
@@ -156,10 +158,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/videos.css?v=f9ce8e4eb2">
 <link rel="stylesheet" href="/exam-palettes.css?v=20261031h">
-<link rel="stylesheet" href="/landing.css?v=20261031zh">
-<link rel="stylesheet" href="/exam-switch.css?v=20261030">
+<link rel="stylesheet" href="/landing.css?v=20261108b">
+<link rel="stylesheet" href="/exam-switch.css?v=92317555cb">
 </head>
 <body data-exam="ea">
 
@@ -231,7 +234,7 @@
         <span class="ko">2026 EA 시험 대비 · 2025 세법 기준</span><span class="en">2026 EA EXAM PREP · 2025 TAX LAW</span>
       </span>
       <h1 style="margin-top:14px;">
-        <span class="ko">Master the Enrolled Agent Exam<br><em>Your Ultimate PSI-style Exam Finisher</em></span>
+        <span class="ko">미국 세무사 · EA 시험 준비의 새로운 기준<br><em>PSI 스타일 실전 문제로 합격까지</em></span>
         <span class="en">Master the Enrolled Agent Exam<br><em>Your Ultimate PSI-style Exam Finisher</em></span>
       </h1>
       <p class="lead">
@@ -246,6 +249,7 @@
           <span class="ko">예제 문제 보기</span><span class="en">Try Sample Questions</span>
         </a>
       </div>
+      <p class="hero-free"><img class="hero-note-icon" src="/icon-192.png" alt="" width="34" height="34"><span class="ko">카드 등록 없이 30일 무료 · 매일 10문제</span><span class="en">No credit card · 30 days free · 10 questions a day</span></p>
       <div class="hero-note">
         <img class="hero-note-icon" src="/icon-192.png" alt="" width="34" height="34">
         <span class="ko">모바일 앱으로 설치 — 어디서든, 언제든 학습</span>
@@ -600,57 +604,6 @@
   </div>
 </section>
 
-<!-- ═══ KILLER QUESTIONS ═══ -->
-<section class="killer-section">
-  <div class="wrap">
-    <div class="killer-head">
-      <span class="killer-eyebrow"><span class="ko">킬러 문항</span><span class="en">KILLER QUESTIONS</span></span>
-      <h2>
-        <span class="ko">암기가 아니라 적용을 묻습니다</span>
-        <span class="en">Applying the rules, not reciting them</span>
-      </h2>
-    </div>
-    <p class="killer-intro">
-      <span class="ko">PracExam의 EA 문제들은 최신 실전 스타일 트렌드를 반영합니다. 단편적인 세법 지식 문제들보다 한 단계 더 높고 정교하게 설계되어 있습니다.</span>
-      <span class="en">PracExam questions reflect the latest exam-style trends. They are designed a level above single-fact tax questions, and with more precision.</span>
-    </p>
-
-    <div class="killer-grid">
-      <div class="killer-card">
-        <span class="killer-badge"><span class="ko">전략 1</span><span class="en">Strategy 1</span></span>
-        <span class="killer-num">01</span>
-        <h3><span class="ko">다차원적 개념 결합</span><span class="en">Multi-dimensional Testing</span></h3>
-        <p><span class="ko">하나의 핵심 개념을 단편적으로 묻는 것이 아니라, 두 개 이상의 세법 규정을 유기적으로 엮어 출제합니다. 이해 없이는 답하기 어려운 구조입니다.</span>
-           <span class="en">Rather than testing a single concept in isolation, each question weaves two or more tax code provisions together. You cannot guess your way through — genuine understanding is required.</span></p>
-      </div>
-
-      <div class="killer-card">
-        <span class="killer-badge"><span class="ko">전략 2</span><span class="en">Strategy 2</span></span>
-        <span class="killer-num">02</span>
-        <h3><span class="ko">치명적인 고품질 오답</span><span class="en">High-quality Distractors</span></h3>
-        <p><span class="ko">수험생들이 실전에서 흔히 저지르는 치명적인 실수를 반영한 함정 답안입니다. 직관적인 정답 찍기가 어려우며, 변별력이 높습니다.</span>
-           <span class="en">Wrong answers are derived from the exact mistakes real candidates make under pressure. Guessing is virtually impossible — every distractor is engineered to catch a genuine misconception.</span></p>
-      </div>
-
-      <div class="killer-card">
-        <span class="killer-badge"><span class="ko">전략 3</span><span class="en">Strategy 3</span></span>
-        <span class="killer-num">03</span>
-        <h3><span class="ko">예외 규정의 정밀 타격</span><span class="en">Targeting Edge Cases</span></h3>
-        <p><span class="ko">일반 원칙뿐만 아니라 예외 조항, 한도 규칙 등 수험생들이 이론으로만 읽고 넘기기 쉬운 '맹점'을 날카롭게 수치화해 출제합니다.</span>
-           <span class="en">Beyond general principles, questions zero in on exception clauses and threshold rules — the "blind spots" candidates skim in theory but fail to apply under exam conditions.</span></p>
-      </div>
-    </div>
-
-    <!-- 킬러 사진 — 어두운 배경 «안», 가운데 860px (2026-08-27 사용자 정정) -->
-    <figure class="killer-photo">
-      <img src="/killer-focus.webp"
-           srcset="/killer-focus.webp 860w, /killer-focus-2x.webp 1720w"
-           sizes="(max-width:900px) 96vw, 860px"
-           width="860" height="480" alt="" loading="lazy">
-    </figure>
-  </div>
-</section>
-
 <!-- ═══ SAMPLE QUESTIONS ═══ -->
 <section id="samples" class="samples">
   <div class="wrap">
@@ -670,6 +623,11 @@
       <button type="button" class="btn btn-ghost btn-lg" id="samples-toggle" aria-expanded="false" aria-controls="sample-questions-mount">
         <span class="ko" data-open="접기 ▴" data-closed="나머지 문제 더 보기 ▾">나머지 문제 더 보기 ▾</span><span class="en" data-open="Show fewer ▴" data-closed="See 2 more questions ▾">See 2 more questions ▾</span>
       </button>
+    </div>
+    <div class="sample-cta">
+      <h3><span class="ko">문제가 마음에 드셨나요?</span><span class="en">Like these questions?</span></h3>
+      <p><span class="ko">지금 가입하고 30일 동안 매일 10문제를 무료로 풀어 보세요. 카드 등록은 필요 없습니다.</span><span class="en">Sign up and practice 10 free questions a day for 30 days. No credit card needed.</span></p>
+      <a class="btn btn-primary btn-lg" href="#" onclick="startFree();return false;"><span class="ko">무료로 시작하기</span><span class="en">Start Free</span></a>
     </div>
     <script>
     (function(){
@@ -708,7 +666,7 @@
           <span class="en">Perfect for getting started with daily EA exam practice.</span></p>
         <ul class="price-list">
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">30일간 매일 Quick Study 모드</span><span class="en">Quick Study Mode for 30 days </span></span></li>
-          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">모든 파트에서 매일 5문제 무료 제공</span><span class="en">5 free questions daily across all Parts</span></span></li>
+          <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">모든 파트에서 매일 10문제 무료 제공</span><span class="en">10 free questions daily across all Parts</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">한·영 자세한 해설 &amp; 시험 공부 팁</span><span class="en">Detailed explanations &amp; exam tips</span></span></li>
           <li><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg><span><span class="ko">플래그 &amp; 복습 모드</span><span class="en">Flag &amp; review</span></span></li>
         </ul>
@@ -786,6 +744,33 @@
 </section>
 
 <!-- ═══ ABOUT (사업자 정보 고지 — 광고 심사용, 강조 최소화) ═══ -->
+<!-- ═══ FAQ (visible, KO/EN) — 2026-11-05: 한국어 검색어(미국 세무사 · EA 시험)가 «본문»에 나오게 한다 ═══ -->
+<section id="faq" style="padding:36px 0;">
+  <div class="wrap" style="max-width:840px;">
+    <h2 style="font-size:22px; margin:0 0 14px;"><span class="ko">미국 세무사, Enrolled Agent · EA 시험 자주 묻는 질문</span><span class="en">Enrolled Agent (EA) exam FAQ</span></h2>
+    <details style="border-top:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">미국 세무사, Enrolled Agent · EA란 무엇인가요?</span><span class="en">What is an Enrolled Agent (EA)?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">미국 세무사로 불리는 EA, 영어로 Enrolled Agent는 IRS가 주관하는 SEE, 영어로 Special Enrollment Examination에 합격하면 받는 자격입니다. EA는 개인과 기업의 세금 신고서 작성, 세금 계획과 상담 같은 다양한 세무 업무를 하고, 더 나아가 세무조사, 이의신청, 체납 징수 같은 상황에서 IRS 앞에서 납세자를 대리할 수 있습니다.</span><span class="en">An Enrolled Agent is a tax professional who passed the IRS Special Enrollment Examination (SEE). EAs handle a wide range of tax work, such as preparing individual and business tax returns and providing tax planning and advice, and can also represent taxpayers before the IRS in audits, appeals, and collections.</span></p>
+      <p style="margin:6px 0 0;"><a href="/ea/exam-tips/#what" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+    <details style="border-top:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">미국 세무사, Enrolled Agent · EA 시험은 몇 개 파트인가요?</span><span class="en">How many parts does the EA exam have?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">3개 파트입니다. Part 1은 개인 소득세, Part 2는 사업체 세금, Part 3은 대리 업무와 실무 절차, 영어로 Representation, Practices, and Procedures를 다룹니다.</span><span class="en">Three parts: Part 1 Individuals, Part 2 Businesses, Part 3 Representation, Practices, and Procedures.</span></p>
+      <p style="margin:6px 0 0;"><a href="/ea/exam-tips/#format" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+    <details style="border-top:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">EA 시험 문제를 한국어 해설로 공부할 수 있나요?</span><span class="en">Does every question come with an explanation?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">네. PracExam의 모든 문제에 한국어와 영어 해설이 함께 있고, War Room의 이론 공부도 한글과 영어로 할 수 있어서 이해에 큰 도움이 됩니다. 시험 자체는 영어로 치르기 때문에, 한국어 해설로 이해하고 영어 용어도 함께 익히실 수 있습니다.</span><span class="en">Yes. Every question has a detailed explanation, and the War Room lets you study the tax law and theory behind each topic in depth.</span></p>
+      <p style="margin:6px 0 0;"><a href="/ea/exam-tips/#tips" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+    <details style="border-top:1px solid var(--border-clr); border-bottom:1px solid var(--border-clr); padding:12px 0;">
+      <summary style="cursor:pointer; font-weight:700;"><span class="ko">PracExam에는 EA 시험 문제가 몇 개 있나요?</span><span class="en">How many EA practice questions are there?</span></summary>
+      <p style="margin:8px 0 0; line-height:1.7; color:var(--text-muted);"><span class="ko">5,000개가 넘는 PSI 스타일 실전 문제가 Part 1, 2, 3 전 영역에 있고, 최신 세법 기준으로 관리됩니다. 실제 시험 환경과 같은 모의고사 3회분도 제공해서 실전 감각을 익히는 데 도움이 됩니다.</span><span class="en">More than 5,000 PSI-style practice questions across all three parts, kept up to date with current tax law. Three full mock exams in a real exam setting are also included to help you build exam-day confidence.</span></p>
+      <p style="margin:6px 0 0;"><a href="/ea/exam-tips/#tips" style="color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px;"><span class="ko">더 알아보기 →</span><span class="en">Learn more →</span></a></p>
+    </details>
+  </div>
+</section>
+
 <section id="about">
   <div class="wrap">
     <div class="about-strip">
@@ -795,7 +780,7 @@
              모델 검수로 되돌리지 말 것. 「PracExam이 무슨 뜻인가」를 한국 방문자에게
              알려 주려고 앞의 두 문장을 더하셨다 —
              *"영어권에서는 친숙하겠지만 한국에서는 익숙치 않은 말인데"* -->
-        <span class="ko">영어권에서 중요한 시험을 앞두고 실전 감각을 익히기 위해 치르는 연습문제, 모의고사를 ‘Practice Exam’, 줄여서 ‘PracExam’이라고 부릅니다. 이 이름 그대로 PracExam은 미국 IRS 공인 세무사, EA (Enrolled Agent) 자격증을 준비하는 여러분이 실전 스타일의 문제를 연습하고 자신 있게 합격할 수 있도록 돕는 온라인 시험 준비 플랫폼입니다.</span>
+        <span class="ko">영어권에서 중요한 시험을 앞두고 실전 감각을 익히기 위해 치르는 연습문제, 모의고사를 ‘Practice Exam’, 줄여서 ‘PracExam’이라고 부릅니다. 이 이름 그대로 PracExam은 미국 IRS 공인 세무사, Enrolled Agent · EA 자격증을 준비하는 여러분이 실전 스타일의 문제를 연습하고 자신 있게 합격할 수 있도록 돕는 온라인 시험 준비 플랫폼입니다.</span>
         <span class="en">PracExam is an online exam-preparation platform for the U.S. IRS Enrolled Agent (EA) exam.</span>
       </p>
 
@@ -1679,7 +1664,8 @@ function doSignup(){
       return;
     }
     if (result.ok) {
-      // (2026-08-29: Google Ads 전환 보고를 걷어냈다 — 광고 종료)
+      // Google Ads conversion: free sign-up succeeded (2026-11-08)
+      try{ gtag('event','conversion',{ send_to:'AW-18345651711/z9OnCN2y1NUcEP_b8atE' }); }catch(e){}
       // 확인 대기 화면으로 전환 + 확인 여부 감지 시작.
       // 만에 하나 그 화면이 깨지더라도 가입 자체는 성공했으므로, 예전 안내 문구로 물러선다.
       try {
@@ -1933,8 +1919,8 @@ function doWaitlist(){
   }, 15000);
 })();
 </script>
-<script src="/exams.js?v=20261030b" defer></script>
-<script src="/videos.js?v=5fa05d634b" defer></script>
+<script src="/exams.js?v=20261106d" defer></script>
+<script src="/videos.js?v=20261104t" defer></script>
 <script>
 // ── Featured Short (2026-10-16): 최신 쇼츠 1개. 실패/0건이면 섹션과 footer 링크를 숨긴다 ──
 window.addEventListener('DOMContentLoaded', function(){
@@ -1967,7 +1953,7 @@ window.addEventListener('DOMContentLoaded', function(){
       PXVideos.mount(frame, row, l);
       titleEl.textContent = PXVideos.titleOf(row, l);
       descEl.textContent = PXVideos.descOf(row, l);
-      pill.textContent = 'EA Part ' + row.ea_part + ' · ' + row.topic;
+      pill.textContent = PXVideos.pillOf(row, l);
       var id = PXVideos.idOf(row, l);
       yt.href = 'https://www.youtube.com/shorts/' + id;
       yt.hidden = false;

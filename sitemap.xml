@@ -2,27 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://pracexam.com/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/ea/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/re/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/california/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/washington/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/texas/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/illinois/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/florida/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/new-jersey/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/new-york/</loc>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/videos</loc>
-    <lastmod>2026-10-16</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/ea/exam-tips/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/re/exam-tips/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/re/popquiz</loc>
@@ -42,78 +70,106 @@
   </url>
   <url>
     <loc>https://pracexam.com/tips/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/pracexam-calutech-partnership/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/pracexam-calutech-partnership/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ea-exam-from-korea/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/ea-exam-from-korea/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ea-part1-where-questions/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/ea-part1-where-questions/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ea-part3-where-questions/</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/ea-part3-where-questions/</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ea-part2-where-questions/</loc>
-    <lastmod>2026-09-16</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/ea-part2-where-questions/</loc>
-    <lastmod>2026-09-16</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/psi-exam-style-trend/</loc>
-    <lastmod>2026-09-22</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/tips/ko/psi-exam-style-trend/</loc>
-    <lastmod>2026-09-22</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/ko/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/ea/ko/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/re/ko/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/california/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/washington/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/texas/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/illinois/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/florida/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/new-jersey/</loc>
+    <lastmod>2026-11-05</lastmod>
+  </url>
+  <url>
+    <loc>https://pracexam.com/re/ko/new-york/</loc>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/re/exam-tips/ko/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
   <url>
     <loc>https://pracexam.com/ea/exam-tips/ko/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <lastmod>2026-11-05</lastmod>
   </url>
 </urlset>

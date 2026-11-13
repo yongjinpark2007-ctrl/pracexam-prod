@@ -12,15 +12,15 @@
 //    낱말은 하나도 버리지 않고 붙여쓰기로만 줄였다 —
 //      "한글 해설"→"한글해설"(제목 41→40) · "대비 "를 덜고 "모든 문항에"→"전 문항"(설명 83→78).
 //    ⚠️ 여기를 고칠 때는 반드시 «글자 수를 세고» 넣을 것. 넘치면 검색 결과에서 잘린다.
-const KO_TITLE = "미국세무사(EA) 문제은행 · 한글해설 5,000문항 | PracExam";                                   // 40자
-const KO_DESC  = "미국세무사(EA) 시험 실전 문제 5,000+. Part 1·2·3 전 영역, 전 문항 한국어·영어 해설. 최신 세법 기준 온라인 문제은행.";  // 78자
+const KO_TITLE = "미국 세무사 · EA 시험 준비의 새로운 기준 | PracExam";
+const KO_DESC  = "차세대 시험 준비 플랫폼. 미국 세무사, Enrolled Agent · EA 시험 실전 문제 5,000+. Part 1·2·3 전 영역, 전 문항 한국어·영어 해설. 최신 세법 기준 EA 시험 온라인 문제은행.";  // 78자
 
 // 🆕 2026-10-24 — 루트가 «중립 허브»가 되고 EA 는 /ea/ 로 옮겼다. 위 EA 제목·설명은 /ea/ 가 그대로 이어받고(순위 신호 유지),
 //    허브(/)와 부동산(/re/)은 아래 자기 제목을 쓴다. 글자 수 기준(제목 40자 · 설명 80자)은 같다.
-const KO_HUB_TITLE = "PracExam | 미국 세무사·부동산 중개사 시험 문제은행";
-const KO_HUB_DESC  = "미국 세무사(EA)와 부동산 중개사 시험 실전 문제은행. 시험을 고르고 바로 연습하세요.";
-const KO_RE_TITLE  = "미국 부동산 중개사 시험 문제은행 | PracExam";
-const KO_RE_DESC   = "미국 부동산 중개사 시험 National·주(州) 실전 문제. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕, 문항별 해설과 시험 팁.";
+const KO_HUB_TITLE = "PracExam | 미국 세무사 · EA, 부동산 시험 준비의 새로운 기준";
+const KO_HUB_DESC  = "차세대 시험 준비 플랫폼. 미국 세무사, Enrolled Agent · EA 시험과 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 실전 문제은행. 시험을 고르고 바로 연습하세요.";
+const KO_RE_TITLE  = "미국 부동산 중개인, 라이센스, 에이전트 시험 준비의 새로운 기준 | PracExam";
+const KO_RE_DESC   = "차세대 시험 준비 플랫폼. 미국 부동산 중개인, 라이센스, 에이전트, Real Estate License, Broker 시험 실전 문제. National과 주별 문제, 캘리포니아·워싱턴주·텍사스·일리노이·플로리다·뉴저지·뉴욕. California, Washington, Texas, Illinois, Florida, New Jersey, New York. 문항별 해설과 시험 팁.";
 
 // 경로 → 한글 제목·설명
 function koCopy(url) {
@@ -89,7 +89,7 @@ function isRoot(url) {
 //    engines never list a copy of pracexam.com (duplicate content would hurt pracexam.com SEO).
 //  - Only the SHA-256 of the password is in this public repo. A Cloudflare env var GATE_PASSWORD_SHA256 overrides it.
 // ---------------------------------------------------------------------------
-const GATE_HOST_RE = /(^|\.)dxdgroup\.com$/i;
+const GATE_HOST_RE = /^test\.pracexam\.com$|(^|\.)dxdgroup\.com$/i;   // 2026-11-12: test site moving to test.pracexam.com (apex pracexam.com never matches)
 const GATE_DEFAULT_SHA256 = "bdff1fb817fce0908117140656e4c3ee1077ba44c4d4fa41679996f328424b0e";
 const GATE_COOKIE = "pe_test_gate";
 
@@ -185,6 +185,7 @@ async function handle(context) {
     .on('meta[property="og:locale:alternate"]', new MetaRewriter("en_US"))
     .on('meta[name="twitter:title"]',       new MetaRewriter(copy.title))
     .on('meta[name="twitter:description"]', new MetaRewriter(copy.desc))
+    .on(new URL(request.url).pathname === "/" ? "[data-ko]" : "[data-ko-none]", new DataKoSwap())
     .transform(response);
 
   const out = new Response(rewritten.body, rewritten);
@@ -195,21 +196,49 @@ async function handle(context) {
 // 2026-10-31 (boss): Korean entry URLs for Korean search. /ko/ · /ea/ko/ · /re/ko/ · /re/exam-tips/ko/ serve the SAME page as
 // the English URL, already switched to Korean (html lang, title, description, canonical). Nothing about the page itself changes:
 // the KO/EN toggle still works in place. Both URLs carry hreflang pairs (static <link rel="alternate"> in each page).
-const KO_TIPS_RE_TITLE = "미국 부동산 중개사 시험 안내 · 주별 응시 요건 | PracExam";
-const KO_TIPS_RE_DESC  = "미국 부동산 중개사 시험 주별 안내. 캘리포니아·텍사스·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
-const KO_TIPS_EA_TITLE = "미국 세무사(EA) 시험 안내 · 응시 자격·형식 | PracExam";
-const KO_TIPS_EA_DESC  = "미국 세무사(EA) 시험 안내. 응시 자격, 시험 형식과 비용, 시험 당일 준비, 합격 후 등록 절차까지 한눈에 정리했습니다.";
+const KO_TIPS_RE_TITLE = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 안내 · 주별 응시 요건 | PracExam";
+const KO_TIPS_RE_DESC  = "미국 부동산 중개인, 라이센스, 에이전트, Real Estate License 시험 주별 안내. 캘리포니아·워싱턴주·텍사스·일리노이·플로리다·뉴저지·뉴욕 응시 요건, 시험 형식, 비용과 다음 단계.";
+const KO_TIPS_EA_TITLE = "미국 세무사, Enrolled Agent · EA 시험 안내 · 응시 자격·형식 | PracExam";
+const KO_TIPS_EA_DESC  = "미국 세무사, Enrolled Agent · EA 시험 안내. 응시 자격, 시험 형식과 비용, 시험 당일 준비, 합격 후 등록 절차까지 한눈에 정리했습니다.";
+// 2026-11-05 (boss): SEO and AEO both use 라이센스. On the Korean URLs the structured data is Korean too.
+// The RE FAQ is the visible Korean FAQ in re/index.html word for word: keep the two in step.
+const KO_LD_RE_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"inLanguage\": \"ko\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"미국 부동산 라이센스, Real Estate License 시험이란 무엇인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"미국에서 부동산 거래를 중개하려면 주 정부가 발급하는 라이센스가 필요합니다. 라이센스를 받으려면 시험에 합격해야 하고, 시험은 모든 주에 공통인 National 부분과 각 주의 법을 다루는 State 부분으로 나뉘는 경우가 많습니다.\"}}, {\"@type\": \"Question\", \"name\": \"주마다 시험이 다른가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. 라이센스 요건과 시험 형식은 주마다 다릅니다. PracExam이 지원하는 주와 주별 요건은 시험 안내, Exam Tips에서 확인하실 수 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"부동산 에이전트, Real Estate Agent와 브로커, Broker는 어떻게 다른가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"일반적으로 에이전트는 브로커 밑에서 일하고, 브로커 라이센스는 독립적으로 중개업을 운영할 수 있는 상위 라이센스입니다. 세부 요건은 주마다 다릅니다.\"}}, {\"@type\": \"Question\", \"name\": \"한국어 해설로 공부할 수 있나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. PracExam의 모든 문제에 한국어와 영어 해설이 함께 있고, War Room의 이론 공부도 한글과 영어로 할 수 있어서 이해에 큰 도움이 됩니다. 한국어 해설로 쉽게 이해하고 영어 용어도 함께 익히실 수 있습니다.\"}}]}";
+const KO_LD_RE_COURSE = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", "inLanguage": "ko",
+  name: "미국 부동산 라이센스, Real Estate License 시험 문제", description: KO_RE_DESC, url: "https://pracexam.com/re/ko/",
+  provider: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/" },
+  about: ["미국 부동산 라이센스 시험", "Real Estate License Exam"] });
+const KO_LD_HUB_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"inLanguage\": \"ko\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"PracExam은 무엇인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"PracExam은 두 가지 미국 자격시험을 위한 온라인 문제 은행입니다. 미국 세무사 · EA 시험과 미국 부동산 라이센스, Real Estate License 시험을 다룹니다. 모든 문제에 자세한 해설과 시험 팁이 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"어떤 시험을 다루나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"미국 세무사 · EA 시험 Part 1, 2, 3은 https://pracexam.com/ea/ko/ 에서, 미국 부동산 라이센스 시험의 National 부분과 State 부분은 https://pracexam.com/re/ko/ 에서 공부할 수 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"PracExam 요금은 얼마인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"30일 Quick Study로 시작할 수 있습니다. Pro는 월 $29 또는 3개월 $70이고, 14일 환불과 언제든 해지가 가능합니다. 시험별로 따로 구독합니다.\"}}, {\"@type\": \"Question\", \"name\": \"모의고사가 포함되어 있나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. Pro에는 실전 형식의 전체 모의고사와 토픽별 학습, Smart Study 모드, 토픽별 War Room 페이지가 포함됩니다.\"}}]}";
 const KO_ROUTES = {
-  "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC },
+  "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC, ld: { "hub-faq": KO_LD_HUB_FAQ } },
   "/ea/ko/":           { base: "/ea/",           title: KO_TITLE,         desc: KO_DESC },
-  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC },
+  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, heroImg: "/re/img/hero-re-3.webp?v=134ab7aea3", heroAlt: "집 현관 앞에서 태블릿을 든 부동산 에이전트", heroImg2: "/re/img/hero-re-ko2.webp?v=b5707c2779", heroAlt2: "벽돌집 앞에 팔짱을 끼고 서 있는 부동산 에이전트", ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
   "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
   "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
 };
 const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/", "/ea/exam-tips/ko": "/ea/exam-tips/ko/" };
+// 2026-11-05: the hub (/) keeps its Korean in data-ko attributes and fills it in with JS. Crawlers that do not run JS
+// (Naver Yeti) therefore saw English body text on /ko/. For the Korean hub, write the Korean text into the HTML itself.
+class DataKoSwap {
+  element(el) { const v = el.getAttribute("data-ko"); if (v !== null) el.setInnerContent(v); }
+}
+class LdSwap {
+  constructor(ld) { this.ld = ld || {}; }
+  element(el) { const v = this.ld[el.getAttribute("data-ld")]; if (v) el.setInnerContent(v, { html: true }); }
+}
 class AttrSetter {
   constructor(name, value) { this.name = name; this.value = value; }
   element(el) { el.setAttribute(this.name, this.value); }
+}
+// 2026-11-06 (boss): the Korean RE main page rotates only the two Korean photos used on the Korean state pages.
+class HeroKo {
+  constructor(route) { this.r = route; this.n = 0; }
+  element(el) {
+    if (!this.r.heroImg) return;
+    this.n += 1;
+    if (this.n === 1) { el.setAttribute("src", this.r.heroImg); el.setAttribute("alt", this.r.heroAlt); return; }
+    if (this.n === 2) { el.setAttribute("data-src", this.r.heroImg2); el.setAttribute("alt", this.r.heroAlt2); return; }
+    el.remove();
+  }
 }
 async function koRoute(context, route) {
   const url = new URL(context.request.url);
@@ -234,6 +263,9 @@ async function koRoute(context, route) {
     .on('meta[name="twitter:title"]',            new MetaRewriter(route.title))
     .on('meta[name="twitter:description"]',      new MetaRewriter(route.desc))
     .on('link[rel="canonical"]',                 new AttrSetter("href", kourl))
+    .on(route.base === "/" ? "[data-ko]" : "[data-ko-none]", new DataKoSwap())
+    .on("script[data-ld]",                       new LdSwap(route.ld))
+    .on("#hero-rot img",                         new HeroKo(route))
     .transform(response);
   const res = new Response(out.body, out);
   res.headers.delete("Vary");

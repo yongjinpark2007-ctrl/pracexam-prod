@@ -14,12 +14,18 @@
          pass = 56 correct National and 28 correct State (of 80 / 40 scored). Both portions must be passed.
      NJ  PSI bulletin — Salesperson 110 questions, 70% (77 correct), 4 hours.
      NY  DOS — 1 1/2 hours. DOS does not publish the question count or the passing score.
+     IL  PSI candidate information booklet — Broker: National 100 items, 150 min, 70% + State 40 items, 90 min, 75% (2026-11-02).
+     WA  PSI candidate information bulletin (3/28/2024) — Broker: National 100 items, 150 min + State 30 items, 90 min, scaled 70 on each (2026-11-04).
      FL  DBPR/Pearson VUE sales associate booklet — 100 multiple-choice questions, 3 1/2 hours, 75 points or higher (2026-10-29). */
 (function(){
   var FMT = {
     ca: { n:150, min:180, pct:70, portions:false, ko:['150문항 · 3시간', '70% 이상이면 합격 (California DRE 기준)'], en:['150 questions · 3 hours', 'Pass at 70% or more (California DRE)'] },
     tx: { n:135, min:240, pct:70, portions:true,  ko:['National 85 + 주 50문항 · 4시간', 'National과 주 부분을 각각 70% 이상 맞혀야 합격 (실제 시험: 채점 80문항 중 56개 · 40문항 중 28개)'],
                                                    en:['National 85 + State 50 questions · 4 hours', 'Pass each portion at 70% (real exam: 56 of 80 and 28 of 40 scored items)'] },
+    il: { n:140, min:240, pct:70, statePct:75, portions:true, ko:['National 100 + 주 40문항 · 4시간 (National 2시간 30분 + 주 1시간 30분)', 'National은 70%, 주 부분은 75% 이상 맞혀야 합격 (PSI 기준)'],
+                                                   en:['National 100 + State 40 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass National at 70% and State at 75% (PSI)'] },
+    wa: { n:130, min:240, pct:70, portions:true, ko:['National 100 + 주 30문항 · 4시간 (National 2시간 30분 + 주 1시간 30분)', 'National과 주 부분을 각각 70% 이상 맞혀야 합격 (PSI 환산 점수 70 기준)'],
+                                                   en:['National 100 + State 30 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass each portion at 70% (PSI scaled score of 70)'] },
     fl: { n:100, min:210, pct:75, portions:false, ko:['100문항 · 3시간 30분', '75점 이상이면 합격 (Florida DBPR 기준)'], en:['100 questions · 3 hours 30 minutes', 'Pass at 75 or more (Florida DBPR)'] },
     nj: { n:110, min:240, pct:70, portions:false, ko:['110문항 · 4시간', '70% (77문항) 이상이면 합격 (PSI 기준)'], en:['110 questions · 4 hours', 'Pass at 70% (77 correct) or more (PSI)'] },
     ny: { n:75,  min:90,  pct:70, portions:false, ko:['모의고사 75문항 · 1시간 30분(실제 시험 시간과 같음)', '실제 시험은 합격·불합격만 알려 줍니다 — 이 모의고사는 70%를 합격선으로 씁니다'], en:['Mock exam: 75 questions · 1 hour 30 minutes (same time as the real exam)', 'The real exam reports pass or fail only — this mock uses 70% as its pass line'] }
@@ -55,7 +61,7 @@
         ' · <b>' + mL('남은', 'left') + ' ' + mockFmt(rem) + '</b> · ' + mL('만료 시 자동 제출', 'auto-submits at expiry') + '</div>';
     } else if(!paid){
       html += '<div style="background:var(--accent-tint);border:1px solid var(--accent);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:14.5px;color:var(--text-main);line-height:1.6;">' +
-        '🔒 ' + mL('모의고사는 유료 회원 전용입니다. 구성은 아래에서 미리 볼 수 있어요.', 'Mock exams are for paid members. You can preview the setup below.') + '</div>';
+        '🔒 ' + mL('모의고사는 Pro 회원 전용입니다.', 'Mock exams are for Pro Members.') + '</div>';
     }
     var sets = '';
     [1, 2].forEach(function(p){
@@ -64,7 +70,7 @@
         '<div class="setup-icon-label">' + mL(p + '회', 'Set ' + p) + '</div></button>';
     });
     var cta;
-    if(!paid) cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 ' + mL('유료 회원 전용 — 업그레이드', 'Paid only — Upgrade') + '</button>';
+    if(!paid) cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">🔒 ' + mL('Pro 회원 전용 — 업그레이드', 'Pro Members only — Upgrade') + '</button>';
     else if(live && live.attemptId) cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockResume()">' + mL('이어하기', 'Resume') + '</button>' +
           '<button class="btn-ghost" style="width:100%;margin-top:8px;" onclick="mockStart()">' + mL('새 모의고사로 다시 시작', 'Start a new mock exam') + '</button>';
     else cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">' + mL('모의고사 시작', 'Start mock exam') + '</button>';
@@ -136,9 +142,10 @@
     if(F.portions){
       var nat = sc(pq.filter(function(x){ return (x.outline_code || '').indexOf('N-') === 0; }));
       var sta = sc(pq.filter(function(x){ return (x.outline_code || '').indexOf('N-') !== 0; }));
-      pass = nat.p >= F.pct && sta.p >= F.pct;
+      var sp = F.statePct || F.pct;   // IL: state portion has its own pass line (75%)
+      pass = nat.p >= F.pct && sta.p >= sp;
       rows.push('National ' + nat.c + '/' + nat.n + ' (' + nat.p + '%) ' + (nat.p >= F.pct ? '✓' : '✗'));
-      rows.push(mL('주 부분 ', 'State ') + sta.c + '/' + sta.n + ' (' + sta.p + '%) ' + (sta.p >= F.pct ? '✓' : '✗'));
+      rows.push(mL('주 부분 ', 'State ') + sta.c + '/' + sta.n + ' (' + sta.p + '%) ' + (sta.p >= sp ? '✓' : '✗'));
     } else { var a = sc(pq); pass = a.p >= F.pct; }
     var hero = document.querySelector('#mock-result-wrap .mk-eyebrow');
     if(hero){

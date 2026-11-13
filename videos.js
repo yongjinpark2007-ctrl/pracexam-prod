@@ -12,8 +12,8 @@
   var current = null;   // the one player that is currently playing: { box, row, lang }
 
   var UI = {
-    en: { play:'Play video: ', part:'EA Part ', watch:'Watch on YouTube', locked:'Members only', lockedCta:'Available with a paid membership', lockedLabel:'Members-only video: ' },
-    ko: { play:'영상 재생: ',  part:'EA Part ', watch:'YouTube에서 보기', locked:'가입자 전용', lockedCta:'유료 멤버십으로 볼 수 있어요', lockedLabel:'가입자 전용 영상: ' }
+    en: { play:'Play video: ', part:'EA Part ', watch:'Watch on YouTube', locked:'Members only', lockedCta:'Available to Pro Members', lockedLabel:'Members-only video: ' },
+    ko: { play:'영상 재생: ',  part:'EA Part ', watch:'YouTube에서 보기', locked:'가입자 전용', lockedCta:'Pro 회원은 볼 수 있어요', lockedLabel:'가입자 전용 영상: ' }
   };
 
   // o.getToken()  -> the signed-in user's access token (optional; the page may know it better than localStorage)
@@ -58,7 +58,7 @@
       .map(function(s){ return s.replace(/\s+/g, ' ').trim(); })
       .filter(function(s){ return s && !/^[━─=\-\s]+$/.test(s); }).join(' ').slice(0, 300);
   }
-  // ea_part = 0 marks an IRS Tax Tip video (2026-11-04)
+  // ea_part = 0 marks an IRS Tax Tip video (2026-11-04): the pill reads "IRS Tax Tip", not "EA Part N"
   function partText(row, l){ if(Number(row.ea_part) === 0) return 'IRS Tax Tip'; return cfg.partLabel ? cfg.partLabel(row.ea_part, l) : (UI[l].part + row.ea_part); }
   function descOf(row, l){ return firstLine(row['description_' + l] || row['description_' + other(l)]); }
 

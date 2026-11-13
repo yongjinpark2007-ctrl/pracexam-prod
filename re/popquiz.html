@@ -47,6 +47,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 
 <style>
 :root{
@@ -71,9 +72,9 @@
   --terracotta-tint:   #FBF1EC;
   --terracotta-border: #EFD0C1;
   --terracotta-deep:   #b85f3f;
-  --font-serif:  'Poppins', 'Pretendard Variable', -apple-system, sans-serif;
+  --font-serif:  'Poppins', 'IBM Plex Sans KR','Pretendard Variable', -apple-system, sans-serif;
   --font-display:'DM Serif Display', Georgia, serif;
-  --font-sans:   'Inter', 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:   'Inter', 'IBM Plex Sans KR','Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --radius:      14px;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -279,7 +280,7 @@ html{scrollbar-gutter:stable;}
 @media(min-width:861px){ .nav-inner{height:57px; box-sizing:border-box;} }
 </style>
 <style>/* RE logo pair (2026-10-26) */.logo img{height:28px;width:auto;display:block}.logo .w{display:none}/* 2026-10-28 boss: RE pages have no dark theme, so the phone dark mode must NOT switch to the white logo (it vanished on the white header) */:root[data-theme="dark"] .logo .d{display:none}:root[data-theme="dark"] .logo .w{display:block}</style>
-<link rel="stylesheet" href="/exam-switch.css?v=20261030"><script src="/exams.js?v=20261030b" defer></script></head>
+<link rel="stylesheet" href="/exam-switch.css?v=92317555cb"><script src="/exams.js?v=20261106d" defer></script></head>
 <body data-exam="re">
 
 <!-- ══ 머리줄 — sync_nav.js 가 index.html 에서 찍어 넣는다. 손으로 고치지 말 것 ══ -->
@@ -381,7 +382,7 @@ html{scrollbar-gutter:stable;}
         <a href="/re/?signup=1" class="btn btn-primary"><span class="ko">가입하고 더 많은 문제 풀기</span><span class="en">Sign up & keep practicing</span></a>
         <a href="/re/" class="btn btn-ghost"><span class="ko">🏠 홈으로</span><span class="en">🏠 Home</span></a>
       </div>
-      <p class="hint"><span class="ko">주마다 5,000개 이상의 실전 문제로 부동산 중개사 시험을 준비하세요.</span><span class="en">Prepare with 5,000+ practice questions for your state's real estate exam.</span></p>
+      <p class="hint"><span class="ko">주마다 5,000개 이상의 실전 문제로 부동산 중개인 시험을 준비하세요.</span><span class="en">Prepare with 5,000+ practice questions for your state's real estate exam.</span></p>
     </div>
   </div>
 </main>
@@ -445,7 +446,7 @@ function show(id){ ['state-loading','state-empty','state-question'].forEach(func
 
 function renderQuestion(q){
   // badge: PART N · topic
-  var P = {N:'NATIONAL', CA:'CALIFORNIA', NY:'NEW YORK', TX:'TEXAS', NJ:'NEW JERSEY', FL:'FLORIDA'};
+  var P = {N:'NATIONAL', CA:'CALIFORNIA', NY:'NEW YORK', TX:'TEXAS', NJ:'NEW JERSEY', FL:'FLORIDA', IL:'ILLINOIS', WA:'WASHINGTON'};
   var m = /^(?:MOCK-)?RE-([A-Z]+)/.exec(q.question_id || '');
   var badge = (m && P[m[1]]) || 'REAL ESTATE';
   if(q.topic) badge += ' · ' + q.topic;

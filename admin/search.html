@@ -428,13 +428,14 @@ function renderCustomer(){
 
   /* ── 메일 ── */
   h += '<div class="card"><div class="sub">메일</div><dl class="kv">' +
-    '<dt>가입 환영</dt><dd>' + flag(a.signup_welcome_sent) + '</dd>' +
-    '<dt>유료 환영</dt><dd>' + flag(a.welcome_email_sent) + '</dd>' +
-    '<dt>프로모</dt><dd>'    + flag(a.promo_email_sent) + '</dd>' +
-    '<dt>War Room</dt><dd>'  + flag(a.warroom_email_sent) + '</dd>' +
+    '<dt>EA 가입 환영</dt><dd>' + flag(a.signup_welcome_sent) + '</dd>' +
+    '<dt>EA 3일째 할인</dt><dd>' + flag(a.promo_email_sent) + '</dd>' +
+    '<dt>EA 5일째 War Room</dt><dd>' + flag(a.warroom_email_sent) + '</dd>' +
+    '<dt>EA 유료 환영</dt><dd>' + flag(a.welcome_email_sent) + '</dd>' +
+    '<dt>부동산 가입 환영</dt><dd>' + flag(a.re_welcome_sent) + '</dd>' +
   '</dl>' +
   '<div class="banner info" style="margin-top:12px;">' +
-    '📮 지금은 <strong>보냈다/안 보냈다</strong>만 남습니다 — 언제 보냈는지는 기록이 없습니다. ' +
+    '📮 ✓ = 처리됨 (보냈거나, 보낼 필요가 없어 건너뜀). 부동산 3일째·5일째·체험 메일과 <strong>실제 발송 시각</strong>은 고객 관리 화면의 «보낸 메일»에 나옵니다 (2026-11-11부터 기록). ' +
     'Pop Quiz 메일은 회원별이 아니라 회차별(<code>daily_quiz.email_sent_at</code>)로 기록됩니다.' +
   '</div></div>';
 
@@ -496,7 +497,7 @@ async function doRevoke(){
 
   const ok = confirm('이 계정의 무료 이용을 지금 즉시 회수합니다.\n\n' +
     '  대상: ' + (CUR.account.email || '') + '\n\n' +
-    '바로 무료 회원(하루 5문제)으로 내려갑니다. 진행할까요?');
+    '바로 무료 회원(하루 10문제)으로 내려갑니다. 진행할까요?');
   if(!ok) return;
 
   msg('g2-msg', '회수 중…', true);

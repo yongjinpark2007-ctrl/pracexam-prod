@@ -30,14 +30,16 @@ export function parsePx(description) {
   let part = null;
   if (pairs.part !== undefined && pairs.part !== '') {
     part = Number(pairs.part);
-    if (![1, 2, 3].includes(part)) return { ok: false, reason: 'invalid part', cleaned };
+    if (![0, 1, 2, 3].includes(part)) return { ok: false, reason: 'invalid part', cleaned };
   }
   const topic = pairs.topic || null;
   return { ok: true, key, part, topic, cleaned };
 }
 
 // "... | Part 1 Practice Question #tags" / "... | 파트 1 실전 문제" -> 1
+// 2026-11-04: a title with "IRS Tax Tip" -> 0 (0 = IRS Tax Tip video; the site shows "IRS Tax Tip" instead of "EA Part N")
 export function partFromTitle(title) {
+  if (/\bIRS\s*TAX\s*TIP\b/i.test(String(title || ''))) return 0;
   const m = /(?:\bPart|파트)\s*([123])\b/i.exec(String(title || ''));
   return m ? Number(m[1]) : null;
 }
@@ -46,7 +48,7 @@ export function partFromTitle(title) {
 export function topicFromTitle(title) {
   let t = String(title || '').replace(/#\S+/g, ' ').split('|')[0];
   // RE (2026-10-29): "Real Estate Agent Exam: …" / "미국 부동산 중개인 시험: …"
-  const i = t.search(/(?:EA\s*Exam|EA\s*시험|Real\s*Estate(?:\s*Agent)?\s*Exam|부동산\s*중개인\s*시험)\s*:/i);
+  const i = t.search(/(?:IRS\s*TAX\s*TIP|EA\s*Exam|EA\s*시험|Real\s*Estate(?:\s*Agent)?\s*Exam|부동산\s*중개인\s*시험)\s*:/i);
   if (i >= 0) t = t.slice(t.indexOf(':', i) + 1);
   t = t.replace(/\s+/g, ' ').trim();
   return t || null;
@@ -70,7 +72,7 @@ export function indexLanguage(videos, lang, opts = {}) {
     if (!px.ok) { skipped.push(`skipped: no/invalid PX line (${v.id})`); continue; }
     const part = px.part ?? partFromTitle(v.title) ?? (opts.defaultPart || null);
     const topic = px.topic ?? topicFromTitle(v.title);
-    if (!part || !topic) { skipped.push(`skipped: no part/topic in PX line or title (${v.id})`); continue; }
+    if (part === null || part === undefined || !topic) { skipped.push(`skipped: no part/topic in PX line or title (${v.id})`); continue; }
     const entry = { id: v.id, title: v.title || null, description: px.cleaned || null,
                     publishedAt: v.publishedAt, part, topic, access };
     const prev = byKey.get(px.key);
