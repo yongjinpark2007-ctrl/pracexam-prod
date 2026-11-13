@@ -72,40 +72,36 @@
     return '<div class="rv-sample-banner">' + bi('디자인 확인용 샘플(SAMPLE) 후기입니다. 실제 고객 리뷰가 아닙니다.', 'SAMPLE reviews for design review only. These are not real customer reviews.') + '</div>';
   }
 
-  // ── slow continuous drift (boss 2026-11-13: the one-card jumps every 5 s felt dizzy) ──
-  // About 18 px a second, endless loop (the cards are rendered twice), pauses on hover / focus / touch / hidden tab.
-  // Off for prefers-reduced-motion. Arrows still move one card.
-  var SPEED = 18;
+  // ── pause, then glide one card slowly (boss 2026-11-13: fast jumps were dizzy, a constant drift cannot be read) ──
+  // Each card rests HOLD_MS, then glides over GLIDE_MS with ease-in-out. Endless loop (cards rendered twice).
+  // Pauses on hover / focus / touch / hidden tab. Off for prefers-reduced-motion. Arrows glide one card.
+  var HOLD_MS = 4500, GLIDE_MS = 1600;
   function carousel(wrap){
     var track = wrap.querySelector('.rv-track');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var paused = false, pos = 0, last = 0, busy = false;
+    var paused = false, moving = false;
     function half(){ return track.scrollWidth / 2; }
-    function frame(t){
-      var dt = last ? Math.min(t - last, 100) : 0; last = t;
-      if (!paused && !busy && !document.hidden && track.offsetParent !== null){
-        pos += SPEED * dt / 1000;
-        if (pos >= half()) pos -= half();
-        track.scrollLeft = pos;
-      } else { pos = track.scrollLeft; }
-      requestAnimationFrame(frame);
+    function cardW(){ var c = track.querySelector('.rv-card'); return c ? c.getBoundingClientRect().width + 16 : 0; }
+    function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+    function glide(dir, ms){
+      if (moving) return; var w = cardW(); if (!w) return;
+      var from = track.scrollLeft;
+      if (dir < 0 && from < w) { from += half(); track.scrollLeft = from; }
+      var to = from + dir * w, t0 = 0; moving = true;
+      function f(t){ if (!t0) t0 = t; var k = Math.min(1, (t - t0) / ms);
+        track.scrollLeft = from + (to - from) * ease(k);
+        if (k < 1) requestAnimationFrame(f);
+        else { if (track.scrollLeft >= half()) track.scrollLeft -= half(); moving = false; } }
+      requestAnimationFrame(f);
     }
-    function step(dir){
-      var c = track.querySelector('.rv-card'); if (!c) return;
-      var w = c.getBoundingClientRect().width + 16;
-      busy = true;
-      var target = track.scrollLeft + dir * w;
-      if (target < 0) target += half();
-      track.scrollTo({ left: target, behavior: 'smooth' });
-      setTimeout(function(){ pos = track.scrollLeft % half(); track.scrollLeft = pos; busy = false; }, 600);
-    }
+    function tick(){ if (!paused && !document.hidden && track.offsetParent !== null) glide(1, GLIDE_MS); }
     ['mouseenter','focusin','touchstart'].forEach(function(e){ wrap.addEventListener(e, function(){ paused = true; }, { passive: true }); });
     ['mouseleave','focusout'].forEach(function(e){ wrap.addEventListener(e, function(){ paused = false; }); });
     wrap.addEventListener('touchend', function(){ setTimeout(function(){ paused = false; }, 4000); }, { passive: true });
     var prev = wrap.querySelector('[data-rv-prev]'), next = wrap.querySelector('[data-rv-next]');
-    if (prev) prev.onclick = function(){ step(-1); };
-    if (next) next.onclick = function(){ step(1); };
-    if (!reduce) requestAnimationFrame(frame);
+    if (prev) prev.onclick = function(){ glide(-1, 700); };
+    if (next) next.onclick = function(){ glide(1, 700); };
+    if (!reduce) setInterval(tick, HOLD_MS + GLIDE_MS);
   }
 
   var ARROW_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg>';
