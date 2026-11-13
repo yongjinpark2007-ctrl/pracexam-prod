@@ -229,7 +229,8 @@
     used:       ['이미 사용된 코드입니다.', 'This code has already been used.'],
     expired:    ['사용 기한이 지난 코드입니다.', 'This code has expired.'],
     not_new:    ['선물받은 코드는 PracExam에서 결제한 적이 없는 계정에서만 쓸 수 있습니다.', 'Gifted codes work only on accounts that have never paid for PracExam.'],
-    gift_used:  ['선물받은 코드는 계정당 한 번만 쓸 수 있습니다.', 'A gifted code can be used only once per account.']
+    gift_used:  ['선물받은 코드는 계정당 한 번만 쓸 수 있습니다.', 'A gifted code can be used only once per account.'],
+    needs_payment: ['이 이용권은 첫 결제 후에 사용하실 수 있습니다.', 'This pass can be used after your first payment.']
   };
   function reasonText(r){ var x = REASONS[r]; return x ? L(x[0], x[1]) : L('잠시 후 다시 시도해 주세요.', 'Please try again in a moment.'); }
 
@@ -255,11 +256,11 @@
       p_show_state: showState, p_state: showState ? document.getElementById('rvm-state').value : null
     }).then(function(d){
       if (!d || !d.ok){ btn.disabled = false; err.textContent = reasonText(d && d.reason); return; }
-      clearDraft(); done(d.pass_code || null); loadInfo();
+      clearDraft(); done(d.pass_code || null, !!d.locked); loadInfo();
     }).catch(function(e){ btn.disabled = false; console.warn('submit_review', e && e.message); err.textContent = reasonText(); });
   }
 
-  function done(code){
+  function done(code, locked){
     if (!code){
       body('<div class="section-title" id="rvm-title">' + L('소중한 리뷰를 남겨 주셔서 감사합니다', 'Thank you for your review') + '</div>'
         + '<p class="rvm-sub">' + L('보내 주신 의견은 PracExam 서비스 개선에 활용하겠습니다. 게시에 동의하지 않으셔서 이번에는 이용권이 발급되지 않았습니다.', 'We read every review and use it to improve PracExam. No pass was issued because you did not agree to publish.') + '</p>'
@@ -268,10 +269,13 @@
     }
     body('<div class="section-title" id="rvm-title">' + L('감사합니다! 30-Day Pro Pass가 발급되었습니다', 'Thank you! Here is your 30-Day Pro Pass') + '</div>'
       + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 쓸 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'This code is valid for 12 months. You can use it now, save it in Settings for later, or gift it to a new account that has never paid for PracExam.') + '</p>'
+      + (locked ? '<p class="rvm-sub" style="color:var(--text-main);font-weight:600;">' + L('선물 이용권으로 시작하신 계정이라, 이 이용권은 첫 결제 후에 사용하거나 선물하실 수 있습니다.', 'Because this account started with a gifted pass, this pass can be used or gifted after your first payment.') + '</p>' : '')
       + '<div class="rvm-code">' + esc(code) + '</div>'
       + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 사용하기', 'Use now') + '</button>'
       + '<button class="btn-ghost" type="button" id="rvm-gift">' + L('선물하기', 'Gift') + '</button>'
       + '<button class="btn-ghost" type="button" id="rvm-later">' + L('나중에 사용하기', 'Use later') + '</button></div>');
+    if (locked){ ['rvm-use', 'rvm-gift'].forEach(function(id){ var b = document.getElementById(id); if (b) b.style.display = 'none'; });
+      document.getElementById('rvm-later').textContent = L('확인', 'OK'); }
     document.getElementById('rvm-use').onclick = function(){ redeem(code, function(){ closeReview(); }); };
     document.getElementById('rvm-gift').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){}
       setTimeout(function(){ var b = document.querySelector('[data-rvp-gift="' + code + '"]'); if (b) b.click(); }, 400); };
@@ -335,11 +339,12 @@
     var list = (INFO && INFO.passes) || [];
     var rows = list.map(function(p){
       var chip, meta;
-      if (p.status === 'unused'){ chip = '<span class="rvp-chip ok">' + L('사용 가능', 'Available') + '</span>'; meta = L(fmt(p.expires_at) + '까지 사용 가능', 'Use by ' + fmt(p.expires_at)); }
+      if (p.status === 'unused' && p.locked){ chip = '<span class="rvp-chip done">' + L('첫 결제 후 사용 가능', 'After first payment') + '</span>'; meta = L('첫 결제 후 ' + fmt(p.expires_at) + '까지 사용하실 수 있습니다.', 'Usable after your first payment, until ' + fmt(p.expires_at) + '.'); }
+      else if (p.status === 'unused'){ chip = '<span class="rvp-chip ok">' + L('사용 가능', 'Available') + '</span>'; meta = L(fmt(p.expires_at) + '까지 사용 가능', 'Use by ' + fmt(p.expires_at)); }
       else if (p.status === 'queued'){ chip = '<span class="rvp-chip done">' + L('대기 중', 'Queued') + '</span>'; meta = L('구독 기간이 끝나면 30일이 이어서 시작됩니다.', 'Starts when your current paid period ends.'); }
       else if (p.mode === 'gift'){ chip = '<span class="rvp-chip done">' + L('선물함', 'Gifted') + '</span>'; meta = p.used_at ? L(fmt(p.used_at) + '에 사용됨', 'Used on ' + fmt(p.used_at)) : ''; }
       else { chip = '<span class="rvp-chip done">' + L('사용함', 'Used') + '</span>'; meta = p.applied_until ? L(fmt(p.applied_until) + '까지 Pro', 'Pro until ' + fmt(p.applied_until)) : ''; }
-      var btns = p.status === 'unused'
+      var btns = p.status === 'unused' && !p.locked
         ? '<div class="rvp-btns"><button class="btn-navy" type="button" data-rvp-use="' + esc(p.code) + '">' + L('내 계정에 사용', 'Use on my account') + '</button><button class="btn-ghost" type="button" data-rvp-gift="' + esc(p.code) + '" data-exp="' + esc(p.expires_at) + '">' + L('선물하기', 'Gift') + '</button></div>'
         : '';
       return '<div class="rvp-row"><div><div class="rvp-code">' + esc(p.code) + chip + '</div><div class="rvp-meta">' + meta + '</div></div>' + btns + '<div class="rvp-gift" id="gift-' + esc(p.code) + '" hidden></div></div>';
