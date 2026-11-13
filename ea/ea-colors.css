@@ -22,3 +22,7 @@ body[data-exam="ea"] .stats .stat-label{margin-top:6px; line-height:1.4;}
    and unlike the grey-teal pricing below. Ivory was rejected. */
 body[data-exam="ea"] .samples{background:linear-gradient(180deg,#F4F9F1 0%,#EAF4E6 100%); border-top:none; border-bottom:none;}
 body[data-exam="ea"] .samples .sample-card{box-shadow:0 4px 18px rgba(70,100,60,.10);}
+/* Korean eyebrows (boss 2026-11-13: «고객 후기» looked broken): the 12px uppercase label with .14em tracking is an English
+   style; in Korean it spreads the syllables apart. Larger and tighter in the Korean view only. */
+.lang-ko body[data-exam="ea"] .eyebrow .ko,
+html.lang-ko body[data-exam="ea"] .eyebrow{font-size:14px; letter-spacing:.03em;}
