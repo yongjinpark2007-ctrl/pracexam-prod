@@ -113,7 +113,6 @@
       + '<li>' + L('리뷰 게시에 동의하고 2번과 3번 항목을 각각 30자 이상 작성하시면 30-Day Pro Pass 코드 1개를 드립니다.', 'Agree to publish and answer questions 2 and 3 with at least 30 characters each to receive a 30-Day Pro Pass code.') + '</li>'
       + '<li>' + L('리뷰 내용의 긍정·부정 여부나 실제 웹사이트 게시 여부와 관계없이, 조건을 충족하면 동일하게 지급됩니다.', 'You will receive it whether your review is positive or negative, even if it is not published.') + '</li>'
       + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam 결제 이력이 없는 신규 계정에 선물할 수 있습니다.', 'Use the code yourself within 12 months, or gift it to a new account that has never paid for PracExam.') + '</li>'
-      + '<li>' + L('리뷰 작성 혜택은 계정당 1회만 제공됩니다.', 'Limit one review reward per account.') + '</li>'
       + '</ul></div>';
   }
 
