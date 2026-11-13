@@ -110,7 +110,7 @@
 
   function rulesBox(){   // wording by the boss 2026-11-13
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 증정 내용', 'How the 30-Day Pro Pass works') + '</b><ul>'
-      + '<li>' + L('리뷰 게시에 동의하시고 2번과 3번 항목을 각각 30자 이상 작성하시면 리뷰 내용에 상관없이 30-Day Pro Pass 코드 1개를 증정합니다.', 'Agree to publish and write at least 30 characters each for questions 2 and 3, and you receive one 30-Day Pro Pass code, whatever your review says.') + '</li>'
+      + '<li>' + L('리뷰 게시에 동의하시고 2번과 3번 항목을 각각 30자 이상 작성하시면 리뷰 내용에 상관없이 30-Day Pro Pass 코드를 증정합니다.', 'Agree to publish and write at least 30 characters each for questions 2 and 3, and you receive a 30-Day Pro Pass code, whatever your review says.') + '</li>'
       + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam이 처음인 친구, 동료에게 선물하실 수 있습니다.', 'Use the code yourself within 12 months, or give it to a friend or colleague who is new to PracExam.') + '</li>'
       + '</ul></div>';
   }
