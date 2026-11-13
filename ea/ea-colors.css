@@ -18,18 +18,9 @@ body[data-exam="ea"] .stats-grid > div{padding:0 14px;}
 body[data-exam="ea"] .stats .stat-num{font-size:clamp(20px,2.2vw,27px);}
 body[data-exam="ea"] .stats .stat-label{margin-top:6px; line-height:1.4;}
 @media (max-width:760px){ body[data-exam="ea"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} body[data-exam="ea"] .stats-grid > div + div{border-left:none;} }
-/* samples «미리 풀어보기» (boss 2026-11-13): ivory and sage were rejected. Very light green options for the boss to pick
-   on the test site (switcher in reviews.js): g1 mint white · g2 pale mint · g3 green-grey · g4 mint gradient · g5 white */
-body[data-exam="ea"] .samples{border-top:none; border-bottom:none;}
+/* samples «미리 풀어보기» (boss 2026-11-13 picked option 3 «그린 그레이» after rejecting ivory and sage) */
+body[data-exam="ea"] .samples{background:#EFF3F0; border-top:none; border-bottom:none;}
 body[data-exam="ea"] .samples .sample-card{box-shadow:0 4px 18px rgba(var(--navy-rgb),.10);}
-body[data-exam="ea"] .samples.g1{background:#F5FAF8;}
-body[data-exam="ea"] .samples.g2{background:#EDF6F1;}
-body[data-exam="ea"] .samples.g3{background:#EFF3F0;}
-body[data-exam="ea"] .samples.g4{background:linear-gradient(180deg,#F7FBF9 0%,#E9F4EE 100%);}
-body[data-exam="ea"] .samples.g5{background:#fff;}
-.sbg-pick{display:flex; justify-content:center; gap:6px; flex-wrap:wrap; margin:-20px 0 22px;}
-.sbg-pick button{font:600 12px var(--font-sans); padding:4px 10px; border-radius:999px; border:1px solid var(--border-strong); background:#fff; color:var(--text-main); cursor:pointer;}
-.sbg-pick button[aria-pressed="true"]{background:var(--navy); color:#fff;}
 /* Korean eyebrows (boss 2026-11-13: «고객 후기» looked broken): the 12px uppercase label with .14em tracking is an English
    style; in Korean it spreads the syllables apart. Larger and tighter in the Korean view only. */
 .lang-ko body[data-exam="ea"] .eyebrow .ko,

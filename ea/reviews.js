@@ -75,7 +75,7 @@
   // ── pause, then glide one card slowly (boss 2026-11-13: fast jumps were dizzy, a constant drift cannot be read) ──
   // Each card rests HOLD_MS, then glides over GLIDE_MS with ease-in-out. Endless loop (cards rendered twice).
   // Pauses on hover / focus / touch / hidden tab. Off for prefers-reduced-motion. Arrows glide one card.
-  var HOLD_MS = 6000, GLIDE_MS = 3200;   // boss 2026-11-13: slower again
+  var HOLD_MS = 7000, GLIDE_MS = 5000;   // boss 2026-11-13: slower again (twice)
   function carousel(wrap){
     var track = wrap.querySelector('.rv-track');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -145,21 +145,7 @@
     });
   }
 
-  // TEST ONLY (2026-11-13): light-green options for the «미리 풀어보기» band. Remove after the boss picks one.
-  function samplesPicker(){
-    var sec = document.getElementById('samples'); if (!sec || !IS_TEST) return;
-    var names = ['1 민트 화이트','2 연한 민트','3 그린 그레이','4 민트 그라데이션','5 흰색'];
-    var pick = document.createElement('div'); pick.className = 'sbg-pick';
-    pick.innerHTML = names.map(function(n, i){ return '<button type="button" data-k="' + (i + 1) + '">' + n + '</button>'; }).join('');
-    function set(k){ for (var j = 1; j <= 5; j++) sec.classList.toggle('g' + j, String(j) === String(k));
-      pick.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-k') === String(k))); }); }
-    pick.addEventListener('click', function(e){ var b = e.target.closest('button'); if (b) set(b.getAttribute('data-k')); });
-    var head = sec.querySelector('.sec-head'); if (head) head.parentNode.insertBefore(pick, head.nextSibling);
-    set(1);
-  }
-
   function start(){
-    samplesPicker();
     var sec = document.getElementById('reviews'), page = document.getElementById('rv-all');
     if (!sec && !page) return;
     loadReviews().then(function(list){
