@@ -203,3 +203,13 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 #reviews .rv-card{padding:24px 20px 20px; min-height:300px;}
 .rv-foot{margin-top:auto; padding-top:14px;}
 .rv-advice{margin-bottom:14px;}
+
+/* real buttons instead of text links (boss 2026-11-13) */
+a.rv-btn{display:inline-flex; align-items:center; gap:6px; height:38px; padding:0 16px; border-radius:10px;
+  background:#fff; border:1px solid var(--border-strong,rgba(53,70,73,.22)); color:var(--navy); font:600 14px var(--font-sans);
+  text-decoration:none; box-shadow:0 1px 3px rgba(var(--navy-rgb,53,70,73),.08); transition:background .15s, box-shadow .15s;}
+a.rv-btn:hover{background:var(--navy-light); text-decoration:none; box-shadow:0 3px 10px rgba(var(--navy-rgb,53,70,73),.12);}
+a.rv-btn svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+.rv-disclose-foot a.rv-btn{margin-left:0; font-size:14px; color:var(--navy);}
+.rv-disclose-foot{margin-top:16px;}
+.lang-ko a.rv-btn.en, .lang-en a.rv-btn.ko{display:none !important;}
