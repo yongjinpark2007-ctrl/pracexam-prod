@@ -33,7 +33,8 @@
     + '.rvm h3{font-size:19px;font-weight:700;color:var(--text-main);margin:0 0 4px;}'
     + '.rvm .rvm-sub{font-size:14.5px;color:var(--text-muted);line-height:1.6;margin:0 0 14px;}'
     + '.rvm .rvm-sample{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;color:#fff;background:#dc2626;border-radius:4px;padding:2px 7px;margin-bottom:10px;}'
-    + '.rvm-rules{background:var(--navy-light,#d9ebe9);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.65;color:var(--text-main);margin-bottom:16px;}'
+    + '.rvm-notice{margin-top:20px;padding-top:14px;border-top:1px solid var(--border-clr);}'
+    + '.rvm-rules{font-size:13px;line-height:1.6;color:var(--text-muted);}'
     + '.rvm-rules b{display:block;margin-bottom:4px;}'
     + '.rvm-rules ul{margin:0;padding-left:1.2em;}'
     + '.rvm-f{margin-bottom:16px;}'
@@ -116,19 +117,6 @@
       + '</ul></div>';
   }
 
-  function gate(n){
-    var pct = Math.min(100, Math.round(n / MIN_SOLVED * 100));
-    body('<h3 id="rvm-title">' + L('리뷰 작성하기', 'Write a Review') + '</h3>'
-      + '<p class="rvm-sub">' + L('PracExam을 충분히 이용해 보신 분들의 리뷰를 받습니다. ' + MIN_SOLVED + '문항 이상 풀면 리뷰를 남길 수 있습니다.', 'Reviews come from people who have really used PracExam. You can write one after answering ' + MIN_SOLVED + ' questions.') + '</p>'
-      + '<div class="rvm-bar"><span style="width:' + pct + '%"></span></div>'
-      + '<p class="rvm-sub" style="margin:0 0 16px;"><b>' + n + ' / ' + MIN_SOLVED + '</b> · ' + L((MIN_SOLVED - n) + '문항 더 풀면 리뷰를 남길 수 있습니다.', (MIN_SOLVED - n) + ' more questions to go.') + '</p>'
-      + rulesBox()
-      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('확인', 'OK') + '</button>'
-      + '<button class="btn-ghost" type="button" id="rvm-preview">' + L('(테스트) 양식 미리 보기', '(Test) Preview the form') + '</button></div>');
-    document.getElementById('rvm-close').onclick = closeReview;
-    document.getElementById('rvm-preview').onclick = form;
-  }
-
   function counter(id, outId){
     var t = document.getElementById(id), o = document.getElementById(outId);
     function upd(){ var n = t.value.trim().length; o.textContent = n + ' / ' + MIN_CHARS + '+'; o.classList.toggle('ok', n >= MIN_CHARS); }
@@ -139,7 +127,6 @@
     var nm = displayName();
     body('<h3 id="rvm-title">' + L('리뷰 작성하기', 'Write a Review') + '</h3>'
       + '<p class="rvm-sub">' + L('솔직한 의견을 작성해 주세요. 좋았던 점과 아쉬웠던 점 모두 서비스 개선에 큰 도움이 됩니다.', 'Please share your honest feedback. Hearing what you liked and what we can improve helps us make PracExam better.') + '</p>'
-      + rulesBox()
       + '<div class="rvm-f"><span class="q" style="display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">1. ' + L('합격한 파트를 모두 골라 주세요.', 'Which parts have you passed? Check all that apply.') + '</span>'
       +   '<div class="rvm-parts">' + [1,2,3].map(function(n){ return '<label><input type="checkbox" name="rvm-pass" value="' + n + '">Part ' + n + '</label>'; }).join('') + '</div>'
       +   '<div class="rvm-count" style="text-align:left;">' + L('아직 합격한 파트가 없으면 비워 두세요. 학습 중으로 표시됩니다. 합격 여부는 본인 응답으로 표시됩니다.', 'Leave all unchecked if you have not passed any parts yet. You will be shown as Currently studying. Pass results are shown as self-reported.') + '</div></div>'
@@ -154,7 +141,8 @@
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(State)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
       +   '<div id="rvm-state-wrap" style="display:none;margin:8px 0 0 28px;max-width:160px;"><select id="rvm-state">' + STATES.map(function(s){ return '<option>' + s + '</option>'; }).join('') + '</select></div></div>'
       + '<p class="rvm-err" id="rvm-err"></p>'
-      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 제출하기', 'Submit review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('취소', 'Cancel') + '</button></div>');
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 제출하기', 'Submit review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('취소', 'Cancel') + '</button></div>'
+      + '<div class="rvm-notice">' + rulesBox() + '</div>');
     counter('rvm-q2', 'rvm-c2'); counter('rvm-q3', 'rvm-c3');
     function req(){ var on = document.getElementById('rvm-q5').checked;
       ['rvm-c2','rvm-c3'].forEach(function(id){ var o = document.getElementById(id); o.style.fontWeight = on ? '700' : ''; o.title = on ? L('필수', 'Required') : ''; });
@@ -202,8 +190,9 @@
   }
 
   function openReview(){
-    var n = solvedCount();
-    if (n < MIN_SOLVED) gate(n); else form();
+    // Boss 2026-11-13: no gate screen, the form opens at once. Live: the menu item is shown only to users with
+    // MIN_SOLVED+ questions answered (and never to refunded customers), so nobody reaches the form early.
+    form();
   }
   window.pxOpenReview = openReview;
 

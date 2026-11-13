@@ -83,3 +83,14 @@
 .rv-disclose-foot a{margin-left:8px; font-weight:600; color:var(--navy); text-decoration:none; white-space:nowrap;}
 .rv-disclose-foot a:hover{text-decoration:underline;}
 @media (max-width:720px){ #reviews.reviews{padding:30px 0 26px;} }
+
+/* dark band (boss 2026-11-13: the light band with light cards looked faint on the light EA page) */
+#reviews.reviews{background:var(--navy,#354649); border-top:none;}
+#reviews .rv-head .eyebrow{color:var(--accent-border,#C9DEDB);}
+#reviews .rv-head h2{color:#fff;}
+#reviews .rv-card{background:#fff; border-color:transparent; box-shadow:0 2px 10px rgba(0,0,0,.18);}
+#reviews .rv-nav button{background:transparent; border-color:rgba(255,255,255,.45); color:#fff;}
+#reviews .rv-nav button:hover{background:rgba(255,255,255,.12);}
+#reviews .rv-disclose-foot{color:rgba(255,255,255,.75);}
+#reviews .rv-disclose-foot a{color:#fff;}
+#reviews .rv-sample-banner{background:rgba(255,255,255,.92);}
