@@ -188,3 +188,14 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
    (Chrome's minimum font size can floor tiny text at 12px, so the contrast comes from the name size and the meta color.) */
 #reviews .rv-foot > .rv-name, .rv-foot > .rv-name{font-size:14px;}
 .rv-foot > .rv-meta{color:#8a979a;}
+
+/* boss 2026-11-13 (final rule): emphasis = review text + name, keep them full size. Reference info (Verified …, state,
+   date, Part pill) must show but small, so the card breathes. Chrome's minimum-font-size setting floors text at 12px,
+   so the reference line is shrunk with a transform instead of font-size. */
+#reviews .rv-text{font-size:15.5px; line-height:1.65;}
+#reviews .rv-advice{font-size:13.5px;}
+#reviews .rv-card{padding:20px 20px 16px; gap:12px;}
+.rv-foot{padding-top:12px; row-gap:3px;}
+.rv-foot > .rv-meta{font-size:12px; transform:scale(.82); transform-origin:left center; width:122%; white-space:nowrap;}
+.rv-pass{font-size:12px; transform:scale(.82); transform-origin:right center; padding:2px 8px 2px 5px; gap:4px;}
+.rv-pass img{width:14px; height:14px;}
