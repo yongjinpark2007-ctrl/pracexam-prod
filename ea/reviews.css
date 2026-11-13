@@ -120,3 +120,12 @@
 #reviews.rv-bg-6 .rv-disclose-foot a{color:var(--navy);}
 #reviews.rv-bg-6 .rv-bg-pick button{border-color:var(--border-strong); background:rgba(255,255,255,.6); color:var(--text-main);}
 #reviews.rv-bg-6 .rv-bg-pick button[aria-pressed="true"]{background:var(--navy); color:#fff;}
+
+/* 2026-11-13 boss: keep the War Room colors, but the bubbles must differ from the War Room section below.
+   War Room = big circles at top-left and bottom-right. Reviews = mirrored and smaller: one at top-right, a small
+   warm (terracotta) one at bottom-left, plus a tiny one near the heading. */
+#reviews.rv-bg-6::before{top:-90px; left:auto; right:-70px; width:260px; height:260px; background:rgba(var(--accent-rgb),.16);}
+#reviews.rv-bg-6::after{bottom:-70px; right:auto; left:-50px; width:200px; height:200px; background:rgba(221,143,117,.13);}
+#reviews.rv-bg-6 .rv-head{position:relative;}
+#reviews.rv-bg-6 .rv-head::before{content:''; position:absolute; top:-6px; left:calc(50% - 190px); width:46px; height:46px; border-radius:50%; background:rgba(var(--accent-rgb),.18); pointer-events:none;}
+@media (max-width:640px){ #reviews.rv-bg-6 .rv-head::before{display:none;} }
