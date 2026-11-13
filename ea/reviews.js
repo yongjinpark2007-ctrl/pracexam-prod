@@ -72,34 +72,47 @@
     return '<div class="rv-sample-banner">' + bi('디자인 확인용 샘플(SAMPLE) 후기입니다. 실제 고객 리뷰가 아닙니다.', 'SAMPLE reviews for design review only. These are not real customer reviews.') + '</div>';
   }
 
-  // ── slow auto-scroll: one card every 5 s, pauses on hover / focus / touch / hidden tab; off for reduced motion ──
+  // ── slow continuous drift (boss 2026-11-13: the one-card jumps every 5 s felt dizzy) ──
+  // About 18 px a second, endless loop (the cards are rendered twice), pauses on hover / focus / touch / hidden tab.
+  // Off for prefers-reduced-motion. Arrows still move one card.
+  var SPEED = 18;
   function carousel(wrap){
     var track = wrap.querySelector('.rv-track');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var paused = false;
+    var paused = false, pos = 0, last = 0, busy = false;
+    function half(){ return track.scrollWidth / 2; }
+    function frame(t){
+      var dt = last ? Math.min(t - last, 100) : 0; last = t;
+      if (!paused && !busy && !document.hidden && track.offsetParent !== null){
+        pos += SPEED * dt / 1000;
+        if (pos >= half()) pos -= half();
+        track.scrollLeft = pos;
+      } else { pos = track.scrollLeft; }
+      requestAnimationFrame(frame);
+    }
     function step(dir){
       var c = track.querySelector('.rv-card'); if (!c) return;
       var w = c.getBoundingClientRect().width + 16;
-      var max = track.scrollWidth - track.clientWidth - 2;
-      if (dir > 0 && track.scrollLeft >= max) track.scrollTo({ left: 0 });
-      else if (dir < 0 && track.scrollLeft <= 2) track.scrollTo({ left: max });
-      else track.scrollBy({ left: dir * w });
+      busy = true;
+      var target = track.scrollLeft + dir * w;
+      if (target < 0) target += half();
+      track.scrollTo({ left: target, behavior: 'smooth' });
+      setTimeout(function(){ pos = track.scrollLeft % half(); track.scrollLeft = pos; busy = false; }, 600);
     }
-    function tick(){ if (!paused && !document.hidden && track.offsetParent !== null) step(1); }
     ['mouseenter','focusin','touchstart'].forEach(function(e){ wrap.addEventListener(e, function(){ paused = true; }, { passive: true }); });
     ['mouseleave','focusout'].forEach(function(e){ wrap.addEventListener(e, function(){ paused = false; }); });
-    wrap.addEventListener('touchend', function(){ setTimeout(function(){ paused = false; }, 6000); }, { passive: true });
+    wrap.addEventListener('touchend', function(){ setTimeout(function(){ paused = false; }, 4000); }, { passive: true });
     var prev = wrap.querySelector('[data-rv-prev]'), next = wrap.querySelector('[data-rv-next]');
     if (prev) prev.onclick = function(){ step(-1); };
     if (next) next.onclick = function(){ step(1); };
-    if (!reduce) setInterval(tick, AUTO_MS);
+    if (!reduce) requestAnimationFrame(frame);
   }
 
   var ARROW_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg>';
   var ARROW_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg>';
   function carouselHtml(cls, list){
     return '<div class="rv-carousel ' + cls + '" aria-roledescription="carousel">'
-      + '<div class="rv-track" tabindex="0">' + list.map(function(r){ return card(r, true); }).join('') + '</div>'
+      + '<div class="rv-track" tabindex="0">' + list.map(function(r){ return card(r, true); }).join('') + list.map(function(r){ return card(r, true).replace('<article ', '<article aria-hidden="true" '); }).join('') + '</div>'
       + '<div class="rv-nav"><button type="button" data-rv-prev aria-label="Previous">' + ARROW_L + '</button><button type="button" data-rv-next aria-label="Next">' + ARROW_R + '</button></div>'
       + '</div>';
   }

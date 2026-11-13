@@ -94,3 +94,5 @@
 #reviews .rv-disclose-foot{color:rgba(255,255,255,.75);}
 #reviews .rv-disclose-foot a{color:#fff;}
 #reviews .rv-sample-banner{background:rgba(255,255,255,.92);}
+/* continuous drift: no snapping, no smooth-scroll fighting the animation */
+#reviews .rv-track{scroll-snap-type:none; scroll-behavior:auto;}
