@@ -23,7 +23,7 @@
   function displayName(){
     var f = '', l = '';
     try { var m = (SB_USER && SB_USER.user_metadata) || {}; f = (S.firstName || m.first_name || '').trim(); l = (S.lastName || m.last_name || '').trim(); } catch(e){}
-    if (!f) return L('이름 미설정', 'Name not set');
+    if (!f) return '';
     return f.charAt(0).toUpperCase() + f.slice(1) + (l ? ' ' + l.charAt(0).toUpperCase() + '.' : '');
   }
 
@@ -136,8 +136,11 @@
       +   '<textarea id="rvm-q3" maxlength="400"></textarea><div class="rvm-count" id="rvm-c3"></div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q4">4. ' + L('개선되었으면 하는 점', 'What should we improve?') + ' <span class="opt">' + L('(선택 사항 · 비공개)', '(optional · never published)') + '</span></label>'
       +   '<textarea id="rvm-q4" maxlength="800"></textarea></div>'
-      + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q5"><span>' + L('이 리뷰를 <b>' + esc(nm) + '</b> 이름으로 PracExam 웹사이트에 게시하는 데 동의합니다. 맞춤법과 길이만 다듬을 수 있습니다.', 'I agree that PracExam may publish this review on its website as <b>' + esc(nm) + '</b>. PracExam may correct spelling and shorten it only.') + '</span></label>'
-      +   '<p class="rvm-hint">' + L('동의하면 2번과 3번 답변은 각각 30자 이상이어야 합니다. 동의하지 않아도 리뷰를 제출할 수 있으나, 이 경우 무료 이용권은 발급되지 않습니다.', 'If you agree, answers 2 and 3 must each be at least 30 characters. You can still submit your review without agreeing, but a free pass will not be issued in this case.') + '</p></div>'
+      + '<div class="rvm-f"><label class="q" for="rvm-name">5. ' + L('후기에 표시할 이름', 'Name to show on your review') + '</label>'
+      +   '<input type="text" id="rvm-name" maxlength="40" value="' + esc(nm) + '" placeholder="Jenny K." style="max-width:260px;">'
+      +   '<div class="rvm-count" style="text-align:left;">' + L('예: Jenny K.', 'For example: Jenny K.') + '</div></div>'
+      + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q5"><span>' + L('내 후기를 PracExam 웹사이트에 올려도 좋습니다.', 'Yes, PracExam may post my review on its website.') + '</span></label>'
+      +   '<p class="rvm-hint">' + L('내용은 바꾸지 않고 맞춤법과 길이만 살짝 다듬어서 올립니다. 올려도 좋다고 체크하시면 2번과 3번 질문에 각각 30자 이상 써 주세요. 체크하지 않아도 후기는 보낼 수 있지만, 30일 이용권은 받으실 수 없습니다.', 'We only fix spelling and length, never what you say. If you check the box, please write at least 30 characters for questions 2 and 3. You can send your review without checking it, but you will not get the 30-day pass.') + '</p></div>'
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(State)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
       +   '<div id="rvm-state-wrap" style="display:none;margin:8px 0 0 28px;max-width:160px;"><select id="rvm-state">' + STATES.map(function(s){ return '<option>' + s + '</option>'; }).join('') + '</select></div></div>'
       + '<p class="rvm-err" id="rvm-err"></p>'
@@ -157,6 +160,7 @@
     var q2 = document.getElementById('rvm-q2').value.trim(), q3 = document.getElementById('rvm-q3').value.trim();
     var consent = document.getElementById('rvm-q5').checked, err = document.getElementById('rvm-err');
     if (!q2 || !q3){ err.textContent = L('2번과 3번 질문에 답변을 입력해 주세요.', 'Please answer questions 2 and 3.'); return; }
+    if (consent && !document.getElementById('rvm-name').value.trim()){ err.textContent = L('후기에 표시할 이름을 적어 주세요.', 'Please enter the name to show on your review.'); document.getElementById('rvm-name').focus(); return; }
     if (consent && (q2.length < MIN_CHARS || q3.length < MIN_CHARS)){
       err.textContent = L('게시에 동의하셨으므로 2번과 3번 답변을 각각 ' + MIN_CHARS + '자 이상 써 주세요.', 'Because you agreed to publish, answers 2 and 3 must each be at least ' + MIN_CHARS + ' characters.');
       (q2.length < MIN_CHARS ? document.getElementById('rvm-q2') : document.getElementById('rvm-q3')).focus();
