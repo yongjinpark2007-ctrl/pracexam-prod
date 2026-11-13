@@ -1,0 +1,247 @@
+/* EA app — customer review form + 30-Day Pro Pass screen (DESIGN STAGE, 2026-11-13).
+   Boss decisions 2026-11-12: EA only · paid and trial users with 250+ questions solved · one pass per review,
+   valid 12 months · reward = publish consent + real answers (Q2, Q3 each 30+ characters), never tied to sentiment ·
+   pass can be used by the reviewer or gifted to a never-paid new account · refunded customers (Blackout) see nothing.
+   🔴 Design stage: shown only on test hosts. Nothing is saved; the pass codes are SAMPLE codes.
+      Wiring to customer_reviews / pro_passes / the redeem RPC comes after the boss's design OK and Jay's SQL. */
+(function(){
+  'use strict';
+  var host = location.hostname;
+  var IS_TEST = /^test\.pracexam\.com$/i.test(host) || /\.pages\.dev$/i.test(host) || host === 'localhost' || host === '127.0.0.1';
+  if (!IS_TEST) return;   // not live on pracexam.com until wired and approved
+
+  var MIN_SOLVED = 250, MIN_CHARS = 30;
+  var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+
+  function en(){ try { return LANG === 'en'; } catch(e){ return true; } }
+  function L(ko, e){ return en() ? e : ko; }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  function solvedCount(){
+    try { return Object.keys(S.answered || {}).filter(function(k){ return (S.answered[k].times || 0) > 0; }).length; } catch(e){ return 0; }
+  }
+  function displayName(){
+    var f = '', l = '';
+    try { var m = (SB_USER && SB_USER.user_metadata) || {}; f = (S.firstName || m.first_name || '').trim(); l = (S.lastName || m.last_name || '').trim(); } catch(e){}
+    if (!f) return L('이름 미등록', 'Name not set');
+    return f.charAt(0).toUpperCase() + f.slice(1) + (l ? ' ' + l.charAt(0).toUpperCase() + '.' : '');
+  }
+
+  // ── styles ──
+  var css = ''
+    + '.rvm h3{font-size:19px;font-weight:700;color:var(--text-main);margin:0 0 4px;}'
+    + '.rvm .rvm-sub{font-size:14.5px;color:var(--text-muted);line-height:1.6;margin:0 0 14px;}'
+    + '.rvm .rvm-sample{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;color:#fff;background:#dc2626;border-radius:4px;padding:2px 7px;margin-bottom:10px;}'
+    + '.rvm-rules{background:var(--navy-light,#d9ebe9);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.65;color:var(--text-main);margin-bottom:16px;}'
+    + '.rvm-rules b{display:block;margin-bottom:4px;}'
+    + '.rvm-rules ul{margin:0;padding-left:1.2em;}'
+    + '.rvm-f{margin-bottom:16px;}'
+    + '.rvm-f label.q{display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;}'
+    + '.rvm-f .opt{font-weight:500;color:var(--text-muted);font-size:13px;}'
+    + '.rvm-f select,.rvm-f textarea,.rvm-f input[type=text],.rvp-redeem input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--border-clr);border-radius:10px;background:#fff;color:var(--text-main);}'
+    + '.rvm-f textarea{min-height:84px;resize:vertical;line-height:1.55;}'
+    + '.rvm-count{font-size:12.5px;color:var(--text-muted);text-align:right;margin-top:3px;}'
+    + '.rvm-count.ok{color:var(--success-color,#16a34a);}'
+    + '.rvm-check{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.55;color:var(--text-main);cursor:pointer;}'
+    + '.rvm-check input{margin-top:4px;width:18px;height:18px;flex:0 0 auto;}'
+    + '.rvm-hint{font-size:13px;color:var(--text-muted);margin:4px 0 0 28px;}'
+    + '.rvm-err{color:var(--danger-color,#dc2626);font-size:14px;margin:8px 0 0;min-height:1em;}'
+    + '.rvm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}'
+    + '.rvm-actions .btn-navy,.rvm-actions .btn-ghost{padding:11px 20px;font-size:15.5px;}'
+    + '.rvm-bar{height:10px;border-radius:999px;background:var(--border-clr);overflow:hidden;margin:10px 0 6px;}'
+    + '.rvm-bar span{display:block;height:100%;background:var(--teal,#354649);}'
+    + '.rvm-code{font:700 22px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--text-main);background:#fff;border:2px dashed var(--teal,#354649);border-radius:12px;padding:14px;text-align:center;margin:12px 0;}'
+    + '.rvp-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;}'
+    + '.rvp-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--border-clr);}'
+    + '.rvp-row:last-of-type{border-bottom:none;}'
+    + '.rvp-code{font:700 16px ui-monospace,Consolas,monospace;letter-spacing:.05em;color:var(--text-main);}'
+    + '.rvp-meta{font-size:13.5px;color:var(--text-muted);line-height:1.5;}'
+    + '.rvp-btns{display:flex;gap:8px;flex-wrap:wrap;}'
+    + '.rvp-btns button{padding:8px 14px;font-size:14px;}'
+    + '.rvp-redeem{display:flex;gap:8px;margin-top:10px;max-width:420px;}'
+    + '.rvp-redeem input{text-transform:uppercase;letter-spacing:.05em;}'
+    + '.rvp-redeem button{white-space:nowrap;padding:10px 16px;font-size:15px;}'
+    + '.rvp-note{font-size:13.5px;color:var(--text-muted);line-height:1.6;margin-top:10px;}';
+  var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+
+  // ── menu items: More menu AND drawer (a new menu item goes in both) ──
+  var ICO = '<svg class="%C" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>';
+  function addMenus(){
+    var more = document.getElementById('nav-settings'), drawer = document.getElementById('mob-settings');
+    if (more && !document.getElementById('nav-review')){
+      var b = document.createElement('button'); b.className = 'nav-btn'; b.id = 'nav-review'; b.type = 'button';
+      b.innerHTML = ICO.replace('%C', 'nav-ico') + '<span class="rv-menu-label"></span>';
+      b.onclick = function(){ try{ closeNavMore(); }catch(e){} openReview(); };
+      more.parentNode.insertBefore(b, more);
+    }
+    if (drawer && !document.getElementById('mob-review-write')){
+      var d = document.createElement('button'); d.className = 'mobile-nav-item'; d.id = 'mob-review-write'; d.type = 'button';
+      d.innerHTML = ICO.replace('%C', 'mob-ico') + '<span class="rv-menu-label"></span>';
+      d.onclick = function(){ try{ closeDrawer(); }catch(e){} openReview(); };
+      drawer.parentNode.insertBefore(d, drawer);
+    }
+    document.querySelectorAll('.rv-menu-label').forEach(function(s){ s.textContent = L('리뷰 쓰기', 'Write a Review'); });
+  }
+
+  // ── modal ──
+  var bg;
+  function modal(){
+    if (bg) return bg;
+    bg = document.createElement('div'); bg.className = 'modal-bg'; bg.id = 'rv-modal-bg';
+    bg.innerHTML = '<div class="modal rvm" role="dialog" aria-modal="true" aria-labelledby="rvm-title"><button class="modal-close" type="button" aria-label="Close">×</button><div id="rvm-body"></div></div>';
+    bg.addEventListener('click', function(e){ if (e.target === bg) closeReview(); });
+    bg.querySelector('.modal-close').onclick = closeReview;
+    document.body.appendChild(bg);
+    return bg;
+  }
+  function closeReview(){ if (bg) bg.classList.remove('open'); }
+  function body(html){ modal().querySelector('#rvm-body').innerHTML = '<span class="rvm-sample">SAMPLE · DESIGN</span>' + html; bg.classList.add('open'); }
+
+  function rulesBox(){
+    return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 받는 조건', 'How the 30-Day Pro Pass works') + '</b><ul>'
+      + '<li>' + L('게시에 동의하고 2번과 3번 질문에 각각 30자 이상 답하면 30-Day Pro Pass 코드 1개를 드립니다.', 'Agree to publish and answer questions 2 and 3 with at least 30 characters each, and you get one 30-Day Pro Pass code.') + '</li>'
+      + '<li>' + L('리뷰가 긍정적이든 부정적이든 똑같이 드립니다. 실제로 게시되지 않아도 드립니다.', 'You get it whether your review is positive or negative, and even if we do not publish it.') + '</li>'
+      + '<li>' + L('코드는 12개월 안에 직접 쓰거나, PracExam에서 결제한 적 없는 새 계정에 선물할 수 있습니다.', 'Use the code yourself within 12 months, or gift it to a new account that has never paid for PracExam.') + '</li>'
+      + '<li>' + L('리뷰 보상은 계정당 한 번입니다.', 'One review reward per account.') + '</li>'
+      + '</ul></div>';
+  }
+
+  function gate(n){
+    var pct = Math.min(100, Math.round(n / MIN_SOLVED * 100));
+    body('<h3 id="rvm-title">' + L('리뷰 쓰기', 'Write a Review') + '</h3>'
+      + '<p class="rvm-sub">' + L('PracExam을 충분히 써 보신 분의 리뷰를 받습니다. ' + MIN_SOLVED + '문항 이상 풀면 리뷰를 남길 수 있습니다.', 'Reviews come from people who have really used PracExam. You can write one after answering ' + MIN_SOLVED + ' questions.') + '</p>'
+      + '<div class="rvm-bar"><span style="width:' + pct + '%"></span></div>'
+      + '<p class="rvm-sub" style="margin:0 0 16px;"><b>' + n + ' / ' + MIN_SOLVED + '</b> · ' + L((MIN_SOLVED - n) + '문항 더 풀면 리뷰를 남길 수 있습니다.', (MIN_SOLVED - n) + ' more questions to go.') + '</p>'
+      + rulesBox()
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('확인', 'OK') + '</button>'
+      + '<button class="btn-ghost" type="button" id="rvm-preview">' + L('(테스트) 양식 미리 보기', '(Test) Preview the form') + '</button></div>');
+    document.getElementById('rvm-close').onclick = closeReview;
+    document.getElementById('rvm-preview').onclick = form;
+  }
+
+  function counter(id, outId){
+    var t = document.getElementById(id), o = document.getElementById(outId);
+    function upd(){ var n = t.value.trim().length; o.textContent = n + ' / ' + MIN_CHARS + '+'; o.classList.toggle('ok', n >= MIN_CHARS); }
+    t.addEventListener('input', upd); upd();
+  }
+
+  function form(){
+    var nm = displayName();
+    body('<h3 id="rvm-title">' + L('리뷰 쓰기', 'Write a Review') + '</h3>'
+      + '<p class="rvm-sub">' + L('솔직하게 써 주세요. 좋은 점도 아쉬운 점도 모두 도움이 됩니다.', 'Please be honest. Good points and weak points both help.') + '</p>'
+      + rulesBox()
+      + '<div class="rvm-f"><label class="q" for="rvm-q1">1. ' + L('EA 시험 준비는 어디까지 하셨나요?', 'Where are you with the EA exam?') + '</label>'
+      +   '<select id="rvm-q1"><option value="studying">' + L('공부 중', 'Still studying') + '</option><option value="p1">' + L('Part 1 합격', 'Passed Part 1') + '</option><option value="p2">' + L('Part 2 합격', 'Passed Part 2') + '</option><option value="p3">' + L('Part 3 합격', 'Passed Part 3') + '</option><option value="all">' + L('세 파트 모두 합격', 'Passed all three parts') + '</option></select>'
+      +   '<div class="rvm-count" style="text-align:left;">' + L('합격은 본인 응답으로 표시됩니다.', 'Pass results are shown as self-reported.') + '</div></div>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q2">2. ' + L('PracExam에서 가장 도움이 된 것은 무엇인가요?', 'What helped you most in PracExam?') + '</label>'
+      +   '<textarea id="rvm-q2" maxlength="600" placeholder="' + esc(L('예: 해설, 모의고사, War Room, 휴대폰 학습', 'For example: explanations, mock exams, War Room, studying on your phone')) + '"></textarea><div class="rvm-count" id="rvm-c2"></div></div>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q3">3. ' + L('이제 시작하는 수험생에게 한마디 해 주세요.', 'One piece of advice for someone just starting?') + '</label>'
+      +   '<textarea id="rvm-q3" maxlength="400"></textarea><div class="rvm-count" id="rvm-c3"></div></div>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q4">4. ' + L('고쳤으면 하는 점', 'What should we improve?') + ' <span class="opt">' + L('(선택 · 공개하지 않음)', '(optional · never published)') + '</span></label>'
+      +   '<textarea id="rvm-q4" maxlength="800"></textarea></div>'
+      + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q5"><span>' + L('이 리뷰를 <b>' + esc(nm) + '</b> 이름으로 PracExam 웹사이트에 게시하는 데 동의합니다. 맞춤법과 길이만 다듬을 수 있습니다.', 'I agree that PracExam may publish this review on its website as <b>' + esc(nm) + '</b>. PracExam may correct spelling and shorten it only.') + '</span></label>'
+      +   '<p class="rvm-hint">' + L('동의하지 않아도 리뷰를 보낼 수 있지만, 그때는 이용권이 발급되지 않습니다.', 'You can send your review without agreeing, but no pass is issued in that case.') + '</p></div>'
+      + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(state)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
+      +   '<div id="rvm-state-wrap" style="display:none;margin:8px 0 0 28px;max-width:160px;"><select id="rvm-state">' + STATES.map(function(s){ return '<option>' + s + '</option>'; }).join('') + '</select></div></div>'
+      + '<p class="rvm-err" id="rvm-err"></p>'
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 보내기', 'Send review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('취소', 'Cancel') + '</button></div>');
+    counter('rvm-q2', 'rvm-c2'); counter('rvm-q3', 'rvm-c3');
+    document.getElementById('rvm-q6').onchange = function(){ document.getElementById('rvm-state-wrap').style.display = this.checked ? 'block' : 'none'; };
+    document.getElementById('rvm-cancel').onclick = closeReview;
+    document.getElementById('rvm-submit').onclick = submit;
+  }
+
+  function submit(){
+    var q2 = document.getElementById('rvm-q2').value.trim(), q3 = document.getElementById('rvm-q3').value.trim();
+    var consent = document.getElementById('rvm-q5').checked, err = document.getElementById('rvm-err');
+    if (!q2 || !q3){ err.textContent = L('2번과 3번 질문에 답해 주세요.', 'Please answer questions 2 and 3.'); return; }
+    var qualifies = consent && q2.length >= MIN_CHARS && q3.length >= MIN_CHARS;
+    if (consent && !qualifies){
+      err.textContent = L('이용권을 받으려면 2번과 3번에 각각 ' + MIN_CHARS + '자 이상 써 주세요. 이대로 보내셔도 됩니다.', 'To get the pass, write at least ' + MIN_CHARS + ' characters for questions 2 and 3. You can still send it as is.');
+      var b = document.getElementById('rvm-submit');
+      if (!b.dataset.confirm){ b.dataset.confirm = '1'; b.textContent = L('이대로 보내기', 'Send as is'); return; }
+    }
+    // DESIGN STAGE: nothing is saved.
+    if (qualifies) return done(true);
+    done(false);
+  }
+
+  function done(withPass){
+    if (!withPass){
+      body('<h3 id="rvm-title">' + L('리뷰를 보내 주셔서 감사합니다', 'Thank you for your review') + '</h3>'
+        + '<p class="rvm-sub">' + L('보내 주신 의견은 PracExam을 고치는 데 씁니다. 게시 동의와 답변 길이 조건을 채우지 않아 이번에는 이용권이 발급되지 않았습니다.', 'We read every review and use it to improve PracExam. No pass was issued because the publish consent or answer length condition was not met.') + '</p>'
+        + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('닫기', 'Close') + '</button></div>');
+      document.getElementById('rvm-close').onclick = closeReview; return;
+    }
+    body('<h3 id="rvm-title">' + L('감사합니다! 30-Day Pro Pass를 드립니다', 'Thank you! Here is your 30-Day Pro Pass') + '</h3>'
+      + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 쓸 수 있습니다. 지금 쓰거나, 설정 화면에 두었다가 나중에 쓰거나, 아직 결제한 적 없는 새 계정에 선물할 수 있습니다.', 'This code is good for 12 months. Use it now, keep it in Settings for later, or gift it to a new account that has never paid.') + '</p>'
+      + '<div class="rvm-code">PASS-SAMP-LE01</div>'
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 쓰기', 'Use it now') + '</button>'
+      + '<button class="btn-ghost" type="button" id="rvm-gift">' + L('선물용 코드 복사', 'Copy code to gift') + '</button>'
+      + '<button class="btn-ghost" type="button" id="rvm-later">' + L('나중에', 'Later') + '</button></div>');
+    document.getElementById('rvm-use').onclick = function(){ closeReview(); toast(L('(테스트) 실제로는 Pro 30일이 열립니다.', '(Test) In the live version this opens 30 days of Pro.')); };
+    document.getElementById('rvm-gift').onclick = function(){ copy('PASS-SAMP-LE01'); };
+    document.getElementById('rvm-later').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){} };
+  }
+
+  function toast(m){ try { showToast(m); } catch(e){ alert(m); } }
+  function copy(code){
+    try { navigator.clipboard.writeText(code).then(function(){ toast(L('코드를 복사했습니다', 'Code copied')); }); } catch(e){ toast(code); }
+  }
+
+  function openReview(){
+    var n = solvedCount();
+    if (n < MIN_SOLVED) gate(n); else form();
+  }
+  window.pxOpenReview = openReview;
+
+  // ── Settings: 30-Day Pro Pass card ──
+  var SAMPLE_PASSES = [
+    { code: 'PASS-SAMP-LE01', status: 'unused', issued: '2026-11-13', expires: '2027-11-13' },
+    { code: 'PASS-SAMP-LE02', status: 'gifted', issued: '2026-10-02', expires: '2027-10-02', used: '2026-10-20' }
+  ];
+  function fmt(d){ var p = d.split('-'); return en() ? (['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+p[1]-1] + ' ' + (+p[2]) + ', ' + p[0]) : (p[0] + '년 ' + (+p[1]) + '월 ' + (+p[2]) + '일'); }
+  function renderPassCard(){
+    var host = document.getElementById('screen-settings'); if (!host) return;
+    var card = document.getElementById('rvp-card');
+    if (!card){
+      card = document.createElement('div'); card.id = 'rvp-card'; card.className = 'rvp-card';
+      var anchor = document.getElementById('settings-data-mgmt');
+      host.insertBefore(card, anchor || null);
+    }
+    var rows = SAMPLE_PASSES.map(function(p){
+      var stTxt = p.status === 'unused' ? L('사용 전 · ' + fmt(p.expires) + '까지', 'Not used · good until ' + fmt(p.expires))
+               : p.status === 'gifted' ? L('선물함 · ' + fmt(p.used) + ' 사용됨', 'Gifted · used ' + fmt(p.used))
+               : L('사용함 · ' + fmt(p.used), 'Used · ' + fmt(p.used));
+      var btns = p.status === 'unused'
+        ? '<div class="rvp-btns"><button class="btn-navy" type="button" data-rvp-use="' + p.code + '">' + L('쓰기', 'Use') + '</button><button class="btn-ghost" type="button" data-rvp-copy="' + p.code + '">' + L('선물용 복사', 'Copy to gift') + '</button></div>'
+        : '';
+      return '<div class="rvp-row"><div><div class="rvp-code">' + p.code + '</div><div class="rvp-meta">' + stTxt + '</div></div>' + btns + '</div>';
+    }).join('');
+    card.innerHTML = '<span class="rvm-sample" style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;color:#fff;background:#dc2626;border-radius:4px;padding:2px 7px;margin-bottom:8px;">SAMPLE · DESIGN</span>'
+      + '<div class="exp-label" style="margin-bottom:6px;">🎟️ 30-Day Pro Pass</div>'
+      + '<div class="rvp-meta" style="margin-bottom:6px;">' + L('리뷰를 쓰고 받은 이용권입니다. 하나를 쓰면 Pro가 30일 열립니다. 구독 중이면 다음 결제일이 30일 뒤로 미뤄집니다.', 'Passes you received for writing a review. Each one opens 30 days of Pro. If you are subscribed, your next billing date moves back 30 days.') + '</div>'
+      + rows
+      + '<div class="exp-label" style="margin:16px 0 4px;font-size:15px;">' + L('이용권 코드가 있으신가요?', 'Have a pass code?') + '</div>'
+      + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
+      + '<p class="rvp-note">' + L('선물받은 코드는 PracExam에서 한 번도 결제한 적 없는 계정에서만 쓸 수 있습니다. 코드 하나는 한 번만 쓸 수 있습니다.', 'A gifted code works only on an account that has never paid for PracExam. Each code can be used once.') + '</p>';
+    card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ toast(L('(테스트) 실제로는 Pro 30일이 열립니다.', '(Test) In the live version this opens 30 days of Pro.')); }; });
+    card.querySelectorAll('[data-rvp-copy]').forEach(function(b){ b.onclick = function(){ copy(b.getAttribute('data-rvp-copy')); }; });
+    card.querySelector('#rvp-redeem-btn').onclick = function(){
+      var v = card.querySelector('#rvp-input').value.trim().toUpperCase();
+      toast(/^PASS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v) ? L('(테스트) 실제로는 서버가 코드를 확인합니다.', '(Test) In the live version the server checks the code.') : L('코드 형식을 확인해 주세요. 예: PASS-7K3M-Q9TX', 'Please check the code. Example: PASS-7K3M-Q9TX'));
+    };
+  }
+
+  // keep labels in step with the app language and the Settings screen
+  function hook(name, after){
+    var orig = window[name]; if (typeof orig !== 'function') return;
+    window[name] = function(){ var r = orig.apply(this, arguments); try { after.apply(this, arguments); } catch(e){} return r; };
+  }
+  function start(){
+    addMenus(); renderPassCard();
+    hook('setLang', function(){ addMenus(); renderPassCard(); });
+    hook('showScreen', function(n){ if (n === 'settings') renderPassCard(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
