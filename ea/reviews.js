@@ -29,7 +29,7 @@
     return m ? bi(m[1] + '.' + m[2], MON_EN[parseInt(m[2], 10) - 1] + ' ' + m[1]) : '';
   }
 
-  function key(r){ return 'rv-' + (r.id || (String(r.name || '') + '-' + String(r.date || ''))).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function key(r){ return 'rv-' + String(r.id || (String(r.name || '') + '-' + String(r.date || ''))).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="5 12.5 10 17 19 7"></polyline></svg>';
   function card(r, clamp){
     var vt = r.subscriber ? 'Verified Subscriber · 구독 회원 인증' : 'Verified User · 회원 인증';
