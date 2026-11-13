@@ -108,11 +108,10 @@
   function closeReview(){ if (bg) bg.classList.remove('open'); }
   function body(html){ modal().querySelector('#rvm-body').innerHTML = '<span class="rvm-sample">SAMPLE · DESIGN</span>' + html; bg.classList.add('open'); }
 
-  function rulesBox(){
+  function rulesBox(){   // wording by the boss 2026-11-13
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 증정 내용', 'How the 30-Day Pro Pass works') + '</b><ul>'
-      + '<li>' + L('리뷰 게시에 동의하고 2번과 3번 항목을 각각 30자 이상 작성하시면 30-Day Pro Pass 코드 1개를 드립니다.', 'Agree to publish and answer questions 2 and 3 with at least 30 characters each to receive a 30-Day Pro Pass code.') + '</li>'
-      + '<li>' + L('리뷰 내용에 상관없이 게시를 동의하시면 증정합니다.', 'Whatever your review says, you receive it when you agree to publish.') + '</li>'
-      + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam 결제 이력이 없는 신규 계정에 선물할 수 있습니다.', 'Use the code yourself within 12 months, or gift it to a new account that has never paid for PracExam.') + '</li>'
+      + '<li>' + L('리뷰 게시에 동의하시고 2번과 3번 항목을 각각 30자 이상 작성하시면 리뷰 내용에 상관없이 30-Day Pro Pass 코드 1개를 증정합니다.', 'Agree to publish and write at least 30 characters each for questions 2 and 3, and you receive one 30-Day Pro Pass code, whatever your review says.') + '</li>'
+      + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam이 처음인 친구, 동료에게 선물하실 수 있습니다.', 'Use the code yourself within 12 months, or give it to a friend or colleague who is new to PracExam.') + '</li>'
       + '</ul></div>';
   }
 
