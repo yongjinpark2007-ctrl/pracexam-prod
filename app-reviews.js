@@ -55,6 +55,7 @@
     + '.rvm-err{color:var(--danger-color,#dc2626);font-size:14px;margin:8px 0 0;min-height:1em;}'
     + '.rvm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}'
     + '.rvm-actions .btn-navy,.rvm-actions .btn-ghost{padding:11px 20px;font-size:15.5px;}'
+    + '#rvm-submit{background:#354649;color:#fff;border-color:#354649;font-weight:700;}#rvm-submit:hover{background:#2a383a;color:#fff;}'   // boss 2026-11-13: darker submit
     + '.rvm-bar{height:10px;border-radius:999px;background:var(--border-clr);overflow:hidden;margin:10px 0 6px;}'
     + '.rvm-bar span{display:block;height:100%;background:var(--teal,#354649);}'
     + '.rvm-code{font:700 22px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--text-main);background:#fff;border:2px dashed var(--teal,#354649);border-radius:12px;padding:14px;text-align:center;margin:12px 0;}'
