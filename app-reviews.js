@@ -130,7 +130,7 @@
       +   '<div class="rvm-count" style="text-align:left;">' + L('아직 합격한 파트가 없다면 선택하지 않고 넘어가세요. 「학습 중」으로 표시됩니다. 합격 여부는 회원님이 응답하신 내용 그대로 표시됩니다.', 'Leave all unchecked if you have not passed any parts yet. You will be shown as Currently studying. Pass results are shown as self-reported.') + '</div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q2">2. ' + L('PracExam에서 가장 도움이 되었던 점과 그 이유는 무엇인가요?', 'What helped you most in PracExam, and why?') + '</label>'
       +   '<textarea id="rvm-q2" maxlength="600" placeholder="' + esc(L('예: 해설, 모의고사, War Room, 모바일 학습', 'For example: explanations, mock exams, War Room, studying on your phone')) + '"></textarea><div class="rvm-count" id="rvm-c2"></div></div>'
-      + '<div class="rvm-f"><label class="q" for="rvm-q3">3. ' + L('이제 시험 준비를 시작하는 수험생에게 조언 한마디를 남겨 주세요.', 'Please share a word of advice for candidates just starting out.') + '</label>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q3">3. ' + L('이제 시험 준비를 시작하는 수험생에게 경험을 공유해주세요.', 'Please share your experience with candidates who are just starting to prepare.') + '</label>'
       +   '<textarea id="rvm-q3" maxlength="400"></textarea><div class="rvm-count" id="rvm-c3"></div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q4">4. ' + L('개선되었으면 하는 점', 'What should we improve?') + ' <span class="opt">' + L('(선택 사항 · 비공개)', '(optional · never published)') + '</span></label>'
       +   '<textarea id="rvm-q4" maxlength="800"></textarea></div>'
