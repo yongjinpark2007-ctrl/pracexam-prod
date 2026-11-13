@@ -17,4 +17,4 @@ body[data-exam="ea"] .stats-grid{grid-template-columns:repeat(5,minmax(0,1fr)); 
 body[data-exam="ea"] .stats-grid > div{padding:0 14px;}
 body[data-exam="ea"] .stats .stat-num{font-size:clamp(20px,2.2vw,27px);}
 body[data-exam="ea"] .stats .stat-label{margin-top:6px; line-height:1.4;}
-@media (max-width:720px){ body[data-exam="ea"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} }
+@media (max-width:760px){ body[data-exam="ea"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} body[data-exam="ea"] .stats-grid > div + div{border-left:none;} }
