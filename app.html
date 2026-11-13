@@ -4179,8 +4179,8 @@ function updateTrialQuotaBanner(){
   const left = Math.max(0, 10 - (S.dailyUsed || 0));
   el.style.display = '';
   el.innerHTML = ((LANG === 'en')
-    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 10 Quick questions per day · remaining today: <strong>' + left + '</strong>')
-    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 10문제까지 Quick으로 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
+    ? ('🎁 <strong>' + t('trial_banner') + '</strong> — up to 10 questions per day · remaining today: <strong>' + left + '</strong>')
+    : ('🎁 <strong>' + t('trial_banner') + '</strong> — 하루 10문제까지 학습 가능 · 오늘 남은 문제: <strong>' + left + '개</strong>')) +
     ' <button class="btn-navy" style="margin-left:8px;padding:4px 14px;font-size:12.5px;vertical-align:middle;display:inline-flex;align-items:center;justify-content:center;gap:4px;text-align:center;line-height:1.4;" onclick="showPricingModal()">' + t('upgrade_cta') + '</button>';   // centered (boss 2026-10-31)
 }
 
