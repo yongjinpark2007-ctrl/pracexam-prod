@@ -351,7 +351,9 @@
     }).join('');
     // boss 2026-11-14: the empty-state text follows where the customer is
     var emptyMsg = canReview()
-      ? L('이제 리뷰를 남기실 수 있습니다. 리뷰를 남겨 주시면 30-Day Pro Pass를 드립니다.', 'You can now leave a review. Leave one and receive a 30-Day Pro Pass.')
+      ? (INFO && INFO.next_pass_locked
+          ? L('이제 리뷰를 남기실 수 있습니다. 리뷰를 남겨 주시면 30-Day Pro Pass를 증정해 드립니다. 선물 이용권으로 시작하신 계정이라 이 이용권은 첫 결제 후에 사용하실 수 있습니다.', 'You can now leave a review and receive a 30-Day Pro Pass. Because this account started with a gifted pass, you can use it after your first payment.')
+          : L('이제 리뷰를 남기실 수 있습니다. 리뷰를 남겨 주시면 30-Day Pro Pass를 증정해 드립니다. 지금 사용하시는 이 계정에 바로 사용하실 수 있습니다.', 'You can now leave a review and receive a 30-Day Pro Pass. You can use it right away on this account.'))
       : (INFO && INFO.has_review)
         ? L('리뷰를 남겨 주셔서 감사합니다. 게시에 동의하지 않으셔서 이용권은 발급되지 않았습니다.', 'Thank you for your review. No pass was issued because you did not agree to publish it.')
         : L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 250 questions and leave a review to receive one.');
