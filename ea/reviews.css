@@ -179,3 +179,5 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-foot > .rv-name{grid-column:1;}
 .rv-foot > .rv-pass{grid-column:2;}
 .rv-foot > .rv-meta{grid-column:1 / span 2;}
+/* boss 2026-11-13: meta line smaller still */
+.rv-foot > .rv-meta{font-size:9.5px; letter-spacing:.01em;}
