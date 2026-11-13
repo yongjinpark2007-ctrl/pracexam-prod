@@ -75,7 +75,7 @@
   // ── pause, then glide one card slowly (boss 2026-11-13: fast jumps were dizzy, a constant drift cannot be read) ──
   // Each card rests HOLD_MS, then glides over GLIDE_MS with ease-in-out. Endless loop (cards rendered twice).
   // Pauses on hover / focus / touch / hidden tab. Off for prefers-reduced-motion. Arrows glide one card.
-  var HOLD_MS = 4500, GLIDE_MS = 1600;
+  var HOLD_MS = 6000, GLIDE_MS = 3200;   // boss 2026-11-13: slower again
   function carousel(wrap){
     var track = wrap.querySelector('.rv-track');
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
