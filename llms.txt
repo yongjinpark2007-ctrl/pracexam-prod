@@ -27,7 +27,7 @@
   variations per topic so the same tested concept is practiced from different angles.
 - Every question includes an answer explanation and an exam tip, in both English and
   Korean.
-- Pricing: start free with 30 days of Quick Study; Pro is $29 per month or $70 every 3 months (same features), cancel anytime, 14-day refund.
+- Pricing: start with a 30-day free trial (10 questions a day); Pro is $29 per month or $70 every 3 months (same features), cancel anytime, 14-day refund.
 - "War Room" — a reference library of tax rules and traps, cross-linked from each
   question's explanation, for deeper study on a topic.
 - Practice modes include topic-focused study, full timed mock exams, and a
@@ -86,7 +86,7 @@ Each article is published in English and Korean at the two URLs shown.
 - Every question includes an answer explanation and an exam tip; topic "War Room" pages explain
   the rule, tables, state differences and traps behind a question.
 - 130+ core topics and 5,000+ practice questions for each state (national + state portions).
-- Pricing: start free with 30 days of Quick Study; Pro is $29 per month or $70 every 3 months (same features), cancel anytime, 14-day refund.
+- Pricing: start with a 30-day free trial (10 questions a day); Pro is $29 per month or $70 every 3 months (same features), cancel anytime, 14-day refund.
 - The practice app opens at https://pracexam.com/re/app .
 
 ### Who it's for
