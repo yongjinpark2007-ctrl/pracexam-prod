@@ -83,13 +83,13 @@ function isRoot(url) {
 
 // ---------------------------------------------------------------------------
 // 🆕 2026-10-24 — TEST DOMAIN GATE (boss: dxdgroup.com 에 몇 주 올려 라이브 테스트, 비밀번호 하나로 잠금)
-//  - Runs ONLY when the host is dxdgroup.com or a subdomain of it. pracexam.com and *.pages.dev are untouched,
+//  - Runs ONLY when the host is test.pracexam.com (was test.dxdgroup.com until 2026-11-12). pracexam.com and *.pages.dev are untouched,
 //    so this file can move to pracexam.com as is.
 //  - One password -> a cookie for 30 days. Every response on the test host also gets «noindex» so search
 //    engines never list a copy of pracexam.com (duplicate content would hurt pracexam.com SEO).
 //  - Only the SHA-256 of the password is in this public repo. A Cloudflare env var GATE_PASSWORD_SHA256 overrides it.
 // ---------------------------------------------------------------------------
-const GATE_HOST_RE = /^test\.pracexam\.com$|(^|\.)dxdgroup\.com$/i;   // 2026-11-12: test site moving to test.pracexam.com (apex pracexam.com never matches)
+const GATE_HOST_RE = /^test.pracexam.com$/i;   // 2026-11-12: test site moved to test.pracexam.com; test.dxdgroup.com retired (apex pracexam.com never matches)
 const GATE_DEFAULT_SHA256 = "bdff1fb817fce0908117140656e4c3ee1077ba44c4d4fa41679996f328424b0e";
 const GATE_COOKIE = "pe_test_gate";
 
