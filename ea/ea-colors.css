@@ -1,0 +1,12 @@
+/* EA landing color rhythm (boss 2026-11-13: the stats band had the same background as Features and read as a
+   meaningless band; review the whole page's colors). Order after this file:
+   hero white gradient → STATS dark navy strip → features grey → reviews War Room gradient → video WHITE →
+   Smart Study / War Room gradient → samples white → pricing grey → FAQ grey → about white.
+   Compare with the old look on the test site: /ea/?colors=old */
+body[data-exam="ea"] .stats{background:var(--navy); border:none; padding:30px 0;}
+body[data-exam="ea"] .stats .stat-num{color:#fff;}
+body[data-exam="ea"] .stats .stat-label{color:rgba(255,255,255,.72);}
+body[data-exam="ea"] .stats-grid > div + div{border-left:1px solid rgba(255,255,255,.14);}
+@media (max-width:720px){ body[data-exam="ea"] .stats-grid > div + div{border-left:none;} }
+/* the featured-short band was light teal, between two light-teal gradients (reviews, War Room) → white */
+body[data-exam="ea"] .fs-section{background:var(--white,#fff); border-top:none; border-bottom:none;}
