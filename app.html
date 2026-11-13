@@ -4344,6 +4344,8 @@ async function _memBoth(txt, cur){
   var rows = cur === 're'
     ? [[reLabel, curText, true], [eaLabel, _memLine(ea, eaJoined), false]]
     : [[eaLabel, curText, true], [reLabel, _memLine(re, !!re), false]];
+  // boss 2026-11-14: do not mention the other exam when the customer has not joined it
+  rows = rows.filter(function(x, i){ return i === 0 || (cur === 're' ? eaJoined : !!re); });
   txt.textContent = '';
   rows.forEach(function(x){
     var line = document.createElement('div');
