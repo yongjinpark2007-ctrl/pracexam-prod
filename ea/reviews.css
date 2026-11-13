@@ -143,3 +143,5 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-back{margin:0 0 18px; font-size:14px;}
 .rv-back a{color:var(--navy); font-weight:600; text-decoration:none;}
 .rv-back a:hover{text-decoration:underline;}
+/* small inline quote mark (boss 2026-11-13: the big one took a whole line) */
+.rv-q{font-family:var(--font-display, Georgia, serif); color:var(--accent); font-size:1.5em; line-height:0; vertical-align:-0.28em; margin-right:3px;}
