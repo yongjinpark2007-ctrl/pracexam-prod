@@ -10,7 +10,7 @@
   'use strict';
   var host = location.hostname;
   var IS_TEST = /^test\.pracexam\.com$/i.test(host) || /\.pages\.dev$/i.test(host) || host === 'localhost' || host === '127.0.0.1';
-  var LIVE_SOURCE = false;   // flip to true after public_reviews exists (build step 4)
+  var LIVE_SOURCE = true;    // public_reviews exists since 2026-11-13
   var SUPABASE_URL = 'https://ufrhvodruulpgnmudzwh.supabase.co';
   var LANDING_MAX = 12, AUTO_MS = 5000;
 
@@ -53,9 +53,15 @@
     });
   }
 
-  function loadReviews(){
-    // SAMPLE data is fetched only on the test hosts, so the file is never requested on pracexam.com.
-    if (IS_TEST) return new Promise(function(res){
+  // public anon key (same one the landing and app already ship); public_reviews returns published rows, display fields only
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8';
+  function loadLive(){
+    return fetch(SUPABASE_URL + '/rest/v1/public_reviews?exam=eq.ea&select=id,name,state,lang,subscriber,passed,studying,helped,advice,date,featured', {
+      headers: { apikey: ANON, Authorization: 'Bearer ' + ANON }
+    }).then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
+  }
+  function loadSample(){
+    return new Promise(function(res){
       if (Array.isArray(window.PX_REVIEWS_SAMPLE)) return res(window.PX_REVIEWS_SAMPLE);
       var s = document.createElement('script');
       s.src = '/ea/reviews-sample.js?v=2';
@@ -63,11 +69,16 @@
       s.onerror = function(){ res([]); };
       document.head.appendChild(s);
     });
-    if (!LIVE_SOURCE) return Promise.resolve([]);
-    var key = window.SUPABASE_ANON_KEY || '';
-    return fetch(SUPABASE_URL + '/rest/v1/public_reviews?exam=eq.ea&select=name,state,lang,subscriber,passed,helped,advice,date,featured', {
-      headers: { apikey: key, Authorization: 'Bearer ' + key }
-    }).then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
+  }
+  // Live published reviews always. On test hosts only, SAMPLE rows are added after them so the design can be seen
+  // before there are 3 real reviews; the sample file is never requested on pracexam.com.
+  function loadReviews(){
+    var live = LIVE_SOURCE ? loadLive() : Promise.resolve([]);
+    return live.then(function(rows){
+      rows = Array.isArray(rows) ? rows : [];
+      if (!IS_TEST) return rows;
+      return loadSample().then(function(sm){ return rows.concat(sm); });
+    });
   }
 
   function sampleBanner(list){
