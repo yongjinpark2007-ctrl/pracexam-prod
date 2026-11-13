@@ -347,7 +347,7 @@
     var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have any passes yet. Study at least 250 questions and leave a review to receive one.')
       + (canReview() ? ' <a href="#" id="rvp-write" style="color:var(--teal);font-weight:700;">' + L('리뷰 작성하기', 'Write a Review') + '</a>' : '') + '</div>';
     card.innerHTML = '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
-      + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('이용권 하나로 Pro를 30일 동안 쓸 수 있습니다.', 'One pass gives you 30 days of Pro.') + '</div>'
+      + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('하나의 이용권으로 Pro를 30일 동안 사용할 수 있습니다.', 'One pass gives you 30 days of Pro.') + '</div>'
       + '<div class="rvp-sec" style="border-top:none;padding-top:4px;margin-top:8px;">' + L('내 이용권', 'My passes') + '</div>'
       + (list.length ? rows : empty)
       + '<div class="rvp-sec">' + L('선물받은 코드 등록', 'Redeem a gifted code') + '</div>'
