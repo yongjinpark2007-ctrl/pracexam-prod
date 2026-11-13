@@ -109,10 +109,10 @@
 
   function rulesBox(){
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 지급 조건', 'How the 30-Day Pro Pass works') + '</b><ul>'
-      + '<li>' + L('리뷰 게시에 동의하고 2번과 3번 질문에 각각 30자 이상 답변하시면 30-Day Pro Pass 코드 1개를 드립니다.', 'Agree to publish and answer questions 2 and 3 with at least 30 characters each, and you get one 30-Day Pro Pass code.') + '</li>'
-      + '<li>' + L('리뷰의 긍정·부정 여부와 관계없이 동일하게 지급되며, 실제로 게시되지 않더라도 드립니다.', 'You get it whether your review is positive or negative, and even if we do not publish it.') + '</li>'
+      + '<li>' + L('리뷰 게시에 동의하고 2번과 3번 질문에 각각 30자 이상 답변하시면 30-Day Pro Pass 코드 1개를 드립니다.', 'Agree to publish and answer questions 2 and 3 with at least 30 characters each to receive a 30-Day Pro Pass code.') + '</li>'
+      + '<li>' + L('리뷰의 긍정·부정 여부와 관계없이 동일하게 지급되며, 실제로 게시되지 않더라도 드립니다.', 'You will receive it whether your review is positive or negative, even if it is not published.') + '</li>'
       + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam 결제 이력이 없는 신규 계정에 선물할 수 있습니다.', 'Use the code yourself within 12 months, or gift it to a new account that has never paid for PracExam.') + '</li>'
-      + '<li>' + L('리뷰 작성 보상은 계정당 1회만 제공됩니다.', 'One review reward per account.') + '</li>'
+      + '<li>' + L('리뷰 작성 보상은 계정당 1회만 제공됩니다.', 'Limit one review reward per account.') + '</li>'
       + '</ul></div>';
   }
 
@@ -138,23 +138,23 @@
   function form(){
     var nm = displayName();
     body('<h3 id="rvm-title">' + L('리뷰 작성하기', 'Write a Review') + '</h3>'
-      + '<p class="rvm-sub">' + L('솔직한 의견을 작성해 주세요. 좋았던 점과 아쉬웠던 점 모두 서비스 개선에 큰 도움이 됩니다.', 'Please be honest. Good points and weak points both help.') + '</p>'
+      + '<p class="rvm-sub">' + L('솔직한 의견을 작성해 주세요. 좋았던 점과 아쉬웠던 점 모두 서비스 개선에 큰 도움이 됩니다.', 'Please share your honest feedback. Hearing what you liked and what we can improve helps us make PracExam better.') + '</p>'
       + rulesBox()
       + '<div class="rvm-f"><span class="q" style="display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">1. ' + L('합격한 파트를 모두 골라 주세요.', 'Which parts have you passed? Check all that apply.') + '</span>'
       +   '<div class="rvm-parts">' + [1,2,3].map(function(n){ return '<label><input type="checkbox" name="rvm-pass" value="' + n + '">Part ' + n + '</label>'; }).join('') + '</div>'
-      +   '<div class="rvm-count" style="text-align:left;">' + L('아직 합격한 파트가 없으면 비워 두세요. 학습 중으로 표시됩니다. 합격 여부는 본인 응답으로 표시됩니다.', 'Leave all unchecked if you are still studying. Pass results are shown as self-reported.') + '</div></div>'
-      + '<div class="rvm-f"><label class="q" for="rvm-q2">2. ' + L('PracExam에서 가장 도움이 되었던 점은 무엇인가요?', 'What helped you most in PracExam?') + '</label>'
+      +   '<div class="rvm-count" style="text-align:left;">' + L('아직 합격한 파트가 없으면 비워 두세요. 학습 중으로 표시됩니다. 합격 여부는 본인 응답으로 표시됩니다.', 'Leave all unchecked if you have not passed any parts yet. You will be shown as Currently studying. Pass results are shown as self-reported.') + '</div></div>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q2">2. ' + L('PracExam에서 가장 도움이 되었던 점은 무엇인가요?', 'What did you find most helpful about PracExam?') + '</label>'
       +   '<textarea id="rvm-q2" maxlength="600" placeholder="' + esc(L('예: 해설, 모의고사, War Room, 모바일 학습', 'For example: explanations, mock exams, War Room, studying on your phone')) + '"></textarea><div class="rvm-count" id="rvm-c2"></div></div>'
-      + '<div class="rvm-f"><label class="q" for="rvm-q3">3. ' + L('이제 준비를 시작하는 수험생에게 조언 한마디를 남겨 주세요.', 'One piece of advice for someone just starting?') + '</label>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q3">3. ' + L('이제 준비를 시작하는 수험생에게 조언 한마디를 남겨 주세요.', 'Please share a word of advice for candidates just starting out.') + '</label>'
       +   '<textarea id="rvm-q3" maxlength="400"></textarea><div class="rvm-count" id="rvm-c3"></div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q4">4. ' + L('개선되었으면 하는 점', 'What should we improve?') + ' <span class="opt">' + L('(선택 사항 · 비공개)', '(optional · never published)') + '</span></label>'
       +   '<textarea id="rvm-q4" maxlength="800"></textarea></div>'
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q5"><span>' + L('이 리뷰를 <b>' + esc(nm) + '</b> 이름으로 PracExam 웹사이트에 게시하는 데 동의합니다. 맞춤법과 길이만 다듬을 수 있습니다.', 'I agree that PracExam may publish this review on its website as <b>' + esc(nm) + '</b>. PracExam may correct spelling and shorten it only.') + '</span></label>'
-      +   '<p class="rvm-hint">' + L('동의하면 2번과 3번 답변은 각각 30자 이상이어야 합니다. 동의하지 않아도 리뷰를 제출할 수 있으나, 이 경우 무료 이용권은 발급되지 않습니다.', 'If you agree, answers 2 and 3 must each be at least 30 characters. You can send your review without agreeing, but no pass is issued in that case.') + '</p></div>'
+      +   '<p class="rvm-hint">' + L('동의하면 2번과 3번 답변은 각각 30자 이상이어야 합니다. 동의하지 않아도 리뷰를 제출할 수 있으나, 이 경우 무료 이용권은 발급되지 않습니다.', 'If you agree, answers 2 and 3 must each be at least 30 characters. You can still submit your review without agreeing, but a free pass will not be issued in this case.') + '</p></div>'
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(State)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
       +   '<div id="rvm-state-wrap" style="display:none;margin:8px 0 0 28px;max-width:160px;"><select id="rvm-state">' + STATES.map(function(s){ return '<option>' + s + '</option>'; }).join('') + '</select></div></div>'
       + '<p class="rvm-err" id="rvm-err"></p>'
-      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 제출하기', 'Send review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('취소', 'Cancel') + '</button></div>');
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 제출하기', 'Submit review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('취소', 'Cancel') + '</button></div>');
     counter('rvm-q2', 'rvm-c2'); counter('rvm-q3', 'rvm-c3');
     function req(){ var on = document.getElementById('rvm-q5').checked;
       ['rvm-c2','rvm-c3'].forEach(function(id){ var o = document.getElementById(id); o.style.fontWeight = on ? '700' : ''; o.title = on ? L('필수', 'Required') : ''; });
@@ -180,17 +180,17 @@
 
   function done(withPass){
     if (!withPass){
-      body('<h3 id="rvm-title">' + L('소중한 리뷰를 보내 주셔서 감사합니다', 'Thank you for your review') + '</h3>'
+      body('<h3 id="rvm-title">' + L('소중한 리뷰를 남겨 주셔서 감사합니다', 'Thank you for your review') + '</h3>'
         + '<p class="rvm-sub">' + L('보내 주신 의견은 PracExam 서비스 개선에 활용하겠습니다. 게시에 동의하지 않으셔서 이번에는 이용권이 발급되지 않았습니다.', 'We read every review and use it to improve PracExam. No pass was issued because you did not agree to publish.') + '</p>'
         + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('닫기', 'Close') + '</button></div>');
       document.getElementById('rvm-close').onclick = closeReview; return;
     }
     body('<h3 id="rvm-title">' + L('감사합니다! 30-Day Pro Pass가 발급되었습니다', 'Thank you! Here is your 30-Day Pro Pass') + '</h3>'
-      + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 쓸 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'This code is good for 12 months. Use it now, keep it in Settings for later, or gift it to a new account that has never paid.') + '</p>'
+      + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 쓸 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'This code is valid for 12 months. You can use it now, save it in Settings for later, or gift it to a new account that has never paid for PracExam.') + '</p>'
       + '<div class="rvm-code">PASS-SAMP-LE01</div>'
-      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 사용하기', 'Use it now') + '</button>'
-      + '<button class="btn-ghost" type="button" id="rvm-gift">' + L('선물하기', 'Gift it') + '</button>'
-      + '<button class="btn-ghost" type="button" id="rvm-later">' + L('나중에 사용하기', 'Later') + '</button></div>');
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 사용하기', 'Use now') + '</button>'
+      + '<button class="btn-ghost" type="button" id="rvm-gift">' + L('선물하기', 'Gift') + '</button>'
+      + '<button class="btn-ghost" type="button" id="rvm-later">' + L('나중에 사용하기', 'Use later') + '</button></div>');
     document.getElementById('rvm-use').onclick = function(){ closeReview(); toast(L('(테스트) 실제로는 Pro 30일 이용 권한이 활성화됩니다.', '(Test) In the live version this opens 30 days of Pro.')); };
     document.getElementById('rvm-gift').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){} setTimeout(function(){ var b = document.querySelector('[data-rvp-gift="PASS-SAMP-LE01"]'); if (b) b.click(); }, 50); };
     document.getElementById('rvm-later').onclick = function(){ closeReview(); try { showScreen('settings'); } catch(e){} };
@@ -235,11 +235,11 @@
       var meta = p.status === 'unused' ? L(fmt(p.expires) + '까지 사용 가능', 'Use by ' + fmt(p.expires))
                : L(fmt(p.used) + '에 사용됨', 'Used on ' + fmt(p.used));
       var btns = p.status === 'unused'
-        ? '<div class="rvp-btns"><button class="btn-navy" type="button" data-rvp-use="' + p.code + '">' + L('내 계정에 사용', 'Use on my account') + '</button><button class="btn-ghost" type="button" data-rvp-gift="' + p.code + '" data-exp="' + p.expires + '">' + L('선물하기', 'Gift it') + '</button></div>'
+        ? '<div class="rvp-btns"><button class="btn-navy" type="button" data-rvp-use="' + p.code + '">' + L('내 계정에 사용', 'Use on my account') + '</button><button class="btn-ghost" type="button" data-rvp-gift="' + p.code + '" data-exp="' + p.expires + '">' + L('선물하기', 'Gift') + '</button></div>'
         : '';
       return '<div class="rvp-row"><div><div class="rvp-code">' + p.code + chip + '</div><div class="rvp-meta">' + meta + '</div></div>' + btns + '<div class="rvp-gift" id="gift-' + p.code + '" hidden></div></div>';
     }).join('');
-    var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 푼 뒤 리뷰를 쓰면 받을 수 있습니다.', 'You have no passes yet. Answer 250 questions, then write a review to get one.')
+    var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + L('아직 받은 이용권이 없습니다. 250문항 이상 푼 뒤 리뷰를 쓰면 받을 수 있습니다.', 'You do not have any passes yet. Answer at least 250 questions, then write a review to get one.')
       + ' <a href="#" id="rvp-write" style="color:var(--teal);font-weight:700;">' + L('리뷰 작성하기', 'Write a Review') + '</a></div>';
     card.innerHTML = '<span style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;color:#fff;background:#dc2626;border-radius:4px;padding:2px 7px;margin-bottom:8px;">SAMPLE · DESIGN</span>'
       + '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
@@ -248,20 +248,20 @@
       + (list.length ? rows : empty)
       + '<div class="rvp-sec">' + L('선물받은 코드 등록', 'Redeem a gifted code') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
-      + '<p class="rvp-note">' + L('선물받은 코드는 PracExam에서 결제한 적이 없는 계정에서만 쓸 수 있습니다. 코드 하나는 한 번만 쓸 수 있습니다.', 'Gifted codes work only on accounts that have never paid for PracExam. Each code can be used once.') + '</p>'
+      + '<p class="rvp-note">' + L('선물받은 코드는 PracExam 결제 이력이 없는 계정에서만 등록할 수 있습니다. 각 코드는 한 번만 사용할 수 있습니다.', 'Gifted codes can only be redeemed on accounts that have never paid for PracExam. Each code can only be used once.') + '</p>'
       + '<p class="rvp-note" style="margin-top:4px;"><a href="#" id="rvp-toggle" style="color:var(--text-muted);">' + (showEmpty ? '(테스트) 이용권 있는 화면 보기' : '(테스트) 이용권 없는 화면 보기') + '</a></p>';
     card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ toast(L('(테스트) 실제로는 Pro 30일 이용 권한이 활성화됩니다.', '(Test) In the live version this opens 30 days of Pro.')); }; });
     card.querySelectorAll('[data-rvp-gift]').forEach(function(b){ b.onclick = function(){
       var code = b.getAttribute('data-rvp-gift'), box = document.getElementById('gift-' + code), msg = giftText(code, b.getAttribute('data-exp'));
       box.hidden = !box.hidden; if (box.hidden) return;
-      box.innerHTML = L('아래 글을 복사해 친구에게 보내세요.', 'Copy this message and send it to a friend.') + '<textarea readonly>' + esc(msg) + '</textarea><button class="btn-navy" type="button">' + L('메시지 복사', 'Copy message') + '</button>';
+      box.innerHTML = L('아래 메시지를 복사해 친구에게 보내세요.', 'Copy this message and send it to a friend.') + '<textarea readonly>' + esc(msg) + '</textarea><button class="btn-navy" type="button">' + L('메시지 복사', 'Copy message') + '</button>';
       box.querySelector('button').onclick = function(){ copy(msg); };
     }; });
     var w = card.querySelector('#rvp-write'); if (w) w.onclick = function(e){ e.preventDefault(); openReview(); };
     card.querySelector('#rvp-toggle').onclick = function(e){ e.preventDefault(); showEmpty = !showEmpty; renderPassCard(); };
     card.querySelector('#rvp-redeem-btn').onclick = function(){
       var v = card.querySelector('#rvp-input').value.trim().toUpperCase();
-      toast(/^PASS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v) ? L('(테스트) 실제 환경에서는 서버가 코드 유효성을 확인합니다.', '(Test) In the live version the server checks the code.') : L('코드 형식을 다시 한번 확인해 주세요. (예: PASS-7K3M-Q9TX)', 'Please check the code. Example: PASS-7K3M-Q9TX'));
+      toast(/^PASS-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v) ? L('(테스트) 실제 환경에서는 서버가 코드 유효성을 확인합니다.', '(Test) In the live version the server checks the code.') : L('코드 형식을 다시 한번 확인해 주세요. (예: PASS-7K3M-Q9TX)', 'Please check the code format. Example: PASS-7K3M-Q9TX'));
     };
   }
 
