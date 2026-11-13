@@ -38,7 +38,9 @@
 
   // ── styles ──
   var css = ''
-    + '#rv-modal-bg .modal.rvm{max-width:680px;}'
+    + '#screen-review .rvm{max-width:760px;margin:0 auto;background:var(--card-bg,#fff);border:1px solid var(--border-clr);border-radius:14px;padding:1.5rem;}'
+    + '@media (max-width:640px){#screen-review .rvm{padding:1.1rem;}}'
+    + '.rvm-saved{font-size:12.5px;color:var(--text-muted);margin-left:auto;align-self:center;}'
     + '.rvm h3{font-size:19px;font-weight:700;color:var(--text-main);margin:0 0 4px;}'
     + '.rvm .rvm-sub{font-size:14.5px;color:var(--text-muted);line-height:1.6;margin:0 0 14px;}'
     + '.rvm .rvm-sample{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;color:#fff;background:#dc2626;border-radius:4px;padding:2px 7px;margin-bottom:10px;}'
@@ -104,19 +106,23 @@
     document.querySelectorAll('.rv-menu-label').forEach(function(s){ s.textContent = L('리뷰 작성하기', 'Write a Review'); });
   }
 
-  // ── modal ──
-  var bg;
-  function modal(){
-    if (bg) return bg;
-    bg = document.createElement('div'); bg.className = 'modal-bg'; bg.id = 'rv-modal-bg';
-    bg.innerHTML = '<div class="modal rvm" role="dialog" aria-modal="true" aria-labelledby="rvm-title"><button class="modal-close" type="button" aria-label="Close">×</button><div id="rvm-body"></div></div>';
-    bg.addEventListener('click', function(e){ if (e.target === bg) closeReview(); });
-    bg.querySelector('.modal-close').onclick = closeReview;
-    document.body.appendChild(bg);
-    return bg;
+  // ── review screen (boss 2026-11-13: the popup closed on a stray click and lost the text → a normal app screen) ──
+  var screenEl;
+  function screen(){
+    if (screenEl) return screenEl;
+    screenEl = document.createElement('div'); screenEl.className = 'screen'; screenEl.id = 'screen-review';
+    screenEl.innerHTML = '<div class="rvm"><div id="rvm-body"></div></div>';
+    var settings = document.getElementById('screen-settings');
+    if (settings && settings.parentNode) settings.parentNode.insertBefore(screenEl, settings.nextSibling);
+    else document.body.appendChild(screenEl);
+    return screenEl;
   }
-  function closeReview(){ if (bg) bg.classList.remove('open'); }
-  function body(html){ modal().querySelector('#rvm-body').innerHTML = html; bg.classList.add('open'); }
+  function closeReview(){ try { showScreen('dashboard'); } catch(e){} }
+  function body(html){
+    screen().querySelector('#rvm-body').innerHTML = html;
+    try { if (!screenEl.classList.contains('active')) showScreen('review'); } catch(e){}
+    try { window.scrollTo(0, 0); } catch(e){}
+  }
 
   function rulesBox(){   // wording by the boss 2026-11-13
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 증정 내용', 'How the 30-Day Pro Pass works') + '</b><ul>'
@@ -131,9 +137,33 @@
     t.addEventListener('input', upd); upd();
   }
 
+  function draftKey(){ try { return 'px_review_draft_' + (SB_USER ? SB_USER.id : 'anon'); } catch(e){ return 'px_review_draft'; } }
+  function saveDraft(){
+    try {
+      var g = function(id){ var el = document.getElementById(id); return el ? (el.type === 'checkbox' ? el.checked : el.value) : null; };
+      var d = { passed: [].map.call(document.querySelectorAll('input[name="rvm-pass"]:checked'), function(x){ return x.value; }),
+                studying: g('rvm-studying'), q2: g('rvm-q2'), q3: g('rvm-q3'), q4: g('rvm-q4'),
+                name: (document.getElementById('rvm-name') || {}).type === 'text' ? g('rvm-name') : null,
+                q5: g('rvm-q5'), q6: g('rvm-q6'), state: g('rvm-state') };
+      localStorage.setItem(draftKey(), JSON.stringify(d));
+      var m = document.getElementById('rvm-saved'); if (m) m.textContent = L('작성 중인 내용이 자동 저장되었습니다', 'Draft saved automatically');
+    } catch(e){}
+  }
+  function loadDraft(){
+    try {
+      var d = JSON.parse(localStorage.getItem(draftKey()) || 'null'); if (!d) return;
+      (d.passed || []).forEach(function(v){ var x = document.querySelector('input[name="rvm-pass"][value="' + v + '"]'); if (x) x.checked = true; });
+      var set = function(id, v){ var el = document.getElementById(id); if (!el || v == null) return; if (el.type === 'checkbox') el.checked = !!v; else el.value = v; };
+      set('rvm-studying', d.studying); set('rvm-q2', d.q2); set('rvm-q3', d.q3); set('rvm-q4', d.q4);
+      if (d.name != null && (document.getElementById('rvm-name') || {}).type === 'text') set('rvm-name', d.name);
+      set('rvm-q5', d.q5); set('rvm-q6', d.q6); set('rvm-state', d.state);
+    } catch(e){}
+  }
+  function clearDraft(){ try { localStorage.removeItem(draftKey()); } catch(e){} }
+
   function form(){
     var nm = displayName();
-    body('<h3 id="rvm-title">' + L('리뷰 작성하기', 'Write a Review') + '</h3>'
+    body('<div class="section-title" id="rvm-title">' + L('리뷰 작성하기', 'Write a Review') + '</div>'
       + '<p class="rvm-sub">' + L('솔직한 후기를 들려주세요. 좋았던 점과 아쉬웠던 점 모두 서비스 개선에 큰 도움이 됩니다.', 'Please share your honest feedback. Hearing what you liked and what we can improve helps us make PracExam better.') + '</p>'
       + '<div class="rvm-f" style="margin-bottom:26px;"><span class="q" style="display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:12px;">1. ' + L('해당하는 것을 모두 선택해 주세요.', 'Check all that apply.') + '</span>'
       +   '<div class="rvm-parts">' + [1,2,3].map(function(n){ return '<label><input type="checkbox" name="rvm-pass" value="' + n + '">' + L('Part ' + n + ' 합격', 'Passed Part ' + n) + '</label>'; }).join('') + '<label><input type="checkbox" id="rvm-studying">' + L('학습 중', 'Still studying') + '</label></div></div>'
@@ -152,9 +182,12 @@
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(State)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
       +   '<div id="rvm-state-wrap" style="display:none;margin:8px 0 0 28px;max-width:160px;"><select id="rvm-state">' + STATES.map(function(s){ return '<option>' + s + '</option>'; }).join('') + '</select></div></div>'
       + '<p class="rvm-err" id="rvm-err"></p>'
-      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 제출하기', 'Submit review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('취소', 'Cancel') + '</button></div>'
+      + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-submit">' + L('리뷰 제출하기', 'Submit review') + '</button><button class="btn-ghost" type="button" id="rvm-cancel">' + L('나중에 쓰기', 'Finish later') + '</button><span class="rvm-saved" id="rvm-saved"></span></div>'
       + '<div class="rvm-notice">' + rulesBox() + '</div>');
+    loadDraft();
     counter('rvm-q2', 'rvm-c2'); counter('rvm-q3', 'rvm-c3');
+    var _t; screenEl.querySelector('#rvm-body').addEventListener('input', function(){ clearTimeout(_t); _t = setTimeout(saveDraft, 400); });
+    screenEl.querySelector('#rvm-body').addEventListener('change', saveDraft);
     function req(){ var on = document.getElementById('rvm-q5').checked;
       ['rvm-c2','rvm-c3'].forEach(function(id){ var o = document.getElementById(id); o.style.fontWeight = on ? '700' : ''; o.title = on ? L('필수', 'Required') : ''; });
       document.getElementById('rvm-err').textContent = ''; }
@@ -163,6 +196,7 @@
       q6.closest('.rvm-f').style.opacity = on ? '1' : '.5'; }
     document.getElementById('rvm-q5').onchange = function(){ req(); stateDep(); };
     stateDep();
+    if (document.getElementById('rvm-q6').checked) document.getElementById('rvm-state-wrap').style.display = 'block';
     document.getElementById('rvm-q6').onchange = function(){ document.getElementById('rvm-state-wrap').style.display = this.checked ? 'block' : 'none'; };
     document.getElementById('rvm-cancel').onclick = closeReview;
     document.getElementById('rvm-submit').onclick = submit;
@@ -221,18 +255,18 @@
       p_show_state: showState, p_state: showState ? document.getElementById('rvm-state').value : null
     }).then(function(d){
       if (!d || !d.ok){ btn.disabled = false; err.textContent = reasonText(d && d.reason); return; }
-      done(d.pass_code || null); loadInfo();
+      clearDraft(); done(d.pass_code || null); loadInfo();
     }).catch(function(e){ btn.disabled = false; console.warn('submit_review', e && e.message); err.textContent = reasonText(); });
   }
 
   function done(code){
     if (!code){
-      body('<h3 id="rvm-title">' + L('소중한 리뷰를 남겨 주셔서 감사합니다', 'Thank you for your review') + '</h3>'
+      body('<div class="section-title" id="rvm-title">' + L('소중한 리뷰를 남겨 주셔서 감사합니다', 'Thank you for your review') + '</div>'
         + '<p class="rvm-sub">' + L('보내 주신 의견은 PracExam 서비스 개선에 활용하겠습니다. 게시에 동의하지 않으셔서 이번에는 이용권이 발급되지 않았습니다.', 'We read every review and use it to improve PracExam. No pass was issued because you did not agree to publish.') + '</p>'
         + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('닫기', 'Close') + '</button></div>');
       document.getElementById('rvm-close').onclick = closeReview; return;
     }
-    body('<h3 id="rvm-title">' + L('감사합니다! 30-Day Pro Pass가 발급되었습니다', 'Thank you! Here is your 30-Day Pro Pass') + '</h3>'
+    body('<div class="section-title" id="rvm-title">' + L('감사합니다! 30-Day Pro Pass가 발급되었습니다', 'Thank you! Here is your 30-Day Pro Pass') + '</div>'
       + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 쓸 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'This code is valid for 12 months. You can use it now, save it in Settings for later, or gift it to a new account that has never paid for PracExam.') + '</p>'
       + '<div class="rvm-code">' + esc(code) + '</div>'
       + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 사용하기', 'Use now') + '</button>'
