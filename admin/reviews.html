@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PracExam 관리자 — 리뷰 관리</title>
+<link rel="icon" href="/favicon.ico">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* Same palette and grammar as /admin/ (Harbor). Light only, like the other admin screens. */
+:root{
+  --page-bg:#E0E7E9; --card-bg:#fff; --border-clr:rgba(53,70,73,.14); --border-hover:rgba(53,70,73,.32);
+  --sel-bg:#d9ebe9; --sel-border:#6FA39E; --text-main:#232e30; --text-mid:#4b5759; --text-muted:#6C7A89;
+  --navy:#354649; --success-color:#16a34a; --danger-color:#dc2626; --accent:#DD8F75; --accent-tint:#FBF1EC; --accent-border:#EFD0C1;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--page-bg);color:var(--text-main);font-size:15px;line-height:1.6;}
+.header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;flex-wrap:wrap;}
+.header-title{font-size:17px;font-weight:700;color:#E0E7E9;}
+.header-sub{font-size:11.5px;color:rgba(255,255,255,.6);letter-spacing:.06em;text-transform:uppercase;margin-left:10px;}
+.icon-btn{background:none;border:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.85);border-radius:8px;padding:7px 11px;font:600 13.5px inherit;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-block;}
+.icon-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+.wrap{max-width:1100px;margin:0 auto;padding:16px;}
+.tiles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tile{font-family:inherit;text-align:left;cursor:pointer;background:#fff;border:1px solid var(--border-clr);border-radius:10px;padding:7px 14px;min-width:96px;}
+.tile.on{background:var(--sel-bg);border-color:var(--sel-border);box-shadow:inset 2px 0 0 var(--sel-border);}
+.tile .n{font-size:19px;font-weight:800;line-height:1.25;}
+.tile .l{font-size:12.5px;color:var(--text-muted);font-weight:600;}
+.hint{font-size:13px;color:var(--text-muted);margin-bottom:14px;}
+.card{background:#fff;border:1px solid var(--border-clr);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(53,70,73,.08);}
+.top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;}
+.who b{font-size:16px;}
+.meta{font-size:12.5px;color:var(--text-muted);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.chip{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--sel-bg);color:var(--navy);}
+.chip.new{background:#fef3c7;color:#92400e;}
+.chip.pub{background:#dcfce7;color:#166534;}
+.chip.hid{background:#f1f5f9;color:#64748b;}
+.chip.feat{background:var(--accent-tint);color:#b85f3f;}
+.chip.warn{background:#fee2e2;color:#991b1b;}
+.qa{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:760px){ .qa{grid-template-columns:1fr;} }
+.qa h4{font-size:12.5px;color:var(--text-muted);font-weight:700;margin-bottom:4px;}
+.orig{white-space:pre-wrap;background:#f7f9f9;border:1px solid var(--border-clr);border-radius:8px;padding:8px 10px;font-size:14px;}
+textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--border-clr);border-radius:8px;min-height:90px;resize:vertical;margin-top:6px;}
+.private{margin-top:10px;font-size:13.5px;background:#fffbeb;border:1px dashed #f59e0b;border-radius:8px;padding:8px 10px;white-space:pre-wrap;}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.btn{font-family:inherit;font-size:14px;font-weight:700;padding:8px 14px;border-radius:9px;border:1px solid var(--border-clr);background:#fff;color:var(--text-mid);cursor:pointer;}
+.btn:hover{border-color:var(--border-hover);}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff;}
+.btn.danger{color:var(--danger-color);border-color:rgba(220,38,38,.35);}
+.btn:disabled{opacity:.42;cursor:not-allowed;}
+.msg{font-size:13px;color:var(--text-muted);align-self:center;}
+.empty{padding:30px;text-align:center;color:var(--text-muted);}
+</style>
+</head>
+<body>
+<header class="header">
+  <div><span class="header-title">PracExam</span><span class="header-sub">리뷰 관리</span></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="icon-btn" onclick="load()">새로고침</button>
+    <a class="icon-btn" href="/admin/">고객 관리</a>
+    <a class="icon-btn" href="/ea/reviews/ko/" target="_blank" rel="noopener">후기 페이지 보기</a>
+  </div>
+</header>
+<div class="wrap">
+  <div id="tiles" class="tiles"></div>
+  <p class="hint">게시에 동의한 리뷰만 게시할 수 있습니다. 「다듬은 글」은 맞춤법과 길이만 고칩니다. 원문은 그대로 보관되고, 다듬은 글이 있으면 사이트에는 그 글이 나갑니다. 4번 개선 의견은 공개되지 않습니다.</p>
+  <div id="list"></div>
+</div>
+<script>
+// Admin «Reviews» (2026-11-13). Server: admin_reviews_list / admin_review_update / admin_review_delete (is_admin() only).
+var SUPABASE_URL  = 'https://ufrhvodruulpgnmudzwh.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8';
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+var ROWS = [], FILTER = 'new';
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function d(t){ return t ? String(t).slice(0, 16).replace('T', ' ') : ''; }
+
+async function load(){
+  var s = await sb.auth.getSession();
+  if (!s.data || !s.data.session){
+    $('list').innerHTML = '<div class="card empty">로그인이 필요합니다. <a href="/admin/">고객 관리 화면</a>에서 관리자 계정으로 로그인한 뒤 다시 여세요.</div>';
+    return;
+  }
+  var r = await sb.rpc('admin_reviews_list', { p_status: null });
+  if (r.error){ $('list').innerHTML = '<div class="card empty">불러오지 못했습니다: ' + esc(r.error.message) + '</div>'; return; }
+  ROWS = r.data || [];
+  render();
+}
+
+function tiles(){
+  var c = { new:0, published:0, hidden:0, all:ROWS.length };
+  ROWS.forEach(function(x){ c[x.status] = (c[x.status] || 0) + 1; });
+  var t = [['new','새 리뷰'],['published','게시됨'],['hidden','숨김'],['all','전체']];
+  $('tiles').innerHTML = t.map(function(x){
+    return '<button class="tile' + (FILTER === x[0] ? ' on' : '') + '" data-f="' + x[0] + '"><div class="n">' + (c[x[0]] || 0) + '</div><div class="l">' + x[1] + '</div></button>';
+  }).join('');
+  $('tiles').querySelectorAll('[data-f]').forEach(function(b){ b.onclick = function(){ FILTER = b.getAttribute('data-f'); render(); }; });
+}
+
+function card(x){
+  var st = { new:['new','새 리뷰'], published:['pub','게시됨'], hidden:['hid','숨김'] }[x.status] || ['', x.status];
+  var passed = (x.passed || []).length ? 'Part ' + x.passed.join('·') + ' 합격' : '';
+  var pass = x.pass ? ('이용권 ' + x.pass.code + ' · ' + ({unused:'사용 전', queued:'대기', used:'사용함', revoked:'회수'}[x.pass.status] || x.pass.status) + (x.pass.mode === 'gift' ? ' (선물)' : '')) : '이용권 없음';
+  return '<div class="card" data-id="' + x.id + '">'
+    + '<div class="top"><div class="who"><b>' + esc(x.display_name || '(이름 없음)') + '</b> '
+    +   '<span class="meta">' + esc(x.email) + ' · ' + d(x.created_at) + ' · ' + (x.lang === 'ko' ? '한국어' : '영어') + ' 리뷰 · ' + x.answered + '문항 풀이</span>'
+    +   '<div class="chips"><span class="chip ' + st[0] + '">' + st[1] + '</span>'
+    +   (x.featured ? '<span class="chip feat">대표 후기</span>' : '')
+    +   (x.consent ? '<span class="chip">게시 동의</span>' : '<span class="chip warn">게시 동의 안 함</span>')
+    +   '<span class="chip">' + (x.subscriber ? 'Verified Subscriber' : 'Verified User') + '</span>'
+    +   (passed ? '<span class="chip">' + passed + '</span>' : '') + (x.studying ? '<span class="chip">학습 중</span>' : '')
+    +   (x.show_state && x.state ? '<span class="chip">' + esc(x.state) + '</span>' : '')
+    +   '<span class="chip">' + esc(pass) + '</span></div></div></div>'
+    + '<div class="qa">'
+    +   '<div><h4>2. 가장 도움이 된 점과 이유 — 원문</h4><div class="orig">' + esc(x.helped) + '</div>'
+    +     '<h4 style="margin-top:8px;">다듬은 글 (비우면 원문이 나갑니다)</h4><textarea data-k="helped">' + esc(x.helped_edit || '') + '</textarea></div>'
+    +   '<div><h4>3. 조언과 경험 — 원문</h4><div class="orig">' + esc(x.advice) + '</div>'
+    +     '<h4 style="margin-top:8px;">다듬은 글 (비우면 원문이 나갑니다)</h4><textarea data-k="advice">' + esc(x.advice_edit || '') + '</textarea></div>'
+    + '</div>'
+    + (x.improve ? '<div class="private"><b>4. 개선 의견 (비공개)</b>\n' + esc(x.improve) + '</div>' : '')
+    + '<div class="actions">'
+    +   '<button class="btn primary" data-a="published"' + (x.consent ? '' : ' disabled title="게시 동의가 없어 게시할 수 없습니다"') + '>게시</button>'
+    +   '<button class="btn" data-a="hidden">숨김</button>'
+    +   '<button class="btn" data-a="feat">' + (x.featured ? '대표 후기 해제' : '대표 후기로') + '</button>'
+    +   '<button class="btn" data-a="save">다듬은 글 저장</button>'
+    +   '<button class="btn danger" data-a="delete">삭제 (시험용)</button>'
+    +   '<span class="msg"></span>'
+    + '</div></div>';
+}
+
+function render(){
+  tiles();
+  var list = ROWS.filter(function(x){ return FILTER === 'all' || x.status === FILTER; });
+  $('list').innerHTML = list.length ? list.map(card).join('') : '<div class="card empty">해당하는 리뷰가 없습니다.</div>';
+  $('list').querySelectorAll('.card[data-id]').forEach(function(el){
+    var id = +el.getAttribute('data-id'), x = ROWS.find(function(r){ return r.id === id; });
+    el.querySelectorAll('[data-a]').forEach(function(b){ b.onclick = function(){ act(el, x, b.getAttribute('data-a')); }; });
+  });
+}
+
+async function act(el, x, a){
+  var msg = el.querySelector('.msg'); msg.textContent = '저장 중…';
+  var r;
+  if (a === 'delete'){
+    if (!confirm('이 리뷰를 지울까요? 아직 쓰지 않은 이용권도 함께 지워집니다. 되돌릴 수 없습니다.')){ msg.textContent = ''; return; }
+    r = await sb.rpc('admin_review_delete', { p_id: x.id });
+  } else {
+    var args = { p_id: x.id, p_status: null, p_featured: null, p_helped_edit: null, p_advice_edit: null };
+    if (a === 'published' || a === 'hidden') args.p_status = a;
+    if (a === 'feat') args.p_featured = !x.featured;
+    if (a === 'save'){ args.p_helped_edit = el.querySelector('[data-k=helped]').value; args.p_advice_edit = el.querySelector('[data-k=advice]').value; }
+    r = await sb.rpc('admin_review_update', args);
+  }
+  if (r.error){ msg.textContent = '실패: ' + r.error.message; return; }
+  await load();
+}
+load();
+</script>
+</body>
+</html>
