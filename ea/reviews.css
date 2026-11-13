@@ -140,3 +140,6 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 #reviews .rv-advice{font-size:13px;}
 #reviews .rv-foot{font-size:12px;}
 #reviews .rv-name{font-size:12.5px;}
+.rv-back{margin:0 0 18px; font-size:14px;}
+.rv-back a{color:var(--navy); font-weight:600; text-decoration:none;}
+.rv-back a:hover{text-decoration:underline;}
