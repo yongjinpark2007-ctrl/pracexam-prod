@@ -10,7 +10,8 @@
   var IS_TEST = /^test\.pracexam\.com$/i.test(host) || /\.pages\.dev$/i.test(host) || host === 'localhost' || host === '127.0.0.1';
   if (!IS_TEST) return;   // not live on pracexam.com until wired and approved
 
-  var MIN_SOLVED = 250, MIN_CHARS = 30;
+  var MIN_SOLVED = 250;
+  function minChars(){ return en() ? 100 : 40; }   // boss 2026-11-13: KO screen 40, EN screen 100
   var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 
   function en(){ try { return LANG === 'en'; } catch(e){ return true; } }
@@ -110,14 +111,14 @@
 
   function rulesBox(){   // wording by the boss 2026-11-13
     return '<div class="rvm-rules"><b>' + L('30-Day Pro Pass 증정 내용', 'How the 30-Day Pro Pass works') + '</b><ul>'
-      + '<li>' + L('리뷰 게시에 동의하시고 2번과 3번 항목을 각각 30자 이상 작성하시면 리뷰 내용에 상관없이 30-Day Pro Pass 코드를 증정합니다.', 'Agree to publish and write at least 30 characters each for questions 2 and 3, and you receive a 30-Day Pro Pass code, whatever your review says.') + '</li>'
+      + '<li>' + L('리뷰 게시에 동의하시고 2번과 3번 항목을 각각 ' + minChars() + '자 이상 작성하시면 리뷰 내용에 상관없이 30-Day Pro Pass 코드를 증정합니다.', 'Agree to publish and write at least ' + minChars() + ' characters each for questions 2 and 3, and you receive a 30-Day Pro Pass code, whatever your review says.') + '</li>'
       + '<li>' + L('발급된 코드는 12개월 이내에 직접 사용하거나, PracExam이 처음인 친구, 동료에게 선물하실 수 있습니다.', 'Use the code yourself within 12 months, or give it to a friend or colleague who is new to PracExam.') + '</li>'
       + '</ul></div>';
   }
 
   function counter(id, outId){
     var t = document.getElementById(id), o = document.getElementById(outId);
-    function upd(){ var n = t.value.trim().length; o.textContent = n + L(' / 최소 ' + MIN_CHARS + '자', ' / min ' + MIN_CHARS); o.classList.toggle('ok', n >= MIN_CHARS); }
+    function upd(){ var n = t.value.trim().length; o.textContent = n + L(' / 최소 ' + minChars() + '자', ' / min ' + minChars()); o.classList.toggle('ok', n >= minChars()); }
     t.addEventListener('input', upd); upd();
   }
 
@@ -138,7 +139,7 @@
             + '<input type="text" id="rvm-name" maxlength="40" placeholder="Jenny K." style="max-width:260px;">'
             + '<div class="rvm-count" style="text-align:left;">' + L('이름과 성의 첫 글자. 예: Jenny K.', 'First name and last initial. For example: Jenny K.') + '</div></div>')
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q5"><span>' + L('내 리뷰를 PracExam 웹사이트에 공유해도 좋습니다.', 'Yes, PracExam may share my review on its website.') + (nm ? ' <span class="opt">' + L('표시 이름: ', 'Shown as: ') + esc(nm) + '</span>' : '') + '</span></label>'
-      +   '<p class="rvm-hint">' + L('내용은 바꾸지 않지만, 게시 여건상 맞춤법과 길이를 조금 다듬어서 올릴 수도 있습니다. 동의하시면 2번과 3번 질문에 각각 30자 이상 작성해주세요. 체크하지 않으셔도 여러분의 리뷰를 감사히 받겠습니다. 하지만 30일 무료 이용권 기회는 제한됩니다.', 'We do not change what you say, but we may lightly fix spelling and length to fit the page. If you agree, please write at least 30 characters each for questions 2 and 3. Even if you do not check the box, we will gladly receive your review. However, the free 30-day pass will not be available.') + '</p></div>'
+      +   '<p class="rvm-hint">' + L('내용은 바꾸지 않지만, 게시 여건상 맞춤법과 길이를 조금 다듬어서 올릴 수도 있습니다. 동의하시면 2번과 3번 질문에 각각 ' + minChars() + '자 이상 작성해주세요. 체크하지 않으셔도 여러분의 리뷰를 감사히 받겠습니다. 하지만 30일 무료 이용권 기회는 제한됩니다.', 'We do not change what you say, but we may lightly fix spelling and length to fit the page. If you agree, please write at least ' + minChars() + ' characters each for questions 2 and 3. Even if you do not check the box, we will gladly receive your review. However, the free 30-day pass will not be available.') + '</p></div>'
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(State)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
       +   '<div id="rvm-state-wrap" style="display:none;margin:8px 0 0 28px;max-width:160px;"><select id="rvm-state">' + STATES.map(function(s){ return '<option>' + s + '</option>'; }).join('') + '</select></div></div>'
       + '<p class="rvm-err" id="rvm-err"></p>'
@@ -163,9 +164,9 @@
     var consent = document.getElementById('rvm-q5').checked, err = document.getElementById('rvm-err');
     if (!q2 || !q3){ err.textContent = L('2번과 3번 질문에 답변을 입력해 주세요.', 'Please answer questions 2 and 3.'); return; }
     if (consent && !document.getElementById('rvm-name').value.trim()){ err.textContent = L('후기에 표시할 이름을 적어 주세요.', 'Please enter the name to show on your review.'); document.getElementById('rvm-name').focus(); return; }
-    if (consent && (q2.length < MIN_CHARS || q3.length < MIN_CHARS)){
-      err.textContent = L('게시에 동의하셨으므로 2번과 3번 답변을 각각 ' + MIN_CHARS + '자 이상 써 주세요.', 'Because you agreed to publish, answers 2 and 3 must each be at least ' + MIN_CHARS + ' characters.');
-      (q2.length < MIN_CHARS ? document.getElementById('rvm-q2') : document.getElementById('rvm-q3')).focus();
+    if (consent && (q2.length < minChars() || q3.length < minChars())){
+      err.textContent = L('게시에 동의하셨으므로 2번과 3번 답변을 각각 ' + minChars() + '자 이상 써 주세요.', 'Because you agreed to publish, answers 2 and 3 must each be at least ' + minChars() + ' characters.');
+      (q2.length < minChars() ? document.getElementById('rvm-q2') : document.getElementById('rvm-q3')).focus();
       return;
     }
     // DESIGN STAGE: nothing is saved. passed = checked parts.
