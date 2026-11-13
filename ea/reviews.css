@@ -1,0 +1,66 @@
+/* Customer reviews (EA) — shared by the EA landing (#reviews) and /ea/reviews/.
+   Colors come from exam-palettes.css / the page tokens. No stars by design (boss 2026-11-12). */
+.reviews{background:var(--page-bg);}
+.reviews .sec-head p.rv-disclose,
+.rv-disclose{font-size:14px; color:var(--text-muted); max-width:680px; margin-left:auto; margin-right:auto;}
+
+.rv-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:8px;}
+@media (max-width:960px){ .rv-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+@media (max-width:640px){ .rv-grid{grid-template-columns:1fr;} }
+
+.rv-card{
+  position:relative; display:flex; flex-direction:column; gap:14px;
+  background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:16px;
+  padding:24px 22px 20px; box-shadow:0 1px 6px rgba(0,0,0,.06); min-width:0;
+}
+.rv-card.is-featured{border-color:var(--accent-border,var(--border-strong));}
+.rv-quote-mark{font-family:var(--font-display, Georgia, serif); font-size:44px; line-height:.6; height:18px; color:var(--accent); user-select:none;}
+.rv-text{font-size:16px; line-height:1.7; color:var(--text-main); margin:0; white-space:pre-line; overflow-wrap:anywhere;}
+.rv-advice{border-left:3px solid var(--accent-border,var(--border-clr)); padding:2px 0 2px 12px;}
+.rv-advice-label{display:block; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--navy-mid); margin-bottom:2px;}
+.rv-advice p{font-size:14px; line-height:1.65; color:var(--text-mid); margin:0; white-space:pre-line; overflow-wrap:anywhere;}
+
+/* landing cards stay short; the full page shows everything */
+.rv-clamp .rv-text{display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden;}
+.rv-clamp .rv-advice p{display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+
+.rv-foot{margin-top:auto; display:flex; flex-direction:column; gap:10px; padding-top:14px; border-top:1px solid var(--border-clr);}
+.rv-who{display:flex; align-items:center; gap:10px; min-width:0;}
+.rv-avatar{flex:0 0 auto; width:36px; height:36px; border-radius:50%; background:var(--navy-light); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px;}
+.rv-name{font-weight:700; color:var(--text-main); font-size:15px; line-height:1.3;}
+.rv-meta{font-size:13px; color:var(--text-muted); line-height:1.3;}
+.rv-badges{display:flex; flex-wrap:wrap; gap:6px;}
+.rv-badge{display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 9px; border-radius:6px;
+  font-size:12px; font-weight:600; white-space:nowrap; border:1px solid var(--border-clr); color:var(--navy); background:rgba(var(--navy-rgb),.06);}
+.rv-badge svg{width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round;}
+.rv-badge.pass{color:var(--terracotta-deep,#b85f3f); background:var(--terracotta-tint,#fbf1ec); border-color:var(--terracotta-border,#efd0c1);}
+.rv-badge.study{color:var(--text-mid); background:transparent;}
+
+.rv-more{text-align:center; margin-top:28px;}
+
+/* SAMPLE marking — test site only. These never ship with real data. */
+.rv-sample-tag{position:absolute; top:12px; right:12px; font-size:11px; font-weight:800; letter-spacing:.12em;
+  color:#fff; background:#dc2626; border-radius:4px; padding:2px 7px;}
+.rv-sample-banner{background:#fef2f2; border:1px dashed #dc2626; color:#991b1b; border-radius:10px;
+  padding:10px 14px; font-size:14px; font-weight:600; text-align:center; margin:0 auto 22px; max-width:680px;}
+
+/* full page */
+.rv-page{max-width:1120px; margin:0 auto; padding:48px 0 72px;}
+.rv-page h1{font-size:clamp(28px,4.5vw,42px); margin-bottom:10px;}
+.rv-page .rv-lead{font-size:16px; color:var(--text-mid); margin-bottom:8px;}
+.rv-filter{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 18px;}
+.rv-chip{height:34px; padding:0 14px; border-radius:999px; border:1px solid var(--border-strong,var(--border-clr)); background:var(--white,#fff);
+  color:var(--text-mid); font:600 14px var(--font-sans); cursor:pointer;}
+.rv-chip[aria-pressed="true"]{background:var(--navy); border-color:var(--navy); color:#fff;}
+.rv-policy{margin-top:36px; font-size:13px; color:var(--text-muted); line-height:1.7; border-top:1px solid var(--border-clr); padding-top:18px;}
+.rv-empty{color:var(--text-muted); padding:24px 0;}
+.rv-cta{margin-top:40px; text-align:center; background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:16px; padding:28px 20px;}
+.rv-cta h2{font-size:24px; margin-bottom:6px;}
+.rv-cta p{margin-bottom:16px;}
+
+/* language rule: English view shows English reviews only */
+.lang-en #reviews.rv-few-en{display:none;}
+.lang-en #rv-all .rv-card[data-lang="ko"]{display:none;}
+#rv-all[data-filter="ko"] .rv-card[data-lang="en"],
+#rv-all[data-filter="en"] .rv-card[data-lang="ko"]{display:none;}

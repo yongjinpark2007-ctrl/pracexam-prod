@@ -202,6 +202,9 @@ const KO_TIPS_EA_TITLE = "미국 세무사, Enrolled Agent · EA 시험 안내 �
 const KO_TIPS_EA_DESC  = "미국 세무사, Enrolled Agent · EA 시험 안내. 응시 자격, 시험 형식과 비용, 시험 당일 준비, 합격 후 등록 절차까지 한눈에 정리했습니다.";
 // 2026-11-05 (boss): SEO and AEO both use 라이센스. On the Korean URLs the structured data is Korean too.
 // The RE FAQ is the visible Korean FAQ in re/index.html word for word: keep the two in step.
+// 2026-11-13: EA customer reviews page (Korean view shows Korean and English reviews).
+const KO_REVIEWS_EA_TITLE = "미국 세무사, EA 시험 준비 고객 후기 | PracExam";
+const KO_REVIEWS_EA_DESC  = "PracExam으로 미국 세무사, Enrolled Agent · EA 시험을 준비한 분들의 후기. 공부에 도움이 된 점과 이제 시작하는 분께 드리는 조언.";
 const KO_LD_RE_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPage\", \"inLanguage\": \"ko\", \"mainEntity\": [{\"@type\": \"Question\", \"name\": \"미국 부동산 라이센스, Real Estate License 시험이란 무엇인가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"미국에서 부동산 거래를 중개하려면 주 정부가 발급하는 라이센스가 필요합니다. 라이센스를 받으려면 시험에 합격해야 하고, 시험은 모든 주에 공통인 National 부분과 각 주의 법을 다루는 State 부분으로 나뉘는 경우가 많습니다.\"}}, {\"@type\": \"Question\", \"name\": \"주마다 시험이 다른가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. 라이센스 요건과 시험 형식은 주마다 다릅니다. PracExam이 지원하는 주와 주별 요건은 시험 안내, Exam Tips에서 확인하실 수 있습니다.\"}}, {\"@type\": \"Question\", \"name\": \"부동산 에이전트, Real Estate Agent와 브로커, Broker는 어떻게 다른가요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"일반적으로 에이전트는 브로커 밑에서 일하고, 브로커 라이센스는 독립적으로 중개업을 운영할 수 있는 상위 라이센스입니다. 세부 요건은 주마다 다릅니다.\"}}, {\"@type\": \"Question\", \"name\": \"한국어 해설로 공부할 수 있나요?\", \"acceptedAnswer\": {\"@type\": \"Answer\", \"text\": \"네. PracExam의 모든 문제에 한국어와 영어 해설이 함께 있고, War Room의 이론 공부도 한글과 영어로 할 수 있어서 이해에 큰 도움이 됩니다. 한국어 해설로 쉽게 이해하고 영어 용어도 함께 익히실 수 있습니다.\"}}]}";
 const KO_LD_RE_COURSE = JSON.stringify({ "@context": "https://schema.org", "@type": "Course", "inLanguage": "ko",
   name: "미국 부동산 라이센스, Real Estate License 시험 문제", description: KO_RE_DESC, url: "https://pracexam.com/re/ko/",
@@ -214,8 +217,9 @@ const KO_ROUTES = {
   "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, heroImg: "/re/img/hero-re-3.webp?v=134ab7aea3", heroAlt: "집 현관 앞에서 태블릿을 든 부동산 에이전트", heroImg2: "/re/img/hero-re-ko2.webp?v=b5707c2779", heroAlt2: "벽돌집 앞에 팔짱을 끼고 서 있는 부동산 에이전트", ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
   "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
   "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
+  "/ea/reviews/ko/":   { base: "/ea/reviews/",   title: KO_REVIEWS_EA_TITLE, desc: KO_REVIEWS_EA_DESC },
 };
-const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/", "/ea/exam-tips/ko": "/ea/exam-tips/ko/" };
+const KO_REDIRECT = { "/ko": "/ko/", "/ea/ko": "/ea/ko/", "/re/ko": "/re/ko/", "/re/exam-tips/ko": "/re/exam-tips/ko/", "/ea/exam-tips/ko": "/ea/exam-tips/ko/", "/ea/reviews/ko": "/ea/reviews/ko/" };
 // 2026-11-05: the hub (/) keeps its Korean in data-ko attributes and fills it in with JS. Crawlers that do not run JS
 // (Naver Yeti) therefore saw English body text on /ko/. For the Korean hub, write the Korean text into the HTML itself.
 class DataKoSwap {
