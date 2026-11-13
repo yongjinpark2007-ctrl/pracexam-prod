@@ -29,6 +29,11 @@
     var f = '', l = '';
     try { var m = (SB_USER && SB_USER.user_metadata) || {}; f = (S.firstName || m.first_name || '').trim(); l = (S.lastName || m.last_name || '').trim(); } catch(e){}
     if (!f) return '';
+    // boss 2026-11-13: Korean names (4 of 190 profiles, all «이름 2 + 성 1») use the Korean masking style 김*수.
+    if (/[\uac00-\ud7a3]/.test(f + l)) {
+      if (!l) return f.length > 1 ? f.charAt(0) + '*' + (f.length > 2 ? f.charAt(f.length - 1) : '') : f + '*';
+      return l + '*' + (f.length > 1 ? f.charAt(f.length - 1) : '');
+    }
     return f.charAt(0).toUpperCase() + f.slice(1) + (l ? ' ' + l.charAt(0).toUpperCase() + '.' : '');
   }
 
