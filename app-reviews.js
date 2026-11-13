@@ -281,11 +281,28 @@
   function redeem(code, after){
     rpc('redeem_pro_pass', { p_code: code }).then(function(d){
       if (!d || !d.ok){ toast(reasonText(d && d.reason)); return; }
-      if (d.result === 'queued') toast(L('구독 기간이 끝나면 30일 Pro가 이어서 시작됩니다.', 'Your 30 days of Pro will start when your current paid period ends.'));
+      if (d.result === 'queued'){ extendPaddle(code, after); return; }
       else toast(L('Pro 30일이 열렸습니다. ' + fmt(String(d.until).slice(0, 10)) + '까지 이용하실 수 있습니다.', '30 days of Pro are now open, until ' + fmt(String(d.until).slice(0, 10)) + '.'));
       try { loadTrialStatus(); } catch(e){}
       loadInfo(); if (after) after();
     }).catch(function(e){ console.warn('redeem_pro_pass', e && e.message); toast(reasonText()); });
+  }
+
+  // Active subscriber: the server function moves the Paddle next billing date 30 days later (no charge).
+  // If Paddle cannot (past due, cancel scheduled …) the pass stays queued and starts after the paid period ends.
+  function extendPaddle(code, after){
+    sb.auth.getSession().then(function(r){
+      var tok = r && r.data && r.data.session ? r.data.session.access_token : '';
+      return fetch(SUPABASE_URL + '/functions/v1/pro-pass-extend', {
+        method: 'POST', headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + tok, apikey: SUPABASE_ANON },
+        body: JSON.stringify({ code: code })
+      }).then(function(x){ return x.json(); });
+    }).then(function(d){
+      if (d && d.ok) toast(L('다음 결제일이 30일 뒤로 미뤄졌습니다. 새 결제일: ' + fmt(String(d.until).slice(0, 10)), 'Your next billing date moved 30 days later, to ' + fmt(String(d.until).slice(0, 10)) + '.'));
+      else toast(L('구독 기간이 끝나면 30일 Pro가 이어서 시작됩니다.', 'Your 30 days of Pro will start when your current paid period ends.'));
+    }).catch(function(){
+      toast(L('구독 기간이 끝나면 30일 Pro가 이어서 시작됩니다.', 'Your 30 days of Pro will start when your current paid period ends.'));
+    }).then(function(){ try { loadTrialStatus(); } catch(e){} loadInfo(); if (after) after(); });
   }
 
   function toast(m){ try { showToast(m); } catch(e){ alert(m); } }
