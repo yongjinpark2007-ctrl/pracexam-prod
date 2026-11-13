@@ -86,6 +86,8 @@
     + '.rvp-sec{font-size:14px;font-weight:700;color:var(--text-muted);margin:18px 0 6px;padding-top:14px;border-top:1px solid var(--border-clr);}'
     + '.rvp-row{border-bottom:none !important;}.rvp-row + .rvp-row{border-top:1px solid var(--border-clr);}'   // boss 2026-11-14: no double line
     + '.rvp-sec.rvp-split{border-top:2px solid rgba(53,70,73,.35);margin-top:20px;padding-top:16px;}'   // darker divider between «My pass» and «from a friend»
+    + '.rvp-sec{font-size:15.5px !important;font-weight:800 !important;color:var(--text-main) !important;}'   // boss 2026-11-14: section titles stronger than the pass code
+    + '.rvp-code{font-weight:600 !important;font-size:15px !important;color:var(--text-mid) !important;}'
     + '.rvp-note{font-size:13.5px;color:var(--text-muted);line-height:1.6;margin-top:10px;}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
