@@ -76,8 +76,7 @@
     var live = LIVE_SOURCE ? loadLive() : Promise.resolve([]);
     return live.then(function(rows){
       rows = Array.isArray(rows) ? rows : [];
-      if (!IS_TEST) return rows;
-      return loadSample().then(function(sm){ return rows.concat(sm); });
+      return rows;   // boss 2026-11-14: samples no longer shown, even on the test site
     });
   }
 
@@ -126,10 +125,11 @@
     var ko = document.documentElement.className.indexOf('lang-ko') > -1;
     a.href = a.getAttribute('href').replace(/^\/ea\/reviews\/(ko\/)?/, ko ? '/ea/reviews/ko/' : '/ea/reviews/');
   }, true);
+  var LOOP_MIN = 5;   // with 4 or fewer cards everything fits: no duplicate copy, no auto-scroll, no arrows
   function carouselHtml(cls, list){
-    return '<div class="rv-carousel ' + cls + '" aria-roledescription="carousel">'
-      + '<div class="rv-track" tabindex="0">' + list.map(function(r){ return card(r, true); }).join('') + list.map(function(r){ return card(r, true).replace('<a ', '<a aria-hidden="true" tabindex="-1" '); }).join('') + '</div>'
-      + '<div class="rv-nav"><button type="button" data-rv-prev aria-label="Previous">' + ARROW_L + '</button><button type="button" data-rv-next aria-label="Next">' + ARROW_R + '</button></div>'
+    return '<div class="rv-carousel ' + cls + '" data-loop="' + (list.length >= LOOP_MIN ? 1 : 0) + '" aria-roledescription="carousel">'
+      + '<div class="rv-track" tabindex="0">' + list.map(function(r){ return card(r, true); }).join('') + (list.length >= LOOP_MIN ? list.map(function(r){ return card(r, true).replace('<a ', '<a aria-hidden="true" tabindex="-1" '); }).join('') : '') + '</div>'
+      + (list.length >= LOOP_MIN ? '<div class="rv-nav"><button type="button" data-rv-prev aria-label="Previous">' + ARROW_L + '</button><button type="button" data-rv-next aria-label="Next">' + ARROW_R + '</button></div>' : '')
       + '</div>';
   }
 
@@ -137,13 +137,14 @@
   function renderLanding(sec, list){
     var all = sortReviews(list);
     var en = all.filter(function(r){ return r.lang !== 'ko'; });
-    if (all.length < 3) return;
-    sec.classList.toggle('rv-few-en', en.length < 3);
+    var MIN_SHOW = IS_TEST ? 1 : 3;   // test site: 1 so the boss can see his own review; live: 3
+    if (all.length < MIN_SHOW) return;
+    sec.classList.toggle('rv-few-en', en.length < MIN_SHOW);
     var box = document.getElementById('rv-carousels'), ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     if (box){
       box.innerHTML = carouselHtml('ko', all.slice(0, LANDING_MAX)) + carouselHtml('en', en.slice(0, LANDING_MAX));
-      box.querySelectorAll('.rv-carousel').forEach(carousel);
+      box.querySelectorAll('.rv-carousel[data-loop="1"]').forEach(carousel);
     }
     sec.hidden = false;
     sec.classList.add('rv-bg-6');   // War Room style background (boss 2026-11-13)
