@@ -28,7 +28,7 @@
   }
   function dateText(d){
     var m = /^(\d{4})-(\d{2})/.exec(d || '');
-    return m ? bi(m[1] + '년 ' + parseInt(m[2], 10) + '월', MON_EN[parseInt(m[2], 10) - 1] + ' ' + m[1]) : '';
+    return m ? bi(m[1] + '.' + m[2], MON_EN[parseInt(m[2], 10) - 1] + ' ' + m[1]) : '';
   }
 
   function key(r){ return 'rv-' + (r.id || (String(r.name || '') + '-' + String(r.date || ''))).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }

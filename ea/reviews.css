@@ -160,3 +160,4 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-pass{flex:0 0 auto; align-self:center; font-size:11px; font-weight:700; white-space:nowrap; padding:3px 8px; border-radius:999px;
   color:var(--terracotta-deep,#b85f3f); background:var(--terracotta-tint,#fbf1ec); border:1px solid var(--terracotta-border,#efd0c1); cursor:help;}
 #reviews .rv-foot{font-size:12px;}
+.rv-meta{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
