@@ -184,3 +184,7 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 /* boss 2026-11-13: pass pill smaller */
 .rv-pass{font-size:9.5px; padding:1px 6px 1px 4px; gap:3px;}
 .rv-pass img{width:11px; height:11px;}
+/* boss 2026-11-13: only the meta line was to get smaller, not the name. Name back up; meta stays small and lighter.
+   (Chrome's minimum font size can floor tiny text at 12px, so the contrast comes from the name size and the meta color.) */
+#reviews .rv-foot > .rv-name, .rv-foot > .rv-name{font-size:14px;}
+.rv-foot > .rv-meta{color:#8a979a;}
