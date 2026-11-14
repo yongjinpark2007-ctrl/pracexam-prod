@@ -35,3 +35,12 @@ body[data-exam="re"] .tpiq-section{background:linear-gradient(180deg,#DCE7F3 0%,
 
 /* 2026-10-29: featured-short band (videos.css) glows in EA teal by default; RE uses its own accent */
 body[data-exam="re"] .fs-media::before{background:radial-gradient(closest-side, rgba(var(--accent-rgb),.35), rgba(var(--accent-rgb),0));}
+
+/* boss 2026-11-14: RE stats band the same as the EA landing (ea/ea-colors.css): white strip, thin dividers, inner padding */
+body[data-exam="re"] .stats{background:#fff; border-top:1px solid var(--border-clr); border-bottom:1px solid var(--border-clr); padding:28px 0; box-shadow:0 6px 18px -12px rgba(var(--navy-rgb),.25);}
+body[data-exam="re"] .stats .stat-num{color:var(--navy); font-size:clamp(20px,2.2vw,27px);}
+body[data-exam="re"] .stats .stat-label{color:var(--text-muted); margin-top:6px; line-height:1.4;}
+body[data-exam="re"] .stats-grid{grid-template-columns:repeat(5,minmax(0,1fr)); gap:0;}
+body[data-exam="re"] .stats-grid > div{padding:0 14px;}
+body[data-exam="re"] .stats-grid > div + div{border-left:1px solid var(--border-clr);}
+@media (max-width:760px){ body[data-exam="re"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} body[data-exam="re"] .stats-grid > div + div{border-left:none;} }
