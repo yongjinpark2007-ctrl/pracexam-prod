@@ -11848,6 +11848,15 @@ document.addEventListener('keydown', function(e){
   var tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.tagName==='SELECT'||tg.isContentEditable)) return;
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
+// /app?admin=1 (from the admin console's «앱 관리 도구») opens the admin screen once the admin is logged in (2026-11-14)
+(function(){
+  try { if (!new URLSearchParams(location.search).has('admin')) return; } catch(e){ return; }
+  var n = 0, iv = setInterval(function(){
+    var ok = false; try { ok = !!(SB_USER && SB_USER.id === ADMIN_UID); } catch(e){}
+    if (ok){ clearInterval(iv); setTimeout(function(){ try { showScreen('anomaly'); } catch(e){} }, 1500); }
+    else if (++n > 40) clearInterval(iv);
+  }, 500);
+})();
 </script>
 <script src="/app-reviews.js?v=20261115c" defer></script>
 </body>
