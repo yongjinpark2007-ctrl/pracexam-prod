@@ -181,7 +181,7 @@
       + (nm ? '<input type="hidden" id="rvm-name" value="' + esc(nm) + '">'
             : '<div class="rvm-f"><label class="q" for="rvm-name">' + L('후기에 표시할 이름', 'Name to show on your review') + '</label>'
             + '<input type="text" id="rvm-name" maxlength="40" placeholder="' + esc(L('이*수', 'Jenny K.')) + '" style="max-width:260px;">'
-            + '<div class="rvm-count" style="text-align:left;">' + L('이름과 성의 첫 글자. 예: Jenny K.', 'First name and last initial. For example: Jenny K.') + '</div></div>')
+            + '<div class="rvm-count" style="text-align:left;">' + L('이름 가운데 글자를 *로 가려 주세요. 예: 이*수', 'First name and last initial. For example: Jenny K.') + '</div></div>')
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q5"><span>' + L('내 리뷰를 PracExam 웹사이트에 공유해도 좋습니다.', 'Yes, PracExam may share my review on its website.') + (nm ? ' <span class="opt">' + L('표시 이름: ', 'Shown as: ') + esc(nm) + '</span>' : '') + '</span></label>'
       +   '<p class="rvm-hint">' + L('내용은 바꾸지 않지만, 게시 여건상 맞춤법과 길이를 조금 다듬어서 올릴 수도 있습니다. 동의하시면 2번과 3번 질문에 각각 ' + minChars() + '자 이상 작성해주세요. 체크하지 않으셔도 여러분의 리뷰를 감사히 받겠습니다. 하지만 30일 무료 이용권 기회는 제한됩니다.', 'We do not change what you say, but we may lightly fix spelling and length to fit the page. If you agree, please write at least ' + minChars() + ' characters each for questions 2 and 3. Even if you do not check the box, we will gladly receive your review. However, the free 30-day pass will not be available.') + '</p></div>'
       + '<div class="rvm-f"><label class="rvm-check"><input type="checkbox" id="rvm-q6"><span>' + L('거주하는 주(State)도 함께 표시합니다.', 'Also show my state.') + ' <span class="opt">' + L('(선택)', '(optional)') + '</span></span></label>'
