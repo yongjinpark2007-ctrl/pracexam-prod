@@ -1,5 +1,5 @@
 /* EA app — customer review form + 30-Day Pro Pass (wired 2026-11-13 to supabase/sql/reviews_pro_pass_2026-11-13.sql).
-   Boss decisions 2026-11-12/13: EA only · 150+ EA questions answered (was 250 until 2026-11-14) · not refunded (Blackout) · one review per account ·
+   Boss decisions 2026-11-12/13: EA only · 100+ EA questions answered, reset history included (250 → 150 → 100 on 2026-11-14) · not refunded (Blackout) · one review per account ·
    pass when the reviewer agrees to publish and Q2/Q3 reach the minimum (KO screen 40, EN screen 80 letters/digits),
    whatever the review says · pass valid 12 months, own use or gift to a never-paid account.
    🔴 Test hosts only until the boss's end-to-end test and the legal check. */
@@ -9,7 +9,7 @@
   var IS_TEST = /^test\.pracexam\.com$/i.test(host) || /\.pages\.dev$/i.test(host) || host === 'localhost' || host === '127.0.0.1';
   // 2026-11-14: live on pracexam.com (review launch). IS_TEST only keeps the admin shortcut and the design preview on test hosts.
 
-  var MIN_SOLVED = 150;   // boss 2026-11-14 (was 250)
+  var MIN_SOLVED = 100;   // boss 2026-11-14 (was 250, then 150)
   function realLen(t){
     var x = String(t || '').replace(/[^\p{L}\p{N}]/gu, '').replace(/[\u3131-\u318E]/g, '');
     return x.replace(/(.)\1{2,}/gu, '$1').length;
@@ -225,7 +225,7 @@
     login:      ['로그인 후 이용해 주세요.', 'Please log in first.'],
     exam:       ['EA 시험 리뷰만 받을 수 있습니다.', 'Reviews are open for the EA exam only.'],
     blackout:   ['이 계정은 리뷰를 남길 수 없습니다.', 'This account cannot leave a review.'],
-    not_enough: ['150문항 이상 풀면 리뷰를 남길 수 있습니다.', 'You can write a review after answering 150 questions.'],
+    not_enough: ['100문항 이상 풀면 리뷰를 남길 수 있습니다.', 'You can write a review after answering 100 questions.'],
     already:    ['이미 리뷰를 남기셨습니다. 감사합니다.', 'You have already left a review. Thank you.'],
     too_short:  ['2번과 3번 답변의 글자 수가 부족합니다.', 'Answers 2 and 3 are too short.'],
     name:       ['후기에 표시할 이름을 적어 주세요.', 'Please enter the name to show on your review.'],
@@ -321,7 +321,7 @@
 
   function openReview(){
     // Boss 2026-11-13: no gate screen, the form opens at once. The menu item is shown only to users who can review
-    // (150+ EA questions, not Blackout, no review yet), and the server checks the same again.
+    // (100+ EA questions, not Blackout, no review yet), and the server checks the same again.
     if (INFO && INFO.has_review){ toast(reasonText('already')); return; }
     form();
   }
@@ -361,7 +361,7 @@
           : L('이제 리뷰를 남기실 수 있습니다. 리뷰를 남겨 주시면 30-Day Pro Pass를 증정해 드립니다. 지금 사용하시는 이 계정에 바로 사용하실 수 있습니다.', 'You can now leave a review and receive a 30-Day Pro Pass. You can use it right away on this account.'))
       : (INFO && INFO.has_review)
         ? L('리뷰를 남겨 주셔서 감사합니다. 게시에 동의하지 않으셔서 이용권은 발급되지 않았습니다.', 'Thank you for your review. No pass was issued because you did not agree to publish it.')
-        : L('아직 받은 이용권이 없습니다. 150문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 150 questions and leave a review to receive one.');
+        : L('아직 받은 이용권이 없습니다. 100문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 100 questions and leave a review to receive one.');
     var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + emptyMsg
       + '</div>' + (canReview() ? '<div style="margin-top:10px;"><button class="btn-navy" type="button" id="rvp-write" style="padding:9px 18px;font-size:14.5px;">' + L('리뷰 작성하기', 'Write a Review') + '</button></div>' : '');   // boss 2026-11-14: a button, not a link
     card.innerHTML = '<div class="sts-section-title set-title">30-Day Pro Pass</div><div class="rvp-box">'
