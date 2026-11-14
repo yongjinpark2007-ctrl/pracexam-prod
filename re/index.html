@@ -265,10 +265,15 @@
 </section>
 
 <!-- Korean-only state links (English /re/ hides .ko) -->
+<style>/* 2026-11-14 boss: state guide buttons on one line on desktop; they wrap only on narrow screens */
+.re-state-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.re-state-row .btn{width:auto;padding:8px 14px;font-size:14px;white-space:nowrap}
+@media (min-width:980px){.re-state-row{flex-wrap:nowrap}}
+</style>
 <section class="en" id="states-en" style="padding:34px 0;border-bottom:1px solid var(--border-clr);">
   <div class="wrap" style="text-align:center;">
     <h2 style="font-size:22px;margin:0 0 14px;">Exam Guide by State</h2>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <div class="re-state-row">
       <a class="btn btn-ghost" href="/re/california/">California</a>
       <a class="btn btn-ghost" href="/re/washington/">Washington State</a>
       <a class="btn btn-ghost" href="/re/texas/">Texas</a>
@@ -286,7 +291,7 @@
 <section class="ko" id="states-ko" style="padding:34px 0;border-bottom:1px solid var(--border-clr);">
   <div class="wrap" style="text-align:center;">
     <h2 style="font-size:22px;margin:0 0 14px;">주별 시험 안내</h2>
-    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <div class="re-state-row">
       <a class="btn btn-ghost" href="/re/ko/california/">캘리포니아</a>
       <a class="btn btn-ghost" href="/re/ko/washington/">워싱턴주</a>
       <a class="btn btn-ghost" href="/re/ko/texas/">텍사스</a>
