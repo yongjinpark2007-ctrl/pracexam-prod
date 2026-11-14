@@ -176,7 +176,7 @@
       +   '<textarea id="rvm-q2" maxlength="600" placeholder="' + esc(L('예: 해설, 모의고사, War Room, 모바일 학습', 'For example: explanations, mock exams, War Room, studying on your phone')) + '"></textarea><div class="rvm-count" id="rvm-c2"></div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q3">3. ' + L('이제 시험 준비를 시작하는 수험생에게 조언과 경험을 공유해주세요.', 'Please share your advice and experience with candidates who are just starting to prepare.') + '</label>'
       +   '<textarea id="rvm-q3" maxlength="400"></textarea><div class="rvm-count" id="rvm-c3"></div></div>'
-      + '<div class="rvm-f"><label class="q" for="rvm-q4">4. ' + L('PracExam이 개선되었으면 하는 점', 'What would you like PracExam to improve?') + ' <span class="opt">' + L('(선택 사항 · 비공개)', '(optional · never published)') + '</span></label>'
+      + '<div class="rvm-f"><label class="q" for="rvm-q4">4. ' + L('PracExam이 개선되었으면 하는 점', 'What would you like PracExam to improve?') + ' <span class="opt">' + L('(선택 사항 · 비공개)', '(optional, will not be published)') + '</span></label>'
       +   '<textarea id="rvm-q4" maxlength="800"></textarea></div>'
       + (nm ? '<input type="hidden" id="rvm-name" value="' + esc(nm) + '">'
             : '<div class="rvm-f"><label class="q" for="rvm-name">' + L('후기에 표시할 이름', 'Name to show on your review') + '</label>'
