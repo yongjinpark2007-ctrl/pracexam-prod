@@ -279,18 +279,21 @@ async function koRoute(context, route) {
 // 2026-11-14: published EA reviews are written into the HTML of /ea/reviews/ (and /ko/) on the server, so search engines and
 // AI answer engines read them without running JS. ea/reviews.js re-renders the same list on load. On any error the page is
 // served untouched (the JS still shows the reviews). English page = English reviews only; Korean page = all.
-const RV_URL  = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_reviews?exam=eq.ea&select=id,name,state,lang,subscriber,passed,helped,advice,date,featured";
+const RV_URL  = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_reviews?exam=eq.ea&select=id,name,state,lang,subscriber,passed,helped,advice,date,featured,helped_en,advice_en";
 const RV_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8";
 function rvEsc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 function rvKey(r) { return "rv-" + String(r.id || (String(r.name || "") + "-" + String(r.date || ""))).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
-function rvCard(r) {
+function rvCard(r, en) {
   const p = (r.passed || []).filter(n => n >= 1 && n <= 3).sort();
   const m = /^(\d{4})-(\d{2})/.exec(r.date || "");
   const meta = [r.subscriber ? "Verified Subscriber" : "Verified User", r.state ? rvEsc(r.state) : "", m ? m[1] + "." + m[2] : ""].filter(Boolean).join(" · ");
-  const lang = r.lang === "ko" ? "ko" : "en";
-  return '<article id="' + rvKey(r) + '" class="rv-card" data-lang="' + lang + '" lang="' + lang + '">'
-    + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + rvEsc(r.helped) + "</p>"
-    + (r.advice ? '<p class="rv-advice"><b>To Future EAs:</b> ' + rvEsc(r.advice) + "</p>" : "")
+  const tr = en && r.lang === "ko" && r.helped_en;
+  const lang = tr ? "en" : (r.lang === "ko" ? "ko" : "en");
+  const h = tr ? r.helped_en : r.helped, a = tr ? r.advice_en : r.advice;
+  return '<article id="' + rvKey(r) + '" class="rv-card" data-lang="' + (tr ? "both" : lang) + '" lang="' + lang + '">'
+    + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + rvEsc(h) + "</p>"
+    + (a ? '<p class="rv-advice"><b>To Future EAs:</b> ' + rvEsc(a) + "</p>" : "")
+    + (tr ? '<p class="rv-tr">Translated from Korean</p>' : "")
     + '<div class="rv-foot"><span class="rv-name">' + rvEsc(r.name) + "</span>"
     + (p.length ? '<span class="rv-pass"><img src="/check-mark.png" alt="" width="14" height="14">Part ' + p.join("·") + "</span>" : "")
     + '<span class="rv-meta">' + meta + "</span></div></article>";
@@ -307,11 +310,11 @@ async function injectReviews(response, ko) {
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html") || response.status !== 200) return response;
   let rows = await rvRows();
-  if (!rows || rows.filter(r => r.lang !== "ko").length < 3) return response;   // same 3-English rule as ea/reviews.js
-  if (!ko) rows = rows.filter(r => r.lang !== "ko");
+  if (!rows || rows.length < 3) return response;   // same 3-review rule as ea/reviews.js
+  if (!ko) rows = rows.filter(r => r.lang !== "ko" || r.helped_en);
   rows.sort((a, b) => (!!b.featured !== !!a.featured) ? (b.featured ? 1 : -1) : String(b.date || "").localeCompare(String(a.date || "")));
   if (!rows.length) return response;
-  const html = rows.map(rvCard).join("");
+  const html = rows.map(r => rvCard(r, !ko)).join("");
   return new HTMLRewriter()
     .on("#rv-all", { element(el) { el.setInnerContent(html, { html: true }); } })
     .on("#rv-empty", { element(el) { el.setAttribute("hidden", ""); } })
@@ -323,7 +326,7 @@ async function injectReviews(response, ko) {
 const RV_LINK_PAGES = /^\/(ea\/(?!reviews\/)|tips\/|popquiz|videos)/;
 async function hideReviewLinks(response) {
   const rows = await rvRows();
-  if (!rows || rows.filter(r => r.lang !== "ko").length >= 3) return response;
+  if (!rows || rows.length >= 3) return response;
   return new HTMLRewriter()
     .on('a[href="/ea/reviews/"], a[href="/ea/reviews/ko/"]', { element(el) { el.remove(); } })
     .transform(response);

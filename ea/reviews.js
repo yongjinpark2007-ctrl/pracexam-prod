@@ -37,9 +37,17 @@
     var init = esc(String(r.name || '?').trim().charAt(0).toUpperCase());
     var tag = clamp ? 'a' : 'article';
     var link = clamp ? ' href="' + (document.documentElement.className.indexOf('lang-ko') > -1 ? '/ea/reviews/ko/' : '/ea/reviews/') + '#' + key(r) + '" data-rv-link' : ' id="' + key(r) + '"';
-    return '<' + tag + link + ' class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
-      + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + esc(r.helped) + '</p>'
-      + (r.advice ? '<p class="rv-advice"><b>' + 'To Future EAs:' + '</b> ' + esc(r.advice) + '</p>' : '')
+    var tr = r.lang === 'ko' && r.helped_en;
+    var dl = r.lang === 'ko' ? (tr ? 'both' : 'ko') : 'en';
+    function body(h, a){ return '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + esc(h) + '</p>'
+      + (a ? '<p class="rv-advice"><b>' + 'To Future EAs:' + '</b> ' + esc(a) + '</p>' : ''); }
+    var text = !tr ? body(r.helped, r.advice)
+      : '<div class="ko" lang="ko">' + body(r.helped, r.advice) + '</div>'
+        + '<div class="en" lang="en"><div class="rv-tr-text">' + body(r.helped_en, r.advice_en) + '</div>'
+        + (clamp ? '' : '<div class="rv-tr-orig" lang="ko" hidden>' + body(r.helped, r.advice) + '</div>')
+        + '<p class="rv-tr">Translated from Korean' + (clamp ? '' : ' · <button type="button" class="rv-tr-btn" data-rv-orig>Show original</button>') + '</p></div>';
+    return '<' + tag + link + ' class="rv-card' + (clamp ? ' rv-clamp' : '') + '" data-lang="' + dl + '" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">'
+      + text
       + '<div class="rv-foot"><span class="rv-av" aria-hidden="true">' + init + '</span>'
       +   '<span class="rv-name">' + esc(r.name) + '</span>' + passBadge(r)
       +   '<span class="rv-meta">' + meta + '</span></div>'
@@ -56,7 +64,7 @@
   // public anon key (same one the landing and app already ship); public_reviews returns published rows, display fields only
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8';
   function loadLive(){
-    return fetch(SUPABASE_URL + '/rest/v1/public_reviews?exam=eq.ea&select=id,name,state,lang,subscriber,passed,studying,helped,advice,date,featured', {
+    return fetch(SUPABASE_URL + '/rest/v1/public_reviews?exam=eq.ea&select=id,name,state,lang,subscriber,passed,studying,helped,advice,date,featured,helped_en,advice_en', {
       headers: { apikey: ANON, Authorization: 'Bearer ' + ANON }
     }).then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
   }
@@ -126,6 +134,11 @@
   var ARROW_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 5 8 12 15 19"></polyline></svg>';
   var ARROW_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 5 16 12 9 19"></polyline></svg>';
   document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('[data-rv-orig]'); if (!b) return;
+    var c = b.closest('.rv-card'), o = c.querySelector('.rv-tr-orig'), t = c.querySelector('.rv-tr-text');
+    var show = o.hidden; o.hidden = !show; t.hidden = show; b.textContent = show ? 'Show translation' : 'Show original';
+  });
+  document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a[data-rv-link]'); if (!a) return;
     var ko = document.documentElement.className.indexOf('lang-ko') > -1;
     a.href = a.getAttribute('href').replace(/^\/ea\/reviews\/(ko\/)?/, ko ? '/ea/reviews/ko/' : '/ea/reviews/');
@@ -138,13 +151,13 @@
       + '</div>';
   }
 
-  var MIN_EN = 3;   // boss 2026-11-14: one lone English review works against us
+  var MIN_EN = 3;   // boss 2026-11-14: at least 3 published reviews (any language; Korean ones carry an English translation)
 
   // ── EA landing section ──
   function renderLanding(sec, list){
     var all = sortReviews(list);
-    var en = all.filter(function(r){ return r.lang !== 'ko'; });
-    if (en.length < MIN_EN) return;   // boss 2026-11-14: no section on KO or EN pages until there are 3 English reviews (test site too)
+    var en = all.filter(function(r){ return r.lang !== 'ko' || r.helped_en; });
+    if (all.length < MIN_EN) return;   // boss 2026-11-14: no section until there are 3 published reviews in any language (test site too)
     var box = document.getElementById('rv-carousels'), ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     if (box){
@@ -158,7 +171,7 @@
   // ── /ea/reviews/ page ──
   function renderPage(box, list){
     var all = sortReviews(list);
-    if (all.filter(function(r){ return r.lang !== 'ko'; }).length < MIN_EN) all = [];   // same 3-English rule as the landing
+    if (all.length < MIN_EN) all = [];   // same 3-review rule as the landing
     var ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     box.innerHTML = all.map(function(r){ return card(r, false); }).join('');
