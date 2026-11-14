@@ -307,7 +307,7 @@ async function injectReviews(response, ko) {
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html") || response.status !== 200) return response;
   let rows = await rvRows();
-  if (!rows || !rows.length) return response;
+  if (!rows || rows.filter(r => r.lang !== "ko").length < 3) return response;   // same 3-English rule as ea/reviews.js
   if (!ko) rows = rows.filter(r => r.lang !== "ko");
   rows.sort((a, b) => (!!b.featured !== !!a.featured) ? (b.featured ? 1 : -1) : String(b.date || "").localeCompare(String(a.date || "")));
   if (!rows.length) return response;

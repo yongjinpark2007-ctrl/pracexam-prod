@@ -133,13 +133,13 @@
       + '</div>';
   }
 
+  var MIN_EN = 3;   // boss 2026-11-14: one lone English review works against us
+
   // ── EA landing section ──
   function renderLanding(sec, list){
     var all = sortReviews(list);
     var en = all.filter(function(r){ return r.lang !== 'ko'; });
-    var MIN_SHOW = IS_TEST ? 1 : 3;   // test site: 1 so the boss can see his own review; live: 3
-    if (all.length < MIN_SHOW) return;
-    sec.classList.toggle('rv-few-en', en.length < MIN_SHOW);
+    if (en.length < MIN_EN) return;   // boss 2026-11-14: no section on KO or EN pages until there are 3 English reviews (test site too)
     var box = document.getElementById('rv-carousels'), ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     if (box){
@@ -153,6 +153,7 @@
   // ── /ea/reviews/ page ──
   function renderPage(box, list){
     var all = sortReviews(list);
+    if (all.filter(function(r){ return r.lang !== 'ko'; }).length < MIN_EN) all = [];   // same 3-English rule as the landing
     var ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     box.innerHTML = all.map(function(r){ return card(r, false); }).join('');
