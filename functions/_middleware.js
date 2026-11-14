@@ -338,6 +338,8 @@ export async function onRequest(context) {
   if (_p === "/ea/reviews/" || _p === "/ea/reviews/ko/") response = await injectReviews(response, _p === "/ea/reviews/ko/");
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html")) return response;
-  if (RV_LINK_PAGES.test(_p)) response = await hideReviewLinks(response);
+  const _h = new URL(context.request.url).hostname;
+  const _test = _h === "test.pracexam.com" || _h.endsWith(".pages.dev");   // test site keeps the links (sample reviews show there)
+  if (!_test && RV_LINK_PAGES.test(_p)) response = await hideReviewLinks(response);
   return new HTMLRewriter().onDocument({ comments(c) { c.remove(); } }).transform(response);
 }
