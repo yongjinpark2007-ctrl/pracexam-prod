@@ -330,14 +330,12 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
     <div class="tb-row"><div id="exam-seg" class="exam-seg"></div><div id="tiles" class="tiles"></div></div>
     <div class="fields">
       <input type="text" id="q" class="f-q" placeholder="검색 — 이메일 · 이름" oninput="render()" aria-label="검색">
-      <select id="gp" class="f-gp" title="부여 프로그램" aria-label="부여 프로그램"></select>
-      <input type="text" id="gn" class="f-gn" placeholder="부여 메모 — 왜 주는지 (이력에 남습니다)" aria-label="메모">
       <button type="button" class="more-btn" onclick="document.getElementById('tb-more').classList.toggle('open')">유입 경로 · 도움말</button>
     </div>
     <div id="tb-more" class="tb-more">
     <div id="refstats" class="refstats"></div>
     <div class="hint">
-      표 오른쪽 <b>“부여…”</b> 를 고르면 위에서 정한 프로그램·메모로 들어갑니다.
+      무료 기간 부여는 고객 줄을 눌러 펼친 뒤 <b>「기간 부여 · 회수」</b>에서 합니다. 여러 명은 왼쪽 칸을 체크하면 아래에 묶음 부여 줄이 나옵니다.
       줄을 누르면 그 고객의 상세가 펼쳐집니다. <b>제목을 누르면 그 열로 정렬</b>됩니다(다시 누르면 반대 순서).
       <br>🕒 <b>모든 시각은 미국 서부 시간(PT)</b>입니다 — 이 화면을 어디서 열든 같은 숫자가 나옵니다.
     </div>
@@ -363,7 +361,6 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
           <th class="sortable" data-sort="login">마지막 로그인</th>
           <th class="sortable" data-sort="study">마지막 학습</th>
           <th class="sortable num" data-sort="volume">학습량 · Part별 정답률</th>
-          <th style="width:130px;">작업</th>
         </tr>
       </thead>
       <tbody id="tb"></tbody>
@@ -373,6 +370,8 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
   <!-- ══════════════ 여러 명 한꺼번에 ══════════════ -->
   <div id="bulk" class="bulk hide">
     <span class="cnt" id="bulk-n"></span>
+    <select id="gp" title="부여 프로그램" aria-label="부여 프로그램"></select>
+    <input type="text" id="gn" placeholder="메모 — 왜 주는지 (이력에 남습니다)" aria-label="메모" style="min-width:220px;">
     <select id="bulk-act"></select>
     <button class="btn primary" onclick="runBulk()">실행</button>
     <button class="btn" onclick="clearSel()">선택 해제</button>
@@ -913,10 +912,10 @@ function locOf(r){
 
 async function loadAll(){
   if(SAMPLE) return;
-  $('tb').innerHTML = '<tr><td colspan="11" class="empty">불러오는 중…</td></tr>';
+  $('tb').innerHTML = '<tr><td colspan="10" class="empty">불러오는 중…</td></tr>';
   var r = await sb.rpc('admin_list_customers', { p_limit: 2000, p_offset: 0 });
   if(r.error){
-    $('tb').innerHTML = '<tr><td colspan="11" class="empty" style="color:var(--danger-color);">' +
+    $('tb').innerHTML = '<tr><td colspan="10" class="empty" style="color:var(--danger-color);">' +
       esc(rpcErr(r.error)) + '</td></tr>';
     return;
   }
@@ -1117,19 +1116,16 @@ function render(){
         '<td class="num">' + (r.answered || 0) + '문항' +
           (pct === null ? '' : ' · ' + pct + '%') +
           (partSummary(r) ? '<div class="sub2">' + partSummary(r) + '</div>' : '') + '</td>' +
-        (EXAM === 're'
-          ? '<td class="sub2" title="RE 기간 부여는 아직 없습니다">—</td>'
-          : '<td><select class="rowact" data-uid="' + esc(r.user_id) + '">' + actOpts + '</select></td>') +
       '</tr>';
 
     if(OPEN === r.user_id){
-      line += '<tr class="detail"><td colspan="11"><div class="detail-in" id="det-' +
+      line += '<tr class="detail"><td colspan="10"><div class="detail-in" id="det-' +
               esc(r.user_id) + '">불러오는 중…</div></td></tr>';
     }
     return line;
   }).join('');
 
-  $('tb').innerHTML = html || '<tr><td colspan="11" class="empty">해당하는 고객이 없습니다.</td></tr>';
+  $('tb').innerHTML = html || '<tr><td colspan="10" class="empty">해당하는 고객이 없습니다.</td></tr>';
 
   if(OPEN) renderDetail(OPEN);
   renderBulk();
@@ -1252,6 +1248,8 @@ function renderDetail(uid){
       '증정을 주면 플랜이 <code>comp_*</code>로 덮이고, 증정이 끝나는 순간 만료 처리가 이 고객을 잠급니다. ' +
       '기간만 더 주고 싶으면 아래 <b>무료 체험 연장</b>을 쓰세요 — 결제를 전혀 건드리지 않습니다.</div>';
   }
+  h += '<div class="actrow" style="margin-bottom:8px;"><select class="dgp" aria-label="부여 프로그램">' + $('gp').innerHTML + '</select>' +
+       '<input type="text" class="dgn" placeholder="메모 — 왜 주는지 (이력에 남습니다)" aria-label="메모" style="flex:1;min-width:220px;"></div>';
   h += '<div class="actrow">';
   ACTIONS.forEach(function(a){
     var off = (paying && a.kind !== 'trial') || (a.kind === 'revoke' && !r.grant_program);
@@ -1618,8 +1616,9 @@ async function applyOne(uid, v){
   // 이미 있던 confirmEmail() 을 그대로 부른다(묻는 말이 두 자리에서 갈리지 않게).
   if(a.kind === 'confirm'){ await confirmEmail(uid); return; }
 
-  var program = $('gp').value;
-  var note    = ($('gn').value || '').trim();
+  var _d = document.getElementById('det-' + uid);
+  var program = (_d && _d.querySelector('.dgp')) ? _d.querySelector('.dgp').value : $('gp').value;
+  var note    = ((_d && _d.querySelector('.dgn')) ? _d.querySelector('.dgn').value : ($('gn').value || '')).trim();
 
   var what = a.kind === 'revoke' ? '증정을 회수'
            : a.kind === 'trial'  ? '무료 체험을 ' + a.n + '일 연장'
@@ -1655,7 +1654,7 @@ async function grantDemo(uid){
   if(SAMPLE){ say(uid, '표본 보기라 실행하지 않았습니다.', false); return; }
   say(uid, '처리 중…', true);
   var res = await sb.rpc('admin_grant_demo', {
-    p_user_id: uid, p_days: 7, p_note: ($('gn').value || '').trim() || null });
+    p_user_id: uid, p_days: 7, p_note: (((document.getElementById('det-' + uid) || document).querySelector('.dgn') || $('gn')).value || '').trim() || null });
   if(res.error){ say(uid, rpcErr(res.error), false); return; }
   say(uid, '✓ 데모 7일 부여 완료', true);
   await loadAll();
