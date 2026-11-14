@@ -326,7 +326,8 @@ html, body {
 #screen-dashboard .sts-section-title, #screen-dashboard .sts-section-head{margin-top:.35rem;}
 #screen-dashboard .sts-section-head .sts-section-title{margin-top:0;}
 #settings-screen-title + .set-title{margin-top:0;}
-.sts-section-title{font-size:15.5px;font-weight:800;color:var(--text-main);letter-spacing:.01em;margin-bottom:.85rem;padding-left:11px;border-left:5px solid #DD8F75;border-radius:2px;line-height:1.25;}   /* boss 2026-11-14: was grey caps, too weak */
+.sts-section-title{font-size:15.5px;font-weight:800;color:var(--text-main);letter-spacing:.01em;margin-bottom:.85rem;display:block;position:relative;padding-bottom:7px;line-height:1.25;}
+.sts-section-title::after{content:'';position:absolute;left:0;bottom:0;width:26px;height:3px;border-radius:2px;background:#DD8F75;}   /* boss 2026-11-14: side bar looked like the hero card's bar → short underline */   /* boss 2026-11-14: was grey caps, too weak */
 .sts-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;}
 .sts-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1rem;text-align:center;box-shadow:var(--card-shadow);transition:border-color .2s;}
 .sts-card-val{font-size:26px;font-weight:700;color:var(--text-main);line-height:1;}
