@@ -169,7 +169,7 @@
   function form(){
     var nm = displayName();
     body('<div class="section-title" id="rvm-title">' + L('나의 학습 여정 나누기', 'Share Your Journey') + '</div>'
-      + '<p class="rvm-sub">' + L('PracExam과 함께한 경험을 편하게 들려주세요. 좋았던 점도, 아쉬웠던 점도 저희가 더 나아지는 데 도움이 되고, 앞으로 EA를 준비하실 분들께도 큰 힘이 됩니다.', 'We’d love to hear about your experience with PracExam. What you enjoyed and what we could do better both help us improve, and they help future EA candidates too.') + '</p>'
+      + '<p class="rvm-sub">' + L('PracExam과 함께한 학습 경험을 나누어 주실 수 있으세요?<br>좋았던 점, 아쉬웠던 점도 저희가 더 나아지는 데 큰 도움이 됩니다. 또 앞으로 EA를 준비하실 분들께도 큰 힘이 될 것입니다.', 'We’d love to hear about your experience with PracExam. What you enjoyed and what we could do better both help us improve, and they help future EA candidates too.') + '</p>'
       + '<div class="rvm-f" style="margin-bottom:26px;"><span class="q" style="display:block;font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:12px;">1. ' + L('해당하는 것을 모두 선택해 주세요.', 'Check all that apply.') + '</span>'
       +   '<div class="rvm-parts">' + [1,2,3].map(function(n){ return '<label><input type="checkbox" name="rvm-pass" value="' + n + '">' + L('Part ' + n + ' 합격', 'Passed Part ' + n) + '</label>'; }).join('') + '<label><input type="checkbox" id="rvm-studying">' + L('학습 중', 'Still studying') + '</label></div></div>'
       + '<div class="rvm-f"><label class="q" for="rvm-q2">2. ' + L('PracExam에서 가장 도움이 되었던 점과 그 이유는 무엇인가요?', 'What helped you most in PracExam, and why?') + '</label>'
