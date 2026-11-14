@@ -29,7 +29,7 @@
                                                    en:['National 100 + State 40 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass National at 70% and State at 75% (PSI)'] },
     wa: { n:130, min:240, pct:70, portions:true, ko:['National 100 + 주 30문항 · 4시간 (National 2시간 30분 + 주 1시간 30분)', 'National과 주 부분을 각각 70% 이상 맞혀야 합격 (PSI 환산 점수 70 기준)'],
                                                    en:['National 100 + State 30 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass each portion at 70% (PSI scaled score of 70)'] },
-    ga: { n:152, min:240, pct:null, portions:false, noPass:true, ko:['National 100 + 주 52문항 · 4시간 (한 번에 응시)', '조지아는 합격 점수가 공개되어 있지 않아, 이 모의고사는 점수만 보여 줍니다'],
+    ga: { n:152, min:240, pct:null, portions:false, noPass:true, ko:['National 100 + 주 52문항 · 4시간 (한 번에 응시)', '조지아는 합격 기준 점수가 공개되어 있지 않아서, 이 모의고사에서는 획득한 점수만 보여 줍니다'],
                                                    en:['National 100 + State 52 questions · 4 hours (one sitting)', 'Georgia does not publish a passing score, so this mock shows your score only'] },
     va: { n:120, min:150, pct:70, statePct:75, portions:true, ko:['National 80 + 주 40문항 · 2시간 30분 (National 1시간 45분 + 주 45분)', 'National 56문항(70%), 주 부분 30문항(75%) 이상 맞혀야 합격 (PSI 기준)'],
                                                    en:['National 80 + State 40 questions · 2.5 hours (National 1 hour 45 minutes + State 45 minutes)', 'Pass National with 56 correct (70%) and State with 30 correct (75%) (PSI)'] },
