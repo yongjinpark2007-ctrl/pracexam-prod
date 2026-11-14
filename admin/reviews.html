@@ -89,6 +89,23 @@ async function load(){
   if (r.error){ $('list').innerHTML = '<div class="card empty">불러오지 못했습니다: ' + esc(r.error.message) + '</div>'; return; }
   ROWS = r.data || [];
   render();
+  backfill();
+}
+// published Korean reviews with no English yet (e.g. published before translation existed) get one when this screen opens
+var BACKFILLING = false;
+async function backfill(){
+  if (BACKFILLING) return;
+  var todo = ROWS.filter(function(x){ return x.lang === 'ko' && x.status === 'published' && !x.helped_en; });
+  if (!todo.length) return;
+  BACKFILLING = true;
+  for (var i = 0; i < todo.length; i++){
+    var el = document.querySelector('.card[data-id="' + todo[i].id + '"]');
+    var msg = el ? el.querySelector('.msg') : { textContent: '' };
+    await translate(todo[i], el, msg);
+  }
+  BACKFILLING = false;
+  var r = await sb.rpc('admin_reviews_list', { p_status: null });
+  if (!r.error){ ROWS = r.data || []; render(); }
 }
 
 function tiles(){
