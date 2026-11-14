@@ -1,0 +1,222 @@
+/* Customer reviews (EA) — shared by the EA landing (#reviews) and /ea/reviews/.
+   Colors come from exam-palettes.css / the page tokens. No stars by design (boss 2026-11-12).
+   2026-11-13 boss feedback: own background (not the same as Pricing), smaller cards, quiet name/badges so the
+   review text leads, slow auto-scroll on the landing. */
+.reviews{background:var(--accent-tint,#EDF4F3); border-top:1px solid var(--accent-border,var(--border-clr)); border-bottom:1px solid var(--accent-border,var(--border-clr));}
+.rv-disclose{font-size:14px; color:var(--text-muted); max-width:680px; margin-left:auto; margin-right:auto;}
+
+/* full page grid */
+.rv-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:8px;}
+@media (max-width:960px){ .rv-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+@media (max-width:640px){ .rv-grid{grid-template-columns:1fr;} }
+
+/* landing carousel */
+.rv-carousel{position:relative; margin-top:6px;}
+.rv-track{display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  padding:4px 2px 10px; scrollbar-width:none; -ms-overflow-style:none;}
+.rv-track::-webkit-scrollbar{display:none;}
+.rv-track .rv-card{flex:0 0 calc((100% - 48px) / 4); scroll-snap-align:start;}
+@media (max-width:1060px){ .rv-track .rv-card{flex-basis:calc((100% - 32px) / 3);} }
+@media (max-width:760px){ .rv-track .rv-card{flex-basis:calc((100% - 16px) / 2);} }
+@media (max-width:520px){ .rv-track .rv-card{flex-basis:82%;} }
+.rv-nav{display:flex; justify-content:center; gap:10px; margin-top:12px;}
+.rv-nav button{width:36px; height:36px; border-radius:50%; border:1px solid var(--border-strong,var(--border-clr)); background:var(--white,#fff);
+  color:var(--navy); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.rv-nav button:hover{background:var(--navy-light);}
+.rv-nav svg{width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
+
+.rv-card{
+  position:relative; display:flex; flex-direction:column; gap:10px;
+  background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:14px;
+  padding:18px 18px 14px; box-shadow:0 1px 4px rgba(0,0,0,.05); min-width:0;
+}
+.rv-quote-mark{font-family:var(--font-display, Georgia, serif); font-size:34px; line-height:.6; height:12px; color:var(--accent); user-select:none;}
+.rv-text{font-size:15.5px; line-height:1.65; color:var(--text-main); margin:0; white-space:pre-line; overflow-wrap:anywhere;}
+.rv-advice{font-size:13.5px; line-height:1.6; color:var(--text-mid); margin:0; white-space:pre-line; overflow-wrap:anywhere;}
+.rv-advice b{font-weight:600; color:var(--navy-mid);}
+
+.rv-clamp .rv-text{display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden;}
+.rv-clamp .rv-advice{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+
+.rv-foot{margin-top:auto; padding-top:10px; border-top:1px solid var(--border-clr); font-size:12.5px; line-height:1.55; color:var(--text-muted);}
+.rv-name{font-weight:600; color:var(--text-mid); font-size:13px;}
+.rv-badges{display:block; margin-top:2px;}
+.rv-badges .ok{color:var(--accent-hover,#5D8F8A); font-weight:600;}
+.rv-badges .pass{color:var(--terracotta-deep,#b85f3f); font-weight:600;}
+
+.rv-more{text-align:center; margin-top:22px;}
+
+/* SAMPLE marking — test site only. These never ship with real data. */
+.rv-sample-tag{position:absolute; top:10px; right:10px; font-size:10px; font-weight:800; letter-spacing:.12em;
+  color:#fff; background:#dc2626; border-radius:4px; padding:1px 6px;}
+.rv-sample-banner{background:#fef2f2; border:1px dashed #dc2626; color:#991b1b; border-radius:10px;
+  padding:8px 14px; font-size:13.5px; font-weight:600; text-align:center; margin:0 auto 18px; max-width:680px;}
+
+/* full page */
+.rv-page{max-width:1120px; margin:0 auto; padding:48px 0 72px;}
+.rv-page h1{font-size:clamp(28px,4.5vw,42px); margin-bottom:10px;}
+.rv-page .rv-lead{font-size:16px; color:var(--text-mid); margin-bottom:8px;}
+.rv-filter{display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 18px;}
+.rv-chip{height:34px; padding:0 14px; border-radius:999px; border:1px solid var(--border-strong,var(--border-clr)); background:var(--white,#fff);
+  color:var(--text-mid); font:600 14px var(--font-sans); cursor:pointer;}
+.rv-chip[aria-pressed="true"]{background:var(--navy); border-color:var(--navy); color:#fff;}
+.rv-policy{margin-top:36px; font-size:12px; color:#9AA3A8; line-height:1.65; border-top:1px solid var(--border-clr); padding-top:18px;}
+.rv-empty{color:var(--text-muted); padding:24px 0;}
+.rv-cta{margin-top:40px; text-align:center; background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:16px; padding:28px 20px;}
+.rv-cta h2{font-size:24px; margin-bottom:6px;}
+.rv-cta p{margin-bottom:16px;}
+
+/* language rule: English view shows English reviews only */
+.lang-en #reviews.rv-few-en{display:none;}
+.lang-en #rv-all .rv-card[data-lang="ko"]{display:none;}
+/* translated Korean reviews (data-lang="both") show on both views; label under the English text */
+.rv-tr{margin:8px 0 0; font-size:12.5px; color:var(--text-muted);}
+.rv-tr-btn{background:none; border:0; padding:0; font:inherit; color:var(--teal,#354649); text-decoration:underline; cursor:pointer;}
+.rv-card .ko > p:first-child, .rv-card .en .rv-tr-text > p:first-child, .rv-card .rv-tr-orig > p:first-child{margin-top:0;}
+#rv-all[data-filter="ko"] .rv-card[data-lang="en"],
+#rv-all[data-filter="en"] .rv-card[data-lang="ko"]{display:none;}
+
+/* compact landing placement between Features and the video section (boss 2026-11-13) */
+#reviews.reviews{background:var(--white,#fff); border-top:1px solid var(--border-clr); border-bottom:none; padding:40px 0 34px;}
+#reviews .rv-head{margin-bottom:18px;}
+#reviews .rv-head h2{font-size:clamp(22px,3vw,28px); margin-bottom:0;}
+#reviews .rv-head .eyebrow{margin-bottom:6px;}
+#reviews .rv-card{background:#F7FAFA;}
+#reviews .rv-nav{margin-top:6px;}
+.rv-disclose-foot{text-align:center; font-size:12.5px; margin-top:10px;}
+.rv-disclose-foot a{margin-left:8px; font-weight:600; color:var(--navy); text-decoration:none; white-space:nowrap;}
+.rv-disclose-foot a:hover{text-decoration:underline;}
+@media (max-width:720px){ #reviews.reviews{padding:30px 0 26px;} }
+
+/* dark band (boss 2026-11-13: the light band with light cards looked faint on the light EA page) */
+#reviews.reviews{background:var(--navy,#354649); border-top:none;}
+#reviews .rv-head .eyebrow{color:var(--accent-border,#C9DEDB);}
+#reviews .rv-head h2{color:#fff;}
+#reviews .rv-card{background:#fff; border-color:transparent; box-shadow:0 2px 10px rgba(0,0,0,.18);}
+#reviews .rv-nav button{background:transparent; border-color:rgba(255,255,255,.45); color:#fff;}
+#reviews .rv-nav button:hover{background:rgba(255,255,255,.12);}
+#reviews .rv-disclose-foot{color:rgba(255,255,255,.75);}
+#reviews .rv-disclose-foot a{color:#fff;}
+#reviews .rv-sample-banner{background:rgba(255,255,255,.92);}
+/* continuous drift: no snapping, no smooth-scroll fighting the animation */
+#reviews .rv-track{scroll-snap-type:none; scroll-behavior:auto;}
+
+/* background options for the boss to compare (test site switcher in reviews.js) */
+#reviews.rv-bg-1{background:var(--navy,#354649);}                                   /* 1 navy (current) */
+#reviews.rv-bg-2{background:linear-gradient(135deg,#C97A5F 0%,#B85F3F 100%);}       /* 2 terracotta (EA warm accent) */
+#reviews.rv-bg-3{background:linear-gradient(135deg,#6FA39E 0%,#4F837E 100%);}       /* 3 mid teal (EA accent) */
+#reviews.rv-bg-4{background:linear-gradient(135deg,#2B3A55 0%,#1E2A40 100%);}       /* 4 deep indigo */
+#reviews.rv-bg-5{background:linear-gradient(135deg,#B8924A 0%,#9A7536 100%);}       /* 5 muted gold */
+.rv-bg-pick{display:flex; justify-content:center; gap:6px; margin:0 0 14px; flex-wrap:wrap;}
+.rv-bg-pick button{font:600 12px var(--font-sans); padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.6); background:rgba(255,255,255,.15); color:#fff; cursor:pointer;}
+.rv-bg-pick button[aria-pressed="true"]{background:#fff; color:#222;}
+
+/* 6 War Room style (boss 2026-11-13: «밝은 느낌이지만 흰색 박스는 잘 보이는») — same gradient + soft circles as .tpiq-section */
+#reviews.rv-bg-6{background:linear-gradient(180deg, var(--navy-light) 0%, #cde3e1 100%); position:relative; overflow:hidden;}
+#reviews.rv-bg-6::before{content:''; position:absolute; top:-140px; left:-100px; width:380px; height:380px; border-radius:50%; background:rgba(var(--accent-rgb),.12); pointer-events:none;}
+#reviews.rv-bg-6::after{content:''; position:absolute; bottom:-180px; right:-120px; width:420px; height:420px; border-radius:50%; background:rgba(var(--navy-rgb),.06); pointer-events:none;}
+#reviews.rv-bg-6 .wrap{position:relative; z-index:1;}
+#reviews.rv-bg-6 .rv-head .eyebrow{color:var(--accent);}
+#reviews.rv-bg-6 .rv-head h2{color:var(--text-main);}
+#reviews.rv-bg-6 .rv-card{box-shadow:0 8px 24px rgba(var(--navy-rgb),.10);}
+#reviews.rv-bg-6 .rv-nav button{background:var(--white,#fff); border-color:var(--border-strong); color:var(--navy);}
+#reviews.rv-bg-6 .rv-nav button:hover{background:var(--navy-light);}
+#reviews.rv-bg-6 .rv-disclose-foot a{color:var(--navy);}
+#reviews.rv-bg-6 .rv-bg-pick button{border-color:var(--border-strong); background:rgba(255,255,255,.6); color:var(--text-main);}
+#reviews.rv-bg-6 .rv-bg-pick button[aria-pressed="true"]{background:var(--navy); color:#fff;}
+
+/* 2026-11-13 boss: keep the War Room colors, but the bubbles must differ from the War Room section below.
+   War Room = big circles at top-left and bottom-right. Reviews = mirrored and smaller: one at top-right, a small
+   warm (terracotta) one at bottom-left, plus a tiny one near the heading. */
+#reviews.rv-bg-6::before{top:-90px; left:auto; right:-70px; width:260px; height:260px; background:rgba(var(--accent-rgb),.16);}
+#reviews.rv-bg-6::after{bottom:-70px; right:auto; left:-50px; width:200px; height:200px; background:rgba(221,143,117,.13);}
+#reviews.rv-bg-6 .rv-head{position:relative;}
+#reviews.rv-bg-6 .rv-head::before{content:''; position:absolute; top:-6px; left:calc(50% - 190px); width:46px; height:46px; border-radius:50%; background:rgba(var(--accent-rgb),.18); pointer-events:none;}
+@media (max-width:640px){ #reviews.rv-bg-6 .rv-head::before{display:none;} }
+
+/* landing cards are links to the full review (boss 2026-11-13) */
+a.rv-card{text-decoration:none; color:inherit; cursor:pointer; transition:box-shadow .15s, transform .15s;}
+a.rv-card:hover{box-shadow:0 10px 26px rgba(var(--navy-rgb),.16); transform:translateY(-2px);}
+a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
+.rv-card.rv-flash{box-shadow:0 0 0 3px var(--accent), 0 10px 26px rgba(var(--navy-rgb),.16); transition:box-shadow .3s;}
+/* landing cards: slightly smaller text (boss 2026-11-13) */
+#reviews .rv-text{font-size:14.5px; line-height:1.6;}
+#reviews .rv-advice{font-size:13px;}
+#reviews .rv-foot{font-size:12px;}
+#reviews .rv-name{font-size:12.5px;}
+.rv-back{margin:0 0 18px; font-size:14px;}
+.rv-back a{color:var(--navy); font-weight:600; text-decoration:none;}
+.rv-back a:hover{text-decoration:underline;}
+/* small inline quote mark (boss 2026-11-13: the big one took a whole line) */
+.rv-q{font-family:var(--font-display, Georgia, serif); color:var(--accent); font-size:1.5em; line-height:0; vertical-align:-0.28em; margin-right:3px;}
+
+/* tidy footer (boss 2026-11-13: name, state, date, verified and passed were jumbled):
+   [initial] Name ✓        [Part 2 합격]
+             CA · Oct 2026                 */
+.rv-foot{display:flex; align-items:center; gap:10px; font-size:12px;}
+.rv-av{flex:0 0 auto; width:30px; height:30px; border-radius:50%; background:var(--navy-light); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;}
+.rv-who{flex:1 1 auto; min-width:0; display:flex; flex-wrap:wrap; align-items:center; column-gap:4px; line-height:1.35;}
+.rv-who .rv-name{font-weight:700; color:var(--text-main); font-size:13px;}
+.rv-check{display:inline-flex; width:15px; height:15px; border-radius:50%; background:var(--accent); color:#fff; align-items:center; justify-content:center; cursor:help;}
+.rv-check svg{width:10px; height:10px; stroke:currentColor; fill:none; stroke-width:3.2; stroke-linecap:round; stroke-linejoin:round;}
+.rv-meta{flex-basis:100%; color:var(--text-muted); font-size:11.5px;}
+.rv-pass{flex:0 0 auto; align-self:center; font-size:11px; font-weight:700; white-space:nowrap; padding:3px 8px; border-radius:999px;
+  color:var(--terracotta-deep,#b85f3f); background:var(--terracotta-tint,#fbf1ec); border:1px solid var(--terracotta-border,#efd0c1); cursor:help;}
+#reviews .rv-foot{font-size:12px;}
+.rv-meta{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+/* footer v4 (boss 2026-11-13): words «Verified …», state and date in small text, shown in full (no ellipsis);
+   pass pill = logo check mark + «Part 1» */
+.rv-meta{white-space:normal; overflow:visible; text-overflow:clip; font-size:10.5px; line-height:1.4; color:var(--text-muted);}
+.rv-pass{display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 8px 2px 5px;}
+.rv-pass img{width:14px; height:14px; display:block;}
+/* footer v5: [initial] Name ........ [✓ Part 1]
+              Verified Subscriber · NJ · 2026.10   (one line, full width under the name and the pill) */
+.rv-foot{display:grid; grid-template-columns:30px minmax(0,1fr) auto; column-gap:10px; row-gap:1px; align-items:center;}
+.rv-foot .rv-av{grid-row:1 / span 2;}
+.rv-foot > .rv-name{grid-column:2; font-weight:700; color:var(--text-main); font-size:13px; line-height:1.3; min-width:0;}
+.rv-foot > .rv-pass{grid-column:3; grid-row:1;}
+.rv-foot > .rv-meta{grid-column:2 / span 2; grid-row:2;}
+/* footer v6: drop the initial circle so «Verified Subscriber · CA · 2026.10» fits on one line */
+.rv-foot{grid-template-columns:minmax(0,1fr) auto; column-gap:8px;}
+.rv-foot .rv-av{display:none;}
+.rv-foot > .rv-name{grid-column:1;}
+.rv-foot > .rv-pass{grid-column:2;}
+.rv-foot > .rv-meta{grid-column:1 / span 2;}
+/* boss 2026-11-13: meta line smaller still */
+.rv-foot > .rv-meta{font-size:9.5px; letter-spacing:.01em;}
+/* boss 2026-11-13: pass pill smaller */
+.rv-pass{font-size:9.5px; padding:1px 6px 1px 4px; gap:3px;}
+.rv-pass img{width:11px; height:11px;}
+/* boss 2026-11-13: only the meta line was to get smaller, not the name. Name back up; meta stays small and lighter.
+   (Chrome's minimum font size can floor tiny text at 12px, so the contrast comes from the name size and the meta color.) */
+#reviews .rv-foot > .rv-name, .rv-foot > .rv-name{font-size:14px;}
+.rv-foot > .rv-meta{color:#8a979a;}
+
+/* boss 2026-11-13 (final rule): emphasis = review text + name, keep them full size. Reference info (Verified …, state,
+   date, Part pill) must show but small, so the card breathes. Chrome's minimum-font-size setting floors text at 12px,
+   so the reference line is shrunk with a transform instead of font-size. */
+#reviews .rv-text{font-size:15.5px; line-height:1.65;}
+#reviews .rv-advice{font-size:13.5px;}
+#reviews .rv-card{padding:20px 20px 16px; gap:12px;}
+.rv-foot{padding-top:12px; row-gap:3px;}
+.rv-foot > .rv-meta{font-size:12px; transform:scale(.82); transform-origin:left center; width:122%; white-space:nowrap;}
+.rv-pass{font-size:12px; transform:scale(.82); transform-origin:right center; padding:2px 8px 2px 5px; gap:4px;}
+.rv-pass img{width:14px; height:14px;}
+/* boss 2026-11-13: taller cards, more room between the review and the name block */
+#reviews .rv-card{padding:24px 20px 20px; min-height:300px;}
+.rv-foot{margin-top:auto; padding-top:14px;}
+.rv-advice{margin-bottom:14px;}
+
+/* buttons use the site's .btn .btn-ghost (boss 2026-11-13: design consistency) */
+#reviews .rv-more{margin-top:18px;}
+/* boss 2026-11-14: with only a few cards (no loop), fill from the center: 1 → middle, 2 → middle two, 3 → middle three */
+#reviews .rv-carousel[data-loop="0"] .rv-track{justify-content:center; overflow-x:visible;}
+/* boss 2026-11-14: light buttons keep their border on hover (the shared .btn-ghost hover paints the border the same
+   color as the hover background, so the outline vanished) */
+.rv-more .btn-ghost:hover, .rv-back .btn-ghost:hover{border-color:var(--navy-mid, #4d6164);}
+.rv-back a, .rv-back a:hover, .rv-more a, .rv-more a:hover{text-decoration:none;}   /* boss 2026-11-14: no underline on button links */
+
+/* boss 2026-11-14: the small print sits above «Try it yourself», in the same color as the review text */
+.rv-policy{color:var(--text-main); margin-top:28px;}
+.rv-policy .rv-disc{font-weight:inherit;}   /* boss 2026-11-14: plain, same as the rest of the note */

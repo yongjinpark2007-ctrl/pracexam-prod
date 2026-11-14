@@ -50,7 +50,7 @@ html,body{
 /* ── 헤더 ───────────────────────────────────────────────────────────────── */
 .header{
   background:var(--navy);display:flex;align-items:center;justify-content:space-between;
-  gap:12px;padding:8px 1rem;min-height:60px;flex-shrink:0;flex-wrap:wrap;
+  gap:12px;padding:6px 1rem;min-height:50px;flex-shrink:0;flex-wrap:wrap;
   box-shadow:0 2px 12px rgba(0,0,0,.18);z-index:100;
 }
 .header-brand{display:flex;align-items:baseline;gap:10px;min-width:0;}
@@ -65,6 +65,7 @@ html,body{
   font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;
 }
 .icon-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+.adm-nav{display:flex;gap:4px;align-items:stretch;flex-wrap:wrap;}.adm-nav a{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;color:rgba(255,255,255,.75);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap;}.adm-nav a:hover{background:rgba(255,255,255,.10);color:#fff;}.adm-nav a.on{background:rgba(255,255,255,.16);color:#fff;box-shadow:inset 0 -3px 0 #DD8F75;}.adm-nav .ext{font-size:12px;opacity:.7;}
 .fs-seg{display:inline-flex;border:1px solid rgba(255,255,255,.28);border-radius:8px;overflow:hidden;}
 .fs-seg button{
   font-family:inherit;font-weight:700;font-size:calc(13px * var(--fs));padding:7px 10px;
@@ -80,10 +81,17 @@ html,body{
 /* ── 위쪽 조작줄 ────────────────────────────────────────────────────────── */
 .toolbar{
   background:var(--card-bg);border-bottom:1px solid var(--border-clr);
-  padding:11px 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:10px;
+  padding:8px 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:7px;
 }
+.tb-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.fields .f-q{flex:2;min-width:220px;} .fields .f-gp{flex:1;min-width:160px;} .fields .f-gn{flex:2;min-width:200px;}
+.fields input,.fields select{padding:7px 10px !important;font-size:calc(14px * var(--fs)) !important;}
+.more-btn{font-family:inherit;font-size:calc(13px * var(--fs));font-weight:700;color:var(--text-muted);background:none;
+  border:1px solid var(--border-clr);border-radius:8px;padding:7px 11px;cursor:pointer;white-space:nowrap;}
+.more-btn:hover{color:var(--text-main);border-color:var(--border-hover);}
+.tb-more{display:none;flex-direction:column;gap:8px;} .tb-more.open{display:flex;}
 /* EA / RE 고객 나누기 (2026-11-02) */
-.exam-seg{display:flex;gap:6px;align-items:center;margin-bottom:10px;}
+.exam-seg{display:flex;gap:6px;align-items:center;}
 .exam-seg button{font-family:inherit;cursor:pointer;background:#fff;border:1px solid var(--border-clr);
   border-radius:999px;padding:6px 16px;font-weight:700;font-size:calc(13.5px * var(--fs));color:var(--text-muted);}
 .exam-seg button.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--text-main);}
@@ -95,11 +103,11 @@ html,body{
 .tile{
   font-family:inherit;text-align:left;cursor:pointer;
   background:#fff;border:1px solid var(--border-clr);border-radius:10px;
-  padding:7px 13px;min-width:92px;transition:all .12s;
+  padding:4px 11px;transition:all .12s;display:inline-flex;align-items:baseline;gap:6px;
 }
 .tile:hover{border-color:var(--border-hover);}
 .tile.on{background:var(--sel-bg);border-color:var(--sel-border);box-shadow:inset 2px 0 0 var(--sel-border);}
-.tile .n{font-size:calc(19px * var(--fs));font-weight:800;line-height:1.25;color:var(--text-main);}
+.tile .n{font-size:calc(16px * var(--fs));font-weight:800;line-height:1.3;color:var(--text-main);}
 .tile .l{font-size:calc(12.5px * var(--fs));color:var(--text-muted);font-weight:600;}
 
 /* 알게 된 경로 집계 줄 — 위 타일과 달리 **누르는 것이 아니다**(거르개가 아님).
@@ -279,8 +287,9 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
   <header class="header">
     <div class="header-brand">
       <span class="header-title">PracExam</span>
-      <span class="header-sub">고객 관리</span>
+      <span class="header-sub">관리자</span>
     </div>
+    <nav class="adm-nav"><a href="/admin/" class="on">고객 관리</a><a href="/admin/reviews">리뷰 관리</a><a href="/app?admin=1" target="_blank" rel="noopener" title="공지 관리 · 이상 탐지 · 미확인 가입자 · 문제 검토 · Pop Quiz 문제">앱 관리 도구 <span class="ext">↗</span></a></nav>
     <div class="header-right">
       <span class="hdr-stat" id="hdr-count"></span>
       <div class="fs-seg">
@@ -289,9 +298,8 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
       </div>
       <button class="icon-btn" onclick="loadAll()">새로고침</button>
       <button class="icon-btn" onclick="exportCsv()">CSV</button>
-      <!-- Cloudflare Pages 가 .html 을 떼고 308 로 넘기므로 붙인 주소로 바로 건다 -->
-      <a class="icon-btn" href="/admin/search" title="예전 검색 화면 (문제가 있을 때 대비용)">검색 화면</a>
-      <a class="icon-btn" href="/app">문항 관리</a>
+      <!-- boss 2026-11-14: «검색 화면»(old /admin/search, replaced 2026-08-08) link removed; the file stays for emergencies.
+           «문항 관리» only opened /app — now «앱 관리 도구» in the menu, straight to the app's admin screen. -->
       <button class="icon-btn" onclick="doLogout()">로그아웃</button>
     </div>
   </header>
@@ -319,27 +327,18 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
 
   <!-- ══════════════ 조작줄 ══════════════ -->
   <div id="toolbar" class="toolbar hide">
-    <div id="exam-seg" class="exam-seg"></div>
-    <div id="tiles" class="tiles"></div>
-    <div id="refstats" class="refstats"></div>
+    <div class="tb-row"><div id="exam-seg" class="exam-seg"></div><div id="tiles" class="tiles"></div></div>
     <div class="fields">
-      <div class="field" style="flex:2;min-width:230px;">
-        <label for="q">검색 — 이메일 · 이름 (치는 대로 걸러집니다)</label>
-        <input type="text" id="q" placeholder="hong@ 또는 홍길동" oninput="render()">
-      </div>
-      <div class="field" style="flex:1;min-width:170px;">
-        <label for="gp">부여 프로그램</label>
-        <select id="gp"></select>
-      </div>
-      <div class="field" style="flex:2;min-width:210px;">
-        <label for="gn">메모 — 왜 주는지 (이력에 남습니다)</label>
-        <input type="text" id="gn" placeholder="예: 문의 응대, 세미나 감사">
-      </div>
+      <input type="text" id="q" class="f-q" placeholder="검색 — 이메일 · 이름" oninput="render()" aria-label="검색">
+      <button type="button" class="more-btn" onclick="document.getElementById('tb-more').classList.toggle('open')">유입 경로 · 도움말</button>
     </div>
+    <div id="tb-more" class="tb-more">
+    <div id="refstats" class="refstats"></div>
     <div class="hint">
-      표 오른쪽 <b>“부여…”</b> 를 고르면 위에서 정한 프로그램·메모로 들어갑니다.
+      무료 기간 부여는 고객 줄을 눌러 펼친 뒤 <b>「기간 부여 · 회수」</b>에서 합니다. 여러 명은 왼쪽 칸을 체크하면 아래에 묶음 부여 줄이 나옵니다.
       줄을 누르면 그 고객의 상세가 펼쳐집니다. <b>제목을 누르면 그 열로 정렬</b>됩니다(다시 누르면 반대 순서).
       <br>🕒 <b>모든 시각은 미국 서부 시간(PT)</b>입니다 — 이 화면을 어디서 열든 같은 숫자가 나옵니다.
+    </div>
     </div>
     <div id="top-msg" class="msg"></div>
   </div>
@@ -362,7 +361,6 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
           <th class="sortable" data-sort="login">마지막 로그인</th>
           <th class="sortable" data-sort="study">마지막 학습</th>
           <th class="sortable num" data-sort="volume">학습량 · Part별 정답률</th>
-          <th style="width:130px;">작업</th>
         </tr>
       </thead>
       <tbody id="tb"></tbody>
@@ -372,6 +370,8 @@ table.mini td{padding:5px 8px;border-bottom:1px solid var(--border-clr);font-siz
   <!-- ══════════════ 여러 명 한꺼번에 ══════════════ -->
   <div id="bulk" class="bulk hide">
     <span class="cnt" id="bulk-n"></span>
+    <select id="gp" title="부여 프로그램" aria-label="부여 프로그램"></select>
+    <input type="text" id="gn" placeholder="메모 — 왜 주는지 (이력에 남습니다)" aria-label="메모" style="min-width:220px;">
     <select id="bulk-act"></select>
     <button class="btn primary" onclick="runBulk()">실행</button>
     <button class="btn" onclick="clearSel()">선택 해제</button>
@@ -912,10 +912,10 @@ function locOf(r){
 
 async function loadAll(){
   if(SAMPLE) return;
-  $('tb').innerHTML = '<tr><td colspan="11" class="empty">불러오는 중…</td></tr>';
+  $('tb').innerHTML = '<tr><td colspan="10" class="empty">불러오는 중…</td></tr>';
   var r = await sb.rpc('admin_list_customers', { p_limit: 2000, p_offset: 0 });
   if(r.error){
-    $('tb').innerHTML = '<tr><td colspan="11" class="empty" style="color:var(--danger-color);">' +
+    $('tb').innerHTML = '<tr><td colspan="10" class="empty" style="color:var(--danger-color);">' +
       esc(rpcErr(r.error)) + '</td></tr>';
     return;
   }
@@ -1051,7 +1051,7 @@ function renderTiles(){
   ];
   // 독촉 미발송은 평소엔 0이라 자리만 차지한다 — 실제로 밀린 사람이 있을 때만 띄운다.
   if(c.noremind > 0) defs.splice(6, 0, ['noremind','독촉 미발송']);
-  $('tiles').innerHTML = '<span class="tiles-label">눌러서 거르기 →</span>' + defs.map(function(t){
+  $('tiles').innerHTML = defs.map(function(t){
     return '<button class="tile' + (BUCKET === t[0] ? ' on' : '') + '" data-bucket="' + t[0] + '">' +
       '<div class="n">' + c[t[0]] + '</div><div class="l">' + t[1] + '</div></button>';
   }).join('');
@@ -1116,19 +1116,16 @@ function render(){
         '<td class="num">' + (r.answered || 0) + '문항' +
           (pct === null ? '' : ' · ' + pct + '%') +
           (partSummary(r) ? '<div class="sub2">' + partSummary(r) + '</div>' : '') + '</td>' +
-        (EXAM === 're'
-          ? '<td class="sub2" title="RE 기간 부여는 아직 없습니다">—</td>'
-          : '<td><select class="rowact" data-uid="' + esc(r.user_id) + '">' + actOpts + '</select></td>') +
       '</tr>';
 
     if(OPEN === r.user_id){
-      line += '<tr class="detail"><td colspan="11"><div class="detail-in" id="det-' +
+      line += '<tr class="detail"><td colspan="10"><div class="detail-in" id="det-' +
               esc(r.user_id) + '">불러오는 중…</div></td></tr>';
     }
     return line;
   }).join('');
 
-  $('tb').innerHTML = html || '<tr><td colspan="11" class="empty">해당하는 고객이 없습니다.</td></tr>';
+  $('tb').innerHTML = html || '<tr><td colspan="10" class="empty">해당하는 고객이 없습니다.</td></tr>';
 
   if(OPEN) renderDetail(OPEN);
   renderBulk();
@@ -1251,6 +1248,8 @@ function renderDetail(uid){
       '증정을 주면 플랜이 <code>comp_*</code>로 덮이고, 증정이 끝나는 순간 만료 처리가 이 고객을 잠급니다. ' +
       '기간만 더 주고 싶으면 아래 <b>무료 체험 연장</b>을 쓰세요 — 결제를 전혀 건드리지 않습니다.</div>';
   }
+  h += '<div class="actrow" style="margin-bottom:8px;"><select class="dgp" aria-label="부여 프로그램">' + $('gp').innerHTML + '</select>' +
+       '<input type="text" class="dgn" placeholder="메모 — 왜 주는지 (이력에 남습니다)" aria-label="메모" style="flex:1;min-width:220px;"></div>';
   h += '<div class="actrow">';
   ACTIONS.forEach(function(a){
     var off = (paying && a.kind !== 'trial') || (a.kind === 'revoke' && !r.grant_program);
@@ -1617,8 +1616,9 @@ async function applyOne(uid, v){
   // 이미 있던 confirmEmail() 을 그대로 부른다(묻는 말이 두 자리에서 갈리지 않게).
   if(a.kind === 'confirm'){ await confirmEmail(uid); return; }
 
-  var program = $('gp').value;
-  var note    = ($('gn').value || '').trim();
+  var _d = document.getElementById('det-' + uid);
+  var program = (_d && _d.querySelector('.dgp')) ? _d.querySelector('.dgp').value : $('gp').value;
+  var note    = ((_d && _d.querySelector('.dgn')) ? _d.querySelector('.dgn').value : ($('gn').value || '')).trim();
 
   var what = a.kind === 'revoke' ? '증정을 회수'
            : a.kind === 'trial'  ? '무료 체험을 ' + a.n + '일 연장'
@@ -1654,7 +1654,7 @@ async function grantDemo(uid){
   if(SAMPLE){ say(uid, '표본 보기라 실행하지 않았습니다.', false); return; }
   say(uid, '처리 중…', true);
   var res = await sb.rpc('admin_grant_demo', {
-    p_user_id: uid, p_days: 7, p_note: ($('gn').value || '').trim() || null });
+    p_user_id: uid, p_days: 7, p_note: (((document.getElementById('det-' + uid) || document).querySelector('.dgn') || $('gn')).value || '').trim() || null });
   if(res.error){ say(uid, rpcErr(res.error), false); return; }
   say(uid, '✓ 데모 7일 부여 완료', true);
   await loadAll();
