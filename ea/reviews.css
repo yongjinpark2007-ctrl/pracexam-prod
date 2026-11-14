@@ -213,5 +213,5 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 .rv-more .btn-ghost:hover, .rv-back .btn-ghost:hover{border-color:var(--navy-mid, #4d6164);}
 .rv-back a, .rv-back a:hover, .rv-more a, .rv-more a:hover{text-decoration:none;}   /* boss 2026-11-14: no underline on button links */
 
-/* boss 2026-11-14: the free-pass disclosure sits right under the reviews in normal text (not grey fine print) */
-.rv-disclose{margin:22px 0 0; font-size:15px; line-height:1.6; color:var(--text-main); text-align:center;}
+/* boss 2026-11-14: the free-pass disclosure is the last sentence of the small print, not grey */
+.rv-policy .rv-disc{font-weight:600; color:var(--text-main);}
