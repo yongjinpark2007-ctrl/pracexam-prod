@@ -60,6 +60,7 @@ textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px soli
 .btn:disabled{opacity:.42;cursor:not-allowed;}
 .msg{font-size:13px;color:var(--text-muted);align-self:center;}
 .empty{padding:30px;text-align:center;color:var(--text-muted);}
+.q1{margin:12px 0 4px;}.q1 h4{font-size:12.5px;color:var(--text-muted);font-weight:700;margin-bottom:6px;}.q1v{display:inline-block;background:#E3ECEA;border:1px solid #6FA39E;border-radius:999px;padding:3px 12px;margin:0 6px 4px 0;font-weight:700;font-size:14px;}
 </style>
 </head>
 <body>
@@ -131,6 +132,12 @@ function tiles(){
   $('tiles').querySelectorAll('[data-f]').forEach(function(b){ b.onclick = function(){ FILTER = b.getAttribute('data-f'); render(); }; });
 }
 
+// Q1 answer shown as its own line (boss 2026-11-14: it only appeared as small chips)
+function q1(x){
+  var a = (x.passed || []).slice().sort().map(function(n){ return 'Part ' + n + ' 합격'; });
+  if (x.studying) a.push('학습 중');
+  return a.length ? a.map(function(t){ return '<span class="q1v">' + t + '</span>'; }).join('') : '<span class="meta">선택 없음</span>';
+}
 function card(x){
   var st = { new:['new','새 리뷰'], published:['pub','게시됨'], hidden:['hid','숨김'] }[x.status] || ['', x.status];
   var passed = (x.passed || []).length ? 'Part ' + x.passed.join('·') + ' 합격' : '';
@@ -145,6 +152,7 @@ function card(x){
     +   (passed ? '<span class="chip">' + passed + '</span>' : '') + (x.studying ? '<span class="chip">학습 중</span>' : '')
     +   (x.show_state && x.state ? '<span class="chip">' + esc(x.state) + '</span>' : '')
     +   '<span class="chip">' + esc(pass) + '</span></div></div></div>'
+    + '<div class="q1"><h4>1. 해당하는 것 (시험 상태 · 본인 응답)</h4><div>' + q1(x) + '</div></div>'
     + '<div class="qa">'
     +   '<div><h4>2. 가장 도움이 된 점과 이유 — 원문</h4><div class="orig">' + esc(x.helped) + '</div>'
     +     '<h4 style="margin-top:8px;">다듬은 글 (비우면 원문이 나갑니다)</h4><textarea data-k="helped">' + esc(x.helped_edit || '') + '</textarea></div>'
