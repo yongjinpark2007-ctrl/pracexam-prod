@@ -322,6 +322,8 @@ html, body {
 
 /* ── PHASE 4: STATISTICS PAGE ── */
 .sts-section{margin-bottom:2rem;}
+#screen-settings .set-title{margin-top:1.6rem;}
+#settings-screen-title + .set-title{margin-top:0;}
 .sts-section-title{font-size:14.5px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem;}
 .sts-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;}
 .sts-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1rem;text-align:center;box-shadow:var(--card-shadow);transition:border-color .2s;}
@@ -2248,15 +2250,17 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 <div id="screen-settings" class="screen">
   <div class="section-title" id="settings-screen-title">Settings</div>
 
+  <div class="sts-section-title set-title" data-i18n="acct_info_title">계정 정보</div>
   <div style="background:var(--card-bg);border:1px solid rgba(53,70,73,.2);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
-    <div class="exp-label" style="color:var(--teal);" data-i18n="acct_info_title">👤 계정 정보</div>
     <div style="font-size:15.5px;color:var(--text-mid);line-height:1.6;" id="sync-status-text">…</div>
   </div>
 
-  <div id="settings-trial-status" style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;display:none;">
-    <div class="exp-label" style="margin-bottom:8px;" data-i18n="acct_membership_title">🎓 멤버십</div>
-    <div style="font-size:15.5px;color:var(--text-mid);line-height:1.75;" id="trial-status-text"></div>
-    <div id="trial-status-action" style="margin-top:12px;"></div>
+  <div id="settings-trial-status" style="display:none;">
+    <div class="sts-section-title set-title" data-i18n="acct_membership_title">멤버십</div>
+    <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;">
+      <div style="font-size:15.5px;color:var(--text-mid);line-height:1.75;" id="trial-status-text"></div>
+      <div id="trial-status-action" style="margin-top:12px;"></div>
+    </div>
   </div>
 
   <!-- 이메일 수신 설정 카드 제거(2026-07-11): 인앱 토글 대신 이메일 하단 unsubscribe 링크로 옵트아웃. 옵트인 모달·동의 로직은 유지. -->
@@ -2266,8 +2270,8 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   <!-- 💾 클라우드 저장 안내 카드 제거(2026-07-11): 불필요한 안내문. -->
 
   <!-- 🔒 비밀번호 변경 (2026-07-30) — 재인증(현재 비밀번호 확인) 후 updateUser, 성공 시 다른 기기 세션 종료 -->
-  <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;">
-    <div class="exp-label" style="margin-bottom:10px;" data-i18n="pw_title">🔒 비밀번호 변경</div>
+  <div class="sts-section-title set-title" data-i18n="pw_title">비밀번호 변경</div>
+  <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;">
     <div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
       <div>
         <label style="display:block;font-size:14px;font-weight:700;color:var(--text-muted);margin-bottom:4px;" data-i18n="pw_cur">현재 비밀번호</label>
@@ -5345,10 +5349,10 @@ var UI_TEXT = {
   nav_account:   {ko:'내 계정',  en:'My Account'},
   nav_settings:  {ko:'설정',     en:'Settings'},
   nav_admin:     {ko:'관리자',   en:'Admin'},
-  acct_info_title:{ko:'👤 계정 정보', en:'👤 Account Info'},
-  acct_membership_title:{ko:'🎓 멤버십', en:'🎓 Membership'},
+  acct_info_title:{ko:'계정 정보', en:'Account Info'},
+  acct_membership_title:{ko:'멤버십', en:'Membership'},
   acct_logout:   {ko:'로그아웃', en:'Log out'},
-  pw_title:      {ko:'🔒 비밀번호 변경', en:'🔒 Change Password'},
+  pw_title:      {ko:'비밀번호 변경', en:'Change Password'},
   pw_cur:        {ko:'현재 비밀번호', en:'Current password'},
   pw_new:        {ko:'새 비밀번호 (6자 이상)', en:'New password (at least 6 characters)'},
   pw_new2:       {ko:'새 비밀번호 확인', en:'Confirm new password'},
@@ -11840,6 +11844,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
-<script src="/app-reviews.js?v=20261114w" defer></script>
+<script src="/app-reviews.js?v=20261114x" defer></script>
 </body>
 </html>

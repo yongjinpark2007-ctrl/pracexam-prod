@@ -65,7 +65,7 @@
     + '.rvm-bar{height:10px;border-radius:999px;background:var(--border-clr);overflow:hidden;margin:10px 0 6px;}'
     + '.rvm-bar span{display:block;height:100%;background:var(--teal,#354649);}'
     + '.rvm-code{font:700 22px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--text-main);background:#fff;border:2px dashed var(--teal,#354649);border-radius:12px;padding:14px;text-align:center;margin:12px 0;}'
-    + '.rvp-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;margin-top:1rem;}'
+    + '.rvp-box{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;}'
     + '.rvp-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--border-clr);}'
     + '.rvp-row:last-of-type{border-bottom:none;}'
     + '.rvp-code{font:700 16px ui-monospace,Consolas,monospace;letter-spacing:.05em;color:var(--text-main);}'
@@ -337,7 +337,7 @@
     var host = document.getElementById('screen-settings'); if (!host) return;
     var card = document.getElementById('rvp-card');
     if (!card){
-      card = document.createElement('div'); card.id = 'rvp-card'; card.className = 'rvp-card';
+      card = document.createElement('div'); card.id = 'rvp-card';
       host.insertBefore(card, document.getElementById('settings-data-mgmt') || null);
     }
     var list = (INFO && INFO.passes) || [];
@@ -363,14 +363,14 @@
         : L('아직 받은 이용권이 없습니다. 250문항 이상 학습하시고 리뷰를 남기시면 받으실 수 있습니다.', 'You do not have a pass yet. Study at least 250 questions and leave a review to receive one.');
     var empty = '<div class="rvp-meta" style="padding:6px 0 2px;">' + emptyMsg
       + '</div>' + (canReview() ? '<div style="margin-top:10px;"><button class="btn-navy" type="button" id="rvp-write" style="padding:9px 18px;font-size:14.5px;">' + L('리뷰 작성하기', 'Write a Review') + '</button></div>' : '');   // boss 2026-11-14: a button, not a link
-    card.innerHTML = '<div class="exp-label" style="margin-bottom:4px;">🎟️ 30-Day Pro Pass</div>'
+    card.innerHTML = '<div class="sts-section-title set-title">30-Day Pro Pass</div><div class="rvp-box">'
       + '<div class="rvp-meta" style="margin-bottom:4px;">' + L('하나의 이용권으로 Pro를 30일 동안 사용할 수 있습니다.', 'One pass gives you 30 free days of Pro.') + '</div>'
       + '<div class="rvp-sec" style="border-top:none;padding-top:4px;margin-top:8px;">' + L('내 이용권', 'My pass') + '</div>'
       + (list.length ? rows : empty)
       + '<div class="rvp-sec rvp-split">' + L('친구에게서 받은 이용권 등록', 'Redeem a pass from a friend') + '</div>'
       + '<div class="rvp-redeem"><input type="text" id="rvp-input" placeholder="PASS-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn-navy" type="button" id="rvp-redeem-btn">' + L('등록', 'Redeem') + '</button></div>'
       + '<p class="rvp-note">' + L('친구에게서 받은 이용권은 PracExam을 처음 이용하는 계정에서 등록할 수 있습니다.', 'Passes from a friend are for accounts that are new to PracExam.') + '</p>'
-      + '<p class="rvp-note">' + L('자세한 이용권 약관은 ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">여기</a>' + '를 참조하세요.', 'For the full pass terms, see ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">here</a>' + '.') + '</p>';   // boss 2026-11-14: «자세한 이용권 약관은 여기를 참조하세요»
+      + '<p class="rvp-note">' + L('자세한 이용권 약관은 ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">여기</a>' + '를 참조하세요.', 'For the full pass terms, see ' + '<a href="/terms.html#pro-pass" target="_blank" rel="noopener" style="color:var(--teal,#354649);font-weight:700;">here</a>' + '.') + '</p></div>';   // boss 2026-11-14: «자세한 이용권 약관은 여기를 참조하세요»
     card.querySelectorAll('[data-rvp-use]').forEach(function(b){ b.onclick = function(){ b.disabled = true; redeem(b.getAttribute('data-rvp-use')); }; });
     card.querySelectorAll('[data-rvp-gift]').forEach(function(b){ b.onclick = function(){
       var code = b.getAttribute('data-rvp-gift'), box = document.getElementById('gift-' + code), msg = giftText(code, b.getAttribute('data-exp'));
