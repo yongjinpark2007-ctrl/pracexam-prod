@@ -399,8 +399,8 @@
     if (!box){ box = document.createElement('div'); box.id = 'dash-review-ask'; anchor.parentNode.insertBefore(box, anchor); }
     if ((!canReview() || askSnoozed()) && !(IS_TEST && window.__rvAskPreview)){ box.innerHTML = ''; return; }   // __rvAskPreview: design check on test hosts
     box.innerHTML = '<div class="dash-sec-card rv-ask">'
-      + '<div class="rv-ask-t">' + esc(L('이제 리뷰를 남기실 수 있습니다.', 'You can now leave a review.')) + '</div>'
-      + '<div class="rv-ask-d">' + esc(L('리뷰를 남겨 주시면 30-Day Pro Pass를 드립니다.', 'Leave one and receive a 30-Day Pro Pass.')) + '</div>'
+      + '<div class="rv-ask-t">' + esc(L('이제 리뷰를 남겨주실 수 있습니다.', 'You can now leave a review.')) + '</div>'
+      + '<div class="rv-ask-d">' + esc(L('의견을 남겨 주시고 공유를 해주시면 내용에 상관없이 30-Day Pro Pass를 드립니다.', 'Share your feedback and allow us to post it, and you will receive a 30-Day Pro Pass, whatever it says.')) + '</div>'
       + '<div class="rv-ask-b"><button class="btn-navy" type="button" id="rv-ask-write">' + esc(L('리뷰 작성하기', 'Write a Review')) + '</button>'
       + '<button class="btn-ghost" type="button" id="rv-ask-later">' + esc(L('나중에', 'Later')) + '</button></div></div>';
     box.querySelector('#rv-ask-write').onclick = function(){ openReview(); };
