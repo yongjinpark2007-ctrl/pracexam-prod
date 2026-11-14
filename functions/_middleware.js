@@ -318,6 +318,17 @@ async function injectReviews(response, ko) {
     .transform(response);
 }
 
+// 2026-11-14 (boss): until 3 English reviews are published, links to the reviews page are taken out of the EA menus
+// (the page would be empty). Checked on the server with the same cached public_reviews call; on error the links stay.
+const RV_LINK_PAGES = /^\/(ea\/(?!reviews\/)|tips\/|popquiz|videos)/;
+async function hideReviewLinks(response) {
+  const rows = await rvRows();
+  if (!rows || rows.filter(r => r.lang !== "ko").length >= 3) return response;
+  return new HTMLRewriter()
+    .on('a[href="/ea/reviews/"], a[href="/ea/reviews/ko/"]', { element(el) { el.remove(); } })
+    .transform(response);
+}
+
 // 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
 // Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
 export async function onRequest(context) {
@@ -327,5 +338,6 @@ export async function onRequest(context) {
   if (_p === "/ea/reviews/" || _p === "/ea/reviews/ko/") response = await injectReviews(response, _p === "/ea/reviews/ko/");
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html")) return response;
+  if (RV_LINK_PAGES.test(_p)) response = await hideReviewLinks(response);
   return new HTMLRewriter().onDocument({ comments(c) { c.remove(); } }).transform(response);
 }
