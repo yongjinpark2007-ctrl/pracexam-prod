@@ -276,12 +276,55 @@ async function koRoute(context, route) {
   return res;
 }
 
+// 2026-11-14: published EA reviews are written into the HTML of /ea/reviews/ (and /ko/) on the server, so search engines and
+// AI answer engines read them without running JS. ea/reviews.js re-renders the same list on load. On any error the page is
+// served untouched (the JS still shows the reviews). English page = English reviews only; Korean page = all.
+const RV_URL  = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_reviews?exam=eq.ea&select=id,name,state,lang,subscriber,passed,helped,advice,date,featured";
+const RV_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmcmh2b2RydXVscGdubXVkendoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTgyOTYsImV4cCI6MjA5NzU3NDI5Nn0.evW9GggJ2saXHgZah1SRQvSdle7AC5esAnrmpbm5jb8";
+function rvEsc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function rvKey(r) { return "rv-" + String(r.id || (String(r.name || "") + "-" + String(r.date || ""))).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function rvCard(r) {
+  const p = (r.passed || []).filter(n => n >= 1 && n <= 3).sort();
+  const m = /^(\d{4})-(\d{2})/.exec(r.date || "");
+  const meta = [r.subscriber ? "Verified Subscriber" : "Verified User", r.state ? rvEsc(r.state) : "", m ? m[1] + "." + m[2] : ""].filter(Boolean).join(" · ");
+  const lang = r.lang === "ko" ? "ko" : "en";
+  return '<article id="' + rvKey(r) + '" class="rv-card" data-lang="' + lang + '" lang="' + lang + '">'
+    + '<p class="rv-text"><span class="rv-q" aria-hidden="true">&ldquo;</span>' + rvEsc(r.helped) + "</p>"
+    + (r.advice ? '<p class="rv-advice"><b>To Future EAs:</b> ' + rvEsc(r.advice) + "</p>" : "")
+    + '<div class="rv-foot"><span class="rv-name">' + rvEsc(r.name) + "</span>"
+    + (p.length ? '<span class="rv-pass"><img src="/check-mark.png" alt="" width="14" height="14">Part ' + p.join("·") + "</span>" : "")
+    + '<span class="rv-meta">' + meta + "</span></div></article>";
+}
+async function rvRows() {
+  try {
+    const r = await fetch(RV_URL, { headers: { apikey: RV_ANON, Authorization: "Bearer " + RV_ANON }, cf: { cacheTtl: 300, cacheEverything: true } });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows : null;
+  } catch (e) { return null; }
+}
+async function injectReviews(response, ko) {
+  const ct = (response && response.headers.get("content-type")) || "";
+  if (!ct.includes("text/html") || response.status !== 200) return response;
+  let rows = await rvRows();
+  if (!rows || !rows.length) return response;
+  if (!ko) rows = rows.filter(r => r.lang !== "ko");
+  rows.sort((a, b) => (!!b.featured !== !!a.featured) ? (b.featured ? 1 : -1) : String(b.date || "").localeCompare(String(a.date || "")));
+  if (!rows.length) return response;
+  const html = rows.map(rvCard).join("");
+  return new HTMLRewriter()
+    .on("#rv-all", { element(el) { el.setInnerContent(html, { html: true }); } })
+    .on("#rv-empty", { element(el) { el.setAttribute("hidden", ""); } })
+    .transform(response);
+}
+
 // 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
 // Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
 export async function onRequest(context) {
   const _p = new URL(context.request.url).pathname;
   if (KO_REDIRECT[_p]) return Response.redirect(new URL(KO_REDIRECT[_p], context.request.url).toString(), 301);
-  const response = KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
+  let response = KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
+  if (_p === "/ea/reviews/" || _p === "/ea/reviews/ko/") response = await injectReviews(response, _p === "/ea/reviews/ko/");
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html")) return response;
   return new HTMLRewriter().onDocument({ comments(c) { c.remove(); } }).transform(response);
