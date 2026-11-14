@@ -323,6 +323,8 @@ html, body {
 /* ── PHASE 4: STATISTICS PAGE ── */
 .sts-section{margin-bottom:2rem;}
 #screen-settings .set-title{margin-top:1.6rem;}
+#screen-dashboard .sts-section-title, #screen-dashboard .sts-section-head{margin-top:.35rem;}
+#screen-dashboard .sts-section-head .sts-section-title{margin-top:0;}
 #settings-screen-title + .set-title{margin-top:0;}
 .sts-section-title{font-size:15.5px;font-weight:800;color:var(--text-main);letter-spacing:.01em;margin-bottom:.85rem;padding-left:10px;border-left:3px solid var(--accent,#6FA39E);line-height:1.25;}   /* boss 2026-11-14: was grey caps, too weak */
 .sts-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;}
@@ -1124,7 +1126,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
   box-shadow:var(--card-shadow);
 }
 .dash-hero-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1rem;}
-.dash-hero-label{font-size:14.5px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;}
+.dash-hero-label{font-size:15px;font-weight:800;color:var(--text-main);letter-spacing:.01em;}   /* boss 2026-11-14: same as «Part 선택» */
 /* ⚠️ flex-wrap 을 쓰지 않는다 — 쓰면 아이콘과 글자가 한 줄에 안 들어갈 때 «글자 덩어리째»
    아래로 내려가, Part 마다(글자 길이마다) 줄 수가 달라진다 (2026-08-21).
    아이콘은 왼쪽에 두고, 글자는 min-width:0 인 자기 칸 안에서 접히게 한다. */
@@ -1268,7 +1270,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
       토큰을 그대로 쓴다. 같은 역할의 부품이 이미 있으면 그것을 가져다 쓴다. */
 .dash-hero-picker{margin-top:1.1rem;padding-top:.9rem;border-top:1px solid rgba(53,70,73,.12);}
 /* 「Part 선택」은 히어로 «안»의 구역 제목 — 「약점 보강」·「최근 학습」이 쓰는 .dash-sec-title 과 같은 값 */
-.dash-hero-picker-lab{font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:11px;}
+.dash-hero-picker-lab{font-size:15px;font-weight:800;color:var(--text-main);margin-bottom:11px;}
 .dash-hero-picker .dash-parts-list{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:0;}
 
 /* 두께 절반 — 진짜 원인은 여백이 아니라 .dash-part-row-name 이 세로로 쌓여 있던 것(44px) */
@@ -1329,7 +1331,7 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .dash-part-row-stats{font-size:13.5px;color:var(--text-mid);margin-bottom:11px;}
 .dash-part-row-bar{height:6px;background:rgba(0,0,0,.05);border-radius:3px;overflow:hidden;margin-top:auto;}
 /* ── 공지사항 (Announcements) ── */
-.ann-card{background:var(--ann-bg);border:1px solid var(--ann-bd);border-left:3px solid var(--silver);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
+.ann-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:16px 18px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
 .ann-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .ann-head-l{display:flex;align-items:center;gap:9px;}
 .ann-title-lbl{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--text-main);}
@@ -1396,7 +1398,7 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 
 /* ── 대시보드 섹션 카드 (약점 보강 · 최근 학습) — 공지/프리미엄과 동일 문법:
      둥근 모서리 + 3px 좌측 포인트 선 + 제목 내장 (2026-07-27 통일) ── */
-.dash-sec-card{background:var(--card-bg);border:1px solid var(--border-clr);border-left:3px solid var(--silver);border-radius:14px;padding:14px 16px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
+.dash-sec-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:16px 18px;margin-bottom:1.25rem;box-shadow:var(--card-shadow);}
 .dash-sec-title{font-size:17.5px;font-weight:700;color:var(--text-main);margin-bottom:12px;}
 
 /* 약점 토픽 위젯 — 카드 안쪽 행 (공지 항목과 동일 톤) */
@@ -2225,7 +2227,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 #dash-videos, #screen-videos{ --border-strong:var(--border-clr); --font-sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
 /* 대시보드 «최신 영상» — 랜딩 페이지의 Featured Short 띠와 같은 디자인(videos.css 의 .fs-* 를 그대로 쓴다) */
 /* 바탕은 다른 대시보드 카드(.dash-sec-card)와 같은 «흰 카드 + 회색 왼쪽 선». 대시보드에서 따뜻한 색을 걷은 2026-09-21 결정을 따른다. */
-.dv-card{background:var(--card-bg); border:1px solid var(--border-clr); border-left:3px solid var(--silver); border-radius:14px; padding:22px 24px; margin-bottom:1.25rem; box-shadow:var(--card-shadow);}
+.dv-card{background:var(--card-bg); border:1px solid var(--border-clr); border-radius:14px; padding:22px 24px; margin-bottom:1.25rem; box-shadow:var(--card-shadow);}
 #dash-videos .vx-pill, #screen-videos .vx-pill{background:var(--navy-light); border-color:var(--border-clr); color:var(--navy);}
 .dv-card .fs-grid{gap:clamp(20px,4vw,44px);}
 .dv-card .fs-media{width:200px;}
@@ -6363,11 +6365,11 @@ function renderDashVideos(){
     var l = PXVideos.usable(row, LANG);
     if(!l){ el.innerHTML = ''; return; }
     el.innerHTML =
+      '<div class="sts-section-title">' + vidT('최신 동영상', 'Latest Video') + '</div>' +
       '<div class="dv-card">' +
         '<div class="fs-grid">' +
           '<div class="fs-media"><div class="vx-frame" id="dv-frame"></div></div>' +
           '<div class="fs-text">' +
-            '<span class="dv-eyebrow">' + vidT('EA 문제풀이 & TAX TIP', 'EA Practice Questions & Tax Tips') + '</span>' +
             '<h2 id="dv-title"></h2>' +
             '<div><span class="vx-pill" id="dv-pill"></span></div>' +
             '<p class="fs-desc" id="dv-desc" style="margin-top:12px;"></p>' +
@@ -6531,9 +6533,9 @@ function paintAnnouncements(){
   var unread = rows.filter(function(a){ return !readSet.has(a.id); }).length;
 
   var head =
-    '<div class="ann-head">'+
-      '<div class="ann-head-l">'+
-        '<span class="ann-title-lbl"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'+ (en ? 'Notices' : '공지사항') +'</span>'+
+    '<div class="sts-section-head">'+
+      '<div style="display:flex;align-items:center;gap:9px;">'+
+        '<span class="sts-section-title" style="margin-bottom:0;">'+ (en ? 'Notices' : '공지사항') +'</span>'+
         (unread ? '<span class="ann-pill">'+ (en ? (unread+' unread') : (unread+'개 안 읽음')) +'</span>' : '')+
       '</div>'+
       (unread ? '<button class="ann-mark" onclick="annMarkAll()">'+ (en ? 'Mark all read' : '모두 읽음') +'</button>' : '')+
@@ -6562,7 +6564,7 @@ function paintAnnouncements(){
     '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="ann-card">'+ head + items +'</div>';
+  el.innerHTML = head + '<div class="ann-card">'+ items +'</div>';
 }
 function _annEsc(s){
   return String(s == null ? '' : s)
@@ -7630,7 +7632,7 @@ function renderDashWeakTopics(){
   if(!el) return;
 
   // 제목은 카드 안에 (공지사항·프리미엄 카드와 동일 문법, 2026-07-27 통일)
-  var label = '<div class="dash-sec-title">' + t('dash_weak_more') + focusPart + ' Top 3</div>';
+  var label = '<div class="sts-section-title">' + t('dash_weak_more') + focusPart + ' Top 3</div>';
 
   if(weak.length === 0){
     var reason = Object.keys(copMap).length === 0
@@ -7638,7 +7640,7 @@ function renderDashWeakTopics(){
       : (LANG === 'en'
           ? ('Shown after ' + MIN_ATT + '+ attempts on a ' + focusPart + ' topic')
           : (focusPart + ' 주제를 ' + MIN_ATT + '회 이상 학습한 후 표시됩니다'));
-    el.innerHTML = '<div class="dash-sec-card">' + label +
+    el.innerHTML = label + '<div class="dash-sec-card">' +
       '<div class="empty" style="padding:1.25rem 1rem;background:var(--ann-item-bg);' +
       'border:1px solid rgba(53,70,73,.10);border-radius:10px;">' +
         '<div class="empty-sub">' + reason + '</div>' +
@@ -7658,7 +7660,7 @@ function renderDashWeakTopics(){
     '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="dash-sec-card">' + label + rows + '</div>';
+  el.innerHTML = label + '<div class="dash-sec-card">' + rows + '</div>';
 }
 
 // 약점 행 클릭 → 확인 모달 → 승낙 시 해당 COP 문제만 모은 미니 세션
@@ -7793,7 +7795,7 @@ function renderDashRecent2(){
   var _loc = (LANG === 'en') ? 'en-US' : 'ko-KR';
   if(recentItems.length === 0){
     el.innerHTML =
-      '<div class="dash-sec-card"><div class="dash-sec-title">' + t('dash_recent') + '</div>' +
+      '<div class="sts-section-title">' + t('dash_recent') + '</div><div class="dash-sec-card">' +
       '<div class="empty" style="padding:1.5rem 1rem;background:var(--ann-item-bg);border:1px solid rgba(53,70,73,.10);border-radius:10px;">' +
         '<div class="empty-icon">📖</div>' +
         '<div class="empty-title">' + t('dash_recent_empty_t') + '</div>' +
@@ -7832,7 +7834,7 @@ function renderDashRecent2(){
            '</div>';
   }).join('');
 
-  el.innerHTML = '<div class="dash-sec-card"><div class="dash-sec-title">' + t('dash_recent') + '</div>' + rowsHtml + '</div>';
+  el.innerHTML = '<div class="sts-section-title">' + t('dash_recent') + '</div><div class="dash-sec-card">' + rowsHtml + '</div>';
 }
 
 // Hero CTA 클릭 → Study 진입 (focus part 저장 + 해당 chip 자동 선택)
