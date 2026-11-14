@@ -65,6 +65,7 @@
     + '.rvm-bar{height:10px;border-radius:999px;background:var(--border-clr);overflow:hidden;margin:10px 0 6px;}'
     + '.rvm-bar span{display:block;height:100%;background:var(--teal,#354649);}'
     + '.rvm-code{font:700 22px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:var(--text-main);background:#fff;border:2px dashed var(--teal,#354649);border-radius:12px;padding:14px;text-align:center;margin:12px 0;}'
+    + '.rv-ask{display:flex;flex-direction:column;gap:4px;}.rv-ask-t{font-size:16.5px;font-weight:800;color:var(--text-main);}.rv-ask-d{font-size:15px;color:var(--text-mid);}.rv-ask-b{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}.rv-ask-b button{padding:9px 18px;font-size:15px;}'
     + '.rvp-box{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;}'
     + '.rvp-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--border-clr);}'
     + '.rvp-row:last-of-type{border-bottom:none;}'
@@ -386,11 +387,32 @@
     };
   }
 
+  // Dashboard ask card: shown once the customer can review; «나중에» hides it for 14 days.
+  var ASK_DAYS = 14;
+  function askKey(){ try { return 'px_review_ask_later_' + (SB_USER ? SB_USER.id : 'anon'); } catch(e){ return 'px_review_ask_later'; } }
+  function askSnoozed(){
+    try { var t = +localStorage.getItem(askKey()) || 0; return !!t && (Date.now() - t) < ASK_DAYS * 864e5; } catch(e){ return false; }
+  }
+  function renderDashAsk(){
+    var anchor = document.getElementById('dash-mock'); if (!anchor) return;
+    var box = document.getElementById('dash-review-ask');
+    if (!box){ box = document.createElement('div'); box.id = 'dash-review-ask'; anchor.parentNode.insertBefore(box, anchor); }
+    if (!canReview() || askSnoozed()){ box.innerHTML = ''; return; }
+    box.innerHTML = '<div class="dash-sec-card rv-ask">'
+      + '<div class="rv-ask-t">' + esc(L('이제 리뷰를 남기실 수 있습니다.', 'You can now leave a review.')) + '</div>'
+      + '<div class="rv-ask-d">' + esc(L('리뷰를 남겨 주시면 30-Day Pro Pass를 드립니다.', 'Leave one and receive a 30-Day Pro Pass.')) + '</div>'
+      + '<div class="rv-ask-b"><button class="btn-navy" type="button" id="rv-ask-write">' + esc(L('리뷰 작성하기', 'Write a Review')) + '</button>'
+      + '<button class="btn-ghost" type="button" id="rv-ask-later">' + esc(L('나중에', 'Later')) + '</button></div></div>';
+    box.querySelector('#rv-ask-write').onclick = function(){ openReview(); };
+    box.querySelector('#rv-ask-later').onclick = function(){ try { localStorage.setItem(askKey(), String(Date.now())); } catch(e){} box.innerHTML = ''; };
+  }
+
   function refreshUi(){
     addMenus();
     var show = canReview();
     ['nav-review', 'mob-review-write'].forEach(function(id){ var el = document.getElementById(id); if (el) el.style.display = show ? '' : 'none'; });
     renderPassCard();
+    renderDashAsk();
   }
 
   // keep labels in step with the app language and the Settings screen
@@ -402,6 +424,7 @@
     refreshUi();
     hook('setLang', function(){ refreshUi(); });
     hook('showScreen', function(n){ if (n === 'settings') loadInfo(); });
+    hook('renderDashboard', function(){ renderDashAsk(); });
     // wait for login, then ask the server once
     var tries = 0, t = setInterval(function(){
       var ok = false; try { ok = !!SB_USER; } catch(e){}
