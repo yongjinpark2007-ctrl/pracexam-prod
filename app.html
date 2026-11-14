@@ -324,7 +324,7 @@ html, body {
 .sts-section{margin-bottom:2rem;}
 #screen-settings .set-title{margin-top:1.6rem;}
 #settings-screen-title + .set-title{margin-top:0;}
-.sts-section-title{font-size:14.5px;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem;}
+.sts-section-title{font-size:15.5px;font-weight:800;color:var(--text-main);letter-spacing:.01em;margin-bottom:.85rem;padding-left:10px;border-left:3px solid var(--accent,#6FA39E);line-height:1.25;}   /* boss 2026-11-14: was grey caps, too weak */
 .sts-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.75rem;}
 .sts-card{background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1rem;text-align:center;box-shadow:var(--card-shadow);transition:border-color .2s;}
 .sts-card-val{font-size:26px;font-weight:700;color:var(--text-main);line-height:1;}
@@ -2272,7 +2272,9 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   <!-- 🔒 비밀번호 변경 (2026-07-30) — 재인증(현재 비밀번호 확인) 후 updateUser, 성공 시 다른 기기 세션 종료 -->
   <div class="sts-section-title set-title" data-i18n="pw_title">비밀번호 변경</div>
   <div style="background:var(--card-bg);border:1px solid var(--border-clr);border-radius:14px;padding:1.25rem;">
-    <div style="display:flex;flex-direction:column;gap:10px;max-width:420px;">
+    <!-- boss 2026-11-14: rarely used → one button, the form opens on click -->
+    <button id="pw-open" class="btn-navy" type="button" style="padding:10px 20px;font-size:15px;" onclick="this.style.display='none';document.getElementById('pw-form').style.display='flex';var c=document.getElementById('pw-cur');if(c)c.focus();" data-i18n="pw_title">비밀번호 변경</button>
+    <div id="pw-form" style="display:none;flex-direction:column;gap:10px;max-width:420px;">
       <div>
         <label style="display:block;font-size:14px;font-weight:700;color:var(--text-muted);margin-bottom:4px;" data-i18n="pw_cur">현재 비밀번호</label>
         <input type="password" id="pw-cur" autocomplete="current-password" placeholder="••••••••" style="width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--border-clr);border-radius:10px;background:var(--card-bg);color:var(--text-main);">
@@ -11844,6 +11846,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
-<script src="/app-reviews.js?v=20261114x" defer></script>
+<script src="/app-reviews.js?v=20261114y" defer></script>
 </body>
 </html>
