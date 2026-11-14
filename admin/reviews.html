@@ -60,7 +60,7 @@ textarea{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px soli
 .btn:disabled{opacity:.42;cursor:not-allowed;}
 .msg{font-size:13px;color:var(--text-muted);align-self:center;}
 .empty{padding:30px;text-align:center;color:var(--text-muted);}
-.q1{margin:12px 0 4px;}.q1 h4{font-size:12.5px;color:var(--text-muted);font-weight:700;margin-bottom:6px;}.q1v{display:inline-block;background:#E3ECEA;border:1px solid #6FA39E;border-radius:999px;padding:3px 12px;margin:0 6px 4px 0;font-weight:700;font-size:14px;}
+.q1{margin:12px 0 4px;}.q1 h4{font-size:12.5px;color:var(--text-muted);font-weight:700;margin-bottom:6px;}.q1v{font-size:15px;font-weight:600;color:var(--text-main);}
 </style>
 </head>
 <body>
@@ -136,7 +136,7 @@ function tiles(){
 function q1(x){
   var a = (x.passed || []).slice().sort().map(function(n){ return 'Part ' + n + ' 합격'; });
   if (x.studying) a.push('학습 중');
-  return a.length ? a.map(function(t){ return '<span class="q1v">' + t + '</span>'; }).join('') : '<span class="meta">선택 없음</span>';
+  return a.length ? '<span class="q1v">' + a.join(' · ') + '</span>' : '<span class="meta">선택 없음</span>';   // plain text, not pills (boss: looked like buttons)
 }
 function card(x){
   var st = { new:['new','새 리뷰'], published:['pub','게시됨'], hidden:['hid','숨김'] }[x.status] || ['', x.status];
