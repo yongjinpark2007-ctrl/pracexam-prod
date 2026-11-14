@@ -214,7 +214,7 @@ const KO_LD_HUB_FAQ = "{\"@context\": \"https://schema.org\", \"@type\": \"FAQPa
 const KO_ROUTES = {
   "/ko/":              { base: "/",              title: KO_HUB_TITLE,     desc: KO_HUB_DESC, ld: { "hub-faq": KO_LD_HUB_FAQ } },
   "/ea/ko/":           { base: "/ea/",           title: KO_TITLE,         desc: KO_DESC },
-  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, heroImg: "/re/img/hero-re-3.webp?v=134ab7aea3", heroAlt: "집 현관 앞에서 태블릿을 든 부동산 에이전트", heroImg2: "/re/img/hero-re-ko2.webp?v=b5707c2779", heroAlt2: "벽돌집 앞에 팔짱을 끼고 서 있는 부동산 에이전트", ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
+  "/re/ko/":           { base: "/re/",           title: KO_RE_TITLE,      desc: KO_RE_DESC, heroes: [["/re/img/hero-re-ca.webp?v=d9c28d9778", "야자수와 선인장이 있는 스페인풍 집 앞에서 태블릿을 들고 안내하는 부동산 에이전트"], ["/re/img/hero-re-ko2.webp?v=b5707c2779", "벽돌집 앞에 팔짱을 끼고 서 있는 부동산 에이전트"], ["/re/img/hero-re-3.webp?v=134ab7aea3", "집 현관 앞에서 태블릿을 든 부동산 에이전트"], ["/re/img/hero-re-ny.webp?v=efc80208d2", "뉴욕 브라운스톤 건물 앞에 서 있는 부동산 에이전트"]], ld: { "re-faq": KO_LD_RE_FAQ, "re-course": KO_LD_RE_COURSE } },
   "/re/exam-tips/ko/": { base: "/re/exam-tips/", title: KO_TIPS_RE_TITLE, desc: KO_TIPS_RE_DESC },
   "/ea/exam-tips/ko/": { base: "/ea/exam-tips/", title: KO_TIPS_EA_TITLE, desc: KO_TIPS_EA_DESC },
   "/ea/reviews/ko/":   { base: "/ea/reviews/",   title: KO_REVIEWS_EA_TITLE, desc: KO_REVIEWS_EA_DESC },
@@ -233,15 +233,23 @@ class AttrSetter {
   constructor(name, value) { this.name = name; this.value = value; }
   element(el) { el.setAttribute(this.name, this.value); }
 }
-// 2026-11-06 (boss): the Korean RE main page rotates only the two Korean photos used on the Korean state pages.
+// 2026-11-14 (boss): the Korean RE main page rotates the hero photos of the CA, TX, NJ and NY Korean state pages, in that order.
+// The /re/ page has three <img> in #hero-rot: the first gets src, the rest get data-src (loaded after page load), extra photos are
+// added after the third, and unused ones are removed. The rotation script counts the photos itself.
 class HeroKo {
   constructor(route) { this.r = route; this.n = 0; }
   element(el) {
-    if (!this.r.heroImg) return;
+    const list = this.r.heroes;
+    if (!list || !list.length) return;
     this.n += 1;
-    if (this.n === 1) { el.setAttribute("src", this.r.heroImg); el.setAttribute("alt", this.r.heroAlt); return; }
-    if (this.n === 2) { el.setAttribute("data-src", this.r.heroImg2); el.setAttribute("alt", this.r.heroAlt2); return; }
-    el.remove();
+    const h = list[this.n - 1];
+    if (!h) { el.remove(); return; }
+    if (this.n === 1) { el.setAttribute("src", h[0]); el.setAttribute("alt", h[1]); }
+    else { el.setAttribute("data-src", h[0]); el.setAttribute("alt", h[1]); }
+    if (this.n === 3 && list.length > 3) {
+      const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+      el.after(list.slice(3).map((x) => '<img class="hero-photo" data-src="' + esc(x[0]) + '" width="1200" height="800" alt="' + esc(x[1]) + '" loading="lazy">').join(""), { html: true });
+    }
   }
 }
 async function koRoute(context, route) {
