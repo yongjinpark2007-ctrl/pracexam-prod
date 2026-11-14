@@ -215,4 +215,4 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 
 /* boss 2026-11-14: the small print sits above «Try it yourself», in the same color as the review text */
 .rv-policy{color:var(--text-main); margin-top:28px;}
-.rv-policy .rv-disc{font-weight:600;}
+.rv-policy .rv-disc{font-weight:inherit;}   /* boss 2026-11-14: plain, same as the rest of the note */
