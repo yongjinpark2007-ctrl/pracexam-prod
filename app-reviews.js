@@ -7,7 +7,7 @@
   'use strict';
   var host = location.hostname;
   var IS_TEST = /^test\.pracexam\.com$/i.test(host) || /\.pages\.dev$/i.test(host) || host === 'localhost' || host === '127.0.0.1';
-  if (!IS_TEST) return;   // not live on pracexam.com until wired and approved
+  // 2026-11-14: live on pracexam.com (review launch). IS_TEST only keeps the admin shortcut and the design preview on test hosts.
 
   var MIN_SOLVED = 150;   // boss 2026-11-14 (was 250)
   function realLen(t){
@@ -219,7 +219,7 @@
       .catch(function(e){ console.warn('my_review_info', e && e.message); INFO = null; refreshUi(); return null; });
   }
   function isAdmin(){ try { return SB_USER && SB_USER.id === ADMIN_UID; } catch(e){ return false; } }
-  function canReview(){ return !!(INFO && (INFO.can_review || (isAdmin() && !INFO.has_review && !INFO.blackout))); }
+  function canReview(){ return !!(INFO && (INFO.can_review || (IS_TEST && isAdmin() && !INFO.has_review && !INFO.blackout))); }   // staff do not review on live (Terms §7)
 
   var REASONS = {
     login:      ['로그인 후 이용해 주세요.', 'Please log in first.'],
@@ -397,7 +397,7 @@
     var anchor = document.getElementById('dash-mock'); if (!anchor) return;
     var box = document.getElementById('dash-review-ask');
     if (!box){ box = document.createElement('div'); box.id = 'dash-review-ask'; anchor.parentNode.insertBefore(box, anchor); }
-    if ((!canReview() || askSnoozed()) && !window.__rvAskPreview){ box.innerHTML = ''; return; }   // __rvAskPreview: design check on test hosts
+    if ((!canReview() || askSnoozed()) && !(IS_TEST && window.__rvAskPreview)){ box.innerHTML = ''; return; }   // __rvAskPreview: design check on test hosts
     box.innerHTML = '<div class="dash-sec-card rv-ask">'
       + '<div class="rv-ask-t">' + esc(L('이제 리뷰를 남기실 수 있습니다.', 'You can now leave a review.')) + '</div>'
       + '<div class="rv-ask-d">' + esc(L('리뷰를 남겨 주시면 30-Day Pro Pass를 드립니다.', 'Leave one and receive a 30-Day Pro Pass.')) + '</div>'

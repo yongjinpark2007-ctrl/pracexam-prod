@@ -318,6 +318,7 @@ async function injectReviews(response, ko) {
   return new HTMLRewriter()
     .on("#rv-all", { element(el) { el.setInnerContent(html, { html: true }); } })
     .on("#rv-empty", { element(el) { el.setAttribute("hidden", ""); } })
+    .on('meta[name="robots"]', { element(el) { el.remove(); } })   // indexable once 3+ reviews are published
     .transform(response);
 }
 
