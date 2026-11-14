@@ -397,7 +397,7 @@
     var anchor = document.getElementById('dash-mock'); if (!anchor) return;
     var box = document.getElementById('dash-review-ask');
     if (!box){ box = document.createElement('div'); box.id = 'dash-review-ask'; anchor.parentNode.insertBefore(box, anchor); }
-    if (!canReview() || askSnoozed()){ box.innerHTML = ''; return; }
+    if ((!canReview() || askSnoozed()) && !window.__rvAskPreview){ box.innerHTML = ''; return; }   // __rvAskPreview: design check on test hosts
     box.innerHTML = '<div class="dash-sec-card rv-ask">'
       + '<div class="rv-ask-t">' + esc(L('이제 리뷰를 남기실 수 있습니다.', 'You can now leave a review.')) + '</div>'
       + '<div class="rv-ask-d">' + esc(L('리뷰를 남겨 주시면 30-Day Pro Pass를 드립니다.', 'Leave one and receive a 30-Day Pro Pass.')) + '</div>'
