@@ -166,7 +166,9 @@
   }
   function clearDraft(){ try { localStorage.removeItem(draftKey()); } catch(e){} }
 
+  var VIEW = null;   // what the review screen shows now, so a language switch can redraw it (boss 2026-11-14)
   function form(){
+    VIEW = { k: 'form' };
     var nm = displayName();
     body('<div class="section-title" id="rvm-title">' + L('나의 학습 여정 나누기', 'Share Your Journey') + '</div>'
       + '<p class="rvm-sub">' + L('PracExam과 함께한 학습 경험을 나누어 주실 수 있으세요?<br>좋았던 점, 아쉬웠던 점도 저희가 더 나아지는 데 큰 도움이 됩니다. 또 앞으로 EA를 준비하실 분들께도 큰 힘이 될 것입니다.', 'We’d love to hear about your experience with PracExam. What you enjoyed and what we could do better both help us improve, and they help future EA candidates too.') + '</p>'
@@ -191,8 +193,11 @@
       + '<div class="rvm-notice">' + rulesBox() + '</div>');
     loadDraft();
     counter('rvm-q2', 'rvm-c2'); counter('rvm-q3', 'rvm-c3');
-    var _t; screenEl.querySelector('#rvm-body').addEventListener('input', function(){ clearTimeout(_t); _t = setTimeout(saveDraft, 400); });
-    screenEl.querySelector('#rvm-body').addEventListener('change', saveDraft);
+    if (!screenEl._rvListen){   // once: #rvm-body stays, only its content is redrawn
+      screenEl._rvListen = true;
+      var _t; screenEl.querySelector('#rvm-body').addEventListener('input', function(){ if (VIEW && VIEW.k === 'form'){ clearTimeout(_t); _t = setTimeout(saveDraft, 400); } });
+      screenEl.querySelector('#rvm-body').addEventListener('change', function(){ if (VIEW && VIEW.k === 'form') saveDraft(); });
+    }
     function req(){ var on = document.getElementById('rvm-q5').checked;
       ['rvm-c2','rvm-c3'].forEach(function(id){ var o = document.getElementById(id); o.style.fontWeight = on ? '700' : ''; o.title = on ? L('필수', 'Required') : ''; });
       document.getElementById('rvm-err').textContent = ''; }
@@ -266,6 +271,7 @@
   }
 
   function done(code, locked){
+    VIEW = { k: 'done', code: code, locked: locked };
     if (!code){
       body('<div class="section-title" id="rvm-title">' + L('소중한 리뷰를 남겨 주셔서 감사합니다', 'Thank you for your review') + '</div>'
         + '<p class="rvm-sub">' + L('보내 주신 의견은 PracExam 서비스 개선에 활용하겠습니다. 게시에 동의하지 않으셔서 이번에는 이용권이 발급되지 않았습니다.', 'We read every review and use it to improve PracExam. No pass was issued because you did not agree to publish.') + '</p>'
@@ -422,7 +428,13 @@
   }
   function start(){
     refreshUi();
-    hook('setLang', function(){ refreshUi(); });
+    hook('setLang', function(){
+      refreshUi();
+      // redraw the open review screen in the new language; typed answers come back from the draft
+      if (screenEl && screenEl.classList.contains('active') && VIEW){
+        if (VIEW.k === 'form'){ saveDraft(); form(); } else done(VIEW.code, VIEW.locked);
+      }
+    });
     hook('showScreen', function(n){ if (n === 'settings') loadInfo(); });
     hook('renderDashboard', function(){ renderDashAsk(); });
     // wait for login, then ask the server once
