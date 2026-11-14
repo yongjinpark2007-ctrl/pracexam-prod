@@ -76,7 +76,12 @@
     var live = LIVE_SOURCE ? loadLive() : Promise.resolve([]);
     return live.then(function(rows){
       rows = Array.isArray(rows) ? rows : [];
-      return rows;   // boss 2026-11-14: samples no longer shown, even on the test site
+      if (!IS_TEST) return rows;   // pracexam.com never requests the sample file
+      // boss 2026-11-14: on the test site add 3 English SAMPLE reviews so the section can be seen (needs 3 English)
+      return loadSample().then(function(sm){
+        var en3 = (sm || []).filter(function(r){ return r.lang === 'en'; }).slice(0, 3);
+        return rows.concat(en3);
+      });
     });
   }
 
