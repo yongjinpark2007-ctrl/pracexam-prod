@@ -267,7 +267,8 @@
 <!-- Korean-only state links (English /re/ hides .ko) -->
 <style>/* 2026-11-15 boss: state guide buttons in two rows, a little bigger (was one line, 2026-11-14) */
 .re-state-row{display:grid;grid-template-columns:repeat(var(--cols,6),minmax(0,1fr));gap:10px;max-width:980px;margin:0 auto}
-.re-state-row .btn{width:100%;padding:12px 10px;font-size:16px;white-space:nowrap;justify-content:center;text-align:center}
+.re-state-row .btn{width:100%;padding:12px 10px;font-size:16px;white-space:nowrap;justify-content:center;text-align:center;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.06)}
+.re-state-row .btn:hover{background:#f4f7fb}
 @media (max-width:760px){.re-state-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.re-state-row .btn{font-size:14px;padding:11px 6px}}
 </style>
 <section class="en" id="states-en" style="padding:34px 0;border-bottom:1px solid var(--border-clr);">
