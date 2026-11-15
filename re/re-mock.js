@@ -16,7 +16,9 @@
      NY  DOS — 1 1/2 hours. DOS does not publish the question count or the passing score.
      IL  PSI candidate information booklet — Broker: National 100 items, 150 min, 70% + State 40 items, 90 min, 75% (2026-11-02).
      WA  PSI candidate information bulletin (3/28/2024) — Broker: National 100 items, 150 min + State 30 items, 90 min, scaled 70 on each (2026-11-04).
-     FL  DBPR/Pearson VUE sales associate booklet — 100 multiple-choice questions, 3 1/2 hours, 75 points or higher (2026-10-29). */
+     FL  DBPR/Pearson VUE sales associate booklet — 100 multiple-choice questions, 3 1/2 hours, 75 points or higher (2026-10-29).
+     GA  PSI API (account/gare/test/Z97SEEX6) + bulletin 4672 — Salesperson: 100 National + 52 State in ONE 240-minute portion.
+         No published pass score. Boss 2026-11-14 «기역으로 해요» (option 1): the GA mock shows the score only, no pass line, no pass/fail. */
 (function(){
   var FMT = {
     ca: { n:150, min:180, pct:70, portions:false, ko:['150문항 · 3시간', '70% 이상이면 합격 (California DRE 기준)'], en:['150 questions · 3 hours', 'Pass at 70% or more (California DRE)'] },
@@ -26,6 +28,8 @@
                                                    en:['National 100 + State 40 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass National at 70% and State at 75% (PSI)'] },
     wa: { n:130, min:240, pct:70, portions:true, ko:['National 100 + 주 30문항 · 4시간 (National 2시간 30분 + 주 1시간 30분)', 'National과 주 부분을 각각 70% 이상 맞혀야 합격 (PSI 환산 점수 70 기준)'],
                                                    en:['National 100 + State 30 questions · 4 hours (National 2.5 hours + State 1.5 hours)', 'Pass each portion at 70% (PSI scaled score of 70)'] },
+    ga: { n:152, min:240, pct:null, portions:false, noPass:true, ko:['National 100 + 주 52문항 · 4시간 (한 번에 응시)', '조지아는 합격 기준 점수가 공개되어 있지 않아서, 이 모의고사에서는 획득한 점수만 보여 줍니다'],
+                                                   en:['National 100 + State 52 questions · 4 hours (one sitting)', 'Georgia does not publish a passing score, so this mock shows your score only'] },
     fl: { n:100, min:210, pct:75, portions:false, ko:['100문항 · 3시간 30분', '75점 이상이면 합격 (Florida DBPR 기준)'], en:['100 questions · 3 hours 30 minutes', 'Pass at 75 or more (Florida DBPR)'] },
     nj: { n:110, min:240, pct:70, portions:false, ko:['110문항 · 4시간', '70% (77문항) 이상이면 합격 (PSI 기준)'], en:['110 questions · 4 hours', 'Pass at 70% (77 correct) or more (PSI)'] },
     ny: { n:75,  min:90,  pct:70, portions:false, ko:['모의고사 75문항 · 1시간 30분(실제 시험 시간과 같음)', '실제 시험은 합격·불합격만 알려 줍니다 — 이 모의고사는 70%를 합격선으로 씁니다'], en:['Mock exam: 75 questions · 1 hour 30 minutes (same time as the real exam)', 'The real exam reports pass or fail only — this mock uses 70% as its pass line'] }
@@ -138,6 +142,18 @@
   window.renderMockResult = function(r){
     EA_RESULT(r);
     var pq = r.per_question || [], rows = [], pass;
+    if(F.noPass){   // GA: score only — no pass line, no verdict, no check marks (boss 2026-11-14)
+      var gs = function(list){ var c = list.filter(function(x){ return x.is_correct; }).length; return c + '/' + list.length; };
+      var gh = document.querySelector('#mock-result-wrap .mk-eyebrow');
+      if(gh){
+        var g = document.createElement('div');
+        g.style.cssText = 'margin:8px 0 4px;font-size:13.5px;font-weight:600;color:var(--text-mid);';
+        g.textContent = 'National ' + gs(pq.filter(function(x){ return (x.outline_code || '').indexOf('N-') === 0; })) + ' · ' +
+          mL('주 부분 ', 'State ') + gs(pq.filter(function(x){ return (x.outline_code || '').indexOf('N-') !== 0; }));
+        gh.parentNode.insertBefore(g, gh.nextSibling);
+      }
+      return;
+    }
     function sc(list){ var c = list.filter(function(x){ return x.is_correct; }).length; return { c:c, n:list.length, p:list.length ? Math.round(c * 1000 / list.length) / 10 : 0 }; }
     if(F.portions){
       var nat = sc(pq.filter(function(x){ return (x.outline_code || '').indexOf('N-') === 0; }));

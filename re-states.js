@@ -7,6 +7,7 @@
     { id:'wa', name:'Washington' },   // added 2026-11-04 (boss: «공식적으로 WA 서비스 진행»)
     { id:'tx', name:'Texas' },
     { id:'il', name:'Illinois' },     // added 2026-11-02
+    { id:'ga', name:'Georgia' },      // live 2026-11-15 (boss «오픈» via 창1); Virginia waits for its bank
     { id:'fl', name:'Florida' },      // added 2026-10-29 (boss: «랜딩에 업데이트 하세요»)
     { id:'nj', name:'New Jersey' },
     { id:'ny', name:'New York' }
