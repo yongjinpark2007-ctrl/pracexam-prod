@@ -696,6 +696,8 @@ const EXAMS = {
   're-fl': { label:'FL',    parts:{1:'National'} },
   're-il': { label:'IL',    parts:{1:'National'} },
   're-wa': { label:'WA',    parts:{1:'National'} },
+  're-ga': { label:'GA',    parts:{1:'National'} },
+  're-va': { label:'VA',    parts:{1:'National'} },
 
   /* ── NA = National 뱅크 (DB exam 값 're-n') ──────────────────────────────
      2026-10-12 사장님 승인 — National 은 주마다 복사하지 않고 한 벌(RE-N-####, exam='re-n')만 둡니다.
@@ -707,7 +709,7 @@ const EXAMS = {
     virtual:{ readExam:'re-n', idPrefix:'RE-N-' }
   }
 };
-const REVIEW_EXAMS = ['ea','re-national','re-ca','re-tx','re-fl','re-nj','re-ny','re-il','re-wa'];  // 헤더 노출 순서 (2026-11-01 FL·IL·WA 추가)
+const REVIEW_EXAMS = ['ea','re-national','re-ca','re-tx','re-fl','re-nj','re-ny','re-il','re-wa','re-ga','re-va'];  // 헤더 노출 순서 (2026-11-01 FL·IL·WA 추가 · 2026-11-15 GA·VA 추가, 사장님)
 
 /* questions 테이블은 관리자 계정 하나만 읽을 수 있습니다.
    다른 계정으로 로그인하면 조회가 42501 permission denied 로 떨어집니다.
