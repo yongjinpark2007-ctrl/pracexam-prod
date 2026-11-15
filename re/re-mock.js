@@ -19,7 +19,9 @@
      FL  DBPR/Pearson VUE sales associate booklet — 100 multiple-choice questions, 3 1/2 hours, 75 points or higher (2026-10-29).
      VA  PSI bulletin 466 — Salesperson: National 80 items, 105 min, pass 56 + State 40 items, 45 min, pass 30 (2026-11-14).
      GA  PSI API (account/gare/test/Z97SEEX6) + bulletin 4672 — Salesperson: 100 National + 52 State in ONE 240-minute portion.
-         No published pass score. Boss 2026-11-14 «기역으로 해요» (option 1): the GA mock shows the score only, no pass line, no pass/fail. */
+         No published pass score. Boss 2026-11-14 «기역으로 해요» (option 1): the GA mock shows the score only, no pass line, no pass/fail.
+     AZ  Pearson handbook 090300 (Feb 2026) — two separately scheduled exams: Sales-General 80 items, 150 min + Sales-State 60 items, 90 min; 75% on each (2026-11-15).
+     NC  «Real Estate Licensing in North Carolina» (Apr 2026, Pearson) — one exam, National 80 items 2.5 h + State 60 items 2 h, each section 75, both in one 180-day period (2026-11-15). */
 (function(){
   var FMT = {
     ca: { n:150, min:180, pct:70, portions:false, ko:['150문항 · 3시간', '70% 이상이면 합격 (California DRE 기준)'], en:['150 questions · 3 hours', 'Pass at 70% or more (California DRE)'] },
@@ -33,6 +35,10 @@
                                                    en:['National 100 + State 52 questions · 4 hours (one sitting)', 'Georgia does not publish a passing score, so this mock shows your score only'] },
     va: { n:120, min:150, pct:70, statePct:75, portions:true, ko:['National 80 + 주 40문항 · 2시간 30분 (National 1시간 45분 + 주 45분)', 'National 56문항(70%), 주 부분 30문항(75%) 이상 맞혀야 합격 (PSI 기준)'],
                                                    en:['National 80 + State 40 questions · 2.5 hours (National 1 hour 45 minutes + State 45 minutes)', 'Pass National with 56 correct (70%) and State with 30 correct (75%) (PSI)'] },
+    az: { n:140, min:240, pct:75, statePct:75, portions:true, ko:['General 80 + State 60문항 · 두 개의 시험 (General 2시간 30분 + State 1시간 30분)', 'General과 State를 각각 75% 이상 맞혀야 합격 (Pearson VUE 기준)'],
+                                                   en:['General 80 + State 60 questions · two exams (General 2.5 hours + State 1.5 hours)', 'Pass General and State at 75% each (Pearson VUE)'] },
+    nc: { n:140, min:270, pct:75, statePct:75, portions:true, ko:['National 80 + State 60문항 · 4시간 30분 (National 2시간 30분 + State 2시간)', 'National과 State를 각각 75점 이상 받아야 합격 (Pearson VUE 기준)'],
+                                                   en:['National 80 + State 60 questions · 4.5 hours (National 2.5 hours + State 2 hours)', 'Pass National and State with 75 each (Pearson VUE)'] },
     fl: { n:100, min:210, pct:75, portions:false, ko:['100문항 · 3시간 30분', '75점 이상이면 합격 (Florida DBPR 기준)'], en:['100 questions · 3 hours 30 minutes', 'Pass at 75 or more (Florida DBPR)'] },
     nj: { n:110, min:240, pct:70, portions:false, ko:['110문항 · 4시간', '70% (77문항) 이상이면 합격 (PSI 기준)'], en:['110 questions · 4 hours', 'Pass at 70% (77 correct) or more (PSI)'] },
     ny: { n:75,  min:90,  pct:70, portions:false, ko:['모의고사 75문항 · 1시간 30분(실제 시험 시간과 같음)', '실제 시험은 합격·불합격만 알려 줍니다 — 이 모의고사는 70%를 합격선으로 씁니다'], en:['Mock exam: 75 questions · 1 hour 30 minutes (same time as the real exam)', 'The real exam reports pass or fail only — this mock uses 70% as its pass line'] }

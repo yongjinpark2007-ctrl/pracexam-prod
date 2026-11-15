@@ -76,8 +76,8 @@ Each article is published in English and Korean at the two URLs shown.
 ## Real Estate License
 
 > Practice questions for the U.S. real estate license exam: the national portion every state shares
-> plus the state portion on each state's own law. Covers California, Washington, Texas, Illinois, Georgia, Florida, Virginia,
-> New Jersey and New York.
+> plus the state portion on each state's own law. Covers California, Washington, Arizona, Texas, Illinois, Georgia, Florida,
+> Virginia, North Carolina, New Jersey and New York.
 
 ### What it is
 
@@ -92,7 +92,7 @@ Each article is published in English and Korean at the two URLs shown.
 ### Who it's for
 
 - Candidates preparing for a U.S. real estate salesperson/broker license exam in California,
-  Washington, Texas, Illinois, Georgia, Florida, Virginia, New Jersey or New York.
+  Washington, Arizona, Texas, Illinois, Georgia, Florida, Virginia, North Carolina, New Jersey or New York.
 
 ### Key pages
 
@@ -105,6 +105,8 @@ Each article is published in English and Korean at the two URLs shown.
 - Georgia real estate exam page: https://pracexam.com/re/georgia/
 - Florida real estate exam page: https://pracexam.com/re/florida/
 - Virginia real estate exam page: https://pracexam.com/re/virginia/
+- Arizona real estate exam page: https://pracexam.com/re/arizona/
+- North Carolina real estate exam page: https://pracexam.com/re/north-carolina/
 - New Jersey real estate exam page: https://pracexam.com/re/new-jersey/
 - New York real estate exam page: https://pracexam.com/re/new-york/
 - California real estate exam page in Korean: https://pracexam.com/re/ko/california/
@@ -114,6 +116,8 @@ Each article is published in English and Korean at the two URLs shown.
 - Georgia real estate exam page in Korean: https://pracexam.com/re/ko/georgia/
 - Florida real estate exam page in Korean: https://pracexam.com/re/ko/florida/
 - Virginia real estate exam page in Korean: https://pracexam.com/re/ko/virginia/
+- Arizona real estate exam page in Korean: https://pracexam.com/re/ko/arizona/
+- North Carolina real estate exam page in Korean: https://pracexam.com/re/ko/north-carolina/
 - New Jersey real estate exam page in Korean: https://pracexam.com/re/ko/new-jersey/
 - New York real estate exam page in Korean: https://pracexam.com/re/ko/new-york/
 - Free real estate pop quiz (one question with full explanation): https://pracexam.com/re/popquiz

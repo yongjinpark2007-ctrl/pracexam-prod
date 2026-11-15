@@ -5,11 +5,13 @@
   var STATES = [
     { id:'ca', name:'California' },   // west to east (boss 2026-10-24)
     { id:'wa', name:'Washington' },   // added 2026-11-04 (boss: «공식적으로 WA 서비스 진행»)
+    { id:'az', name:'Arizona' },      // added 2026-11-15 on re-site, not live until 창1 says go
     { id:'tx', name:'Texas' },
     { id:'il', name:'Illinois' },     // added 2026-11-02
     { id:'ga', name:'Georgia' },      // added 2026-11-14 on re-site (boss: GA + VA), not live until 창1 says go
     { id:'fl', name:'Florida' },      // added 2026-10-29 (boss: «랜딩에 업데이트 하세요»)
     { id:'va', name:'Virginia' },     // added 2026-11-14 on re-site, not live until 창1 says go
+    { id:'nc', name:'North Carolina' }, // added 2026-11-15 on re-site, not live until 창1 says go
     { id:'nj', name:'New Jersey' },
     { id:'ny', name:'New York' }
   ];
