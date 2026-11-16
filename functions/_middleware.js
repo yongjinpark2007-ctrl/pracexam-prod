@@ -341,12 +341,203 @@ async function hideReviewLinks(response) {
     .transform(response);
 }
 
+// 2026-11-16 (boss): IRS Tax Tips weekly summary on the web, KO + EN, one URL per week.
+//   /ea/irs-news/            English list        /ea/irs-news/ko/            Korean list
+//   /ea/irs-news/2026-11-16/ English issue       /ea/irs-news/ko/2026-11-16/ Korean issue
+//   /ea/irs-news/rss.xml     English RSS         /ea/irs-news/ko/rss.xml     Korean RSS (for Facebook auto-post)
+// The articles are saved by the send-irs-news edge function (table irs_news_issues, read here through the anon view
+// public_irs_news). Every page is written on the server from the template ea/irs-news/index.html, so search engines and
+// AI answer engines read the full text without running JS. On a read error the list shows «coming soon» (never a 500).
+const NW_URL = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_irs_news?select=lang,slug,issue_date,subject,html,created_at,updated_at&order=slug.desc&limit=500";
+const NW_BASE = "https://pracexam.com/ea/irs-news/";
+const NW_TXT = {
+  en: {
+    listTitle: "IRS Tax Tips Weekly Summary | PracExam",
+    listDesc: "A plain-English weekly summary of the latest IRS Tax Tips, with a link to each original IRS article. From PracExam, the EA exam prep site.",
+    h1: "IRS Tax Tips Weekly Summary",
+    lead: "Every week we summarize the latest IRS Tax Tips in plain English. Each article links to the original on IRS.gov.",
+    empty: "The first weekly summary is coming soon.",
+    eyebrow: "IRS TAX TIPS",
+    home: "&larr; EA home", homeHref: "/ea/",
+    all: "&larr; All weekly summaries", more: "See all weekly summaries",
+    note: "This is a PracExam summary of IRS Tax Tips for study and general information. It is not an official IRS publication or tax advice. Each article links to the original on IRS.gov.",
+    ctaH: "Preparing for the EA exam?",
+    ctaP: "Practice real exam-style questions with full explanations. Sign up and practice 10 free questions a day for 30 days. No credit card needed.",
+    ctaB: "Start Free", ctaHref: "/app",
+    week: "Week of ", sep: " · ",
+    rssTitle: "PracExam IRS Tax Tips Weekly Summary (English)", locale: "en_US"
+  },
+  ko: {
+    listTitle: "IRS 뉴스 한국어판 · IRS Tax Tip 주간 정리 | PracExam",
+    listDesc: "IRS가 매주 발행하는 Tax Tip을 쉬운 한국어로 정리한 주간 소식입니다. 기사마다 IRS.gov 원문 링크가 있습니다. 미국 세무사, EA 시험 준비 PracExam.",
+    h1: "IRS 뉴스 한국어판 · 주간 정리",
+    lead: "IRS가 매주 발행하는 Tax Tip을 쉬운 한국어로 정리했습니다. 기사마다 IRS.gov 원문 링크가 있습니다.",
+    empty: "첫 주간 정리가 곧 올라옵니다.",
+    eyebrow: "IRS 뉴스 한국어판",
+    home: "&larr; EA 홈으로", homeHref: "/ea/ko/",
+    all: "&larr; 전체 목록", more: "지난 주간 정리 모두 보기",
+    note: "이 글은 IRS Tax Tip을 PracExam이 공부와 일반 정보 제공을 위해 한국어로 정리한 것입니다. IRS의 공식 간행물이나 세무 자문이 아닙니다. 기사마다 IRS.gov 원문 링크가 있습니다.",
+    ctaH: "미국 세무사, EA 시험을 준비하고 계신가요?",
+    ctaP: "실제 시험과 같은 형식의 문제를 한국어와 영어 해설로 공부하세요. 가입 후 30일 동안 매일 10문제를 무료로 풀어 보세요. 신용카드 등록 없이 바로 이용할 수 있습니다.",
+    ctaB: "무료로 시작하기", ctaHref: "/app",
+    week: "", sep: " · ",
+    rssTitle: "PracExam IRS 뉴스 한국어판 주간 정리", locale: "ko_KR"
+  }
+};
+function nwEsc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function nwText(h) { return String(h || "").replace(/<[^>]+>/g, " ").replace(/&middot;/g, "·").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim(); }
+// Our own HTML from the weekly routine; still drop anything that could run.
+function nwClean(h) { return String(h || "").replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<(iframe|object|embed|form)[\s\S]*?<\/\1>/gi, "").replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "").replace(/javascript:/gi, ""); }
+// Article titles = each <h2> that follows an «IRS TAX TIP ...» label line (skips the digest heading).
+function nwTitles(h) {
+  const out = [], re = /IRS TAX TIP[^<]*<\/p>\s*<h2[^>]*>([\s\S]*?)<\/h2>/gi;
+  let m; while ((m = re.exec(h || ""))) out.push(nwText(m[1]));
+  return out;
+}
+function nwSources(h) {
+  const out = [], re = /href="(https?:\/\/(?:www\.)?irs\.gov[^"]*)"/gi;
+  let m; while ((m = re.exec(h || ""))) if (out.indexOf(m[1]) < 0) out.push(m[1]);
+  return out;
+}
+function nwUrl(lang, slug) { return NW_BASE + (lang === "ko" ? "ko/" : "") + (slug ? slug + "/" : ""); }
+function nwPath(lang, slug) { return "/ea/irs-news/" + (lang === "ko" ? "ko/" : "") + (slug ? slug + "/" : ""); }
+function nwHeadline(r, L) {
+  const t = nwTitles(r.html);
+  if (t.length === 1) return t[0];
+  if (t.length > 1) return t.join(" · ");
+  return nwText(r.subject).replace(/^(\[[^\]]*\]\s*)+/, "");
+}
+async function nwRows() {
+  try {
+    const r = await fetch(NW_URL, { headers: { apikey: RV_ANON, Authorization: "Bearer " + RV_ANON }, cf: { cacheTtl: 300, cacheEverything: true } });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows : null;
+  } catch (e) { return null; }
+}
+function nwRss(rows, lang) {
+  const L = NW_TXT[lang];
+  const items = rows.filter(r => r.lang === lang).slice(0, 30).map(function (r) {
+    const link = nwUrl(lang, r.slug);
+    const d = new Date(r.issue_date + "T15:00:00Z").toUTCString();
+    const titles = nwTitles(r.html);
+    return "<item><title>" + nwEsc(nwHeadline(r, L)) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
+      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(titles.length ? titles.join(" · ") : nwText(r.subject)) + "</description>"
+      + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
+  }).join("");
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
+    + "<title>" + nwEsc(L.rssTitle) + "</title><link>" + nwUrl(lang, "") + "</link>"
+    + '<atom:link href="' + nwUrl(lang, "") + 'rss.xml" rel="self" type="application/rss+xml"/>'
+    + "<description>" + nwEsc(L.listDesc) + "</description><language>" + (lang === "ko" ? "ko" : "en-us") + "</language>"
+    + items + "</channel></rss>";
+}
+async function irsNews(context, p) {
+  const url = new URL(context.request.url);
+  const lang = p.startsWith("/ea/irs-news/ko/") ? "ko" : "en";
+  const rest = p.slice(lang === "ko" ? "/ea/irs-news/ko/".length : "/ea/irs-news/".length);
+  const L = NW_TXT[lang];
+  if (rest === "rss.xml") {
+    const rows = (await nwRows()) || [];
+    return new Response(nwRss(rows, lang), { headers: { "content-type": "application/rss+xml; charset=utf-8", "cache-control": "public, max-age=600" } });
+  }
+  let slug = "";
+  if (rest !== "") {
+    const m = /^(\d{4}-\d{2}-\d{2})\/?$/.exec(rest);
+    if (!m) return Response.redirect(new URL(nwPath(lang, ""), url).toString(), 301);
+    if (!rest.endsWith("/")) return Response.redirect(new URL(nwPath(lang, m[1]), url).toString(), 301);
+    slug = m[1];
+  }
+  const rows = await nwRows();
+  const mine = (rows || []).filter(r => r.lang === lang);
+  const row = slug ? mine.find(r => r.slug === slug) : null;
+  if (slug && rows && !row) {
+    // no issue in this language for that week: send the reader to the list (other language may exist)
+    return Response.redirect(new URL(nwPath(lang, ""), url).toString(), 302);
+  }
+  // template through the normal handler (test gate, noindex on the test host)
+  const tplReq = new Request(new URL("/ea/irs-news/", url.origin).toString(), context.request);
+  const ctx = Object.assign({}, context, { request: tplReq, next: () => context.env.ASSETS.fetch(tplReq) });
+  const response = await handle(ctx);
+  const ct = (response && response.headers.get("content-type")) || "";
+  if (!ct.includes("text/html") || response.status !== 200) return response;
+
+  const other = lang === "ko" ? "en" : "ko";
+  const otherHas = slug ? (rows || []).some(r => r.lang === other && r.slug === slug) : true;
+  const selfUrl = nwUrl(lang, slug);
+  const enUrl = nwUrl("en", (lang === "en" || otherHas) ? slug : "");
+  const koUrl = nwUrl("ko", (lang === "ko" || otherHas) ? slug : "");
+  let title, desc, main, ld, robots = "";
+  if (row) {
+    const head = nwHeadline(row, L);
+    const titles = nwTitles(row.html);
+    title = (lang === "ko" ? "IRS 뉴스 한국어판 " : "IRS Tax Tips ") + row.slug + ": " + head;
+    if (title.length > 110) title = title.slice(0, 107) + "...";
+    title += " | PracExam";
+    desc = (lang === "ko" ? "IRS Tax Tip 한국어 정리 (" + row.slug + "): " : "Plain-English summary of IRS Tax Tips (" + row.slug + "): ") + (titles.length ? titles.join(" · ") : head);
+    if (desc.length > 300) desc = desc.slice(0, 297) + "...";
+    main = '<div class="nw-page"><p class="nw-back"><a class="btn btn-ghost" href="' + nwPath(lang, "") + '">' + L.all + "</a></p>"
+      + '<article class="nw-article" lang="' + lang + '">' + nwClean(row.html) + "</article>"
+      + '<p class="nw-note">' + nwEsc(L.note) + "</p>"
+      + '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div>"
+      + '<p class="nw-more"><a href="' + nwPath(lang, "") + '">' + nwEsc(L.more) + " &rarr;</a></p></div>";
+    ld = { "@context": "https://schema.org", "@type": "Article", headline: head.slice(0, 110), description: desc, inLanguage: lang,
+      datePublished: row.issue_date, dateModified: String(row.updated_at || row.created_at || row.issue_date).slice(0, 10),
+      url: selfUrl, mainEntityOfPage: selfUrl, image: "https://pracexam.com/og-image.png",
+      author: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/" },
+      publisher: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/", logo: { "@type": "ImageObject", url: "https://pracexam.com/apple-touch-icon.png" } },
+      isBasedOn: nwSources(row.html), about: ["IRS Tax Tips", "Enrolled Agent exam"] };
+  } else {
+    title = L.listTitle; desc = L.listDesc;
+    const list = mine.length
+      ? mine.map(r => '<a class="nw-item" href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(L.week + r.slug) + '</span><span class="nw-title">' + nwEsc(nwHeadline(r, L)) + "</span></a>").join("")
+      : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
+    if (!mine.length) robots = "noindex";
+    main = '<div class="nw-page"><p class="nw-back"><a class="btn btn-ghost" href="' + L.homeHref + '">' + L.home + "</a></p>"
+      + '<span class="nw-eyebrow">' + nwEsc(L.eyebrow) + "</span><h1>" + nwEsc(L.h1) + '</h1><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
+      + '<div class="nw-list" id="nw-list">' + list + "</div>"
+      + '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div></div>";
+    ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: L.h1, description: desc, inLanguage: lang, url: selfUrl,
+      hasPart: mine.slice(0, 20).map(r => ({ "@type": "Article", headline: nwHeadline(r, L).slice(0, 110), url: nwUrl(lang, r.slug), datePublished: r.issue_date })) };
+  }
+  let out = new HTMLRewriter()
+    .on("html", new AttrSetter("lang", lang))
+    .on("html", new AttrSetter("class", "lang-" + lang))
+    .on("html", new AttrSetter("data-force-lang", lang))
+    .on("html", new AttrSetter("data-alt-en", enUrl.replace("https://pracexam.com", "")))
+    .on("html", new AttrSetter("data-alt-ko", koUrl.replace("https://pracexam.com", "")))
+    .on("title", new TitleRewriter(title))
+    .on('meta[name="description"]', new MetaRewriter(desc))
+    .on('meta[property="og:type"]', new MetaRewriter(row ? "article" : "website"))
+    .on('meta[property="og:title"]', new MetaRewriter(title))
+    .on('meta[property="og:description"]', new MetaRewriter(desc))
+    .on('meta[property="og:url"]', new MetaRewriter(selfUrl))
+    .on('meta[property="og:locale"]', new MetaRewriter(L.locale))
+    .on('meta[property="og:locale:alternate"]', new MetaRewriter(lang === "ko" ? "en_US" : "ko_KR"))
+    .on('meta[name="twitter:title"]', new MetaRewriter(title))
+    .on('meta[name="twitter:description"]', new MetaRewriter(desc))
+    .on('link[rel="canonical"]', new AttrSetter("href", selfUrl))
+    .on('link[rel="alternate"][hreflang="en"]', new AttrSetter("href", enUrl))
+    .on('link[rel="alternate"][hreflang="ko"]', new AttrSetter("href", koUrl))
+    .on('link[rel="alternate"][hreflang="x-default"]', new AttrSetter("href", (slug && !otherHas) ? selfUrl : enUrl))
+    .on('link[rel="alternate"][type="application/rss+xml"]', new AttrSetter("href", nwUrl(lang, "") + "rss.xml"))
+    .on("script#nw-ld", { element(el) { el.setInnerContent(JSON.stringify(ld).replace(/</g, "\\u003c"), { html: true }); } })
+    .on("#nw-main", { element(el) { el.setInnerContent(main, { html: true }); } });
+  if (robots) out = out.on("head", { element(el) { el.append('<meta name="robots" content="' + robots + '">', { html: true }); } });
+  // a missing other-language issue: drop that hreflang line instead of pointing it at a list page
+  if (slug && !otherHas) out = out.on('link[rel="alternate"][hreflang="' + other + '"]', { element(el) { el.remove(); } });
+  const res = new Response(out.transform(response).body, response);
+  res.headers.delete("Vary");
+  return res;
+}
+
 // 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
 // Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
 export async function onRequest(context) {
   const _p = new URL(context.request.url).pathname;
   if (KO_REDIRECT[_p]) return Response.redirect(new URL(KO_REDIRECT[_p], context.request.url).toString(), 301);
-  let response = KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
+  if (_p === "/ea/irs-news" || _p === "/ea/irs-news/ko") return Response.redirect(new URL(_p + "/", context.request.url).toString(), 301);
+  const _nw = _p.startsWith("/ea/irs-news/");
+  let response = _nw ? await irsNews(context, _p) : KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
   if (_p === "/ea/reviews/" || _p === "/ea/reviews/ko/") response = await injectReviews(response, _p === "/ea/reviews/ko/");
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html")) return response;
