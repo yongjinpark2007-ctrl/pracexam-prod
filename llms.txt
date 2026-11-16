@@ -76,8 +76,8 @@ Each article is published in English and Korean at the two URLs shown.
 ## Real Estate License
 
 > Practice questions for the U.S. real estate license exam: the national portion every state shares
-> plus the state portion on each state's own law. Covers California, Washington, Texas, Illinois, Georgia, Florida, New Jersey
-> and New York.
+> plus the state portion on each state's own law. Covers California, Washington, Texas, Illinois, Georgia, Florida, Virginia,
+> New Jersey and New York.
 
 ### What it is
 
@@ -92,7 +92,7 @@ Each article is published in English and Korean at the two URLs shown.
 ### Who it's for
 
 - Candidates preparing for a U.S. real estate salesperson/broker license exam in California,
-  Washington, Texas, Illinois, Georgia, Florida, New Jersey or New York.
+  Washington, Texas, Illinois, Georgia, Florida, Virginia, New Jersey or New York.
 
 ### Key pages
 
@@ -103,6 +103,7 @@ Each article is published in English and Korean at the two URLs shown.
 - Texas real estate exam page: https://pracexam.com/re/texas/
 - Illinois real estate exam page: https://pracexam.com/re/illinois/
 - Georgia real estate exam page: https://pracexam.com/re/georgia/
+- Virginia real estate exam page: https://pracexam.com/re/virginia/
 - Florida real estate exam page: https://pracexam.com/re/florida/
 - New Jersey real estate exam page: https://pracexam.com/re/new-jersey/
 - New York real estate exam page: https://pracexam.com/re/new-york/
@@ -111,6 +112,7 @@ Each article is published in English and Korean at the two URLs shown.
 - Texas real estate exam page in Korean: https://pracexam.com/re/ko/texas/
 - Illinois real estate exam page in Korean: https://pracexam.com/re/ko/illinois/
 - Georgia real estate exam page in Korean: https://pracexam.com/re/ko/georgia/
+- Virginia real estate exam page in Korean: https://pracexam.com/re/ko/virginia/
 - Florida real estate exam page in Korean: https://pracexam.com/re/ko/florida/
 - New Jersey real estate exam page in Korean: https://pracexam.com/re/ko/new-jersey/
 - New York real estate exam page in Korean: https://pracexam.com/re/ko/new-york/
