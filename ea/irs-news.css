@@ -1,0 +1,35 @@
+/* 2026-11-16 — IRS Tax Tips weekly summary (/ea/irs-news/), KO + EN. Content is written in by functions/_middleware.js */
+.nw-page{max-width:760px; margin:0 auto; padding:44px 0 72px;}
+.nw-back{margin-bottom:18px;}
+.nw-eyebrow{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--navy-mid);}
+.nw-page h1{font-size:clamp(26px,4.2vw,38px); line-height:1.25; margin:6px 0 10px;}
+.nw-lead{font-size:16px; color:var(--text-mid); margin-bottom:28px;}
+.nw-empty{color:var(--text-muted); padding:24px 0;}
+
+/* list */
+.nw-list{display:flex; flex-direction:column; gap:12px;}
+.nw-item{display:block; background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:14px; padding:18px 20px; text-decoration:none; color:inherit; transition:border-color .15s, box-shadow .15s;}
+.nw-item:hover{border-color:var(--accent); box-shadow:0 4px 14px rgba(var(--navy-rgb),.08);}
+.nw-date{font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--terracotta-deep,#b85f3f);}
+.nw-title{display:block; font-size:18px; font-weight:600; color:var(--navy); margin-top:4px; line-height:1.4;}
+
+/* one issue */
+.nw-article{background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:16px; padding:28px 28px 22px; font-size:16px; line-height:1.75; color:var(--text-main);}
+.nw-article h2{font-size:22px; line-height:1.35;}
+.nw-article h3{font-size:17px; margin:22px 0 8px;}
+.nw-article p{margin:0 0 12px;}
+.nw-article ul, .nw-article ol{margin:0 0 14px; padding-left:22px;}
+.nw-article li{margin-bottom:6px;}
+.nw-article a{color:var(--navy); word-break:break-all;}
+.nw-note{font-size:13px; color:var(--text-muted); margin:16px 2px 0; line-height:1.6;}
+.nw-cta{margin-top:32px; text-align:center; background:var(--accent-tint,#EDF4F3); border:1px solid var(--accent-border,var(--border-clr)); border-radius:16px; padding:26px 20px;}
+.nw-cta h2{font-size:22px; margin-bottom:6px;}
+.nw-cta p{margin-bottom:16px; color:var(--text-mid);}
+.nw-more{margin-top:24px; font-size:15px;}
+.nw-more a{color:var(--navy); font-weight:600;}
+
+@media (max-width:640px){
+  .nw-page{padding:28px 0 56px;}
+  .nw-article{padding:20px 16px 16px; font-size:15.5px;}
+  .nw-article h2{font-size:20px;}
+}
