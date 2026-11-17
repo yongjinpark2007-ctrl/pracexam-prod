@@ -441,7 +441,8 @@ async function nwTips(context, lang) {
     let m;
     while ((m = re.exec(t))) {
       const ti = /class="nl-[a-z]*title">([\s\S]*?)<\//.exec(m[2]), w = /nl-when">([^<]*)/.exec(m[2]);
-      if (ti) out.push({ href: m[1], title: nwText(ti[1]), when: w ? nwText(w[1]) : "" });
+      const dk = /class="nl-[a-z]*dek">([\s\S]*?)<\/p>/.exec(m[2]);
+      if (ti) out.push({ href: m[1], title: nwText(ti[1]), when: w ? nwText(w[1]).replace(/\s*·.*$/, "") : "", dek: dk ? nwText(dk[1]) : "" });
     }
     return out;
   } catch (e) { return []; }
@@ -503,21 +504,33 @@ async function irsNews(context, p) {
       isBasedOn: nwSources(row.html), about: ["IRS Tax Tips", "Enrolled Agent exam"] };
   } else {
     title = L.listTitle; desc = L.listDesc;
-    const list = mine.length
-      ? mine.map(r => '<a class="nw-item" href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(L.week + r.slug) + '</span><span class="nw-title">' + nwEsc(nwHeadline(r, L)) + "</span></a>").join("")
-      : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
+    // 2026-11-16 (boss): menu «IRS 뉴스 · Study Tips» lands here. One column: the latest 3 weekly issues as cards,
+    // older weeks as a short link list, then Study Tips cards below. (A side column was tried and rejected: unbalanced.)
     if (!mine.length) robots = "noindex";
-    // 2026-11-16 (boss): the menu item «IRS 뉴스 · Study Tips» lands here — news first, Study Tips listed beside it
+    const K = lang === "ko";
+    const card = r => {
+      const ts = nwTitles(r.html);
+      return '<a class="nw-card" href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + (K ? " 주간 정리" : " weekly summary") + "</span>"
+        + (ts.length ? '<ul class="nw-card-titles">' + ts.map(x => "<li>" + nwEsc(x) + "</li>").join("") + "</ul>" : '<span class="nw-title">' + nwEsc(nwHeadline(r, L)) + "</span>")
+        + '<p class="nw-card-dek">' + nwEsc(nwSnippet(r.html, 180)) + '</p><span class="nw-card-go">' + (K ? "읽기" : "Read") + " &rarr;</span></a>";
+    };
+    const news = mine.length
+      ? mine.slice(0, 3).map(card).join("")
+        + (mine.length > 3 ? '<div class="nw-older"><h3>' + (K ? "지난 주간 정리" : "Earlier weeks") + "</h3><ul>"
+          + mine.slice(3).map(r => '<li><a href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + "</span>" + nwEsc(nwHeadline(r, L)) + "</a></li>").join("") + "</ul></div>" : "")
+      : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
     const tips = await nwTips(context, lang);
-    const side = tips.length
-      ? '<aside class="nw-side"><span class="nw-eyebrow">Study Tips</span><ul class="nw-tips">'
-        + tips.slice(0, 6).map(t => '<li><a href="' + t.href + '">' + nwEsc(t.title) + '</a><span class="nw-tips-d">' + nwEsc(t.when) + "</span></li>").join("")
-        + '</ul><a class="nw-side-all" href="' + (lang === "ko" ? "/tips/ko/" : "/tips/") + '">' + (lang === "ko" ? "Study Tips 모두 보기 &rarr;" : "All Study Tips &rarr;") + "</a></aside>"
-      : "";
-    main = '<div class="nw-page nw-page-wide"><p class="nw-back"><a class="btn btn-ghost" href="' + L.homeHref + '">' + L.home + "</a></p>"
-      + '<div class="nw-cols"><div class="nw-col-main">'
-      + '<span class="nw-eyebrow">' + nwEsc(L.eyebrow) + "</span><h1>" + nwEsc(L.h1) + '</h1><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
-      + '<div class="nw-list" id="nw-list">' + list + "</div></div>" + side + "</div>"
+    const tipCards = tips.slice(0, 6).map(x => '<a class="nw-card" href="' + x.href + '"><span class="nw-date">' + nwEsc(x.when) + "</span>"
+      + '<span class="nw-title">' + nwEsc(x.title) + "</span>" + (x.dek ? '<p class="nw-card-dek">' + nwEsc(x.dek) + "</p>" : "")
+      + '<span class="nw-card-go">' + (K ? "읽기" : "Read") + " &rarr;</span></a>").join("");
+    main = '<div class="nw-page"><p class="nw-back"><a class="btn btn-ghost" href="' + L.homeHref + '">' + L.home + "</a></p>"
+      + '<span class="nw-eyebrow">' + (K ? "IRS 뉴스 · STUDY TIPS" : "IRS NEWS · STUDY TIPS") + "</span><h1>" + (K ? "IRS 뉴스 · Study Tips" : "IRS News · Study Tips") + "</h1>"
+      + '<section class="nw-sec" aria-labelledby="nw-sec-news"><div class="nw-sec-head"><h2 id="nw-sec-news">' + (K ? "IRS 주간 뉴스" : "IRS weekly news") + "</h2>"
+      + '<a class="nw-rss" href="' + nwPath(lang, "") + 'rss.xml">RSS</a></div><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
+      + '<div class="nw-list" id="nw-list">' + news + "</div></section>"
+      + (tipCards ? '<section class="nw-sec" aria-labelledby="nw-sec-tips"><div class="nw-sec-head"><h2 id="nw-sec-tips">Study Tips</h2></div>'
+        + '<p class="nw-lead">' + (K ? "EA 시험 공부에 도움이 되는 글입니다." : "Articles to help you study for the EA exam.") + "</p>"
+        + '<div class="nw-list">' + tipCards + '</div><p class="nw-more"><a href="' + (K ? "/tips/ko/" : "/tips/") + '">' + (K ? "Study Tips 모두 보기" : "All Study Tips") + " &rarr;</a></p></section>" : "")
       + '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div></div>";
     ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: L.h1, description: desc, inLanguage: lang, url: selfUrl,
       hasPart: mine.slice(0, 20).map(r => ({ "@type": "Article", headline: nwHeadline(r, L).slice(0, 110), url: nwUrl(lang, r.slug), datePublished: r.issue_date })) };
