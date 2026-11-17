@@ -10,6 +10,7 @@ Disallow: /review
 # (live since 2026-10-31); like /app it is blocked here and sent with X-Robots-Tag noindex.
 
 Sitemap: https://pracexam.com/sitemap.xml
+Sitemap: https://pracexam.com/ea/irs-news/sitemap.xml
 
 # Notes (keep this file ASCII and keep rules at the top --
 # some crawlers give up on long non-ASCII headers).
