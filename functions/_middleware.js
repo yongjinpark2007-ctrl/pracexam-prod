@@ -530,6 +530,42 @@ async function irsNews(context, p) {
   return res;
 }
 
+// 2026-11-16 (boss): EA landing (/ea/ and /ea/ko/) — the right half of the latest-video band shows the latest IRS weekly news,
+// both languages (the landing switches KO/EN in place). Written on the server so crawlers read it. No issues or a read
+// error: #nw-land stays hidden and the video takes the band as before.
+function nwSnippet(h, max) {
+  const m = /IRS TAX TIP[^<]*<\/p>\s*<h2[^>]*>[\s\S]*?<\/h2>\s*<p[^>]*>([\s\S]*?)<\/p>/i.exec(h || "");
+  let t = m ? nwText(m[1]) : "";
+  if (t.length > max) t = t.slice(0, max).replace(/\s+\S*$/, "") + "…";
+  return t;
+}
+function nwLandBlock(rows, lang) {
+  const L = NW_TXT[lang];
+  const mine = rows.filter(r => r.lang === lang);
+  if (!mine.length) return "";
+  const top = mine[0], titles = nwTitles(top.html);
+  const more = titles.slice(1).map(t => ({ d: top.slug, t: t, href: nwPath(lang, top.slug) }))
+    .concat(mine.slice(1).map(r => ({ d: r.slug, t: (nwTitles(r.html)[0] || nwHeadline(r, L)), href: nwPath(lang, r.slug) }))).slice(0, 3);
+  return '<div class="' + lang + '"><span class="eyebrow">' + (lang === "ko" ? "IRS 주간 뉴스" : "IRS weekly news") + "</span>"
+    + '<a class="nw-land-main" href="' + nwPath(lang, top.slug) + '"><span class="nw-land-date">' + nwEsc(top.slug) + "</span>"
+    + "<h3>" + nwEsc(titles[0] || nwHeadline(top, L)) + "</h3><p>" + nwEsc(nwSnippet(top.html, 170)) + "</p></a>"
+    + (more.length ? '<ul class="nw-land-more">' + more.map(x => '<li><span class="d">' + nwEsc(x.d) + '</span><a href="' + x.href + '">' + nwEsc(x.t) + "</a></li>").join("") + "</ul>" : "")
+    + '<a class="nw-land-all" href="' + nwPath(lang, "") + '">' + (lang === "ko" ? "IRS 뉴스 한국어판 모두 보기 &rarr;" : "All IRS weekly summaries &rarr;") + "</a></div>";
+}
+async function nwLanding(response) {
+  const ct = (response && response.headers.get("content-type")) || "";
+  if (!ct.includes("text/html") || response.status !== 200) return response;
+  const rows = await nwRows();
+  if (!rows || !rows.length) return response;
+  const ko = nwLandBlock(rows, "ko"), en = nwLandBlock(rows, "en");
+  if (!ko && !en) return response;
+  // a language with no issue yet falls back to the other language's block
+  const html = (ko || en.replace('<div class="en">', '<div class="ko">')) + (en || ko.replace('<div class="ko">', '<div class="en">'));
+  return new HTMLRewriter()
+    .on("#nw-land", { element(el) { el.removeAttribute("hidden"); el.setInnerContent(html, { html: true }); } })
+    .transform(response);
+}
+
 // 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
 // Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
 export async function onRequest(context) {
@@ -539,6 +575,7 @@ export async function onRequest(context) {
   const _nw = _p.startsWith("/ea/irs-news/");
   let response = _nw ? await irsNews(context, _p) : KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
   if (_p === "/ea/reviews/" || _p === "/ea/reviews/ko/") response = await injectReviews(response, _p === "/ea/reviews/ko/");
+  if (_p === "/ea/" || _p === "/ea/ko/" || _p === "/ea/index.html") response = await nwLanding(response);
   const ct = (response && response.headers.get("content-type")) || "";
   if (!ct.includes("text/html")) return response;
   const _h = new URL(context.request.url).hostname;
