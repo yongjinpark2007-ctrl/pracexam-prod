@@ -1832,6 +1832,9 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   <!-- 동영상 (2026-10-17) — 약점 보강 아래, 최근 세션 위. 이 회원이 «볼 수 있는» 가장 최신 영상 1개 + More videos -->
   <div id="dash-videos"></div>
 
+  <!-- IRS 주간 뉴스 (2026-11-16, boss) — 최신 한 주 치 제목만. 누르면 pracexam.com/ea/irs-news/ 새 창 -->
+  <div id="dash-irs-news"></div>
+
   <!-- Recent 2 sessions -->
   <div id="dash-recent-2"></div>
 
@@ -2229,6 +2232,12 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 /* 대시보드 «최신 영상» — 랜딩 페이지의 Featured Short 띠와 같은 디자인(videos.css 의 .fs-* 를 그대로 쓴다) */
 /* 바탕은 다른 대시보드 카드(.dash-sec-card)와 같은 «흰 카드 + 회색 왼쪽 선». 대시보드에서 따뜻한 색을 걷은 2026-09-21 결정을 따른다. */
 .dv-card{background:var(--card-bg); border:1px solid var(--border-clr); border-radius:14px; padding:22px 24px; margin-bottom:1.25rem; box-shadow:var(--card-shadow);}
+.nwd-card{display:block; text-decoration:none; color:inherit; padding:18px 22px;}
+.nwd-card:hover{border-color:var(--teal);}
+.nwd-date{display:block; font-size:12px; font-weight:700; letter-spacing:.06em; color:#b85f3f;}
+.nwd-titles{margin:6px 0 8px; padding-left:18px; font-size:15px; font-weight:600; color:var(--text-main); line-height:1.5;}
+.nwd-titles li{margin-bottom:2px;}
+.nwd-go{font-size:14px; font-weight:700; color:var(--navy);}
 #dash-videos .vx-pill, #screen-videos .vx-pill{background:var(--navy-light); border-color:var(--border-clr); color:var(--navy);}
 .dv-card .fs-grid{gap:clamp(20px,4vw,44px);}
 .dv-card .fs-media{width:200px;}
@@ -6352,6 +6361,34 @@ function loadVideoRows(force){
   return _VID.loading;
 }
 
+// 2026-11-16 (boss): latest IRS weekly news on the dashboard — the week's article titles, opens the web page in a new tab.
+// Reads the anon view public_irs_news (filled by send-irs-news). No rows or an error: nothing is shown.
+var _NWD = { rows: {}, at: {} };
+function renderDashIrsNews(){
+  var el = document.getElementById('dash-irs-news'); if(!el) return;
+  var l = (LANG === 'ko') ? 'ko' : 'en';
+  function draw(row){
+    if(!row){ el.innerHTML = ''; return; }
+    var h = row.html || '', ts = [], re = /IRS TAX TIP[^<]*<\/p>\s*<h2[^>]*>([\s\S]*?)<\/h2>/gi, m;
+    while((m = re.exec(h))) ts.push(m[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").trim());
+    var href = '/ea/irs-news/' + (l === 'ko' ? 'ko/' : '') + row.slug + '/';
+    var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
+    el.innerHTML =
+      '<div class="sts-section-title">' + (l === 'ko' ? 'IRS 주간 뉴스' : 'IRS Weekly News') + '</div>' +
+      '<a class="dv-card nwd-card" href="' + href + '" target="_blank" rel="noopener">' +
+        '<span class="nwd-date">' + esc(row.slug) + '</span>' +
+        (ts.length ? '<ul class="nwd-titles">' + ts.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '') +
+        '<span class="nwd-go">' + (l === 'ko' ? '읽기 →' : 'Read →') + '</span>' +
+      '</a>';
+  }
+  if(_NWD.rows[l] !== undefined && (Date.now() - _NWD.at[l]) < 600000){ draw(_NWD.rows[l]); return; }
+  fetch(SUPABASE_URL + '/rest/v1/public_irs_news?select=slug,html&lang=eq.' + l + '&order=slug.desc&limit=1',
+        { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){ _NWD.rows[l] = rows[0] || null; _NWD.at[l] = Date.now(); draw(_NWD.rows[l]); })
+    .catch(function(){ el.innerHTML = ''; });
+}
+
 function renderDashVideos(){
   var el = document.getElementById('dash-videos'); if(!el) return;
   // 재생 중(또는 일시정지)이면 다른 갱신이 영상을 끊지 않게 둔다. 단 «언어를 바꾼 경우»는 다시 그린다.
@@ -6446,6 +6483,7 @@ function renderDashboard(){
   renderDashPartsGrid();
   renderDashWeakTopics();
   try{ renderDashVideos(); }catch(e){}
+  try{ renderDashIrsNews(); }catch(e){}
   renderDashRecent2();
   renderAnnouncements();
 }
