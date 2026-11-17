@@ -34,19 +34,24 @@
   .nw-article h2{font-size:20px;}
 }
 
-/* list page: news (wide) + Study Tips (side), 2026-11-16 */
-.nw-page-wide{max-width:1080px;}
-.nw-cols{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:40px; align-items:start;}
-.nw-side{background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:16px; padding:20px 20px 16px; position:sticky; top:88px;}
-.nw-tips{list-style:none; margin:10px 0 14px; padding:0;}
-.nw-tips li{padding:10px 0; border-bottom:1px solid var(--border-clr); line-height:1.45;}
-.nw-tips li:last-child{border-bottom:0;}
-.nw-tips a{display:block; color:var(--navy); font-weight:600; font-size:15px; text-decoration:none;}
-.nw-tips a:hover{text-decoration:underline;}
-.nw-tips-d{display:block; font-size:12px; color:var(--text-muted); margin-top:3px;}
-.nw-side-all{font-size:14px; font-weight:600; color:var(--navy); text-decoration:none;}
-.nw-side-all:hover{text-decoration:underline;}
-@media (max-width:899px){
-  .nw-cols{grid-template-columns:minmax(0,1fr); gap:28px;}
-  .nw-side{position:static;}
-}
+/* list page (2026-11-16, boss): one column — IRS weekly news cards (latest 3) on top, Study Tips cards below */
+.nw-sec{margin-top:36px;}
+.nw-sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; border-bottom:2px solid var(--navy); padding-bottom:8px; margin-bottom:10px;}
+.nw-sec-head h2{font-size:clamp(20px,2.4vw,24px); margin:0;}
+.nw-rss{font-size:12px; font-weight:700; color:var(--terracotta-deep,#b85f3f); text-decoration:none; letter-spacing:.06em;}
+.nw-sec .nw-lead{font-size:15px; margin-bottom:16px;}
+.nw-card{display:block; background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:14px; padding:18px 20px; text-decoration:none; color:inherit; transition:border-color .15s, box-shadow .15s;}
+.nw-card:hover{border-color:var(--accent); box-shadow:0 4px 14px rgba(var(--navy-rgb),.08);}
+.nw-card .nw-title{font-size:18px;}
+.nw-card-titles{margin:6px 0 0; padding-left:18px; color:var(--navy); font-weight:600; font-size:17px; line-height:1.45;}
+.nw-card-titles li{margin-bottom:3px;}
+.nw-card-dek{margin:8px 0 6px; font-size:15px; line-height:1.6; color:var(--text-mid);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.nw-card-go{font-size:14px; font-weight:600; color:var(--navy);}
+.nw-older{margin-top:8px; padding:4px 4px 0;}
+.nw-older h3{font-size:15px; color:var(--text-mid); margin:6px 0 6px;}
+.nw-older ul{list-style:none; margin:0; padding:0;}
+.nw-older li{padding:6px 0; border-bottom:1px solid var(--border-clr); font-size:15px;}
+.nw-older a{color:var(--navy); text-decoration:none;}
+.nw-older a:hover{text-decoration:underline;}
+.nw-older .nw-date{margin-right:10px;}
