@@ -11,3 +11,6 @@ a.px-back.px-back:hover{border-color:var(--navy,#354649); background:var(--navy-
   .px-backbar{padding:14px 16px 0;}
   .px-backbar-foot{padding:8px 16px 28px;}
 }
+
+/* Study Tips articles: the old back link inside the share bar is replaced by the shared bar above */
+.na-bar a.px-back-dup{display:none !important;}
