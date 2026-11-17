@@ -6374,7 +6374,7 @@ function renderDashIrsNews(){
     var href = '/ea/irs-news/' + (l === 'ko' ? 'ko/' : '') + row.slug + '/';
     var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
     el.innerHTML =
-      '<div class="sts-section-title">' + (l === 'ko' ? 'IRS 주간 뉴스' : 'IRS Weekly News') + '</div>' +
+      '<div class="sts-section-title">' + (l === 'ko' ? 'IRS 주간 Tax Tip' : 'IRS Weekly Tax Tips') + '</div>' +
       '<a class="dv-card nwd-card" href="' + href + '" target="_blank" rel="noopener">' +
         '<span class="nwd-date">' + esc(row.slug) + '</span>' +
         (ts.length ? '<ul class="nwd-titles">' + ts.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '') +
