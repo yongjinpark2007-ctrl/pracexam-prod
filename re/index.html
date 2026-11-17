@@ -154,7 +154,7 @@
 <link rel="stylesheet" href="/exam-palettes.css?v=20261031h">
 <link rel="stylesheet" href="/landing.css?v=20261108b">
 <link rel="stylesheet" href="/exam-switch.css?v=92317555cb">
-<link rel="stylesheet" href="/re/re.css?v=20261114a">
+<link rel="stylesheet" href="/re/re.css?v=20261116a">
 <link rel="stylesheet" href="/videos.css?v=f9ce8e4eb2">
 </head>
 <body data-exam="re">
@@ -398,29 +398,6 @@
   </div>
 </section>
 
-<!-- ═══ FEATURED SHORT (RE · 2026-10-29) — right after the founder message (boss). Latest free RE short, same band as
-     the EA landing. Data and player = /videos.js with the RE table. 0 videos or a failure hides the band. ═══ -->
-<section class="fs-section" id="fs-section" aria-labelledby="fs-title">
-  <div class="wrap fs-grid">
-    <div class="fs-media">
-      <div class="vx-frame vx-skel" id="fs-frame"></div>
-    </div>
-    <div class="fs-text">
-      <span class="eyebrow"><span class="ko">최신 동영상</span><span class="en">Latest video</span></span>
-      <h2 id="fs-title" class="vx-skel fs-skel-line" style="height:34px;width:min(100%,420px);"></h2>
-      <div id="fs-pill-slot"></div>
-      <p class="fs-desc" id="fs-desc"></p>
-      <div class="fs-actions">
-        <a href="/re/videos" class="btn btn-primary btn-lg" id="fs-more">
-          <span class="ko">영상 더 보기 →</span><span class="en">More videos →</span>
-        </a>
-      </div>
-      <a class="fs-yt" id="fs-yt" href="https://www.youtube.com/@PracExam-channel" target="_blank" rel="noopener" hidden>
-        <span class="ko">YouTube에서 보기</span><span class="en">Watch on YouTube</span>
-      </a>
-    </div>
-  </div>
-  <noscript><style>.fs-section{display:none;}</style></noscript>
 </section>
 
 <!-- ═══ SMART STUDY MODE (TPIQ) + WAR ROOM — 좌우 반반 (2026-08-15) ═══
@@ -611,7 +588,7 @@
       </div>
     </div><!-- /오른쪽 카드 -->
 
-    </div><!-- /.duo-grid -->
+    </div><!-- /.duo-grid --><div class="duo-more"><button type="button" class="duo-more-btn" aria-expanded="false" onclick="var s=this.closest('.tpiq-section'),o=s.classList.toggle('duo-open');this.setAttribute('aria-expanded',o?'true':'false');if(!o)s.scrollIntoView({behavior:'smooth',block:'start'});"><span class="m-more"><span class="ko">펼쳐서 더 보기 ▾</span><span class="en">Show more ▾</span></span><span class="m-less"><span class="ko">접기 ▴</span><span class="en">Show less ▴</span></span></button></div>
   </div>
 </section>
 
@@ -655,6 +632,31 @@
 
   </div>
 </section>
+
+<!-- ═══ FEATURED SHORT (RE · 2026-10-29) — right after the founder message (boss). Latest free RE short, same band as
+     the EA landing. Data and player = /videos.js with the RE table. 0 videos or a failure hides the band. ═══ -->
+<section class="fs-section" id="fs-section" aria-labelledby="fs-title">
+  <div class="wrap fs-grid">
+    <div class="fs-media">
+      <div class="vx-frame vx-skel" id="fs-frame"></div>
+    </div>
+    <div class="fs-text">
+      <span class="eyebrow"><span class="ko">최신 동영상</span><span class="en">Latest video</span></span>
+      <h2 id="fs-title" class="vx-skel fs-skel-line" style="height:34px;width:min(100%,420px);"></h2>
+      <div id="fs-pill-slot"></div>
+      <p class="fs-desc" id="fs-desc"></p>
+      <div class="fs-actions">
+        <a href="/re/videos" class="btn btn-primary btn-lg" id="fs-more">
+          <span class="ko">영상 더 보기 →</span><span class="en">More videos →</span>
+        </a>
+      </div>
+      <a class="fs-yt" id="fs-yt" href="https://www.youtube.com/@PracExam-channel" target="_blank" rel="noopener" hidden>
+        <span class="ko">YouTube에서 보기</span><span class="en">Watch on YouTube</span>
+      </a>
+    </div>
+  </div>
+  <noscript><style>.fs-section{display:none;}</style></noscript>
+
 
 <!-- ═══ PRICING ═══ -->
 <section id="pricing">

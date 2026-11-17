@@ -44,3 +44,20 @@ body[data-exam="re"] .stats-grid{grid-template-columns:repeat(5,minmax(0,1fr)); 
 body[data-exam="re"] .stats-grid > div{padding:0 14px;}
 body[data-exam="re"] .stats-grid > div + div{border-left:1px solid var(--border-clr);}
 @media (max-width:760px){ body[data-exam="re"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} body[data-exam="re"] .stats-grid > div + div{border-left:none;} }
+
+/* Smart Study · War Room band (boss 2026-11-16, same as the EA landing): about half height, «펼쳐서 더 보기» opens
+   the full diagram and War Room preview, «접기» closes it. Nothing is removed from the page. */
+section.tpiq-section{padding-top:56px; padding-bottom:44px;}
+.tpiq-section:not(.duo-open) .duo-card{padding:24px 24px 20px;}
+.tpiq-section:not(.duo-open) .tpiq-mini svg{max-height:240px; width:auto; max-width:100%; margin:0 auto;}
+.tpiq-section:not(.duo-open) .lpwr-frame{margin:12px 0 6px;}
+.tpiq-section:not(.duo-open) .lpwr-sheet{height:190px;}
+.tpiq-section:not(.duo-open) .lpwr-sheet::after{height:120px;}
+.duo-more{position:relative; z-index:1; text-align:center; margin-top:20px;}
+.duo-more-btn{display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:14px; font-weight:600; color:var(--navy);
+  background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:999px; padding:9px 20px; cursor:pointer;
+  transition:border-color .15s, background .15s;}
+.duo-more-btn:hover{border-color:var(--navy); background:var(--navy-light,#EEF2F2);}
+.duo-more-btn .m-less{display:none;}
+.duo-open .duo-more-btn .m-more{display:none;}
+.duo-open .duo-more-btn .m-less{display:inline;}
