@@ -528,7 +528,7 @@ async function irsNews(context, p) {
     main = '<div class="nw-page nw-page-list">'
       + '<span class="nw-eyebrow">' + (K ? "IRS 뉴스 · STUDY TIPS" : "IRS NEWS · STUDY TIPS") + "</span><h1>" + (K ? "IRS 뉴스 · Study Tips" : "IRS News · Study Tips") + "</h1>"
       + '<section class="nw-sec" aria-labelledby="nw-sec-news"><div class="nw-sec-head"><h2 id="nw-sec-news">' + (K ? "IRS 주간 뉴스" : "IRS weekly news") + "</h2>"
-      + '<a class="nw-rss" href="' + nwPath(lang, "") + 'rss.xml">RSS</a></div><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
+      + '</div><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
       + '<div id="nw-list">' + news + "</div></section>"
       + (tipCards ? '<section class="nw-sec" aria-labelledby="nw-sec-tips"><div class="nw-sec-head"><h2 id="nw-sec-tips">Study Tips</h2></div>'
         + '<p class="nw-lead">' + (K ? "EA 시험 공부에 도움이 되는 글입니다." : "Articles to help you study for the EA exam.") + "</p>"
