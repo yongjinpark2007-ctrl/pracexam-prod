@@ -422,7 +422,7 @@ function nwRss(rows, lang) {
     const d = new Date(r.issue_date + "T15:00:00Z").toUTCString();
     const titles = nwTitles(r.html);
     return "<item><title>" + nwEsc(nwHeadline(r, L)) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
-      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(titles.length ? titles.join(" · ") : nwText(r.subject)) + "</description>"
+      + "<pubDate>" + d + "</pubDate><description>" + nwEsc((lang === "ko" ? "이번 주 IRS Tax Tip을 쉬운 한국어로 정리했습니다." : "This week's IRS Tax Tips in plain English:") + "\n" + (titles.length ? titles : [nwText(r.subject)]).map(x => "• " + x).join("\n")) + "</description>"
       + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
   }).join("");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
