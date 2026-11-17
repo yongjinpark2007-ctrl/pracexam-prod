@@ -1,0 +1,13 @@
+/* 2026-11-16 (boss): one «back» button for every EA sub-page — same place (under the header, left), same button.
+   Long pages repeat it at the bottom (.px-backbar-foot). The doubled class beats each page's old back styles. */
+.px-backbar{max-width:1120px; margin:0 auto; padding:18px 24px 0; box-sizing:border-box; text-align:left;}
+.px-backbar-foot{padding:8px 24px 36px;}
+a.px-back.px-back{display:inline-flex; align-items:center; gap:6px; font-family:inherit; font-size:14px; font-weight:600;
+  letter-spacing:0; text-transform:none; line-height:1.2; color:var(--navy,#354649); text-decoration:none;
+  background:var(--white,#fff); border:1px solid var(--border-clr,#E6E3DC); border-radius:999px; padding:8px 16px;
+  box-shadow:none; width:auto; min-width:0; transition:border-color .15s, background .15s;}
+a.px-back.px-back:hover{border-color:var(--navy,#354649); background:var(--navy-light,#EEF2F2); text-decoration:none;}
+@media (max-width:640px){
+  .px-backbar{padding:14px 16px 0;}
+  .px-backbar-foot{padding:8px 16px 28px;}
+}

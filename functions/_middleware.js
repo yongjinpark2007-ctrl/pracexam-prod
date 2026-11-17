@@ -482,7 +482,7 @@ async function irsNews(context, p) {
   const selfUrl = nwUrl(lang, slug);
   const enUrl = nwUrl("en", (lang === "en" || otherHas) ? slug : "");
   const koUrl = nwUrl("ko", (lang === "ko" || otherHas) ? slug : "");
-  let title, desc, main, ld, robots = "";
+  let title, desc, main, ld, robots = "", back = null;
   if (row) {
     const head = nwHeadline(row, L);
     const titles = nwTitles(row.html);
@@ -491,7 +491,8 @@ async function irsNews(context, p) {
     title += " | PracExam";
     desc = (lang === "ko" ? "IRS Tax Tip 한국어 정리 (" + row.slug + "): " : "Plain-English summary of IRS Tax Tips (" + row.slug + "): ") + (titles.length ? titles.join(" · ") : head);
     if (desc.length > 300) desc = desc.slice(0, 297) + "...";
-    main = '<div class="nw-page"><p class="nw-back"><a class="btn btn-ghost" href="' + nwPath(lang, "") + '">' + L.all + "</a></p>"
+    back = { href: nwPath(lang, ""), label: lang === "ko" ? "&larr; IRS 뉴스 · Study Tips" : "&larr; IRS News · Study Tips" };
+    main = '<div class="nw-page">'
       + '<article class="nw-article" lang="' + lang + '">' + nwClean(row.html) + "</article>"
       + '<p class="nw-note">' + nwEsc(L.note) + "</p>"
       + '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div>"
@@ -523,7 +524,8 @@ async function irsNews(context, p) {
     const tipCards = tips.slice(0, 6).map(x => '<a class="nw-card" href="' + x.href + '"><span class="nw-date">' + nwEsc(x.when) + "</span>"
       + '<span class="nw-title">' + nwEsc(x.title) + "</span>" + (x.dek ? '<p class="nw-card-dek">' + nwEsc(x.dek) + "</p>" : "")
       + '<span class="nw-card-go">' + (K ? "읽기" : "Read") + " &rarr;</span></a>").join("");
-    main = '<div class="nw-page"><p class="nw-back"><a class="btn btn-ghost" href="' + L.homeHref + '">' + L.home + "</a></p>"
+    back = { href: L.homeHref, label: lang === "ko" ? "&larr; EA 홈" : "&larr; EA Home" };
+    main = '<div class="nw-page">'
       + '<span class="nw-eyebrow">' + (K ? "IRS 뉴스 · STUDY TIPS" : "IRS NEWS · STUDY TIPS") + "</span><h1>" + (K ? "IRS 뉴스 · Study Tips" : "IRS News · Study Tips") + "</h1>"
       + '<section class="nw-sec" aria-labelledby="nw-sec-news"><div class="nw-sec-head"><h2 id="nw-sec-news">' + (K ? "IRS 주간 뉴스" : "IRS weekly news") + "</h2>"
       + '<a class="nw-rss" href="' + nwPath(lang, "") + 'rss.xml">RSS</a></div><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
@@ -557,7 +559,8 @@ async function irsNews(context, p) {
     .on('link[rel="alternate"][hreflang="x-default"]', new AttrSetter("href", (slug && !otherHas) ? selfUrl : enUrl))
     .on('link[rel="alternate"][type="application/rss+xml"]', new AttrSetter("href", nwUrl(lang, "") + "rss.xml"))
     .on("script#nw-ld", { element(el) { el.setInnerContent(JSON.stringify(ld).replace(/</g, "\\u003c"), { html: true }); } })
-    .on("#nw-main", { element(el) { el.setInnerContent(main, { html: true }); } });
+    .on("#nw-main", { element(el) { el.setInnerContent(main, { html: true }); } })
+    .on(".px-backbar", { element(el) { if (back) el.setInnerContent('<a class="px-back" href="' + back.href + '">' + back.label + "</a>", { html: true }); } });
   if (robots) out = out.on("head", { element(el) { el.append('<meta name="robots" content="' + robots + '">', { html: true }); } });
   // a missing other-language issue: drop that hreflang line instead of pointing it at a list page
   if (slug && !otherHas) out = out.on('link[rel="alternate"][hreflang="' + other + '"]', { element(el) { el.remove(); } });
