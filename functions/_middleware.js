@@ -516,7 +516,7 @@ async function irsNews(context, p) {
         + '<p class="nw-card-dek">' + nwEsc(nwSnippet(r.html, 180)) + '</p><span class="nw-card-go">' + (K ? "읽기" : "Read") + " &rarr;</span></a>";
     };
     const news = mine.length
-      ? mine.slice(0, 3).map(card).join("")
+      ? '<div class="nw-grid">' + mine.slice(0, 3).map(card).join("") + "</div>"
         + (mine.length > 3 ? '<div class="nw-older"><h3>' + (K ? "지난 주간 정리" : "Earlier weeks") + "</h3><ul>"
           + mine.slice(3).map(r => '<li><a href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + "</span>" + nwEsc(nwHeadline(r, L)) + "</a></li>").join("") + "</ul></div>" : "")
       : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
@@ -525,14 +525,14 @@ async function irsNews(context, p) {
       + '<span class="nw-title">' + nwEsc(x.title) + "</span>" + (x.dek ? '<p class="nw-card-dek">' + nwEsc(x.dek) + "</p>" : "")
       + '<span class="nw-card-go">' + (K ? "읽기" : "Read") + " &rarr;</span></a>").join("");
     back = { href: L.homeHref, label: lang === "ko" ? "&larr; EA 홈" : "&larr; EA Home" };
-    main = '<div class="nw-page">'
+    main = '<div class="nw-page nw-page-list">'
       + '<span class="nw-eyebrow">' + (K ? "IRS 뉴스 · STUDY TIPS" : "IRS NEWS · STUDY TIPS") + "</span><h1>" + (K ? "IRS 뉴스 · Study Tips" : "IRS News · Study Tips") + "</h1>"
       + '<section class="nw-sec" aria-labelledby="nw-sec-news"><div class="nw-sec-head"><h2 id="nw-sec-news">' + (K ? "IRS 주간 뉴스" : "IRS weekly news") + "</h2>"
       + '<a class="nw-rss" href="' + nwPath(lang, "") + 'rss.xml">RSS</a></div><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
-      + '<div class="nw-list" id="nw-list">' + news + "</div></section>"
+      + '<div id="nw-list">' + news + "</div></section>"
       + (tipCards ? '<section class="nw-sec" aria-labelledby="nw-sec-tips"><div class="nw-sec-head"><h2 id="nw-sec-tips">Study Tips</h2></div>'
         + '<p class="nw-lead">' + (K ? "EA 시험 공부에 도움이 되는 글입니다." : "Articles to help you study for the EA exam.") + "</p>"
-        + '<div class="nw-list">' + tipCards + '</div><p class="nw-more"><a href="' + (K ? "/tips/ko/" : "/tips/") + '">' + (K ? "Study Tips 모두 보기" : "All Study Tips") + " &rarr;</a></p></section>" : "")
+        + '<div class="nw-grid">' + tipCards + '</div><p class="nw-more"><a href="' + (K ? "/tips/ko/" : "/tips/") + '">' + (K ? "Study Tips 모두 보기" : "All Study Tips") + " &rarr;</a></p></section>" : "")
       + '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div></div>";
     ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: L.h1, description: desc, inLanguage: lang, url: selfUrl,
       hasPart: mine.slice(0, 20).map(r => ({ "@type": "Article", headline: nwHeadline(r, L).slice(0, 110), url: nwUrl(lang, r.slug), datePublished: r.issue_date })) };
