@@ -431,6 +431,21 @@ function nwRss(rows, lang) {
     + "<description>" + nwEsc(L.listDesc) + "</description><language>" + (lang === "ko" ? "ko" : "en-us") + "</language>"
     + items + "</channel></rss>";
 }
+// Study Tips articles, read from the static /tips/ (or /tips/ko/) list page: lead card + rows, in page order.
+async function nwTips(context, lang) {
+  try {
+    const r = await context.env.ASSETS.fetch(new Request(new URL(lang === "ko" ? "/tips/ko/" : "/tips/", context.request.url).toString()));
+    if (!r.ok) return [];
+    const t = await r.text(), out = [];
+    const re = /<a class="nl-(?:lead|row)" href="(\/tips\/[^"]+)">([\s\S]*?)<\/a>/g;
+    let m;
+    while ((m = re.exec(t))) {
+      const ti = /class="nl-[a-z]*title">([\s\S]*?)<\//.exec(m[2]), w = /nl-when">([^<]*)/.exec(m[2]);
+      if (ti) out.push({ href: m[1], title: nwText(ti[1]), when: w ? nwText(w[1]) : "" });
+    }
+    return out;
+  } catch (e) { return []; }
+}
 async function irsNews(context, p) {
   const url = new URL(context.request.url);
   const lang = p.startsWith("/ea/irs-news/ko/") ? "ko" : "en";
@@ -492,9 +507,17 @@ async function irsNews(context, p) {
       ? mine.map(r => '<a class="nw-item" href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(L.week + r.slug) + '</span><span class="nw-title">' + nwEsc(nwHeadline(r, L)) + "</span></a>").join("")
       : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
     if (!mine.length) robots = "noindex";
-    main = '<div class="nw-page"><p class="nw-back"><a class="btn btn-ghost" href="' + L.homeHref + '">' + L.home + "</a></p>"
+    // 2026-11-16 (boss): the menu item «IRS 뉴스 · Study Tips» lands here — news first, Study Tips listed beside it
+    const tips = await nwTips(context, lang);
+    const side = tips.length
+      ? '<aside class="nw-side"><span class="nw-eyebrow">Study Tips</span><ul class="nw-tips">'
+        + tips.slice(0, 6).map(t => '<li><a href="' + t.href + '">' + nwEsc(t.title) + '</a><span class="nw-tips-d">' + nwEsc(t.when) + "</span></li>").join("")
+        + '</ul><a class="nw-side-all" href="' + (lang === "ko" ? "/tips/ko/" : "/tips/") + '">' + (lang === "ko" ? "Study Tips 모두 보기 &rarr;" : "All Study Tips &rarr;") + "</a></aside>"
+      : "";
+    main = '<div class="nw-page nw-page-wide"><p class="nw-back"><a class="btn btn-ghost" href="' + L.homeHref + '">' + L.home + "</a></p>"
+      + '<div class="nw-cols"><div class="nw-col-main">'
       + '<span class="nw-eyebrow">' + nwEsc(L.eyebrow) + "</span><h1>" + nwEsc(L.h1) + '</h1><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
-      + '<div class="nw-list" id="nw-list">' + list + "</div>"
+      + '<div class="nw-list" id="nw-list">' + list + "</div></div>" + side + "</div>"
       + '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div></div>";
     ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: L.h1, description: desc, inLanguage: lang, url: selfUrl,
       hasPart: mine.slice(0, 20).map(r => ({ "@type": "Article", headline: nwHeadline(r, L).slice(0, 110), url: nwUrl(lang, r.slug), datePublished: r.issue_date })) };
