@@ -41,6 +41,8 @@
 ### Key pages
 
 - EA landing page (product overview, pricing): https://pracexam.com/ea/
+- IRS Tax Tips, weekly plain-English summary with links to IRS.gov (English): https://pracexam.com/ea/irs-news/
+- IRS Tax Tips, weekly Korean summary: https://pracexam.com/ea/irs-news/ko/
 - Study Tips (exam-strategy articles): https://pracexam.com/tips/
 - Install guide (PWA setup): https://pracexam.com/install-guide
 - EA exam guide (eligibility, format, fees, exam day): https://pracexam.com/ea/exam-tips/

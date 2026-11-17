@@ -447,11 +447,30 @@ async function nwTips(context, lang) {
     return out;
   } catch (e) { return []; }
 }
+function nwSitemap(rows) {
+  const by = {};
+  rows.forEach(r => { (by[r.slug] = by[r.slug] || {})[r.lang] = r; });
+  const alt = (slug, has) => ["en", "ko"].filter(l => has[l]).map(l => '<xhtml:link rel="alternate" hreflang="' + l + '" href="' + nwUrl(l, slug) + '"/>').join("");
+  let out = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
+  const last = rows.length ? String(rows[0].updated_at || rows[0].issue_date).slice(0, 10) : "";
+  ["en", "ko"].forEach(l => { out += "<url><loc>" + nwUrl(l, "") + "</loc>" + (last ? "<lastmod>" + last + "</lastmod>" : "") + alt("", { en: 1, ko: 1 }) + "</url>"; });
+  Object.keys(by).sort().reverse().forEach(slug => {
+    ["en", "ko"].forEach(l => {
+      const r = by[slug][l]; if (!r) return;
+      out += "<url><loc>" + nwUrl(l, slug) + "</loc><lastmod>" + String(r.updated_at || r.issue_date).slice(0, 10) + "</lastmod>" + alt(slug, by[slug]) + "</url>";
+    });
+  });
+  return out + "</urlset>";
+}
 async function irsNews(context, p) {
   const url = new URL(context.request.url);
   const lang = p.startsWith("/ea/irs-news/ko/") ? "ko" : "en";
   const rest = p.slice(lang === "ko" ? "/ea/irs-news/ko/".length : "/ea/irs-news/".length);
   const L = NW_TXT[lang];
+  if (lang === "en" && rest === "sitemap.xml") {
+    const rows = (await nwRows()) || [];
+    return new Response(nwSitemap(rows), { headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" } });
+  }
   if (rest === "rss.xml") {
     const rows = (await nwRows()) || [];
     return new Response(nwRss(rows, lang), { headers: { "content-type": "application/rss+xml; charset=utf-8", "cache-control": "public, max-age=600" } });
