@@ -400,9 +400,10 @@
     try { var t = +localStorage.getItem(askKey()) || 0; return !!t && (Date.now() - t) < ASK_DAYS * 864e5; } catch(e){ return false; }
   }
   function renderDashAsk(){
-    var anchor = document.getElementById('dash-mock'); if (!anchor) return;
+    // boss 2026-11-16: below «약점 보강» (was above the mock card) - less busy at the top of the dashboard
+    var anchor = document.getElementById('dash-weak-topics'); if (!anchor) return;
     var box = document.getElementById('dash-review-ask');
-    if (!box){ box = document.createElement('div'); box.id = 'dash-review-ask'; anchor.parentNode.insertBefore(box, anchor); }
+    if (!box){ box = document.createElement('div'); box.id = 'dash-review-ask'; anchor.parentNode.insertBefore(box, anchor.nextSibling); }
     if ((!canReview() || askSnoozed()) && !(IS_TEST && window.__rvAskPreview)){ box.innerHTML = ''; return; }   // __rvAskPreview: design check on test hosts
     box.innerHTML = '<div class="dash-sec-card rv-ask">'
       + '<div class="rv-ask-t">' + esc(L('그 동안의 학습 경험을 공유해주실 수 있으실까요?', 'We’d love to hear about your journey')) + '</div>'
