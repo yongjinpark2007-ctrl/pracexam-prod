@@ -33,3 +33,20 @@
   .nw-article{padding:20px 16px 16px; font-size:15.5px;}
   .nw-article h2{font-size:20px;}
 }
+
+/* list page: news (wide) + Study Tips (side), 2026-11-16 */
+.nw-page-wide{max-width:1080px;}
+.nw-cols{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:40px; align-items:start;}
+.nw-side{background:var(--white,#fff); border:1px solid var(--border-clr); border-radius:16px; padding:20px 20px 16px; position:sticky; top:88px;}
+.nw-tips{list-style:none; margin:10px 0 14px; padding:0;}
+.nw-tips li{padding:10px 0; border-bottom:1px solid var(--border-clr); line-height:1.45;}
+.nw-tips li:last-child{border-bottom:0;}
+.nw-tips a{display:block; color:var(--navy); font-weight:600; font-size:15px; text-decoration:none;}
+.nw-tips a:hover{text-decoration:underline;}
+.nw-tips-d{display:block; font-size:12px; color:var(--text-muted); margin-top:3px;}
+.nw-side-all{font-size:14px; font-weight:600; color:var(--navy); text-decoration:none;}
+.nw-side-all:hover{text-decoration:underline;}
+@media (max-width:899px){
+  .nw-cols{grid-template-columns:minmax(0,1fr); gap:28px;}
+  .nw-side{position:static;}
+}
