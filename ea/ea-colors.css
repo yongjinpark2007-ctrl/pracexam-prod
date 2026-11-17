@@ -18,8 +18,8 @@ body[data-exam="ea"] .stats-grid > div{padding:0 14px;}
 body[data-exam="ea"] .stats .stat-num{font-size:clamp(20px,2.2vw,27px);}
 body[data-exam="ea"] .stats .stat-label{margin-top:6px; line-height:1.4;}
 @media (max-width:760px){ body[data-exam="ea"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:18px;} body[data-exam="ea"] .stats-grid > div + div{border-left:none;} }
-/* samples «미리 풀어보기» (boss 2026-11-13 picked option 3 «그린 그레이» after rejecting ivory and sage) */
-body[data-exam="ea"] .samples{background:#EFF3F0; border-top:none; border-bottom:none;}
+/* samples «미리 풀어보기»: white (boss 2026-11-16; was «그린 그레이» #EFF3F0 from 2026-11-13) */
+body[data-exam="ea"] .samples{background:#fff; border-top:none; border-bottom:none;}
 body[data-exam="ea"] .samples .sample-card{box-shadow:0 4px 18px rgba(var(--navy-rgb),.10);}
 /* Korean eyebrows (boss 2026-11-13: «고객 후기» looked broken): the 12px uppercase label with .14em tracking is an English
    style; in Korean it spreads the syllables apart. Larger and tighter in the Korean view only. */
