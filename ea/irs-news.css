@@ -55,3 +55,16 @@
 .nw-older a{color:var(--navy); text-decoration:none;}
 .nw-older a:hover{text-decoration:underline;}
 .nw-older .nw-date{margin-right:10px;}
+
+/* list page as wide as the landing (boss 2026-11-16): 1120px, cards three across */
+.nw-page.nw-page-list{max-width:1120px; padding-left:0; padding-right:0;}
+.nw-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; align-items:stretch;}
+.nw-grid .nw-card{display:flex; flex-direction:column; height:100%; box-sizing:border-box;}
+.nw-grid .nw-card-go{margin-top:auto; padding-top:6px;}
+.nw-grid .nw-card-dek{-webkit-line-clamp:3;}
+.nw-page-list .nw-lead{max-width:760px;}
+.nw-page-list .nw-cta{max-width:760px; margin-left:auto; margin-right:auto;}
+@media (max-width:959px){ .nw-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+@media (max-width:640px){ .nw-grid{grid-template-columns:minmax(0,1fr);} }
+/* content edge = back-button edge = landing .wrap edge */
+main.nw-main.nw-main{max-width:1120px;}
