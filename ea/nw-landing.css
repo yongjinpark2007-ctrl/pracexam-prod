@@ -1,0 +1,32 @@
+/* 2026-11-16 (boss) — EA landing: the latest-video band is split in two. Left = video, right = latest IRS weekly news. */
+.fs-split{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,4vw,56px); align-items:center;}
+.fs-split .fs-grid{grid-template-columns:auto minmax(0,1fr); gap:clamp(20px,2.6vw,32px);}
+.fs-split .fs-media{width:200px;}
+.fs-split .fs-text h2{font-size:clamp(19px,1.8vw,23px);}
+.fs-split .fs-actions .btn-lg{padding:12px 20px; font-size:15px;}
+.fs-news-only .fs-split{grid-template-columns:minmax(0,1fr); max-width:720px;}
+
+.nw-land{background:var(--white,#fff); border:1px solid var(--accent-border,var(--border-clr)); border-radius:18px; padding:24px 24px 20px; min-width:0;}
+.nw-land .eyebrow{display:inline-block; margin-bottom:10px;}
+.nw-land-main{display:block; text-decoration:none; color:inherit;}
+.nw-land-date{display:block; font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--terracotta-deep,#b85f3f);}
+.nw-land-main h3{font-size:clamp(18px,1.7vw,21px); line-height:1.4; color:var(--navy); margin:6px 0 8px;}
+.nw-land-main:hover h3{text-decoration:underline; text-underline-offset:3px;}
+.nw-land-main p{font-size:15px; line-height:1.65; color:var(--text-mid); margin:0 0 12px;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+.nw-land-more{list-style:none; margin:0 0 16px; padding:12px 0 0; border-top:1px solid var(--border-clr);}
+.nw-land-more li{margin:0 0 8px; font-size:14px; line-height:1.5;}
+.nw-land-more a{color:var(--navy); text-decoration:none;}
+.nw-land-more a:hover{text-decoration:underline;}
+.nw-land-more .d{color:var(--text-muted); font-size:12px; margin-right:6px;}
+.nw-land-all{font-size:14px; font-weight:600; color:var(--navy); text-decoration:none;}
+.nw-land-all:hover{text-decoration:underline;}
+
+@media (max-width:959px){
+  .fs-split{grid-template-columns:minmax(0,1fr);}
+}
+@media (max-width:767px){
+  .fs-split .fs-grid{grid-template-columns:1fr;}
+  .fs-split .fs-media{width:min(60vw,220px);}
+  .nw-land{padding:20px 16px 16px; text-align:left;}
+}
