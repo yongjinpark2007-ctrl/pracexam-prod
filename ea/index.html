@@ -160,7 +160,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/videos.css?v=f9ce8e4eb2">
-<link rel="stylesheet" href="/ea/nw-landing.css?v=20261116a">
+<link rel="stylesheet" href="/ea/nw-landing.css?v=20261116b">
 <link rel="stylesheet" href="/exam-palettes.css?v=20261031h">
 <link rel="stylesheet" href="/landing.css?v=20261108b">
 <link rel="stylesheet" id="ea-colors-css" href="/ea/ea-colors.css?v=20261116a">
@@ -383,48 +383,6 @@
   </div>
 </section>
 
-<!-- ═══ CUSTOMER REVIEWS (2026-11-13) — compact, right after Features so visitors see it early (boss). Hidden until 3+ published; English view shows English reviews only ═══ -->
-<section id="reviews" class="reviews" hidden>
-  <div class="wrap">
-    <div class="sec-head rv-head">
-      <span class="eyebrow"><span class="ko">고객 후기</span><span class="en">REVIEWS</span></span>
-      <h2><span class="ko">먼저 공부한 수험생들의 이야기</span><span class="en">What EA candidates say</span></h2>
-    </div>
-    <div id="rv-banner"></div>
-    <div id="rv-carousels"></div>
-    <div class="rv-more"><a class="btn btn-ghost btn-lg ko" href="/ea/reviews/ko/">후기 전체 보기 →</a><a class="btn btn-ghost btn-lg en" href="/ea/reviews/">See all reviews →</a></div>
-  </div>
-</section>
-
-<!-- ═══ FEATURED SHORT (2026-10-16) — 히어로 바로 아래. 최신 무료 쇼츠 1개. 0건/실패면 통째로 숨김. 데이터·재생은 videos.js 공용 ═══ -->
-<!-- 2026-11-16 (boss): the band is split in two — left = latest video, right = latest IRS weekly news (#nw-land, written in
-     on the server by functions/_middleware.js from public_irs_news). Each half hides itself on its own failure. -->
-<section class="fs-section" id="fs-section" aria-labelledby="fs-title">
-  <div class="wrap fs-split">
-  <div class="fs-grid fs-half" id="fs-video">
-    <div class="fs-media">
-      <div class="vx-frame vx-skel" id="fs-frame"></div>
-    </div>
-    <div class="fs-text">
-      <span class="eyebrow"><span class="ko">최신 동영상</span><span class="en">Latest video</span></span>
-      <h2 id="fs-title" class="vx-skel fs-skel-line" style="height:34px;width:min(100%,420px);"></h2>
-      <div id="fs-pill-slot"></div>
-      <p class="fs-desc" id="fs-desc"></p>
-      <div class="fs-actions">
-        <a href="/videos" class="btn btn-primary btn-lg" id="fs-more">
-          <span class="ko">영상 더 보기 →</span><span class="en">More videos →</span>
-        </a>
-      </div>
-      <a class="fs-yt" id="fs-yt" href="https://www.youtube.com/@PracExam-channel" target="_blank" rel="noopener" hidden>
-        <span class="ko">YouTube에서 보기</span><span class="en">Watch on YouTube</span>
-      </a>
-    </div>
-  </div>
-  <aside class="nw-land" id="nw-land" aria-label="IRS weekly Tax Tips" hidden></aside>
-  </div>
-</section>
-<noscript><style>#fs-video{display:none;}</style></noscript>
-
 <!-- ═══ SMART STUDY MODE (TPIQ) + WAR ROOM — 좌우 반반 (2026-08-15) ═══
      이전에는 TPIQ 하나가 이 섹션을 통째로 썼다(세로 1,000px 넘음). 절반을 War Room 에 내주고
      TPIQ 는 좁은 폭용 도표 + 한 줄 요약 3개로 줄였다. 오른쪽 War Room 은 캡처 사진이 아니라
@@ -623,7 +581,7 @@
       </div>
     </div><!-- /오른쪽 카드 -->
 
-    </div><!-- /.duo-grid -->
+    </div><!-- /.duo-grid --><div class="duo-more"><button type="button" class="duo-more-btn" aria-expanded="false" onclick="var s=this.closest('.tpiq-section'),o=s.classList.toggle('duo-open');this.setAttribute('aria-expanded',o?'true':'false');if(!o)s.scrollIntoView({behavior:'smooth',block:'start'});"><span class="m-more"><span class="ko">펼쳐서 더 보기 ▾</span><span class="en">Show more ▾</span></span><span class="m-less"><span class="ko">접기 ▴</span><span class="en">Show less ▴</span></span></button></div>
   </div>
 </section>
 
@@ -667,6 +625,49 @@
 
   </div>
 </section>
+
+<!-- ═══ FEATURED SHORT (2026-10-16) — 히어로 바로 아래. 최신 무료 쇼츠 1개. 0건/실패면 통째로 숨김. 데이터·재생은 videos.js 공용 ═══ -->
+<!-- 2026-11-16 (boss): the band is split in two — left = latest video, right = latest IRS weekly news (#nw-land, written in
+     on the server by functions/_middleware.js from public_irs_news). Each half hides itself on its own failure. -->
+<section class="fs-section" id="fs-section" aria-labelledby="fs-title">
+  <div class="wrap fs-split">
+  <div class="fs-grid fs-half" id="fs-video">
+    <div class="fs-media">
+      <div class="vx-frame vx-skel" id="fs-frame"></div>
+    </div>
+    <div class="fs-text">
+      <span class="eyebrow"><span class="ko">최신 동영상</span><span class="en">Latest video</span></span>
+      <h2 id="fs-title" class="vx-skel fs-skel-line" style="height:34px;width:min(100%,420px);"></h2>
+      <div id="fs-pill-slot"></div>
+      <p class="fs-desc" id="fs-desc"></p>
+      <div class="fs-actions">
+        <a href="/videos" class="btn btn-primary btn-lg" id="fs-more">
+          <span class="ko">영상 더 보기 →</span><span class="en">More videos →</span>
+        </a>
+      </div>
+      <a class="fs-yt" id="fs-yt" href="https://www.youtube.com/@PracExam-channel" target="_blank" rel="noopener" hidden>
+        <span class="ko">YouTube에서 보기</span><span class="en">Watch on YouTube</span>
+      </a>
+    </div>
+  </div>
+  <aside class="nw-land" id="nw-land" aria-label="IRS weekly Tax Tips" hidden></aside>
+  </div>
+</section>
+<noscript><style>#fs-video{display:none;}</style></noscript>
+
+<!-- ═══ CUSTOMER REVIEWS (2026-11-13) — compact, right after Features so visitors see it early (boss). Hidden until 3+ published; English view shows English reviews only ═══ -->
+<section id="reviews" class="reviews" hidden>
+  <div class="wrap">
+    <div class="sec-head rv-head">
+      <span class="eyebrow"><span class="ko">고객 후기</span><span class="en">REVIEWS</span></span>
+      <h2><span class="ko">먼저 공부한 수험생들의 이야기</span><span class="en">What EA candidates say</span></h2>
+    </div>
+    <div id="rv-banner"></div>
+    <div id="rv-carousels"></div>
+    <div class="rv-more"><a class="btn btn-ghost btn-lg ko" href="/ea/reviews/ko/">후기 전체 보기 →</a><a class="btn btn-ghost btn-lg en" href="/ea/reviews/">See all reviews →</a></div>
+  </div>
+</section>
+
 
 <!-- ═══ PRICING ═══ -->
 <section id="pricing">
