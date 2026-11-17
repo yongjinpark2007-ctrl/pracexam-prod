@@ -95,7 +95,7 @@
   // ── menu items: More menu AND drawer (a new menu item goes in both) ──
   var ICO = '<svg class="%C" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>';
   function addMenus(){
-    var more = document.getElementById('nav-settings'), drawer = document.getElementById('mob-settings');
+    var more = document.getElementById('nav-upgrade-item') || document.getElementById('nav-settings'), drawer = document.getElementById('mob-settings');
     if (more && !document.getElementById('nav-review')){
       var b = document.createElement('button'); b.className = 'nav-btn'; b.id = 'nav-review'; b.type = 'button';
       b.innerHTML = ICO.replace('%C', 'nav-ico') + '<span class="rv-menu-label"></span>';
@@ -108,7 +108,7 @@
       d.onclick = function(){ try{ closeDrawer(); }catch(e){} openReview(); };
       drawer.parentNode.insertBefore(d, drawer);
     }
-    document.querySelectorAll('.rv-menu-label').forEach(function(s){ s.textContent = L('리뷰 작성하기', 'Write a Review'); });
+    document.querySelectorAll('.rv-menu-label').forEach(function(s){ s.textContent = L('후기 남기기', 'Share Your Review'); });
   }
 
   // ── review screen (boss 2026-11-13: the popup closed on a stray click and lost the text → a normal app screen) ──
