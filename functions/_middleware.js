@@ -581,7 +581,8 @@ async function irsNews(context, p) {
     .on('link[rel="alternate"][type="application/rss+xml"]', new AttrSetter("href", nwUrl(lang, "") + "rss.xml"))
     .on("script#nw-ld", { element(el) { el.setInnerContent(JSON.stringify(ld).replace(/</g, "\\u003c"), { html: true }); } })
     .on("#nw-main", { element(el) { el.setInnerContent(main, { html: true }); } })
-    .on(".px-backbar", { element(el) { if (back) el.setInnerContent('<a class="px-back" href="' + back.href + '">' + back.label + "</a>", { html: true }); } });
+    .on(".px-backbar", { element(el) { if (back) el.setInnerContent('<a class="px-back" href="' + back.href + '">' + back.label + "</a>"
+      + '<a class="px-back px-back-app" href="/app">' + (lang === "ko" ? "내 학습 &rarr;" : "My Practice &rarr;") + "</a>", { html: true }); } });   // boss 2026-11-17
   if (robots) out = out.on("head", { element(el) { el.append('<meta name="robots" content="' + robots + '">', { html: true }); } });
   // a missing other-language issue: drop that hreflang line instead of pointing it at a list page
   if (slug && !otherHas) out = out.on('link[rel="alternate"][hreflang="' + other + '"]', { element(el) { el.remove(); } });

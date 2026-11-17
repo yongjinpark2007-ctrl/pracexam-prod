@@ -14,3 +14,6 @@ a.px-back.px-back:hover{border-color:var(--navy,#354649); background:var(--navy-
 
 /* Study Tips articles: the old back link inside the share bar is replaced by the shared bar above */
 .na-bar a.px-back-dup{display:none !important;}
+
+/* 2026-11-17 (boss): «내 학습» next to the home button — back into the app */
+.px-backbar a.px-back.px-back + a.px-back.px-back{margin-left:8px;}
