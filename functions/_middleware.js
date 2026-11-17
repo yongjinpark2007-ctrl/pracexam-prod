@@ -518,7 +518,7 @@ async function irsNews(context, p) {
       + '<p class="nw-more"><a href="' + nwPath(lang, "") + '">' + nwEsc(L.more) + " &rarr;</a></p></div>";
     ld = { "@context": "https://schema.org", "@type": "Article", headline: head.slice(0, 110), description: desc, inLanguage: lang,
       datePublished: row.issue_date, dateModified: String(row.updated_at || row.created_at || row.issue_date).slice(0, 10),
-      url: selfUrl, mainEntityOfPage: selfUrl, image: "https://pracexam.com/og-image.png",
+      url: selfUrl, mainEntityOfPage: selfUrl, image: "https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116",
       author: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/" },
       publisher: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/", logo: { "@type": "ImageObject", url: "https://pracexam.com/apple-touch-icon.png" } },
       isBasedOn: nwSources(row.html), about: ["IRS Tax Tips", "Enrolled Agent exam"] };
@@ -568,6 +568,8 @@ async function irsNews(context, p) {
     .on('meta[property="og:title"]', new MetaRewriter(title))
     .on('meta[property="og:description"]', new MetaRewriter(desc))
     .on('meta[property="og:url"]', new MetaRewriter(selfUrl))
+    .on('meta[property="og:image"]', new MetaRewriter("https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116"))
+    .on('meta[name="twitter:image"]', new MetaRewriter("https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116"))
     .on('meta[property="og:locale"]', new MetaRewriter(L.locale))
     .on('meta[property="og:locale:alternate"]', new MetaRewriter(lang === "ko" ? "en_US" : "ko_KR"))
     .on('meta[name="twitter:title"]', new MetaRewriter(title))
