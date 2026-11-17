@@ -47,3 +47,9 @@ section.tpiq-section{padding-top:56px; padding-bottom:44px;}
 .duo-more-btn .m-less{display:none;}
 .duo-open .duo-more-btn .m-more{display:none;}
 .duo-open .duo-more-btn .m-less{display:inline;}
+
+/* Background rhythm after the 2026-11-16 reorder (boss: samples white + video white ran together).
+   features grey -> Smart Study teal gradient -> samples white -> video|Tax Tip LIGHT TEAL -> reviews navy -> pricing grey.
+   Lives in this file (shipped live) and beats the test-only ea-colors.css, so test and live look the same here. */
+body[data-exam="ea"] section.fs-section{background:var(--accent-tint,#EDF4F3);
+  border-top:1px solid var(--accent-border,#C9DEDB); border-bottom:1px solid var(--accent-border,#C9DEDB);}
