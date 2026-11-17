@@ -1,0 +1,5 @@
+/* 2026-11-16 (boss): Study Tips as wide as the landing (1120px) — same width as IRS News · Study Tips */
+.na-wrap{max-width:1120px; padding-left:24px; padding-right:24px; box-sizing:border-box;}
+.na-col{max-width:none;}
+.na-fig.wide, .na-more, .na-backfoot{max-width:none;}
+@media (max-width:640px){ .na-wrap{padding-left:16px; padding-right:16px;} }

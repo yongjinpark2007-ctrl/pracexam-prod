@@ -68,3 +68,6 @@
 @media (max-width:640px){ .nw-grid{grid-template-columns:minmax(0,1fr);} }
 /* content edge = back-button edge = landing .wrap edge */
 main.nw-main.nw-main{max-width:1120px;}
+/* issue pages as wide as the list (boss 2026-11-16) */
+.nw-page{max-width:1120px;}
+.nw-cta{max-width:760px; margin-left:auto; margin-right:auto;}
