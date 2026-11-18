@@ -1366,7 +1366,17 @@ function apMarkExported(batch, n){
   loadApprovalsInfo();
 }
 
+/* 🔴 2026-11-17 — 내보내기 도중 오류가 나면 «아무 일도 안 일어난 것처럼» 멈췄다
+   (async 함수의 예외가 클릭 처리기에서 삼켜진다). 이제 까닭을 화면에 띄운다. */
 async function apExport(){
+  try { await apExportInner(); }
+  catch(e){
+    console.error('피드백 내보내기 실패:', e);
+    alert('⚠ 피드백 내보내기 중 오류가 났습니다.\n\n' + (e && (e.name + ': ' + e.message) || e) +
+          '\n\n이 화면을 캡처해서 창1에게 알려 주세요.');
+  }
+}
+async function apExportInner(){
   const fb = apFb();
   /* ✏️ 2026-09-13 — 「고쳐서 승인」한 글을 회신에 함께 싣는다.
      `apply_proposal.py` 가 `edited` 를 보면 «제안서 글 대신» 그것을 라이브에 넣는다. */
@@ -1399,7 +1409,11 @@ async function apExport(){
   const text  = JSON.stringify(out, null, 1);
 
   // ① 지정된 폴더에 바로 저장 (없으면 이때 한 번 물어본다)
-  const dir = await apDirEnsure(true);
+  /* 🔴 2026-11-17 — 기억해 둔 폴더가 없어졌거나(OneDrive 이동·다른 PC) 권한 묻기가 거절되면
+     여기서 예외가 나 다운로드로도 안 넘어갔다. 실패하면 다운로드로 물러난다. */
+  let dir = null;
+  try { dir = await apDirEnsure(true); }
+  catch(e){ console.warn('저장 폴더 확인 실패, 다운로드로 대체:', e); dir = null; }
   if (dir){
     try {
       /* 🔴 2026-08-07 — 남의 회신을 덮어쓰지 않는다.
