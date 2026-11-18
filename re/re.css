@@ -52,3 +52,13 @@ section.tpiq-section{padding-top:56px; padding-bottom:44px;}
 .duo-more-btn .m-less{display:none;}
 .duo-open .duo-more-btn .m-more{display:none;}
 .duo-open .duo-more-btn .m-less{display:inline;}
+
+/* RE numbers band under the hero on the dark navy (2026-11-17, boss: option A, same as EA). RE only. */
+body[data-exam="re"] section.stats.stats-dark{background:var(--navy); padding:40px 0; border-top:0; border-bottom:0;}
+body[data-exam="re"] section.stats.stats-dark .stat-num{color:#fff;}
+body[data-exam="re"] section.stats.stats-dark .stat-label{color:rgba(255,255,255,.78);}
+body[data-exam="re"] section.stats.stats-dark .stats-grid > div{position:relative;}
+@media (min-width:761px){
+  body[data-exam="re"] section.stats.stats-dark .stats-grid > div + div::before{content:''; position:absolute; left:-12px; top:12%; bottom:12%;
+    width:1px; background:rgba(255,255,255,.14);}
+}
