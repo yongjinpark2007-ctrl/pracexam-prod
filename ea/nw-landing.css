@@ -53,3 +53,18 @@ section.tpiq-section{padding-top:56px; padding-bottom:44px;}
    Lives in this file (shipped live) and beats the test-only ea-colors.css, so test and live look the same here. */
 body[data-exam="ea"] section.fs-section{background:var(--accent-tint,#EDF4F3);
   border-top:1px solid var(--accent-border,#C9DEDB); border-bottom:1px solid var(--accent-border,#C9DEDB);}
+
+/* EA closing CTA on the dark teal-slate (2026-11-17, boss: "no dark section on EA, looks too pale").
+   EA only (body[data-exam="ea"]); RE keeps its own look. Uses the EA palette tokens, no new colour. */
+body[data-exam="ea"] section.cta{background:var(--navy); padding:88px 0; position:relative; overflow:hidden;}
+body[data-exam="ea"] section.cta::before{content:''; position:absolute; top:-120px; right:-80px; width:420px; height:420px;
+  border-radius:50%; background:rgba(var(--accent-rgb),.14); pointer-events:none;}
+body[data-exam="ea"] section.cta::after{content:''; position:absolute; bottom:-160px; left:-100px; width:380px; height:380px;
+  border-radius:50%; background:rgba(255,255,255,.04); pointer-events:none;}
+body[data-exam="ea"] section.cta .wrap{position:relative; z-index:1;}
+body[data-exam="ea"] section.cta h2{color:#fff;}
+body[data-exam="ea"] section.cta p{color:rgba(255,255,255,.84);}
+body[data-exam="ea"] section.cta .btn-primary{background:var(--accent); color:#16282a;}
+body[data-exam="ea"] section.cta .btn-primary:hover{background:#85b5b0; box-shadow:0 6px 18px rgba(0,0,0,.25);}
+body[data-exam="ea"] section.cta .btn-ghost{background:transparent; color:#fff; border-color:rgba(255,255,255,.42);}
+body[data-exam="ea"] section.cta .btn-ghost:hover{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.6);}
