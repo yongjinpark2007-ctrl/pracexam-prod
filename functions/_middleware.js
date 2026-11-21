@@ -510,7 +510,7 @@ async function irsNews(context, p) {
     title += " | PracExam";
     desc = (lang === "ko" ? "IRS Tax Tip 한국어 정리 (" + row.slug + "): " : "Plain-English summary of IRS Tax Tips (" + row.slug + "): ") + (titles.length ? titles.join(" · ") : head);
     if (desc.length > 300) desc = desc.slice(0, 297) + "...";
-    back = { href: nwPath(lang, ""), label: lang === "ko" ? "&larr; IRS Tax Tip · Study Tips" : "&larr; IRS Tax Tips · Study Tips" };
+    back = { href: nwPath(lang, ""), label: lang === "ko" ? "&larr; IRS 주간 뉴스" : "&larr; IRS Weekly" };
     main = '<div class="nw-page">'
       + '<article class="nw-article" lang="' + lang + '">' + nwClean(row.html) + "</article>"
       + '<p class="nw-note">' + nwEsc(L.note) + "</p>"
@@ -545,7 +545,7 @@ async function irsNews(context, p) {
       + '<span class="nw-card-go">' + (K ? "읽기" : "Read") + " &rarr;</span></a>").join("");
     back = { href: L.homeHref, label: lang === "ko" ? "&larr; EA 홈" : "&larr; EA Home" };
     main = '<div class="nw-page nw-page-list">'
-      + '<span class="nw-eyebrow">' + (K ? "IRS TAX TIP · STUDY TIPS" : "IRS TAX TIPS · STUDY TIPS") + "</span><h1>" + (K ? "IRS Tax Tip · Study Tips" : "IRS Tax Tips · Study Tips") + "</h1>"
+      + '<span class="nw-eyebrow">' + (K ? "IRS Tax Tip 한국어판" : "IRS TAX TIPS") + "</span><h1>" + (K ? "IRS 주간 뉴스" : "IRS Weekly") + "</h1>"
       + '<section class="nw-sec" aria-labelledby="nw-sec-news"><div class="nw-sec-head"><h2 id="nw-sec-news">' + (K ? "IRS 주간 Tax Tip" : "IRS Weekly Tax Tips") + "</h2>"
       + '</div><p class="nw-lead">' + nwEsc(L.lead) + "</p>"
       + '<div id="nw-list">' + news + "</div></section>"
