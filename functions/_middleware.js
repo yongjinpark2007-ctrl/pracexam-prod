@@ -475,6 +475,20 @@ async function irsNews(context, p) {
     const rows = (await nwRows()) || [];
     return new Response(nwRss(rows, lang), { headers: { "content-type": "application/rss+xml; charset=utf-8", "cache-control": "public, max-age=600" } });
   }
+  // 2026-11-21 (boss): JSON feed for EA Study Hub (eastudyhub.com home + blog «IRS 주간 뉴스»). Same rows as this page,
+  // newest first, links to our own issue pages. Only the two EA Study Hub sites may read it from a browser.
+  if (rest === "latest.json") {
+    const rows = (await nwRows()) || [];
+    const items = rows.filter(r => r.lang === lang).map(r => ({
+      date: r.issue_date || r.slug, slug: r.slug, url: nwUrl(lang, r.slug),
+      titles: nwTitles(r.html).slice(0, 4), headline: nwHeadline(r, L), summary: nwSnippet(r.html, 160)
+    }));
+    const origin = context.request.headers.get("Origin") || "";
+    const okOrigin = /^https:\/\/(blog\.)?eastudyhub\.com$/.test(origin) ? origin : "https://eastudyhub.com";
+    return new Response(JSON.stringify({ list: nwUrl(lang, ""), items }), { headers: {
+      "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=600",
+      "access-control-allow-origin": okOrigin, "vary": "Origin" } });
+  }
   let slug = "";
   if (rest !== "") {
     const m = /^(\d{4}-\d{2}-\d{2})\/?$/.exec(rest);
