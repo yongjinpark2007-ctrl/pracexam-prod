@@ -266,8 +266,18 @@
       p_show_state: showState, p_state: showState ? document.getElementById('rvm-state').value : null
     }).then(function(d){
       if (!d || !d.ok){ btn.disabled = false; err.textContent = reasonText(d && d.reason); return; }
-      clearDraft(); done(d.pass_code || null, !!d.locked); loadInfo();
+      clearDraft(); done(d.pass_code || null, !!d.locked); loadInfo(); sendThanks();
     }).catch(function(e){ btn.disabled = false; console.warn('submit_review', e && e.message); err.textContent = reasonText(); });
+  }
+
+  // boss 2026-11-24: thank-you mail right after a review (server picks the shared/private version, one mail per review)
+  function sendThanks(){
+    try { sb.auth.getSession().then(function(r){
+      var tok = r && r.data && r.data.session ? r.data.session.access_token : '';
+      if (!tok) return;
+      return fetch(SUPABASE_URL + '/functions/v1/review-thanks', { method: 'POST',
+        headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + tok, apikey: SUPABASE_ANON }, body: '{}' });
+    }).catch(function(e){ console.warn('review-thanks', e && e.message); }); } catch(e){}
   }
 
   function done(code, locked){
