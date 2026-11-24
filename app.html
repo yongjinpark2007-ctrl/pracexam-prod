@@ -4876,7 +4876,11 @@ async function fetchCopRows(){
   try{
     const { data, error } = await sb.from('cop_reference').select('*');
     if (error) throw error;
-    return data || [];
+    // P2027 (2026-11-24): C and D topic rows live side by side — keep only this site's edition letter.
+    var _ed = S.edition;
+    if (_ed == null) { var _er = await sb.rpc('ea_edition'); if (_er.error || !_er.data) throw new Error('ea_edition unreadable'); _ed = Number(_er.data); }
+    var _L = String.fromCharCode(65 + _ed - 2024);
+    return (data || []).filter(function(r){ var c = ((r && r.outline_code) || '') + ''; return !/^[A-Z]\d{4}$/.test(c) || c.charAt(0) === _L; });
   }catch(e){
     console.warn('[TPIQ] cop_reference load skipped:', e && e.message);
     return null;
