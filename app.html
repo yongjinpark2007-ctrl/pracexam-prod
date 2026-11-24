@@ -7136,7 +7136,7 @@ async function adminDailyMailSend(){
 async function _dailyFetchQuestion(id){
   var tryIds = [id]; var up = id.toUpperCase(); if(up !== id) tryIds.push(up);
   var res = await sb.from('questions')
-    .select('question_id,part,topic,text,options,correct,explanation_en')
+    .select('question_id,part,topic,text,options,correct,explanation_en,exam,edition')
     .in('question_id', tryIds).limit(1);
   if(res.error) throw res.error;
   return res.data && res.data[0];
@@ -7172,6 +7172,13 @@ async function adminDailySet(){
   try{
     var r = await _dailyFetchQuestion(id);
     if(!r || !r.question_id){ _dailyMsg('해당 question_id가 존재하지 않습니다', false); return; }
+    // P2027: Pop Quiz shows only the LIVE edition (get_daily_quiz filters by edition) — refuse other editions.
+    if((r.exam || 'ea') === 'ea'){
+      var _ee = await sb.from('exam_editions').select('live_edition').eq('exam','ea').limit(1);
+      var _live = _ee && _ee.data && _ee.data[0] && _ee.data[0].live_edition;
+      if(!_live){ _dailyMsg('라이브 판(edition)을 못 읽었습니다 — 지정하지 않았습니다', false); return; }
+      if(r.edition != null && Number(r.edition) !== Number(_live)){ _dailyMsg('이 문항은 ' + r.edition + '년판입니다. 지금 라이브는 ' + _live + '년판이라 고객 화면에 안 나옵니다 — 지정하지 않았습니다', false); return; }
+    }
     var ins = await sb.from('daily_quiz').insert({ question_id: r.question_id, note: note || null });
     if(ins.error) throw ins.error;
     _dailyMsg('✓ 지정 완료 — popquiz.html에 반영되었습니다', true);
