@@ -278,8 +278,8 @@
         + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-close">' + L('닫기', 'Close') + '</button></div>');
       document.getElementById('rvm-close').onclick = closeReview; return;
     }
-    body('<div class="section-title" id="rvm-title">' + L('감사합니다! 30-Day Pro Pass가 발급되었습니다', 'Thank you! Here is your 30-Day Pro Pass') + '</div>'
-      + '<p class="rvm-sub">' + L('이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 쓸 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'This code is valid for 12 months. You can use it now, save it in Settings for later, or gift it to a new account that has never paid for PracExam.') + '</p>'
+    body('<div class="section-title" id="rvm-title">' + L('후기를 공유해 주셔서 감사합니다', 'Thank you for sharing your review') + '</div>'
+      + '<p class="rvm-sub">' + L('감사의 뜻으로 30-Day Pro Pass를 드립니다. 이 코드는 12개월 동안 유효합니다. 지금 바로 사용하거나 설정 화면에 보관해 두었다가 나중에 사용할 수 있으며, 아직 결제 이력이 없는 신규 계정에 선물할 수도 있습니다.', 'As a thank-you, here is your 30-Day Pro Pass. This code is valid for 12 months. You can use it now, save it in Settings for later, or gift it to a new account that has never paid for PracExam.') + '</p>'
       + (locked ? '<p class="rvm-sub" style="color:var(--text-main);font-weight:600;">' + L('선물 이용권으로 시작하신 계정이라, 이 이용권은 첫 결제 후에 사용하거나 선물하실 수 있습니다.', 'Because this account started with a gifted pass, this pass can be used or gifted after your first payment.') + '</p>' : '')
       + '<div class="rvm-code">' + esc(code) + '</div>'
       + '<div class="rvm-actions"><button class="btn-navy" type="button" id="rvm-use">' + L('지금 사용하기', 'Use now') + '</button>'
