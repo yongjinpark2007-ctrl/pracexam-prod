@@ -415,14 +415,27 @@ async function nwRows() {
     return Array.isArray(rows) ? rows : null;
   } catch (e) { return null; }
 }
+// Share image for one issue: 8 designs rotate by week, so FB does not show the same picture every week.
+function nwOgImage(lang, row) {
+  const wk = Math.floor(Date.parse((row && row.issue_date ? row.issue_date : "1970-01-01") + "T00:00:00Z") / 604800000);
+  const n = (((wk + (lang === "en" ? 4 : 0)) % 8) + 8) % 8 + 1;  // EN of the same week gets a different design
+  return "https://pracexam.com/og-taxtip-" + lang + "-" + n + ".jpg?v=20261124";
+}
+// Facebook post text (Zapier reads the RSS description): the first Tax Tip title leads, the rest follow as bullets.
+function nwPostText(lang, titles) {
+  const head = titles[0], rest = titles.slice(1);
+  if (lang === "ko") return head + (rest.length ? "\n\n이번 주 함께 정리한 IRS 소식\n" + rest.map(x => "• " + x).join("\n") : "") + "\n\n쉬운 한국어 정리는 링크에서 확인하세요.";
+  return head + (rest.length ? "\n\nAlso in this week's IRS Tax Tips:\n" + rest.map(x => "• " + x).join("\n") : "") + "\n\nRead the plain-English summary at the link.";
+}
 function nwRss(rows, lang) {
   const L = NW_TXT[lang];
-  const items = rows.filter(r => r.lang === lang).slice(0, 30).map(function (r) {
+  const delayMs = lang === "en" ? 3 * 86400000 : 0, now = Date.now();
+  const items = rows.filter(r => r.lang === lang && Date.parse(r.issue_date + "T15:00:00Z") + delayMs <= now).slice(0, 30).map(function (r) {
     const link = nwUrl(lang, r.slug);
-    const d = new Date(r.issue_date + "T15:00:00Z").toUTCString();
+    const d = new Date(Date.parse(r.issue_date + "T15:00:00Z") + delayMs).toUTCString();
     const titles = nwTitles(r.html);
     return "<item><title>" + nwEsc(nwHeadline(r, L)) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
-      + "<pubDate>" + d + "</pubDate><description>" + nwEsc((lang === "ko" ? "이번 주 IRS Tax Tip을 쉬운 한국어로 정리했습니다." : "This week's IRS Tax Tips in plain English:") + "\n" + (titles.length ? titles : [nwText(r.subject)]).map(x => "• " + x).join("\n")) + "</description>"
+      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(nwPostText(lang, titles.length ? titles : [nwText(r.subject)])) + "</description>"
       + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
   }).join("");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
@@ -532,7 +545,7 @@ async function irsNews(context, p) {
       + '<p class="nw-more"><a href="' + nwPath(lang, "") + '">' + nwEsc(L.more) + " &rarr;</a></p></div>";
     ld = { "@context": "https://schema.org", "@type": "Article", headline: head.slice(0, 110), description: desc, inLanguage: lang,
       datePublished: row.issue_date, dateModified: String(row.updated_at || row.created_at || row.issue_date).slice(0, 10),
-      url: selfUrl, mainEntityOfPage: selfUrl, image: "https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116c",
+      url: selfUrl, mainEntityOfPage: selfUrl, image: nwOgImage(lang, row),
       author: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/" },
       publisher: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/", logo: { "@type": "ImageObject", url: "https://pracexam.com/apple-touch-icon.png" } },
       isBasedOn: nwSources(row.html), about: ["IRS Tax Tips", "Enrolled Agent exam"] };
@@ -576,8 +589,8 @@ async function irsNews(context, p) {
     .on('meta[property="og:title"]', new MetaRewriter(title))
     .on('meta[property="og:description"]', new MetaRewriter(desc))
     .on('meta[property="og:url"]', new MetaRewriter(selfUrl))
-    .on('meta[property="og:image"]', new MetaRewriter("https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116c"))
-    .on('meta[name="twitter:image"]', new MetaRewriter("https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116c"))
+    .on('meta[property="og:image"]', new MetaRewriter(row ? nwOgImage(lang, row) : "https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116c"))
+    .on('meta[name="twitter:image"]', new MetaRewriter(row ? nwOgImage(lang, row) : "https://pracexam.com/og-taxtip-" + lang + ".jpg?v=20261116c"))
     .on('meta[property="og:locale"]', new MetaRewriter(L.locale))
     .on('meta[property="og:locale:alternate"]', new MetaRewriter(lang === "ko" ? "en_US" : "ko_KR"))
     .on('meta[name="twitter:title"]', new MetaRewriter(title))
