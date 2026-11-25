@@ -648,14 +648,188 @@ async function nwLanding(response) {
     .transform(response);
 }
 
+// 2026-11-24 (boss): Real Estate Weekly on the web, KO + EN, one URL per week (same idea as /ea/irs-news/).
+//   /re/news/  /re/news/ko/   lists     /re/news/2026-11-25/  /re/news/ko/2026-11-25/   issues
+//   /re/news/rss.xml  /re/news/ko/rss.xml   RSS (Zapier -> Facebook pracexam.re)
+// Rows come from irs_news_web/publish_re_weekly.py (table re_news_issues, anon view public_re_news). Template = re/news/index.html.
+const RN_URL = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_re_news?select=lang,slug,issue_date,subject,headline,summary,html,created_at,updated_at&order=slug.desc&limit=500";
+const RN_BASE = "https://pracexam.com/re/news/";
+const RN_OG = "https://pracexam.com/og-re.jpg?v=4";
+const RN_TXT = {
+  en: {
+    listTitle: "Real Estate Weekly | PracExam",
+    listDesc: "A weekly roundup of U.S. real estate news in plain words, with one practice exam question tied to the news. From PracExam, the real estate exam prep site.",
+    h1: "Real Estate Weekly", eyebrow: "REAL ESTATE WEEKLY",
+    lead: "Every week we sum up the key U.S. real estate news in plain words and link it to one practice exam question.",
+    empty: "The first issue is coming soon.",
+    homeHref: "/re/", more: "See all issues",
+    note: "PracExam prepares this summary for study and general information. It is not legal, tax or investment advice. Each item links to its original source.",
+    ctaH: "Preparing for the real estate exam?",
+    ctaP: "Practice real exam-style questions with full explanations for your state.",
+    ctaB: "Start Free", ctaHref: "/re/app",
+    rssTitle: "PracExam Real Estate Weekly (English)", locale: "en_US", earlier: "Earlier issues", read: "Read", issue: " issue"
+  },
+  ko: {
+    listTitle: "부동산 위클리 | PracExam",
+    listDesc: "미국 부동산 뉴스를 매주 쉬운 한국어로 정리하고, 뉴스와 이어지는 부동산 시험 문제를 함께 소개합니다. 미국 부동산 시험 준비 PracExam.",
+    h1: "부동산 위클리", eyebrow: "REAL ESTATE WEEKLY",
+    lead: "매주 미국 부동산 시장의 핵심 뉴스를 쉬운 한국어로 정리하고, 그 뉴스와 이어지는 시험 문제를 하나씩 소개합니다.",
+    empty: "첫 호가 곧 올라옵니다.",
+    homeHref: "/re/ko/", more: "지난 호 모두 보기",
+    note: "이 글은 PracExam이 공부와 일반 정보 제공을 위해 정리한 것입니다. 법률, 세무, 투자 자문이 아닙니다. 기사마다 원문 출처 링크가 있습니다.",
+    ctaH: "미국 부동산 시험을 준비하고 계신가요?",
+    ctaP: "실제 시험과 같은 형식의 문제를 한국어와 영어 해설로 공부하세요.",
+    ctaB: "무료로 시작하기", ctaHref: "/re/app",
+    rssTitle: "PracExam 부동산 위클리 (한국어)", locale: "ko_KR", earlier: "지난 호", read: "읽기", issue: " 호"
+  }
+};
+// Share image for one issue: 8 designs rotate by week (EN shifted by 4), like the IRS Tax Tip set.
+function rnOgImage(lang, row) {
+  if (!row) return RN_OG;
+  const wk = Math.floor(Date.parse(row.issue_date + "T00:00:00Z") / 604800000);
+  const n = (((wk + (lang === "en" ? 4 : 0)) % 8) + 8) % 8 + 1;
+  return "https://pracexam.com/og-reweekly-" + lang + "-" + n + ".jpg?v=20261124";
+}
+function rnUrl(lang, slug) { return RN_BASE + (lang === "ko" ? "ko/" : "") + (slug ? slug + "/" : ""); }
+function rnPath(lang, slug) { return "/re/news/" + (lang === "ko" ? "ko/" : "") + (slug ? slug + "/" : ""); }
+async function rnRows() {
+  try {
+    const r = await fetch(RN_URL, { headers: { apikey: RV_ANON, Authorization: "Bearer " + RV_ANON }, cf: { cacheTtl: 300, cacheEverything: true } });
+    if (!r.ok) return null;
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows : null;
+  } catch (e) { return null; }
+}
+function rnSources(h) {
+  const out = [], re = /class="rw-src"[^>]*>[\s\S]*?<\/p>/gi; let m;
+  while ((m = re.exec(h || ""))) { const hr = /href="(https?:[^"]+)"/gi; let k; while ((k = hr.exec(m[0]))) if (out.indexOf(k[1]) < 0) out.push(k[1]); }
+  return out;
+}
+function rnRss(rows, lang) {
+  const L = RN_TXT[lang];
+  const items = rows.filter(r => r.lang === lang).slice(0, 30).map(function (r) {
+    const link = rnUrl(lang, r.slug);
+    const d = new Date(Date.parse(r.issue_date + "T15:00:00Z")).toUTCString();
+    return "<item><title>" + nwEsc(r.headline) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
+      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(r.summary || r.headline) + "</description>"
+      + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
+  }).join("");
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
+    + "<title>" + nwEsc(L.rssTitle) + "</title><link>" + rnUrl(lang, "") + "</link>"
+    + '<atom:link href="' + rnUrl(lang, "") + 'rss.xml" rel="self" type="application/rss+xml"/>'
+    + "<description>" + nwEsc(L.listDesc) + "</description><language>" + (lang === "ko" ? "ko" : "en-us") + "</language>"
+    + items + "</channel></rss>";
+}
+async function reNews(context, p) {
+  const url = new URL(context.request.url);
+  const lang = p.startsWith("/re/news/ko/") ? "ko" : "en";
+  const rest = p.slice(lang === "ko" ? "/re/news/ko/".length : "/re/news/".length);
+  const L = RN_TXT[lang], K = lang === "ko";
+  if (rest === "rss.xml") {
+    const rows = (await rnRows()) || [];
+    return new Response(rnRss(rows, lang), { headers: { "content-type": "application/rss+xml; charset=utf-8", "cache-control": "public, max-age=600" } });
+  }
+  let slug = "";
+  if (rest !== "") {
+    const m = /^(\d{4}-\d{2}-\d{2})\/?$/.exec(rest);
+    if (!m) return Response.redirect(new URL(rnPath(lang, ""), url).toString(), 301);
+    if (!rest.endsWith("/")) return Response.redirect(new URL(rnPath(lang, m[1]), url).toString(), 301);
+    slug = m[1];
+  }
+  const rows = await rnRows();
+  const mine = (rows || []).filter(r => r.lang === lang);
+  const row = slug ? mine.find(r => r.slug === slug) : null;
+  if (slug && rows && !row) return Response.redirect(new URL(rnPath(lang, ""), url).toString(), 302);
+  const tplReq = new Request(new URL("/re/news/", url.origin).toString(), context.request);
+  const ctx = Object.assign({}, context, { request: tplReq, next: () => context.env.ASSETS.fetch(tplReq) });
+  const response = await handle(ctx);
+  const ct = (response && response.headers.get("content-type")) || "";
+  if (!ct.includes("text/html") || response.status !== 200) return response;
+
+  const other = K ? "en" : "ko";
+  const otherHas = slug ? (rows || []).some(r => r.lang === other && r.slug === slug) : true;
+  const selfUrl = rnUrl(lang, slug);
+  const enUrl = rnUrl("en", (lang === "en" || otherHas) ? slug : "");
+  const koUrl = rnUrl("ko", (lang === "ko" || otherHas) ? slug : "");
+  const cta = '<div class="nw-cta"><h2>' + nwEsc(L.ctaH) + "</h2><p>" + nwEsc(L.ctaP) + '</p><a class="btn btn-primary btn-lg" href="' + L.ctaHref + '">' + nwEsc(L.ctaB) + "</a></div>";
+  let title, desc, main, ld, robots = "", back;
+  if (row) {
+    title = (K ? "부동산 위클리 " : "Real Estate Weekly ") + row.slug + ": " + row.headline;
+    if (title.length > 110) title = title.slice(0, 107) + "...";
+    title += " | PracExam";
+    desc = row.summary || row.headline;
+    if (desc.length > 300) desc = desc.slice(0, 297) + "...";
+    back = { href: rnPath(lang, ""), label: K ? "&larr; 부동산 위클리" : "&larr; Real Estate Weekly" };
+    main = '<div class="nw-page"><article class="nw-article" lang="' + lang + '">' + nwClean(row.html) + "</article>"
+      + '<p class="nw-note">' + nwEsc(L.note) + "</p>" + cta
+      + '<p class="nw-more"><a href="' + rnPath(lang, "") + '">' + nwEsc(L.more) + " &rarr;</a></p></div>";
+    ld = { "@context": "https://schema.org", "@type": "Article", headline: row.headline.slice(0, 110), description: desc, inLanguage: lang,
+      datePublished: row.issue_date, dateModified: String(row.updated_at || row.created_at || row.issue_date).slice(0, 10),
+      url: selfUrl, mainEntityOfPage: selfUrl, image: rnOgImage(lang, row),
+      author: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/" },
+      publisher: { "@type": "Organization", name: "PracExam", url: "https://pracexam.com/", logo: { "@type": "ImageObject", url: "https://pracexam.com/apple-touch-icon.png" } },
+      isBasedOn: rnSources(row.html), about: ["U.S. real estate market", "Real estate license exam"] };
+  } else {
+    title = L.listTitle; desc = L.listDesc;
+    if (!mine.length) robots = "noindex";
+    const card = r => '<a class="nw-card" href="' + rnPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + nwEsc(L.issue) + "</span>"
+      + '<span class="nw-title">' + nwEsc(r.headline) + "</span>"
+      + '<p class="nw-card-dek">' + nwEsc(r.summary || "") + '</p><span class="nw-card-go">' + L.read + " &rarr;</span></a>";
+    const list = mine.length
+      ? '<div class="nw-grid">' + mine.slice(0, 3).map(card).join("") + "</div>"
+        + (mine.length > 3 ? '<div class="nw-older"><h3>' + L.earlier + "</h3><ul>"
+          + mine.slice(3).map(r => '<li><a href="' + rnPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + "</span>" + nwEsc(r.headline) + "</a></li>").join("") + "</ul></div>" : "")
+      : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
+    back = { href: L.homeHref, label: K ? "&larr; RE 홈" : "&larr; RE Home" };
+    main = '<div class="nw-page nw-page-list"><span class="nw-eyebrow">' + L.eyebrow + "</span><h1>" + nwEsc(L.h1) + "</h1>"
+      + '<p class="nw-lead">' + nwEsc(L.lead) + "</p>" + list + cta + "</div>";
+    ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: L.h1, description: desc, inLanguage: lang, url: selfUrl,
+      hasPart: mine.slice(0, 20).map(r => ({ "@type": "Article", headline: r.headline.slice(0, 110), url: rnUrl(lang, r.slug), datePublished: r.issue_date })) };
+  }
+  const backHtml = '<a class="px-back" href="' + back.href + '">' + back.label + "</a>"
+    + '<a class="px-back px-back-app" href="/re/app">' + (K ? "내 학습 &rarr;" : "My Practice &rarr;") + "</a>";
+  let out = new HTMLRewriter()
+    .on("html", new AttrSetter("lang", lang))
+    .on("html", new AttrSetter("class", "lang-" + lang))
+    .on("html", new AttrSetter("data-force-lang", lang))
+    .on("html", new AttrSetter("data-alt-en", enUrl.replace("https://pracexam.com", "")))
+    .on("html", new AttrSetter("data-alt-ko", koUrl.replace("https://pracexam.com", "")))
+    .on("title", new TitleRewriter(title))
+    .on('meta[name="description"]', new MetaRewriter(desc))
+    .on('meta[property="og:type"]', new MetaRewriter(row ? "article" : "website"))
+    .on('meta[property="og:title"]', new MetaRewriter(title))
+    .on('meta[property="og:description"]', new MetaRewriter(desc))
+    .on('meta[property="og:url"]', new MetaRewriter(selfUrl))
+    .on('meta[property="og:image"]', new MetaRewriter(rnOgImage(lang, row)))
+    .on('meta[name="twitter:image"]', new MetaRewriter(rnOgImage(lang, row)))
+    .on('meta[property="og:locale"]', new MetaRewriter(L.locale))
+    .on('meta[property="og:locale:alternate"]', new MetaRewriter(K ? "en_US" : "ko_KR"))
+    .on('meta[name="twitter:title"]', new MetaRewriter(title))
+    .on('meta[name="twitter:description"]', new MetaRewriter(desc))
+    .on('link[rel="canonical"]', new AttrSetter("href", selfUrl))
+    .on('link[rel="alternate"][hreflang="en"]', new AttrSetter("href", enUrl))
+    .on('link[rel="alternate"][hreflang="ko"]', new AttrSetter("href", koUrl))
+    .on('link[rel="alternate"][hreflang="x-default"]', new AttrSetter("href", (slug && !otherHas) ? selfUrl : enUrl))
+    .on('link[rel="alternate"][type="application/rss+xml"]', new AttrSetter("href", rnUrl(lang, "") + "rss.xml"))
+    .on("script#nw-ld", { element(el) { el.setInnerContent(JSON.stringify(ld).replace(/</g, "\\u003c"), { html: true }); } })
+    .on("#nw-main", { element(el) { el.setInnerContent(main, { html: true }); } })
+    .on(".px-backbar", { element(el) { el.setInnerContent(backHtml, { html: true }); } });
+  if (robots) out = out.on("head", { element(el) { el.append('<meta name="robots" content="' + robots + '">', { html: true }); } });
+  if (slug && !otherHas) out = out.on('link[rel="alternate"][hreflang="' + other + '"]', { element(el) { el.remove(); } });
+  const res = new Response(out.transform(response).body, response);
+  res.headers.delete("Vary");
+  return res;
+}
+
 // 2026-10-31 (boss): HTML comments are internal work notes; customers and crawlers do not need them.
 // Every HTML page leaves the edge without its <!-- ... --> comments. Inline JS/CSS comments are not touched.
 export async function onRequest(context) {
   const _p = new URL(context.request.url).pathname;
   if (KO_REDIRECT[_p]) return Response.redirect(new URL(KO_REDIRECT[_p], context.request.url).toString(), 301);
   if (_p === "/ea/irs-news" || _p === "/ea/irs-news/ko") return Response.redirect(new URL(_p + "/", context.request.url).toString(), 301);
+  if (_p === "/re/news" || _p === "/re/news/ko") return Response.redirect(new URL(_p + "/", context.request.url).toString(), 301);
   const _nw = _p.startsWith("/ea/irs-news/");
-  let response = _nw ? await irsNews(context, _p) : KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
+  let response = _nw ? await irsNews(context, _p) : _p.startsWith("/re/news/") ? await reNews(context, _p) : KO_ROUTES[_p] ? await koRoute(context, KO_ROUTES[_p]) : await handle(context);
   if (_p === "/ea/reviews/" || _p === "/ea/reviews/ko/") response = await injectReviews(response, _p === "/ea/reviews/ko/");
   if (_p === "/ea/" || _p === "/ea/ko/" || _p === "/ea/index.html") response = await nwLanding(response);
   const ct = (response && response.headers.get("content-type")) || "";
