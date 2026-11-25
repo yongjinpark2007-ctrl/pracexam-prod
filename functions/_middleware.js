@@ -688,7 +688,7 @@ function rnOgImage(lang, row) {
   if (!row) return RN_OG;
   const wk = Math.floor(Date.parse(row.issue_date + "T00:00:00Z") / 604800000);
   const n = (((wk + (lang === "en" ? 4 : 0)) % 8) + 8) % 8 + 1;
-  return "https://pracexam.com/og-reweekly-" + lang + "-" + n + ".jpg?v=20261125";
+  return "https://pracexam.com/og-reweekly-" + lang + "-" + n + ".jpg?v=20261125b";
 }
 function rnUrl(lang, slug) { return RN_BASE + (lang === "ko" ? "ko/" : "") + (slug ? slug + "/" : ""); }
 function rnPath(lang, slug) { return "/re/news/" + (lang === "ko" ? "ko/" : "") + (slug ? slug + "/" : ""); }
