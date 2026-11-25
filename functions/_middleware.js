@@ -652,7 +652,7 @@ async function nwLanding(response) {
 //   /re/news/  /re/news/ko/   lists     /re/news/2026-11-25/  /re/news/ko/2026-11-25/   issues
 //   /re/news/rss.xml  /re/news/ko/rss.xml   RSS (Zapier -> Facebook pracexam.re)
 // Rows come from irs_news_web/publish_re_weekly.py (table re_news_issues, anon view public_re_news). Template = re/news/index.html.
-const RN_URL = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_re_news?select=lang,slug,issue_date,subject,headline,summary,html,created_at,updated_at&order=slug.desc&limit=500";
+const RN_URL = "https://ufrhvodruulpgnmudzwh.supabase.co/rest/v1/public_re_news?select=lang,slug,issue_date,subject,headline,summary,html,post_text,created_at,updated_at&order=slug.desc&limit=500";
 const RN_BASE = "https://pracexam.com/re/news/";
 const RN_OG = "https://pracexam.com/og-re.jpg?v=4";
 const RN_TXT = {
@@ -711,7 +711,7 @@ function rnRss(rows, lang) {
     const link = rnUrl(lang, r.slug);
     const d = new Date(Date.parse(r.issue_date + "T15:00:00Z")).toUTCString();
     return "<item><title>" + nwEsc(r.headline) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
-      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(r.summary || r.headline) + "</description>"
+      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(r.post_text || r.summary || r.headline) + "</description>"
       + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
   }).join("");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
