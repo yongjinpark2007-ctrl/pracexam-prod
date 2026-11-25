@@ -425,7 +425,7 @@ function nwOgImage(lang, row) {
 function nwPostText(lang, titles, h) {
   // Boss 2026-11-24: FB gives native text more reach than a bare link post, so the post carries the tips themselves:
   // per tip = title + its opening sentences + the section heads as checkmarks; the full article stays at the link.
-  const K = lang === "ko", tips = nwTips(h);
+  const K = lang === "ko", tips = nwTipParts(h);
   if (!tips.length) return titles[0] + "\n\n" + (K ? "쉬운 한국어 정리는 링크에서 확인하세요. 👇" : "Read the plain-English summary at the link. 👇");
   const o = [K ? "이번 주 IRS Tax Tip, 쉬운 한국어로 정리했습니다." : "This week's IRS Tax Tips in plain English."];
   tips.forEach(function (x) {
@@ -437,7 +437,7 @@ function nwPostText(lang, titles, h) {
   return o.join("\n");
 }
 // Each Tax Tip in an issue: title (<h2> after the «IRS TAX TIP» label), first 1-2 sentences of its first <p>, its <h3> heads.
-function nwTips(h) {
+function nwTipParts(h) {
   const s = String(h || ""), out = [], re = /IRS TAX TIP[^<]*<\/p>\s*<h2[^>]*>([\s\S]*?)<\/h2>([\s\S]*?)(?=<p[^>]*>IRS TAX TIP|$)/gi;
   const skip = /^(더 알아보기|more information|자세한 정보|more info)/i;
   let m; while ((m = re.exec(s))) {
