@@ -658,9 +658,9 @@ const RN_OG = "https://pracexam.com/og-re.jpg?v=4";
 const RN_TXT = {
   en: {
     listTitle: "Real Estate Weekly | PracExam",
-    listDesc: "A weekly roundup of U.S. real estate news in plain words, with one practice exam question tied to the news. From PracExam, the real estate exam prep site.",
+    listDesc: "A weekly roundup of U.S. real estate news in plain words, plus a related practice question. From PracExam, the real estate exam prep site.",
     h1: "Real Estate Weekly", eyebrow: "REAL ESTATE WEEKLY",
-    lead: "Every week we sum up the key U.S. real estate news in plain words and link it to one practice exam question.",
+    lead: "Every week we sum up the key U.S. real estate news in plain words, plus a related practice question.",
     empty: "The first issue is coming soon.",
     homeHref: "/re/", more: "See all issues",
     note: "PracExam prepares this summary for study and general information. It is not legal, tax or investment advice. Each item links to its original source.",
@@ -671,9 +671,9 @@ const RN_TXT = {
   },
   ko: {
     listTitle: "부동산 위클리 | PracExam",
-    listDesc: "미국 부동산 뉴스를 매주 쉬운 한국어로 정리하고, 뉴스와 이어지는 부동산 시험 문제를 함께 소개합니다. 미국 부동산 시험 준비 PracExam.",
+    listDesc: "미국 부동산 뉴스를 매주 쉬운 한국어로 정리하고, 뉴스와 관련된 연습문제를 함께 정리합니다. 미국 부동산 시험 준비 PracExam.",
     h1: "부동산 위클리", eyebrow: "REAL ESTATE WEEKLY",
-    lead: "매주 미국 부동산 시장의 핵심 뉴스를 쉬운 한국어로 정리하고, 그 뉴스와 이어지는 시험 문제를 하나씩 소개합니다.",
+    lead: "매주 미국 부동산 시장의 핵심 뉴스를 쉬운 한국어로 정리하고, 뉴스와 관련된 연습문제를 함께 정리합니다.",
     empty: "첫 호가 곧 올라옵니다.",
     homeHref: "/re/ko/", more: "지난 호 모두 보기",
     note: "이 글은 PracExam이 공부와 일반 정보 제공을 위해 정리한 것입니다. 법률, 세무, 투자 자문이 아닙니다. 기사마다 원문 출처 링크가 있습니다.",
