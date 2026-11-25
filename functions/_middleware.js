@@ -422,10 +422,34 @@ function nwOgImage(lang, row) {
   return "https://pracexam.com/og-taxtip-" + lang + "-" + n + ".jpg?v=20261124";
 }
 // Facebook post text (Zapier reads the RSS description): the first Tax Tip title leads, the rest follow as bullets.
-function nwPostText(lang, titles) {
-  const head = titles[0], rest = titles.slice(1);
-  if (lang === "ko") return head + (rest.length ? "\n\n이번 주 함께 정리한 IRS 소식\n" + rest.map(x => "• " + x).join("\n") : "") + "\n\n쉬운 한국어 정리는 링크에서 확인하세요.";
-  return head + (rest.length ? "\n\nAlso in this week's IRS Tax Tips:\n" + rest.map(x => "• " + x).join("\n") : "") + "\n\nRead the plain-English summary at the link.";
+function nwPostText(lang, titles, h) {
+  // Boss 2026-11-24: FB gives native text more reach than a bare link post, so the post carries the tips themselves:
+  // per tip = title + its opening sentences + the section heads as checkmarks; the full article stays at the link.
+  const K = lang === "ko", tips = nwTips(h);
+  if (!tips.length) return titles[0] + "\n\n" + (K ? "쉬운 한국어 정리는 링크에서 확인하세요. 👇" : "Read the plain-English summary at the link. 👇");
+  const o = [K ? "이번 주 IRS Tax Tip, 쉬운 한국어로 정리했습니다." : "This week's IRS Tax Tips in plain English."];
+  tips.forEach(function (x) {
+    o.push("", "▪ " + x.title);
+    if (x.lead) o.push(x.lead);
+    x.heads.forEach(s => o.push("✔ " + s));
+  });
+  o.push("", K ? "전체 내용은 링크에서 확인하세요. 👇" : "Read the full summary at the link. 👇");
+  return o.join("\n");
+}
+// Each Tax Tip in an issue: title (<h2> after the «IRS TAX TIP» label), first 1-2 sentences of its first <p>, its <h3> heads.
+function nwTips(h) {
+  const s = String(h || ""), out = [], re = /IRS TAX TIP[^<]*<\/p>\s*<h2[^>]*>([\s\S]*?)<\/h2>([\s\S]*?)(?=<p[^>]*>IRS TAX TIP|$)/gi;
+  const skip = /^(더 알아보기|more information|자세한 정보|more info)/i;
+  let m; while ((m = re.exec(s))) {
+    const body = m[2], p = /<p>([\s\S]*?)<\/p>/i.exec(body), heads = [];
+    const hr = /<h3[^>]*>([\s\S]*?)<\/h3>/gi; let q; while ((q = hr.exec(body))) { const x = nwText(q[1]).replace(/^\d+\.\s*/, ""); if (!skip.test(x)) heads.push(x); }
+    let lead = p ? nwText(p[1]) : "";
+    const sent = lead.match(/[^.!?]+(?:[.!?](?=\s|$))/g) || [lead];
+    lead = sent.slice(0, 2).join("").trim();
+    if (lead.length > 220) lead = sent[0].trim();
+    out.push({ title: nwText(m[1]), lead: lead, heads: heads.slice(0, 5) });
+  }
+  return out;
 }
 function nwRss(rows, lang) {
   const L = NW_TXT[lang];
@@ -435,7 +459,7 @@ function nwRss(rows, lang) {
     const d = new Date(Date.parse(r.issue_date + "T15:00:00Z") + delayMs).toUTCString();
     const titles = nwTitles(r.html);
     return "<item><title>" + nwEsc(nwHeadline(r, L)) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
-      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(nwPostText(lang, titles.length ? titles : [nwText(r.subject)])) + "</description>"
+      + "<pubDate>" + d + "</pubDate><description>" + nwEsc(nwPostText(lang, titles.length ? titles : [nwText(r.subject)], r.html)) + "</description>"
       + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
   }).join("");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel>'
