@@ -707,9 +707,11 @@ function rnSources(h) {
 }
 function rnRss(rows, lang) {
   const L = RN_TXT[lang];
-  const items = rows.filter(r => r.lang === lang).slice(0, 30).map(function (r) {
+  // boss 2026-11-24: same as IRS Weekly - the English post goes out 3 days after the Korean one (no double post the same day)
+  const delayMs = lang === "en" ? 3 * 86400000 : 0, now = Date.now();
+  const items = rows.filter(r => r.lang === lang && Date.parse(r.issue_date + "T15:00:00Z") + delayMs <= now).slice(0, 30).map(function (r) {
     const link = rnUrl(lang, r.slug);
-    const d = new Date(Date.parse(r.issue_date + "T15:00:00Z")).toUTCString();
+    const d = new Date(Date.parse(r.issue_date + "T15:00:00Z") + delayMs).toUTCString();
     return "<item><title>" + nwEsc(r.headline) + "</title><link>" + link + "</link><guid isPermaLink=\"true\">" + link + "</guid>"
       + "<pubDate>" + d + "</pubDate><description>" + nwEsc(r.post_text || r.summary || r.headline) + "</description>"
       + "<content:encoded><![CDATA[" + nwClean(r.html).replace(/\]\]>/g, "]]&gt;") + "]]></content:encoded></item>";
