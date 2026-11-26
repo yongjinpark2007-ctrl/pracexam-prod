@@ -2755,18 +2755,22 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
      모의고사 = 모의고사 문제 은행 중 채점까지 마친 응시에서 본 문항 비율 · War Room = 공개 주제 중 열어 본 비율.
      모양은 히어로 원그래프(.hr-ring)와 같은 문법 — 진도색 --progress-bar, 둥근 마개, 가운데엔 % 만. */
   .prem-card{position:relative;}
-  .prem-card.has-ring > div:last-child{padding-right:68px;}
-  .prem-ring{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:58px;height:58px;border-radius:50%;pointer-events:none;}
-  .prem-ring::before{content:"";position:absolute;inset:6px;background:#EDF4F3;border-radius:50%;z-index:2;}
+  .prem-card.has-ring > div:last-child{padding-right:104px;}
+  .prem-ring{position:absolute;right:28px;top:50%;transform:translateY(-50%);width:66px;height:66px;border-radius:50%;pointer-events:none;}
+  .prem-ring::before{content:"";position:absolute;inset:7px;background:#EDF4F3;border-radius:50%;z-index:2;}
   .prem-ring .pr-cap{position:absolute;inset:0;z-index:1;}
-  .prem-ring .pr-cap::before{content:"";position:absolute;top:0;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--progress-bar);}
+  .prem-ring .pr-cap::before{content:"";position:absolute;top:0;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--progress-bar);}
   .prem-ring .pr-n{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-    font-size:15px;font-weight:800;color:var(--text-main);line-height:1;}
-  .prem-ring .pr-n i{font-style:normal;font-size:10px;font-weight:700;margin-left:1px;}
+    font-size:17px;font-weight:800;color:var(--text-main);line-height:1;}
+  /* 숫자만 가운데에 두고 % 는 그 오른쪽에 붙인다(가운데 정렬에서 빠지게) */
+  .prem-ring .pr-n b{position:relative;font-weight:800;}
+  .prem-ring .pr-n i{position:absolute;left:100%;bottom:1px;font-style:normal;font-size:10px;font-weight:700;margin-left:1px;}
   @media(max-width:640px){
-    .prem-ring{width:46px;height:46px;right:10px;top:12px;transform:none;}
-    .prem-ring::before{inset:5px;}
-    .prem-ring .pr-n{font-size:12.5px;}
+    .prem-ring{width:52px;height:52px;right:18px;top:12px;transform:none;}
+    .prem-ring::before{inset:6px;}
+    .prem-ring .pr-cap::before{width:6px;height:6px;margin-left:-3px;}
+    .prem-ring .pr-n{font-size:14px;}
+    .prem-ring .pr-n i{font-size:9px;}
     .prem-card.has-ring > div:last-child{padding-right:0;}
   }
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
@@ -10592,7 +10596,7 @@ function premRing(pct){
   var v=Math.max(0,Math.min(100,Math.round(pct||0)));
   return '<div class="prem-ring" role="img" aria-label="'+v+'%" style="background:conic-gradient(var(--progress-bar) 0 '+v+'%,var(--ring-track) '+v+'% 100%);">'+
     (v>0?'<span class="pr-cap"></span><span class="pr-cap" style="transform:rotate('+(v*3.6)+'deg);"></span>':'')+
-    '<span class="pr-n">'+v+'<i>%</i></span></div>';
+    '<span class="pr-n"><b>'+v+'<i>%</i></b></span></div>';
 }
 
 function renderMockDashCard(){
