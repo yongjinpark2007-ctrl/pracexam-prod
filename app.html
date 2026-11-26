@@ -1295,10 +1295,11 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .dash-hero-picker .dash-part-row.active .dash-part-key{color:var(--sel-text);font-weight:700;}
 /* 2026-11-25 사장님 «③ 진청록 채움»: 고른 Part 칸을 시폼 초록 대신 진청록(--navy #354649)으로 채우고 글씨·아이콘·막대를 흰색으로.
    새 색을 만들지 않는다 — 앱의 진청록·흰색만 쓴다. 막대 채움은 인라인 background 라 !important 로 덮는다. */
-.dash-hero-picker .dash-part-row.active{background:var(--navy);border-color:var(--navy);}
+/* 2026-11-25 사장님: «학습 계속하기» 버튼(.dash-hero-cta)과 같은 대각선 그라데이션·글자색으로 맞춘다 */
+.dash-hero-picker .dash-part-row.active{background:linear-gradient(135deg,#354649,#4d6164);border-color:var(--navy);}
 .dash-hero-picker .dash-part-row.active .dash-part-key,
 .dash-hero-picker .dash-part-row.active .dash-part-row-stats,
-.dash-hero-picker .dash-part-row.active .dash-part-row-stats *{color:#fff;}
+.dash-hero-picker .dash-part-row.active .dash-part-row-stats *{color:#E0E7E9;}
 .dash-hero-picker .dash-part-row.active .dash-part-ico{background:rgba(255,255,255,.16);}
 .dash-hero-picker .dash-part-row.active .dash-part-ico svg{stroke:#fff;}
 .dash-hero-picker .dash-part-row.active .dash-part-row-bar{background:rgba(255,255,255,.22);}
