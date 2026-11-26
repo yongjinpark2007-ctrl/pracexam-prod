@@ -105,14 +105,24 @@
         '<span class="mk-chip">' + mL('최고', 'Best') + ': <b>' + best.score_correct + '/' + best.score_total + '</b></span>';
     }catch(e){ box.innerHTML = ''; }
   };
+  // Dashboard card + progress ring (boss 2026-11-25, same as EA): one ring per card for the Part chosen in the hero picker
+  //   (Part 1 = National, Part 2 = the state), % only. Data: get_re_prem_progress via premProgLoad (re/app.html).
   window.renderMockDashCard = function(){
     var el = document.getElementById('dash-mock'); if(!el) return;
     var live = mockLoadLS();
     var sub = (live && live.attemptId) ? ('⏱ ' + mL('진행 중 · 남은 ', 'In progress · ') + mockFmt(mockRemainingOf(live))) : mL(F.ko[0], F.en[0]);
-    el.innerHTML = '<div class="prem-row"><div class="prem-card" onclick="showScreen(\'mock\')">' +
+    var focus = localStorage.getItem('re_focus_part') || 'Part 1';
+    var pg = (typeof PREM_PROG !== 'undefined' && PREM_PROG) ? PREM_PROG[focus] : null;
+    var mRing = (pg && pg.mock_pool && typeof premRing === 'function') ? premRing(pg.mock_seen * 100 / pg.mock_pool) : '';
+    var wRing = (pg && pg.wr_total && typeof premRing === 'function') ? premRing(pg.wr_seen * 100 / pg.wr_total) : '';
+    if(typeof premProgLoad === 'function' && (!PREM_PROG || _premProgStale)){
+      premProgLoad().then(function(m){ if(m && document.getElementById('dash-mock')) renderMockDashCardRings(); });
+    }
+    el.innerHTML = '<div class="prem-row"><div class="prem-card' + (mRing ? ' has-ring' : '') + '" onclick="showScreen(\'mock\')">' + mRing +
       '<div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>' +
       '<div><div class="prem-tt">' + mL('실전 모의고사', 'Mock Exam') + '</div><div class="prem-sub">' + sub + '</div></div></div>' +
-      '<div class="prem-card" onclick="showScreen(\'warroom\')"><div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>' +
+      '<div class="prem-card' + (wRing ? ' has-ring' : '') + '" onclick="showScreen(\'warroom\')">' + wRing +
+      '<div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>' +
       '<div><div class="prem-tt">War Room</div><div class="prem-sub">' + mL('주제별 규칙 자세히 보기', 'Topic deep dives') + '</div></div></div></div>';
   };
 
