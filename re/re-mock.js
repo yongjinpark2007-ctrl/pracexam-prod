@@ -105,15 +105,26 @@
         '<span class="mk-chip">' + mL('최고', 'Best') + ': <b>' + best.score_correct + '/' + best.score_total + '</b></span>';
     }catch(e){ box.innerHTML = ''; }
   };
+  // Dashboard card — layout E (boss 2026-11-25), same as EA: icon + title on one line, «진도 n% · 설명», 3px bar.
+  //   Progress comes from get_re_prem_progress (re/app.html premProgLoad): Part 1 = National, Part 2 = the state.
   window.renderMockDashCard = function(){
     var el = document.getElementById('dash-mock'); if(!el) return;
     var live = mockLoadLS();
     var sub = (live && live.attemptId) ? ('⏱ ' + mL('진행 중 · 남은 ', 'In progress · ') + mockFmt(mockRemainingOf(live))) : mL(F.ko[0], F.en[0]);
-    el.innerHTML = '<div class="prem-row"><div class="prem-card" onclick="showScreen(\'mock\')">' +
-      '<div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>' +
-      '<div><div class="prem-tt">' + mL('실전 모의고사', 'Mock Exam') + '</div><div class="prem-sub">' + sub + '</div></div></div>' +
-      '<div class="prem-card" onclick="showScreen(\'warroom\')"><div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>' +
-      '<div><div class="prem-tt">War Room</div><div class="prem-sub">' + mL('주제별 규칙 자세히 보기', 'Topic deep dives') + '</div></div></div></div>';
+    var focus = localStorage.getItem('re_focus_part') || 'Part 1';
+    var pg = (typeof PREM_PROG !== 'undefined' && PREM_PROG) ? PREM_PROG[focus] : null;
+    var mPct = pg && pg.mock_pool ? Math.round(pg.mock_seen * 100 / pg.mock_pool) : null;
+    var wPct = pg && pg.wr_total ? Math.round(pg.wr_seen * 100 / pg.wr_total) : null;
+    if(typeof premProgLoad === 'function' && (typeof PREM_PROG === 'undefined' || !PREM_PROG || _premProgStale)){
+      premProgLoad().then(function(m){ if(m && document.getElementById('dash-mock')) renderMockDashCardRings(); });
+    }
+    function stat(p, txt){ return '<div class="pe-stat">' + (p === null ? '' : mL('진도', 'Progress') + ' <b>' + p + '%</b> · ') + txt + '</div>' +
+      (p === null ? '' : '<div class="pe-bar"><i style="width:' + Math.max(0, Math.min(100, p)) + '%;"></i></div>'); }
+    el.innerHTML = '<div class="prem-row"><div class="prem-card pe" onclick="showScreen(\'mock\')">' +
+      '<div class="pe-name"><div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>' +
+      '<div class="prem-tt">' + mL('실전 모의고사', 'Mock Exam') + '</div></div>' + stat(mPct, sub) + '</div>' +
+      '<div class="prem-card pe" onclick="showScreen(\'warroom\')"><div class="pe-name"><div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>' +
+      '<div class="prem-tt">War Room</div></div>' + stat(wPct, mL('주제별 규칙 자세히 보기', 'Topic deep dives')) + '</div></div>';
   };
 
   // ── start: start_re_mock on the server instead of the EA start_mock_exam ──

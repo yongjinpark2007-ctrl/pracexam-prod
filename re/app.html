@@ -2816,6 +2816,25 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   }
   .prem-tt{font-size:14.5px;font-weight:800;color:var(--text-main);}
   .prem-sub{font-size:11.5px;color:#55716e;margin-top:2px;line-height:1.45;}
+  /* 진도 막대 (2026-11-25 사장님 «E안»): 원그래프 대신 Part 선택 칸과 같은 짜임으로 —
+     아이콘과 제목을 한 줄에, 그 아래 «진도 n% · 설명», 그리고 3px 막대(--progress-bar).
+     Part 는 히어로 아래 선택기에서 고르므로 카드에 따로 적지 않는다. 카드 높이도 전보다 낮다.
+     모의고사 = 고른 Part 모의고사 문제 은행 중 «답을 고른» 문항 비율 · War Room = 열어 본 주제 비율. */
+  .prem-card.pe{padding:10px 14px;gap:0;}
+  .pe-name{display:flex;align-items:center;gap:9px;}
+  .pe-name .prem-ico{width:30px;height:30px;border-radius:8px;}
+  .pe-name .prem-ico svg{width:17px;height:17px;}
+  .pe-stat{font-size:11.5px;color:var(--text-mid);margin-top:6px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pe-stat b{color:var(--text-main);font-weight:700;}
+  .pe-bar{height:3px;background:rgba(0,0,0,.06);border-radius:3px;overflow:hidden;margin-top:6px;}
+  .pe-bar i{display:block;height:100%;border-radius:3px;background:var(--progress-bar);transition:width .4s;}
+  @media(max-width:640px){
+    .prem-card.pe{padding:9px 10px;}
+    .pe-name{gap:7px;}
+    .pe-name .prem-ico{width:26px;height:26px;border-radius:7px;}
+    .pe-name .prem-ico svg{width:15px;height:15px;}
+    .pe-stat{font-size:10.5px;}
+  }
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
   /* 모의고사 해설 모달 copy guard — War Room(.wr-protected)과 동일 방식 (2026-07-30) */
@@ -10753,26 +10772,52 @@ function mockSelectPart(p){ Mock.selPart=p; renderMockHub(); }
 // ── 대시보드 진입 카드: 프리미엄 2버튼 (실전 모의고사 + War Room) ──
 //    · 아이콘 = 기존 언어 재사용: War Room 번개(메뉴와 동일 path) · 모의고사 스톱워치(시간제한 시험)
 //    · 🔒 는 모의고사에만 — War Room은 무료 샘플이 있어 진입 자체는 열어 둠(내부 게이트가 잠금)
+// ── 진도 원그래프 데이터 (2026-11-25) ──
+//    get_re_prem_progress(p_state) 한 번에 National·주 숫자를 받는다(서버에서 계산 · 행 3개).
+//    🔴 화면을 그릴 때마다 부르지 말 것 — DB 디스크 사용량 경고(2026-11-25)가 있었다.
+//       한 번 받아 기억하고, 모의고사 채점·War Room 열람 뒤에만 «다시 받기» 표시를 한다.
+var PREM_PROG=null, _premProgP=null, _premProgStale=false;
+function premProgLoad(){
+  if(_premProgP && !_premProgStale) return _premProgP;
+  _premProgStale=false;
+  _premProgP = sb.rpc('get_re_prem_progress', { p_state: RE_STATE }).then(function(res){
+    if(res.error || !res.data || !res.data.length) return PREM_PROG;
+    var m={}; res.data.forEach(function(r){ m['Part '+r.part]=r; }); PREM_PROG=m; return m;
+  }, function(){ return PREM_PROG; });
+  return _premProgP;
+}
+function premProgStale(){ _premProgStale=true; }
+
 function renderMockDashCard(){
   var el=document.getElementById('dash-mock'); if(!el) return;
+  var focus=localStorage.getItem('re_focus_part')||'Part 1';
+  var pg=PREM_PROG&&PREM_PROG[focus];
+  var mPct=pg&&pg.mock_pool?Math.round(pg.mock_seen*100/pg.mock_pool):null;
+  var wPct=pg&&pg.wr_total?Math.round(pg.wr_seen*100/pg.wr_total):null;
+  function peStat(p,txt){ return '<div class="pe-stat">'+(p===null?'':mL('진도','Progress')+' <b>'+p+'%</b> · ')+txt+'</div>'+
+    (p===null?'':'<div class="pe-bar"><i style="width:'+Math.max(0,Math.min(100,p))+'%;"></i></div>'); }
+  if(!PREM_PROG || _premProgStale){ premProgLoad().then(function(m){ if(m && document.getElementById('dash-mock')) renderMockDashCardRings(); }); }
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
-    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
+    : mL('100문항 · 3시간 30분','100 questions · 3h 30m');
   el.innerHTML =
     '<div class="prem-row">'+
-    '<div class="prem-card" onclick="showScreen(\'mock\')">'+
-      '<div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>'+
-      '<div><div class="prem-tt">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
-      '<div class="prem-sub">'+sub+'</div></div>'+
+    '<div class="prem-card pe" onclick="showScreen(\'mock\')">'+
+      '<div class="pe-name"><div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>'+
+      '<div class="prem-tt">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div></div>'+
+      peStat(mPct, sub)+
     '</div>'+
-    '<div class="prem-card" onclick="showScreen(\'warroom\')">'+
-      '<div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
-      '<div><div class="prem-tt">War Room</div>'+
-      '<div class="prem-sub">'+mL('주제별 세법 자세히 보기','Topic deep dives')+'</div></div>'+
+    '<div class="prem-card pe" onclick="showScreen(\'warroom\')">'+
+      '<div class="pe-name"><div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
+      '<div class="prem-tt">War Room</div></div>'+
+      peStat(wPct, mL('주제별 세법 자세히 보기','Topic deep dives'))+
     '</div>'+
     '</div>';
 }
+
+// 데이터가 도착하면 카드만 다시 그린다(다시 받지 않음)
+function renderMockDashCardRings(){ try{ renderMockDashCard(); }catch(e){} }
 
 // ── 시작 ──
 async function mockStart(){
@@ -10979,6 +11024,7 @@ async function mockSubmit(){
   showToast(mL('채점 중…','Grading…'));
   try{
     var res=await sb.rpc('grade_mock_exam',{ p_attempt_id:Mock.attemptId, p_answers:answers });
+    premProgStale();
     if(res.error) throw res.error;
     Mock.result=res.data; Mock.result.part=Mock.part;
     mockClearLS(); Mock._practiceAck=false;
@@ -11680,16 +11726,18 @@ function _wrCloseTocMobile(){ if(window.innerWidth<=820){ var t=document.getElem
 // 그래서 고객이 "UBIA 설명이 어디에도 없다"고 했을 때도 그 사람이 War Room 을 열어 보긴 했는지
 // 확인할 수가 없었다. 짜임새는 공지 기록(logAnnView)과 똑같다.
 //   RPC: log_war_room_view(p_code) — war_room_views 에 upsert (서버가 중복을 셈으로 정리)
-//   · 관리자 본인 열람은 통계 오염 방지를 위해 보내지 않는다
+//   · 관리자 본인 열람도 보낸다(2026-11-25) — 고객 통계에서는 서버가 관리자를 뺀다
 //   · 함수가 아직 없거나 실패해도 조용히 무시 → 치트시트 보기에 영향 없음(배포 순서 무관)
 var _WR_VIEW_LOGGED = {};   // 한 번 켠 동안 같은 토픽 중복 전송 방지
 function logWrView(code){
   try{
     if(!code) return;
-    if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+    // 2026-11-25 사장님 «관리자도 워룸 표시 — 저도 공부해야 하니까»: 관리자 열람도 남긴다(대시보드 진도 막대용).
+    //   고객 통계(admin_war_room_users · admin_re_war_room_users · admin_war_room_topic_stats)는 서버에서 관리자 계정을 뺀다.
+    if(!SB_USER) return;
     if(_WR_VIEW_LOGGED[code]) return;
     _WR_VIEW_LOGGED[code] = true;
-    sb.rpc('log_war_room_view', { p_code: code }).then(function(){}, function(){});
+    sb.rpc('log_war_room_view', { p_code: code }).then(function(){ premProgStale(); }, function(){});
   }catch(e){}
 }
 
@@ -12128,6 +12176,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
-<script src="/re/re-mock.js?v=888a13cf77"></script>
+<script src="/re/re-mock.js?v=cb7f26539c"></script>
 </body>
 </html>
