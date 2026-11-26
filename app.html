@@ -1315,9 +1315,19 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .season-xmas .dash-hero-picker .dash-part-row.active .dash-part-key,
 .season-xmas .dash-hero-picker .dash-part-row.active .dash-part-row-stats,
 .season-xmas .dash-hero-picker .dash-part-row.active .dash-part-row-stats *{color:#F8E9EC;}
+/* 🦃 계절 테마 — 땡스기빙 (2026-11-25 사장님 «단 며칠이라도 ① 부채꼴 꼬리 칠면조»): 11/20~11/30.
+   호박색 그라데이션 + 오른쪽 아래 부채꼴 꼬리 칠면조. 폰은 색만(아래 규칙). 미리보기 ?season=thanksgiving */
+.season-thanksgiving .dash-hero-picker .dash-part-row.active{background:linear-gradient(135deg,#C2561A,#EE8A2C);border-color:#C2561A;position:relative;overflow:hidden;}
+.season-thanksgiving .dash-hero-picker .dash-part-row.active::after{content:"";position:absolute;right:0;bottom:0;width:120px;height:80px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80' preserveAspectRatio='xMaxYMax meet'%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%237A3B1C' stroke='%235A2A12' stroke-width='.8' transform='rotate(-72 92 58)'/%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%23F6C343' stroke='%235A2A12' stroke-width='.8' transform='rotate(-48 92 58)'/%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%23B7322C' stroke='%235A2A12' stroke-width='.8' transform='rotate(-24 92 58)'/%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%23FFF1D6' stroke='%235A2A12' stroke-width='.8' transform='rotate(0 92 58)'/%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%23B7322C' stroke='%235A2A12' stroke-width='.8' transform='rotate(24 92 58)'/%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%23F6C343' stroke='%235A2A12' stroke-width='.8' transform='rotate(48 92 58)'/%3E%3Cellipse cx='92' cy='38' rx='7.5' ry='21' fill='%237A3B1C' stroke='%235A2A12' stroke-width='.8' transform='rotate(72 92 58)'/%3E%3Cellipse cx='92' cy='62' rx='12' ry='14' fill='%236E3B1E'/%3E%3Ccircle cx='92' cy='46' r='7' fill='%238A4A24'/%3E%3Ccircle cx='89.5' cy='44' r='1.6' fill='%23fff'/%3E%3Ccircle cx='89.5' cy='44' r='.8' fill='%23222'/%3E%3Cpath d='M86 46l-6 2 6 2z' fill='%23F4B400'/%3E%3Cpath d='M87 48c-3 2-3 7 0 8 1-3 1-6 0-8z' fill='%23D63A2F'/%3E%3Cpath d='M88 74l-3 10M96 74l3 10' stroke='%23F4B400' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") right bottom/contain no-repeat;pointer-events:none;z-index:0;}
+.season-thanksgiving .dash-hero-picker .dash-part-row.active > *{position:relative;z-index:1;}
+.season-thanksgiving .dash-hero-picker .dash-part-row.active .dash-part-key,
+.season-thanksgiving .dash-hero-picker .dash-part-row.active .dash-part-row-stats,
+.season-thanksgiving .dash-hero-picker .dash-part-row.active .dash-part-row-stats *{color:#FFF6EC;text-shadow:0 1px 1px rgba(120,40,0,.35);}
 /* 폰(2026-11-25 실측): Part 칸이 92px 뿐이라 그림이 «Part 1» 글씨에 겹친다 → 폰에서는 계절 «색»만, 그림은 숨긴다 */
 @media(max-width:640px){ .season-xmas .dash-hero-picker .dash-part-row.active::after,
-  .season-newyear .dash-hero-picker .dash-part-row.active::after{display:none;} }
+  .season-newyear .dash-hero-picker .dash-part-row.active::after,
+  .season-thanksgiving .dash-hero-picker .dash-part-row.active::after{display:none;} }
 /* 🎆 계절 테마 — 2027 새해 (2026-11-25 사장님): 12/27~1/7. 크리스마스와 같은 자리(고른 Part 칸), 밤하늘 진남색 + 오른쪽 아래 금색·크림·은색 불꽃 세 송이(사장님 선택 ①).
    폰은 칸이 좁아(92px) 그림을 숨기고 색만. 미리보기 ?season=newyear */
 .season-newyear .dash-hero-picker .dash-part-row.active{background:linear-gradient(135deg,#0F1F3D,#26427C);border-color:#0F1F3D;position:relative;overflow:hidden;}
@@ -1654,9 +1664,10 @@ textarea.ann-input{resize:vertical;min-height:60px;}
 (function(){ try{
   var q=(new URLSearchParams(location.search).get('season')||'').toLowerCase();
   var d=new Date(), m=d.getMonth(), day=d.getDate(), th='';
-  if(m===11 && day<=26) th='xmas';                                   // 크리스마스 12/1~12/26
+  if(m===10 && day>=20) th='thanksgiving';                          // 땡스기빙 11/20~11/30
+  else if(m===11 && day<=26) th='xmas';                              // 크리스마스 12/1~12/26
   else if((m===11 && day>=27) || (m===0 && day<=7)) th='newyear';    // 새해 12/27~1/7
-  if(q==='xmas' || q==='newyear') th=q; if(q==='off') th='';
+  if(q==='xmas' || q==='newyear' || q==='thanksgiving') th=q; if(q==='off') th='';
   if(th) document.documentElement.classList.add('season-'+th);
 }catch(e){} })();
 </script>
