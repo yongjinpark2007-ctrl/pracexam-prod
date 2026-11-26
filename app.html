@@ -2751,34 +2751,24 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   }
   .prem-tt{font-size:14.5px;font-weight:800;color:var(--text-main);}
   .prem-sub{font-size:11.5px;color:#55716e;margin-top:2px;line-height:1.45;}
-  /* 진도 원그래프 (2026-11-25 사장님): 히어로 아래에서 고른 Part 의 진도만, 카드 오른쪽 빈자리에.
-     모의고사 = 모의고사 문제 은행 중 채점까지 마친 응시에서 본 문항 비율 · War Room = 공개 주제 중 열어 본 비율.
-     모양은 히어로 원그래프(.hr-ring)와 같은 문법 — 진도색 --progress-bar, 둥근 마개, 가운데엔 % 만. */
-  .prem-card{position:relative;}
-  .prem-card.has-ring > div:last-child{padding-right:104px;}
-  .prem-ring{position:absolute;right:28px;top:50%;transform:translateY(-50%);width:66px;height:66px;border-radius:50%;pointer-events:none;}
-  .prem-ring::before{content:"";position:absolute;inset:7px;background:#EDF4F3;border-radius:50%;z-index:2;}
-  .prem-ring .pr-cap{position:absolute;inset:0;z-index:1;}
-  .prem-ring .pr-cap::before{content:"";position:absolute;top:0;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--progress-bar);}
-  .prem-ring .pr-n{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-    font-size:17px;font-weight:800;color:var(--text-main);line-height:1;}
-  /* 숫자만 가운데에 두고 % 는 그 오른쪽에 붙인다(가운데 정렬에서 빠지게) */
-  .prem-ring .pr-n b{position:relative;font-weight:800;}
-  .prem-ring .pr-n i{position:absolute;left:100%;bottom:1px;font-style:normal;font-size:10px;font-weight:700;margin-left:1px;}
-  /* 100% 는 세 자리라 % 가 원에 닿는다(사장님 2026-11-25) → 세 자리일 때만 글자를 줄인다 */
-  .prem-ring.pr-full .pr-n{font-size:14px;}
-  .prem-ring.pr-full .pr-n i{font-size:8.5px;}
-  .prem-ring.pr-full .pr-n b{left:-4px;}   /* % 까지 합친 «100%» 가 원 안에서 좌우 가운데에 오게 */
+  /* 진도 막대 (2026-11-25 사장님 «E안»): 원그래프 대신 Part 선택 칸과 같은 짜임으로 —
+     아이콘과 제목을 한 줄에, 그 아래 «진도 n% · 설명», 그리고 3px 막대(--progress-bar).
+     Part 는 히어로 아래 선택기에서 고르므로 카드에 따로 적지 않는다. 카드 높이도 전보다 낮다.
+     모의고사 = 고른 Part 모의고사 문제 은행 중 «답을 고른» 문항 비율 · War Room = 열어 본 주제 비율. */
+  .prem-card.pe{padding:10px 14px;gap:0;}
+  .pe-name{display:flex;align-items:center;gap:9px;}
+  .pe-name .prem-ico{width:30px;height:30px;border-radius:8px;}
+  .pe-name .prem-ico svg{width:17px;height:17px;}
+  .pe-stat{font-size:11.5px;color:var(--text-mid);margin-top:6px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pe-stat b{color:var(--text-main);font-weight:700;}
+  .pe-bar{height:3px;background:rgba(0,0,0,.06);border-radius:3px;overflow:hidden;margin-top:6px;}
+  .pe-bar i{display:block;height:100%;border-radius:3px;background:var(--progress-bar);transition:width .4s;}
   @media(max-width:640px){
-    .prem-ring{width:46px;height:46px;right:12px;}
-    .prem-card.has-ring > div:last-child{padding-right:58px;}
-    .prem-ring::before{inset:5px;}
-    .prem-ring .pr-cap::before{width:6px;height:6px;margin-left:-3px;}
-    .prem-ring .pr-n{font-size:13px;}
-    .prem-ring .pr-n i{font-size:9px;}
-    .prem-ring.pr-full .pr-n{font-size:10.5px;}
-    .prem-ring.pr-full .pr-n i{font-size:7px;}
-    .prem-ring.pr-full .pr-n b{left:-3px;}
+    .prem-card.pe{padding:9px 10px;}
+    .pe-name{gap:7px;}
+    .pe-name .prem-ico{width:26px;height:26px;border-radius:7px;}
+    .pe-name .prem-ico svg{width:15px;height:15px;}
+    .pe-stat{font-size:10.5px;}
   }
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
@@ -10599,35 +10589,31 @@ function premProgLoad(){
   return _premProgP;
 }
 function premProgStale(){ _premProgStale=true; }
-function premRing(pct){
-  var v=Math.max(0,Math.min(100,Math.round(pct||0)));
-  return '<div class="prem-ring'+(v>=100?' pr-full':'')+'" role="img" aria-label="'+v+'%" style="background:conic-gradient(var(--progress-bar) 0 '+v+'%,var(--ring-track) '+v+'% 100%);">'+
-    (v>0?'<span class="pr-cap"></span><span class="pr-cap" style="transform:rotate('+(v*3.6)+'deg);"></span>':'')+
-    '<span class="pr-n"><b>'+v+'<i>%</i></b></span></div>';
-}
 
 function renderMockDashCard(){
   var el=document.getElementById('dash-mock'); if(!el) return;
   var focus=localStorage.getItem('ea_focus_part')||'Part 1';
   var pg=PREM_PROG&&PREM_PROG[focus];
-  var mRing=pg&&pg.mock_pool?premRing(pg.mock_seen*100/pg.mock_pool):'';
-  var wRing=pg&&pg.wr_total?premRing(pg.wr_seen*100/pg.wr_total):'';
+  var mPct=pg&&pg.mock_pool?Math.round(pg.mock_seen*100/pg.mock_pool):null;
+  var wPct=pg&&pg.wr_total?Math.round(pg.wr_seen*100/pg.wr_total):null;
+  function peStat(p,txt){ return '<div class="pe-stat">'+(p===null?'':mL('진도','Progress')+' <b>'+p+'%</b> · ')+txt+'</div>'+
+    (p===null?'':'<div class="pe-bar"><i style="width:'+Math.max(0,Math.min(100,p))+'%;"></i></div>'); }
   if(!PREM_PROG || _premProgStale){ premProgLoad().then(function(m){ if(m && document.getElementById('dash-mock')) renderMockDashCardRings(); }); }
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
-    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
+    : mL('100문항 · 3시간 30분','100 questions · 3h 30m');
   el.innerHTML =
     '<div class="prem-row">'+
-    '<div class="prem-card'+(mRing?' has-ring':'')+'" onclick="showScreen(\'mock\')">'+mRing+
-      '<div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>'+
-      '<div><div class="prem-tt">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
-      '<div class="prem-sub">'+sub+'</div></div>'+
+    '<div class="prem-card pe" onclick="showScreen(\'mock\')">'+
+      '<div class="pe-name"><div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>'+
+      '<div class="prem-tt">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div></div>'+
+      peStat(mPct, sub)+
     '</div>'+
-    '<div class="prem-card'+(wRing?' has-ring':'')+'" onclick="showScreen(\'warroom\')">'+wRing+
-      '<div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
-      '<div><div class="prem-tt">War Room</div>'+
-      '<div class="prem-sub">'+mL('주제별 세법 자세히 보기','Topic deep dives')+'</div></div>'+
+    '<div class="prem-card pe" onclick="showScreen(\'warroom\')">'+
+      '<div class="pe-name"><div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
+      '<div class="prem-tt">War Room</div></div>'+
+      peStat(wPct, mL('주제별 세법 자세히 보기','Topic deep dives'))+
     '</div>'+
     '</div>';
 }
@@ -11541,13 +11527,15 @@ function _wrCloseTocMobile(){ if(window.innerWidth<=820){ var t=document.getElem
 // 그래서 고객이 "UBIA 설명이 어디에도 없다"고 했을 때도 그 사람이 War Room 을 열어 보긴 했는지
 // 확인할 수가 없었다. 짜임새는 공지 기록(logAnnView)과 똑같다.
 //   RPC: log_war_room_view(p_code) — war_room_views 에 upsert (서버가 중복을 셈으로 정리)
-//   · 관리자 본인 열람은 통계 오염 방지를 위해 보내지 않는다
+//   · 관리자 본인 열람도 보낸다(2026-11-25) — 고객 통계에서는 서버가 관리자를 뺀다
 //   · 함수가 아직 없거나 실패해도 조용히 무시 → 치트시트 보기에 영향 없음(배포 순서 무관)
 var _WR_VIEW_LOGGED = {};   // 한 번 켠 동안 같은 토픽 중복 전송 방지
 function logWrView(code){
   try{
     if(!code) return;
-    if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+    // 2026-11-25 사장님 «관리자도 워룸 표시 — 저도 공부해야 하니까»: 관리자 열람도 남긴다(대시보드 진도 막대용).
+    //   고객 통계(admin_war_room_users · admin_re_war_room_users · admin_war_room_topic_stats)는 서버에서 관리자 계정을 뺀다.
+    if(!SB_USER) return;
     if(_WR_VIEW_LOGGED[code]) return;
     _WR_VIEW_LOGGED[code] = true;
     sb.rpc('log_war_room_view', { p_code: code }).then(function(){ premProgStale(); }, function(){});
