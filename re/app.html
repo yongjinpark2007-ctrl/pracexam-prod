@@ -2816,35 +2816,6 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   }
   .prem-tt{font-size:14.5px;font-weight:800;color:var(--text-main);}
   .prem-sub{font-size:11.5px;color:#55716e;margin-top:2px;line-height:1.45;}
-  /* 진도 원그래프 (2026-11-25 사장님): 히어로 아래에서 고른 Part 의 진도만, 카드 오른쪽 빈자리에.
-     부동산: Part 1 = National · Part 2 = 주. 모의고사 = 이 주 시험 모의고사 문항 중 채점까지 마친 응시에서 본 비율 · War Room = 열어 본 주제 비율.
-     모양은 히어로 원그래프(.hr-ring)와 같은 문법 — 진도색 --progress-bar, 둥근 마개, 가운데엔 % 만. */
-  .prem-card{position:relative;}
-  .prem-card.has-ring > div:last-child{padding-right:104px;}
-  .prem-ring{position:absolute;right:28px;top:50%;transform:translateY(-50%);width:66px;height:66px;border-radius:50%;pointer-events:none;}
-  .prem-ring::before{content:"";position:absolute;inset:7px;background:#E8EFF7;border-radius:50%;z-index:2;}
-  .prem-ring .pr-cap{position:absolute;inset:0;z-index:1;}
-  .prem-ring .pr-cap::before{content:"";position:absolute;top:0;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--progress-bar);}
-  .prem-ring .pr-n{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
-    font-size:17px;font-weight:800;color:var(--text-main);line-height:1;}
-  /* 숫자만 가운데에 두고 % 는 그 오른쪽에 붙인다(가운데 정렬에서 빠지게) */
-  .prem-ring .pr-n b{position:relative;font-weight:800;}
-  .prem-ring .pr-n i{position:absolute;left:100%;bottom:1px;font-style:normal;font-size:10px;font-weight:700;margin-left:1px;}
-  /* 100% 는 세 자리라 % 가 원에 닿는다(사장님 2026-11-25) → 세 자리일 때만 글자를 줄인다 */
-  .prem-ring.pr-full .pr-n{font-size:14px;}
-  .prem-ring.pr-full .pr-n i{font-size:8.5px;}
-  .prem-ring.pr-full .pr-n b{left:-4px;}   /* % 까지 합친 «100%» 가 원 안에서 좌우 가운데에 오게 */
-  @media(max-width:640px){
-    .prem-ring{width:46px;height:46px;right:12px;}
-    .prem-card.has-ring > div:last-child{padding-right:58px;}
-    .prem-ring::before{inset:5px;}
-    .prem-ring .pr-cap::before{width:6px;height:6px;margin-left:-3px;}
-    .prem-ring .pr-n{font-size:13px;}
-    .prem-ring .pr-n i{font-size:9px;}
-    .prem-ring.pr-full .pr-n{font-size:10.5px;}
-    .prem-ring.pr-full .pr-n i{font-size:7px;}
-    .prem-ring.pr-full .pr-n b{left:-3px;}
-  }
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
   /* 모의고사 해설 모달 copy guard — War Room(.wr-protected)과 동일 방식 (2026-07-30) */
@@ -10782,56 +10753,26 @@ function mockSelectPart(p){ Mock.selPart=p; renderMockHub(); }
 // ── 대시보드 진입 카드: 프리미엄 2버튼 (실전 모의고사 + War Room) ──
 //    · 아이콘 = 기존 언어 재사용: War Room 번개(메뉴와 동일 path) · 모의고사 스톱워치(시간제한 시험)
 //    · 🔒 는 모의고사에만 — War Room은 무료 샘플이 있어 진입 자체는 열어 둠(내부 게이트가 잠금)
-// ── 진도 원그래프 데이터 (2026-11-25) ──
-//    get_re_prem_progress(p_state) 한 번에 National·주 숫자를 받는다(서버에서 계산 · 행 3개).
-//    🔴 화면을 그릴 때마다 부르지 말 것 — DB 디스크 사용량 경고(2026-11-25)가 있었다.
-//       한 번 받아 기억하고, 모의고사 채점·War Room 열람 뒤에만 «다시 받기» 표시를 한다.
-var PREM_PROG=null, _premProgP=null, _premProgStale=false;
-function premProgLoad(){
-  if(_premProgP && !_premProgStale) return _premProgP;
-  _premProgStale=false;
-  _premProgP = sb.rpc('get_re_prem_progress', { p_state: RE_STATE }).then(function(res){
-    if(res.error || !res.data || !res.data.length) return PREM_PROG;
-    var m={}; res.data.forEach(function(r){ m['Part '+r.part]=r; }); PREM_PROG=m; return m;
-  }, function(){ return PREM_PROG; });
-  return _premProgP;
-}
-function premProgStale(){ _premProgStale=true; }
-function premRing(pct){
-  var v=Math.max(0,Math.min(100,Math.round(pct||0)));
-  return '<div class="prem-ring'+(v>=100?' pr-full':'')+'" role="img" aria-label="'+v+'%" style="background:conic-gradient(var(--progress-bar) 0 '+v+'%,var(--ring-track) '+v+'% 100%);">'+
-    (v>0?'<span class="pr-cap"></span><span class="pr-cap" style="transform:rotate('+(v*3.6)+'deg);"></span>':'')+
-    '<span class="pr-n"><b>'+v+'<i>%</i></b></span></div>';
-}
-
 function renderMockDashCard(){
   var el=document.getElementById('dash-mock'); if(!el) return;
-  var focus=localStorage.getItem('re_focus_part')||'Part 1';
-  var pg=PREM_PROG&&PREM_PROG[focus];
-  var mRing=pg&&pg.mock_pool?premRing(pg.mock_seen*100/pg.mock_pool):'';
-  var wRing=pg&&pg.wr_total?premRing(pg.wr_seen*100/pg.wr_total):'';
-  if(!PREM_PROG || _premProgStale){ premProgLoad().then(function(m){ if(m && document.getElementById('dash-mock')) renderMockDashCardRings(); }); }
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
     : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
   el.innerHTML =
     '<div class="prem-row">'+
-    '<div class="prem-card'+(mRing?' has-ring':'')+'" onclick="showScreen(\'mock\')">'+mRing+
+    '<div class="prem-card" onclick="showScreen(\'mock\')">'+
       '<div class="prem-ico"><svg viewBox="0 0 24 24"><path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/></svg></div>'+
       '<div><div class="prem-tt">'+mL('실전 모의고사','Mock Exam')+(paid?'':' <span style="font-size:12px;">🔒</span>')+'</div>'+
       '<div class="prem-sub">'+sub+'</div></div>'+
     '</div>'+
-    '<div class="prem-card'+(wRing?' has-ring':'')+'" onclick="showScreen(\'warroom\')">'+wRing+
+    '<div class="prem-card" onclick="showScreen(\'warroom\')">'+
       '<div class="prem-ico ter"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>'+
       '<div><div class="prem-tt">War Room</div>'+
       '<div class="prem-sub">'+mL('주제별 세법 자세히 보기','Topic deep dives')+'</div></div>'+
     '</div>'+
     '</div>';
 }
-
-// 데이터가 도착하면 카드만 다시 그린다(다시 받지 않음)
-function renderMockDashCardRings(){ try{ renderMockDashCard(); }catch(e){} }
 
 // ── 시작 ──
 async function mockStart(){
@@ -11038,7 +10979,6 @@ async function mockSubmit(){
   showToast(mL('채점 중…','Grading…'));
   try{
     var res=await sb.rpc('grade_mock_exam',{ p_attempt_id:Mock.attemptId, p_answers:answers });
-    premProgStale();
     if(res.error) throw res.error;
     Mock.result=res.data; Mock.result.part=Mock.part;
     mockClearLS(); Mock._practiceAck=false;
@@ -11749,7 +11689,7 @@ function logWrView(code){
     if(!SB_USER || SB_USER.id === ADMIN_UID) return;
     if(_WR_VIEW_LOGGED[code]) return;
     _WR_VIEW_LOGGED[code] = true;
-    sb.rpc('log_war_room_view', { p_code: code }).then(function(){ premProgStale(); }, function(){});
+    sb.rpc('log_war_room_view', { p_code: code }).then(function(){}, function(){});
   }catch(e){}
 }
 
