@@ -10676,7 +10676,7 @@ function renderMockDashCard(){
   var paid=mockCanUse(); var live=mockLoadLS();
   var sub = (live&&live.attemptId)
     ? ('⏱ '+mL('진행 중 · 남은 ','In progress · ')+mockFmt(Math.max(0,MOCK_DURATION_SEC-Math.floor((Date.now()-live.startedAt)/1000)))+mL(' · 이어하기',' left'))
-    : mL('100문항 · 3시간 30분 · 실전 조건','100 questions · 3h 30m · exam conditions');
+    : mL('100문항 3회 · 3시간 30분 · 실전 조건','100 questions × 3 · 3h 30m · exam conditions')  /* 2026-11-26 boss: «100문항 3회» (2027: 2회로 변경 예정) */;
   el.innerHTML =
     '<div class="prem-row">'+
     '<div class="prem-card'+(mRing?' has-ring':'')+'" onclick="showScreen(\'mock\')">'+mRing+
