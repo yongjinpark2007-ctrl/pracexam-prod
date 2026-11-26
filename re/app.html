@@ -1304,6 +1304,18 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .dash-hero-picker .dash-part-row.active .dash-part-ico svg{stroke:#fff;}
 .dash-hero-picker .dash-part-row.active .dash-part-row-bar{background:rgba(255,255,255,.22);}
 .dash-hero-picker .dash-part-row.active .dash-part-row-bar-fill{background:#fff !important;}
+/* 🎄 계절 테마 — 크리스마스 (2026-11-25 사장님): 12/1~12/26 에만 «고른 Part 칸»을 와인색 + 트리·눈송이 선 그림으로.
+   켜고 끄기는 <html class="season-xmas"> (아래 스크립트가 날짜로 정함). 미리보기: 주소에 ?season=xmas (끄기 ?season=off).
+   그림은 데이터 URI SVG — 파일을 따로 받지 않는다. 글씨·막대는 그림 위(z-index)에 둔다. EA·부동산 공통. */
+.season-xmas .dash-hero-picker .dash-part-row.active{background:linear-gradient(135deg,#5E1A27,#8C2B3C);border-color:#5E1A27;
+  position:relative;overflow:hidden;}
+.season-xmas .dash-hero-picker .dash-part-row.active::after{content:"";position:absolute;right:0;bottom:0;width:120px;height:80px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80' preserveAspectRatio='xMaxYMax meet'%3E%3Cg transform='translate(62 18) scale(0.9)' stroke='#fff' stroke-width='1.6' stroke-linecap='round' fill='none' opacity='0.75'%3E%3Cpath d='M0-10V10M-8.7-5L8.7 5M-8.7 5L8.7-5'/%3E%3Cpath d='M-2.5-7.5L0-5L2.5-7.5M-2.5 7.5L0 5L2.5 7.5M-7.7-1.5L-4.3-2.5L-5.3-5.8M7.7 1.5L4.3 2.5L5.3 5.8M-7.7 1.5L-4.3 2.5L-5.3 5.8M7.7-1.5L4.3-2.5L5.3-5.8'/%3E%3C/g%3E%3Cg transform='translate(74 58) scale(0.6)' stroke='#fff' stroke-width='1.6' stroke-linecap='round' fill='none' opacity='0.6'%3E%3Cpath d='M0-10V10M-8.7-5L8.7 5M-8.7 5L8.7-5'/%3E%3Cpath d='M-2.5-7.5L0-5L2.5-7.5M-2.5 7.5L0 5L2.5 7.5M-7.7-1.5L-4.3-2.5L-5.3-5.8M7.7 1.5L4.3 2.5L5.3 5.8M-7.7 1.5L-4.3 2.5L-5.3 5.8M7.7-1.5L4.3-2.5L5.3-5.8'/%3E%3C/g%3E%3Cg transform='translate(50 44) scale(0.45)' stroke='#fff' stroke-width='1.6' stroke-linecap='round' fill='none' opacity='0.5'%3E%3Cpath d='M0-10V10M-8.7-5L8.7 5M-8.7 5L8.7-5'/%3E%3Cpath d='M-2.5-7.5L0-5L2.5-7.5M-2.5 7.5L0 5L2.5 7.5M-7.7-1.5L-4.3-2.5L-5.3-5.8M7.7 1.5L4.3 2.5L5.3 5.8M-7.7 1.5L-4.3 2.5L-5.3 5.8M7.7-1.5L4.3-2.5L5.3-5.8'/%3E%3C/g%3E%3Cg transform='translate(114 64) scale(0.5)' stroke='#fff' stroke-width='1.6' stroke-linecap='round' fill='none' opacity='0.6'%3E%3Cpath d='M0-10V10M-8.7-5L8.7 5M-8.7 5L8.7-5'/%3E%3Cpath d='M-2.5-7.5L0-5L2.5-7.5M-2.5 7.5L0 5L2.5 7.5M-7.7-1.5L-4.3-2.5L-5.3-5.8M7.7 1.5L4.3 2.5L5.3 5.8M-7.7 1.5L-4.3 2.5L-5.3 5.8M7.7-1.5L4.3-2.5L5.3-5.8'/%3E%3C/g%3E%3Cg transform='translate(84 8)'%3E%3Cpath d='M18 6L30 24H24L34 40H27L38 58H-2L9 40H2L12 24H6Z' fill='#2E7D4F'/%3E%3Cpath d='M18 6L30 24H24L34 40H27L38 58H18Z' fill='#256B43'/%3E%3Crect x='15' y='58' width='6' height='8' fill='#6B4226'/%3E%3Cpath d='M18 -1l2.1 4.3 4.7.7-3.4 3.3.8 4.7L18 10.8l-4.2 2.2.8-4.7-3.4-3.3 4.7-.7z' fill='#F5C542'/%3E%3Ccircle cx='14' cy='28' r='2.2' fill='#F5C542'/%3E%3Ccircle cx='24' cy='36' r='2.2' fill='#E9EEF3'/%3E%3Ccircle cx='10' cy='46' r='2.2' fill='#F5C542'/%3E%3Ccircle cx='27' cy='52' r='2.2' fill='#E04A5F'/%3E%3Ccircle cx='19' cy='44' r='2' fill='#E9EEF3'/%3E%3C/g%3E%3C/svg%3E") right bottom/contain no-repeat;pointer-events:none;z-index:0;}
+.season-xmas .dash-hero-picker .dash-part-row.active > *{position:relative;z-index:1;}
+.season-xmas .dash-hero-picker .dash-part-row.active .dash-part-key,
+.season-xmas .dash-hero-picker .dash-part-row.active .dash-part-row-stats,
+.season-xmas .dash-hero-picker .dash-part-row.active .dash-part-row-stats *{color:#F8E9EC;}
+@media(max-width:640px){ .season-xmas .dash-hero-picker .dash-part-row.active::after{width:84px;height:56px;} }
 
 /* 폰에서도 3열 — 세로로 쌓으면 히어로만 길어져 스크롤이 는다.
    ⛔ 아이콘 크기는 건드리지 않는다 (사장님 지시 2026-09-21: 화면 안에서 항상 같아야 한다) */
@@ -1672,6 +1684,16 @@ async function reEnforceState(){
 </style>
 </head>
 <body>
+<script>
+// 🎄 계절 테마 켜기 (2026-11-25): 12/1~12/26 이면 <html> 에 season-xmas. ?season=xmas 로 미리보기, ?season=off 로 끄기.
+(function(){ try{
+  var q=(new URLSearchParams(location.search).get('season')||'').toLowerCase();
+  var d=new Date(), on=(d.getMonth()===11 && d.getDate()<=26);
+  if(q==='xmas') on=true; if(q==='off') on=false;
+  if(on) document.documentElement.classList.add('season-xmas');
+}catch(e){} })();
+</script>
+
 <script>/* join cover (2026-10-30): hide the app until we know if the join step is needed */
 (function(){ try { if(/[?&]join=1/.test(location.search)){ var c = document.createElement('div'); c.id = 'join-cover';
   c.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--page-bg,#eef2f3);';
