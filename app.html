@@ -2765,6 +2765,10 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   /* 숫자만 가운데에 두고 % 는 그 오른쪽에 붙인다(가운데 정렬에서 빠지게) */
   .prem-ring .pr-n b{position:relative;font-weight:800;}
   .prem-ring .pr-n i{position:absolute;left:100%;bottom:1px;font-style:normal;font-size:10px;font-weight:700;margin-left:1px;}
+  /* 100% 는 세 자리라 % 가 원에 닿는다(사장님 2026-11-25) → 세 자리일 때만 글자를 줄인다 */
+  .prem-ring.pr-full .pr-n{font-size:14px;}
+  .prem-ring.pr-full .pr-n i{font-size:8.5px;}
+  .prem-ring.pr-full .pr-n b{left:-4px;}   /* % 까지 합친 «100%» 가 원 안에서 좌우 가운데에 오게 */
   @media(max-width:640px){
     .prem-ring{width:46px;height:46px;right:12px;}
     .prem-card.has-ring > div:last-child{padding-right:58px;}
@@ -2772,6 +2776,9 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
     .prem-ring .pr-cap::before{width:6px;height:6px;margin-left:-3px;}
     .prem-ring .pr-n{font-size:13px;}
     .prem-ring .pr-n i{font-size:9px;}
+    .prem-ring.pr-full .pr-n{font-size:10.5px;}
+    .prem-ring.pr-full .pr-n i{font-size:7px;}
+    .prem-ring.pr-full .pr-n b{left:-3px;}
   }
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
@@ -10594,7 +10601,7 @@ function premProgLoad(){
 function premProgStale(){ _premProgStale=true; }
 function premRing(pct){
   var v=Math.max(0,Math.min(100,Math.round(pct||0)));
-  return '<div class="prem-ring" role="img" aria-label="'+v+'%" style="background:conic-gradient(var(--progress-bar) 0 '+v+'%,var(--ring-track) '+v+'% 100%);">'+
+  return '<div class="prem-ring'+(v>=100?' pr-full':'')+'" role="img" aria-label="'+v+'%" style="background:conic-gradient(var(--progress-bar) 0 '+v+'%,var(--ring-track) '+v+'% 100%);">'+
     (v>0?'<span class="pr-cap"></span><span class="pr-cap" style="transform:rotate('+(v*3.6)+'deg);"></span>':'')+
     '<span class="pr-n"><b>'+v+'<i>%</i></b></span></div>';
 }
