@@ -1293,6 +1293,17 @@ html.px-nocopy .question-card input,html.px-nocopy .question-card textarea,html.
 .dash-hero-picker .dash-part-row.active{background:var(--sel-bg);border:1px solid var(--sel-border);
   border-left:3px solid var(--navy);padding-left:8px;}
 .dash-hero-picker .dash-part-row.active .dash-part-key{color:var(--sel-text);font-weight:700;}
+/* 2026-11-25 사장님 «③ 진청록 채움»: 고른 Part 칸을 시폼 초록 대신 진한 남색(--navy, 부동산 #10304C)으로 채우고 글씨·아이콘·막대를 흰색으로.
+   새 색을 만들지 않는다 — 앱의 진청록·흰색만 쓴다. 막대 채움은 인라인 background 라 !important 로 덮는다. */
+/* 2026-11-25 사장님: «학습 계속하기» 버튼(.dash-hero-cta)과 같은 대각선 그라데이션·글자색으로 맞춘다 */
+.dash-hero-picker .dash-part-row.active{background:linear-gradient(135deg,#10304C,#2F5F8F);border-color:var(--navy);}
+.dash-hero-picker .dash-part-row.active .dash-part-key,
+.dash-hero-picker .dash-part-row.active .dash-part-row-stats,
+.dash-hero-picker .dash-part-row.active .dash-part-row-stats *{color:#E3E9F0;}
+.dash-hero-picker .dash-part-row.active .dash-part-ico{background:rgba(255,255,255,.16);}
+.dash-hero-picker .dash-part-row.active .dash-part-ico svg{stroke:#fff;}
+.dash-hero-picker .dash-part-row.active .dash-part-row-bar{background:rgba(255,255,255,.22);}
+.dash-hero-picker .dash-part-row.active .dash-part-row-bar-fill{background:#fff !important;}
 
 /* 폰에서도 3열 — 세로로 쌓으면 히어로만 길어져 스크롤이 는다.
    ⛔ 아이콘 크기는 건드리지 않는다 (사장님 지시 2026-09-21: 화면 안에서 항상 같아야 한다) */
@@ -2816,6 +2827,38 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
   }
   .prem-tt{font-size:14.5px;font-weight:800;color:var(--text-main);}
   .prem-sub{font-size:11.5px;color:#55716e;margin-top:2px;line-height:1.45;}
+  /* 진도 원그래프 (2026-11-25 사장님): 히어로 아래에서 고른 Part 의 진도만, 카드 오른쪽 빈자리에.
+     부동산: Part 1 = National · Part 2 = 주. 모의고사 = 이 주 모의고사 문항 중 답을 고른 비율 · War Room = 열어 본 주제 비율.
+     모양은 히어로 원그래프(.hr-ring)와 같은 문법 — 진도색 --progress-bar, 둥근 마개, 가운데엔 % 만. */
+  .prem-card{position:relative;}
+  .prem-card.has-ring > div:last-child{padding-right:104px;}
+  .prem-ring{position:absolute;right:28px;top:50%;transform:translateY(-50%);width:66px;height:66px;border-radius:50%;pointer-events:none;}
+  .prem-ring::before{content:"";position:absolute;inset:7px;background:#E8EFF7;border-radius:50%;z-index:2;}
+  .prem-ring .pr-cap{position:absolute;inset:0;z-index:1;}
+  .prem-ring .pr-cap::before{content:"";position:absolute;top:0;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--progress-bar);}
+  .prem-ring .pr-n{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;
+    font-size:17px;font-weight:800;color:var(--text-main);line-height:1;}
+  /* 숫자만 가운데에 두고 % 는 그 오른쪽에 붙인다(가운데 정렬에서 빠지게) */
+  .prem-ring .pr-n b{position:relative;font-weight:800;}
+  .prem-ring .pr-n i{position:absolute;left:100%;bottom:1px;font-style:normal;font-size:10px;font-weight:700;margin-left:1px;}
+  /* 100% 는 세 자리라 % 가 원에 닿는다(사장님 2026-11-25) → 세 자리일 때만 글자를 줄인다 */
+  .prem-ring.pr-full .pr-n{font-size:14px;}
+  .prem-ring.pr-full .pr-n i{font-size:8.5px;}
+  .prem-ring.pr-full .pr-n b{left:-4px;}   /* % 까지 합친 «100%» 가 원 안에서 좌우 가운데에 오게 */
+  @media(max-width:640px){
+    /* 2026-11-25 사장님: 폰에서 «49%» 가 원에 닿았다(실측 -1.1px) → 원 52px · 글씨 12.5px · 숫자를 2px 왼쪽으로.
+       실측(375px 폰): 두 자리 5.2px · 100% 5.5px 띄워짐. */
+    .prem-ring{width:52px;height:52px;right:12px;}
+    .prem-card.has-ring > div:last-child{padding-right:62px;}
+    .prem-ring::before{inset:5px;}
+    .prem-ring .pr-cap::before{width:6px;height:6px;margin-left:-3px;}
+    .prem-ring .pr-n{font-size:12.5px;}
+    .prem-ring .pr-n i{font-size:8px;}
+    .prem-ring .pr-n b{left:-2px;}
+    .prem-ring.pr-full .pr-n{font-size:11px;}
+    .prem-ring.pr-full .pr-n i{font-size:7px;}
+    .prem-ring.pr-full .pr-n b{left:-3px;}
+  }
   /* 복습 모달 확장 (2026-07-17 피드백 6) — :has 미지원 구형 브라우저는 기본 폭으로 무해 저하 */
   .modal:has(#mk-review-box){max-width:720px;}
   /* 모의고사 해설 모달 copy guard — War Room(.wr-protected)과 동일 방식 (2026-07-30) */
@@ -10750,6 +10793,28 @@ async function mockFillLastScores(){
 }
 function mockSelectPart(p){ Mock.selPart=p; renderMockHub(); }
 
+// ── 진도 원그래프 데이터 (2026-11-25) ──
+//    get_re_prem_progress(p_state) 한 번에 National·주 숫자를 받는다(서버에서 계산 · 행 3개).
+//    🔴 화면을 그릴 때마다 부르지 말 것 — DB 디스크 사용량 경고(2026-11-25)가 있었다.
+//       한 번 받아 기억하고, 모의고사 채점·War Room 열람 뒤에만 «다시 받기» 표시를 한다.
+var PREM_PROG=null, _premProgP=null, _premProgStale=false;
+function premProgLoad(){
+  if(_premProgP && !_premProgStale) return _premProgP;
+  _premProgStale=false;
+  _premProgP = sb.rpc('get_re_prem_progress', { p_state: RE_STATE }).then(function(res){
+    if(res.error || !res.data || !res.data.length) return PREM_PROG;
+    var m={}; res.data.forEach(function(r){ m['Part '+r.part]=r; }); PREM_PROG=m; return m;
+  }, function(){ return PREM_PROG; });
+  return _premProgP;
+}
+function premProgStale(){ _premProgStale=true; }
+function premRing(pct){
+  var v=Math.max(0,Math.min(100,Math.round(pct||0)));
+  return '<div class="prem-ring'+(v>=100?' pr-full':'')+'" role="img" aria-label="'+v+'%" style="background:conic-gradient(var(--progress-bar) 0 '+v+'%,var(--ring-track) '+v+'% 100%);">'+
+    (v>0?'<span class="pr-cap"></span><span class="pr-cap" style="transform:rotate('+(v*3.6)+'deg);"></span>':'')+
+    '<span class="pr-n"><b>'+v+'<i>%</i></b></span></div>';
+}
+
 // ── 대시보드 진입 카드: 프리미엄 2버튼 (실전 모의고사 + War Room) ──
 //    · 아이콘 = 기존 언어 재사용: War Room 번개(메뉴와 동일 path) · 모의고사 스톱워치(시간제한 시험)
 //    · 🔒 는 모의고사에만 — War Room은 무료 샘플이 있어 진입 자체는 열어 둠(내부 게이트가 잠금)
@@ -10773,6 +10838,9 @@ function renderMockDashCard(){
     '</div>'+
     '</div>';
 }
+
+// 데이터가 도착하면 카드만 다시 그린다(다시 받지 않음) — 카드는 re/re-mock.js 의 renderMockDashCard 가 그린다
+function renderMockDashCardRings(){ try{ renderMockDashCard(); }catch(e){} }
 
 // ── 시작 ──
 async function mockStart(){
@@ -10979,6 +11047,7 @@ async function mockSubmit(){
   showToast(mL('채점 중…','Grading…'));
   try{
     var res=await sb.rpc('grade_mock_exam',{ p_attempt_id:Mock.attemptId, p_answers:answers });
+    premProgStale();
     if(res.error) throw res.error;
     Mock.result=res.data; Mock.result.part=Mock.part;
     mockClearLS(); Mock._practiceAck=false;
@@ -11680,16 +11749,18 @@ function _wrCloseTocMobile(){ if(window.innerWidth<=820){ var t=document.getElem
 // 그래서 고객이 "UBIA 설명이 어디에도 없다"고 했을 때도 그 사람이 War Room 을 열어 보긴 했는지
 // 확인할 수가 없었다. 짜임새는 공지 기록(logAnnView)과 똑같다.
 //   RPC: log_war_room_view(p_code) — war_room_views 에 upsert (서버가 중복을 셈으로 정리)
-//   · 관리자 본인 열람은 통계 오염 방지를 위해 보내지 않는다
+//   · 관리자 본인 열람도 보낸다(2026-11-25) — 고객 통계에서는 서버가 관리자를 뺀다
 //   · 함수가 아직 없거나 실패해도 조용히 무시 → 치트시트 보기에 영향 없음(배포 순서 무관)
 var _WR_VIEW_LOGGED = {};   // 한 번 켠 동안 같은 토픽 중복 전송 방지
 function logWrView(code){
   try{
     if(!code) return;
-    if(!SB_USER || SB_USER.id === ADMIN_UID) return;
+    // 2026-11-25 사장님 «관리자도 워룸 표시 — 저도 공부해야 하니까»: 관리자 열람도 남긴다(대시보드 진도 막대용).
+    //   고객 통계(admin_war_room_users · admin_re_war_room_users · admin_war_room_topic_stats)는 서버에서 관리자 계정을 뺀다.
+    if(!SB_USER) return;
     if(_WR_VIEW_LOGGED[code]) return;
     _WR_VIEW_LOGGED[code] = true;
-    sb.rpc('log_war_room_view', { p_code: code }).then(function(){}, function(){});
+    sb.rpc('log_war_room_view', { p_code: code }).then(function(){ premProgStale(); }, function(){});
   }catch(e){}
 }
 
@@ -12128,6 +12199,6 @@ document.addEventListener('keydown', function(e){
   setLang(LANG === 'ko' ? 'en' : 'ko');
 });
 </script>
-<script src="/re/re-mock.js?v=888a13cf77"></script>
+<script src="/re/re-mock.js?v=5b25e11afe"></script>
 </body>
 </html>
