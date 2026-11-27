@@ -2335,6 +2335,13 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
 .nwd-titles{margin:6px 0 8px; padding-left:18px; font-size:15px; font-weight:600; color:var(--text-main); line-height:1.5;}
 .nwd-titles li{margin-bottom:2px;}
 .nwd-go{font-size:14px; font-weight:700; color:var(--navy);}
+/* «Get it by email» under the IRS card (boss 2026-11-27): shown only to members who have not agreed to emails. */
+.nwd-mail{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; padding:12px 16px; border:1px dashed var(--border-clr); border-radius:12px; background:var(--card-bg, #fff);}
+.nwd-mail p{margin:0; font-size:13px; color:var(--text-mid); line-height:1.5; flex:1 1 220px;}
+.nwd-mail button{font:inherit; font-size:13.5px; font-weight:700; padding:8px 14px; border-radius:8px; border:none; background:var(--navy); color:#fff; cursor:pointer; white-space:nowrap;}
+.nwd-mail button:disabled{opacity:.6; cursor:default;}
+.nwd-mail.done{border-style:solid; border-color:var(--teal);}
+.nwd-mail.done p{color:var(--teal); font-weight:600;}
 #dash-videos .vx-pill, #screen-videos .vx-pill{background:var(--navy-light); border-color:var(--border-clr); color:var(--navy);}
 .dv-card .fs-grid{gap:clamp(20px,4vw,44px);}
 .dv-card .fs-media{width:200px;}
@@ -4143,6 +4150,7 @@ async function loadTrialStatus(){
     S.isPaid = !!data.is_paid;
     S.subCanceled = !!data.sub_canceled;   // 해지 예정(기간말 해지 신청됨) — 멤버십 카드 표시용
     S.marketingConsent = !!data.marketing_consent;
+    try{ if(!S.marketingConsent && document.getElementById('dash-irs-news')) renderDashIrsNews(); }catch(_e){}   // IRS card email button needs the consent value
     S.paidUntil = data.paid_until || null;   // 유료 만료/다음결제일 표시용
     S.planCode  = data.plan_code || null;
     S.firstName = data.first_name || null;
@@ -6509,6 +6517,35 @@ function loadVideoRows(force){
 // 2026-11-16 (boss): latest IRS weekly news on the dashboard — the week's article titles, opens the web page in a new tab.
 // Reads the anon view public_irs_news (filled by send-irs-news). No rows or an error: nothing is shown.
 var _NWD = { rows: {}, at: {} };
+// 2026-11-27 (boss): «매주 월요일 이메일로 받기» under the IRS card, only for members who have not agreed to emails.
+// The in-app email setting was removed in July and the opt-in popup shows once, so this is the way back in.
+// Writes the same marketing_consent column as the popup (column-level grant, own row only).
+function nwdMailBox(l){
+  // false only once the profile has loaded (undefined before), so consenting members never see it flash
+  if(!SB_USER || SB_USER.id === ADMIN_UID || S.marketingConsent !== false) return '';
+  var ko = (l === 'ko');
+  return '<div class="nwd-mail" id="nwd-mail"><p>' +
+    (ko ? '📬 IRS 주간 뉴스를 매주 월요일 이메일로도 받아 보세요. 버튼을 누르면 PracExam 이메일 수신에 동의하게 되며, 메일 아래 링크로 언제든 해지할 수 있습니다.'
+        : '📬 Get IRS Weekly in your inbox every Monday. Tapping the button means you agree to receive PracExam emails. You can unsubscribe anytime from the link in each email.') +
+    '</p><button type="button" onclick="nwdMailOptIn(this)">' + (ko ? '매주 월요일 이메일로 받기' : 'Email me every Monday') + '</button></div>';
+}
+async function nwdMailOptIn(btn){
+  if(!SB_USER || !btn) return;
+  var ko = (LANG === 'ko');
+  btn.disabled = true;
+  try{
+    var r = await sb.from('profiles').update({ marketing_consent: true, marketing_consent_at: new Date().toISOString() }).eq('id', SB_USER.id);
+    if(r.error) throw r.error;
+    S.marketingConsent = true;
+    try{ localStorage.setItem(MKT_BANNER_DISMISS_KEY, '1'); }catch(e){}
+    var box = document.getElementById('nwd-mail');
+    if(box){ box.classList.add('done'); box.innerHTML = '<p>' + (ko ? '✅ 신청되었습니다. 다음 월요일부터 이메일로 보내 드립니다.' : '✅ You are in. Look for it in your inbox next Monday.') + '</p>'; }
+  }catch(e){
+    console.warn('[IRS mail opt-in]', e);
+    btn.disabled = false;
+    try{ showToast(ko ? '저장하지 못했습니다. 잠시 후 다시 시도해 주세요.' : 'Could not save. Please try again.'); }catch(_){}
+  }
+}
 function renderDashIrsNews(){
   var el = document.getElementById('dash-irs-news'); if(!el) return;
   var l = (LANG === 'ko') ? 'ko' : 'en';
@@ -6524,7 +6561,7 @@ function renderDashIrsNews(){
         '<span class="nwd-date">' + esc(row.slug) + '</span>' +
         (ts.length ? '<ul class="nwd-titles">' + ts.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '') +
         '<span class="nwd-go">' + (l === 'ko' ? '읽기 →' : 'Read →') + '</span>' +
-      '</a>';
+      '</a>' + nwdMailBox(l);
   }
   if(_NWD.rows[l] !== undefined && (Date.now() - _NWD.at[l]) < 600000){ draw(_NWD.rows[l]); return; }
   fetch(SUPABASE_URL + '/rest/v1/public_irs_news?select=slug,html&lang=eq.' + l + '&order=slug.desc&limit=1',
