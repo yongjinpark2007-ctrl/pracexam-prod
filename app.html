@@ -638,6 +638,10 @@ html, body {
 }
 .setup-cta-btn:hover{background:linear-gradient(135deg,#4d6164,#354649);transform:translateY(-1px);}
 .setup-cta-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.mk-note{margin:2px 0 0;}
+.mk-note-h{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--text-dark,#232e30);margin:12px 0 4px;}
+.mk-note-h:first-child{margin-top:0;}
+.mk-note-ul{margin:0;padding-left:18px;font-size:15px;line-height:1.7;color:var(--text-mid);}
 .setup-cta-note{font-size:13px;color:var(--text-muted);text-align:center;margin-top:8px;}
 /* 「세션 시작」 붙박이 자리 — 2026-08-29 사용자 지시.
    까닭 = 주제 고르기가 들어오며 설정이 1,182px 로 길어져 «모든» 창 크기에서
@@ -10620,13 +10624,21 @@ function renderMockHub(){
     '<div class="setup-section-label">'+mL('파트 선택','Choose a part')+'</div>'+
     '<div class="setup-icon-grid setup-icon-grid-3">'+parts+'</div>'+
     '<div class="setup-divider"></div>'+
-    '<div style="font-size:15px;color:var(--text-mid);line-height:1.85;">'+
-      '• '+mL('실제 시험과 동일한 3시간 30분 제한 시간','Same 3-hour, 30-minute time limit as the real exam')+'<br>'+
-      '• '+mL('회당 100문항의 실전적 문제 구성 (채점 85 + 실험 15)','100 questions per exam (85 scored + 15 experimental)')+'<br>'+
-      '• '+mL('파트별 300문항(3세트 분량)의 매회 새로운 조합 테스트','300-question bank per part (three full exams) — a fresh test each attempt')+'<br>'+
-      '• '+mL('시험당 최대 2회 휴식 지원 (휴식 중 시험 시계 정지)','Up to 2 breaks per exam — clock pauses during breaks')+'<br>'+
-      '• '+mL('시험 종료 후 문항별 해설, 도메인별 결과, 약점 토픽 Top 5 분석 제공','Per-question explanations, results by domain, and Weak Topics Top 5 after you finish')+
-    '</div>'+
+    /* 안내문 3묶음 (2026-11-26 사장님 «두서없다» → Gemini 안: 시험 구성 → 진행 규칙 → 종료 후 제공). 사실은 그대로. */
+    (function(){
+      function grp(h,items){ return '<div class="mk-note-h">'+h+'</div><ul class="mk-note-ul">'+items.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>'; }
+      return '<div class="mk-note">'+
+        grp(mL('시험 구성','Exam format'),[
+          mL('회당 100문항 (채점 85 + 실험 15)','100 questions per exam (85 scored + 15 experimental)'),
+          mL('파트별 300문항(3회분) 중 매회 새로운 조합','A fresh test each attempt from a 300-question bank (3 full sets)')])+
+        grp(mL('진행 규칙','During the exam'),[
+          mL('제한 시간 3시간 30분 (실제 시험과 동일)','3-hour, 30-minute time limit (same as the real exam)'),
+          mL('최대 2회 휴식 (휴식 중 시계 정지)','Up to 2 breaks (the clock pauses during breaks)')])+
+        grp(mL('종료 후 제공','After you finish'),[
+          mL('문항별 해설과 도메인별 결과','Per-question explanations and results by domain'),
+          mL('약점 토픽 Top 5 분석','Weak Topics Top 5 analysis')])+
+      '</div>';
+    })()+
     '<div class="mk-lastscores" id="mock-lastscores"></div>'+
     (function(){
       if(!paid){
