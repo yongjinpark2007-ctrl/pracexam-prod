@@ -6525,9 +6525,9 @@ function nwdMailBox(l){
   if(!SB_USER || SB_USER.id === ADMIN_UID || S.marketingConsent !== false) return '';
   var ko = (l === 'ko');
   return '<div class="nwd-mail" id="nwd-mail"><p>' +
-    (ko ? '📬 IRS 주간 뉴스를 매주 월요일 이메일로도 받아 보세요. 버튼을 누르면 PracExam 이메일 수신에 동의하게 되며, 메일 아래 링크로 언제든 해지할 수 있습니다.'
-        : '📬 Get IRS Weekly in your inbox every Monday. Tapping the button means you agree to receive PracExam emails. You can unsubscribe anytime from the link in each email.') +
-    '</p><button type="button" onclick="nwdMailOptIn(this)">' + (ko ? '매주 월요일 이메일로 받기' : 'Email me every Monday') + '</button></div>';
+    (ko ? '📬 매주 월요일, 최신 IRS 주간 뉴스 정리를 메일함으로 배달해 드릴까요?'
+        : '📬 Want the latest IRS Weekly summary in your inbox every Monday?') +   // short copy set by the boss 2026-11-27
+    '</p><button type="button" onclick="nwdMailOptIn(this)">' + (ko ? 'IRS 주간 뉴스 받아보기' : 'Get IRS Weekly') + '</button></div>';
 }
 async function nwdMailOptIn(btn){
   if(!SB_USER || !btn) return;
