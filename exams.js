@@ -85,6 +85,31 @@
       }
     }catch(e){}
   }
-  function start(){ init(); paintPractice(); }
+  // 2026-11-27 (boss): the back bar under the header depends on who is reading.
+  //   Signed in (came from the app): «← 내 학습» on the left, «… →» on the right (as written in the page).
+  //   Not signed in: sending a visitor «back» to an app they never came from is odd, so drop «내 학습»
+  //   and turn the other button into the left-hand «← EA 홈 / ← IRS 주간 뉴스 …» back button.
+  function backBar(){
+    try{
+      var raw = localStorage.getItem('sb-ufrhvodruulpgnmudzwh-auth-token');
+      var sess = raw && JSON.parse(raw);
+      if(sess && (sess.access_token || sess.refresh_token)) return;
+    }catch(e){}
+    var bars = document.querySelectorAll('.px-backbar');
+    for(var i = 0; i < bars.length; i++){
+      var app = bars[i].querySelector('a.px-back-app');
+      if(!app) continue;
+      app.parentNode.removeChild(app);
+      var other = bars[i].querySelector('a.px-back');
+      if(!other) continue;
+      var parts = other.querySelectorAll('span.ko, span.en');
+      var nodes = parts.length ? parts : [other];
+      for(var k = 0; k < nodes.length; k++){
+        var t = nodes[k].textContent.replace(/\s*\u2192\s*$/, '').replace(/\s*더 보기$/, '').replace(/^More\s+/, '').trim();
+        nodes[k].textContent = '\u2190 ' + t;
+      }
+    }
+  }
+  function start(){ init(); paintPractice(); backBar(); }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
