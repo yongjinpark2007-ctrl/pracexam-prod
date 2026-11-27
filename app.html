@@ -215,7 +215,15 @@ html, body {
 /* Right-side cluster: nav + language toggle + hamburger */
 .header-right{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;flex-shrink:0;}
 /* Language toggle — landing-page style segmented control (adapted for dark header) */
-.lang-seg{display:inline-flex;border:1px solid rgba(255,255,255,.28);border-radius:8px;overflow:hidden;flex:0 0 auto;}
+.lang-seg{display:inline-flex;border:1px solid rgba(255,255,255,.28);border-radius:8px;flex:0 0 auto;position:relative;}
+.lang-seg button:first-child{border-radius:7px 0 0 7px;}
+.lang-seg button:last-child{border-radius:0 7px 7px 0;}
+/* Hover hint for the L hotkey (boss 2026-11-27). Mouse only; touch screens have no hover. overflow:hidden was dropped so the hint can sit outside the box; the button corners are rounded instead. */
+@media (hover:hover){
+  .lang-seg::after{content:"단축키 L";position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,-3px);white-space:nowrap;background:#1f2a2c;color:#fff;font-size:11.5px;font-weight:600;letter-spacing:.02em;padding:5px 9px;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:1000;}
+  html[lang="en"] .lang-seg::after{content:"Shortcut: L";}
+  .lang-seg:hover::after{opacity:1;transform:translate(-50%,0);}
+}
 .lang-seg button{
   font-family:inherit;font-weight:700;font-size:12px;letter-spacing:.04em;line-height:1.1;
   padding:6px 11px;border:none;background:transparent;color:rgba(255,255,255,.72);cursor:pointer;
@@ -1860,7 +1868,7 @@ function _joinCoverOff(){ var x = document.getElementById('join-cover'); if(x) x
       </div>
       <button class="nav-btn" id="nav-anomaly" onclick="showScreen('anomaly');closeDrawer()" style="display:none;"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="nav_admin">관리자</span></button>
     </div>
-    <div class="lang-seg" id="lang-seg" role="group" aria-label="Language" title="Shortcut: L">
+    <div class="lang-seg" id="lang-seg" role="group" aria-label="Language" aria-keyshortcuts="L">
       <button id="lang-ko" type="button" onclick="setLang('ko')">KO</button>
       <button id="lang-en" type="button" onclick="setLang('en')">EN</button>
     </div>
