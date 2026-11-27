@@ -39,6 +39,7 @@
   var q = new URLSearchParams(location.search);
   var u = q.get("u") || "", t = q.get("t") || "";
   var ko = q.get("l") === "ko";
+  var RE = q.get("k") === "re";   // 2026-11-27: the same page turns off PracExam Real Estate Weekly (k=re)
   var S = ko ? {
     title: "뉴스 수신 거부", desc: "주간 IRS 뉴스를 받지 않도록 설정합니다.",
     btn: "뉴스 수신 거부", working: "처리 중입니다…", doneT: "수신 거부가 완료되었습니다", doneD: "앞으로 주간 IRS 뉴스를 보내지 않습니다.",
@@ -50,11 +51,21 @@
     undo: "Changed your mind?", again: "Subscribe again", backT: "You are subscribed again", backD: "We will send you the weekly IRS news again starting next week.",
     bad: "This link cannot be used. Please click the link in your email again.", fail: "We could not save that. Please try again in a moment.", home: "Go to PracExam"
   };
+  if (RE) {
+    var R = ko ? {
+      title: "부동산 위클리 수신 거부", desc: "부동산 위클리 메일을 받지 않도록 설정합니다.", btn: "부동산 위클리 수신 거부",
+      doneD: "앞으로 부동산 위클리를 보내지 않습니다.", backD: "다음 주부터 부동산 위클리를 다시 보내 드립니다."
+    } : {
+      title: "Unsubscribe from Real Estate Weekly", desc: "This turns off the Real Estate Weekly emails.", btn: "Unsubscribe from Real Estate Weekly",
+      doneD: "We will no longer send you Real Estate Weekly.", backD: "We will send you Real Estate Weekly again starting next week."
+    };
+    for (var key in R) S[key] = R[key];
+  }
   var $ = function (id) { return document.getElementById(id); };
   function show(title, desc, cls) { $("t").textContent = title; $("d").textContent = desc || ""; $("msg").textContent = ""; $("msg").className = "small " + (cls || ""); }
   function home() { $("alt").innerHTML = '<a href="https://pracexam.com">' + S.home + "</a>"; }
   function post(action) {
-    return fetch(API + "?u=" + encodeURIComponent(u) + "&t=" + encodeURIComponent(t) + "&a=" + action, { method: "POST" })
+    return fetch(API + "?u=" + encodeURIComponent(u) + "&t=" + encodeURIComponent(t) + "&a=" + action + (RE ? "&k=re" : ""), { method: "POST" })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j }; }); });
   }
   function offDone() {
