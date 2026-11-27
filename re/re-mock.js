@@ -83,12 +83,16 @@
     else cta = '<button class="setup-cta-btn" style="margin-top:1.25rem;" onclick="mockStart()">' + mL('모의고사 시작', 'Start mock exam') + '</button>';
     html += '<div class="start-card"><div class="setup-section-label">' + mL('회차 선택', 'Choose a set') + '</div>' +
       '<div class="setup-icon-grid" style="grid-template-columns:repeat(2,1fr);gap:12px;">' + sets + '</div><div class="setup-divider"></div>' +
-      '<div style="font-size:15px;color:var(--text-mid);line-height:1.85;">' +
-        '• ' + mL(F.ko[0], F.en[0]) + '<br>' +
-        '• ' + mL(F.ko[1], F.en[1]) + '<br>' +
-        '• ' + mL('시험당 최대 2회 휴식 (휴식 중 시험 시계 정지)', 'Up to 2 breaks per exam — clock pauses during breaks') + '<br>' +
-        '• ' + mL('시험 종료 후 문항별 해설, 영역별 결과, 약점 토픽 Top 5 분석 제공', 'Per-question explanations, results by area, and Weak Topics Top 5 after you finish') +
-      '</div><div class="mk-lastscores" id="mock-lastscores"></div>' + cta +
+      /* 안내문 3묶음 (2026-11-26 사장님: EA와 같게 «시험 구성 → 진행 규칙 → 종료 후 제공»). 주별 사실(F)은 그대로. */
+      (function(){
+        function grp(h, items){ return '<div class="mk-note-h">' + h + '</div><ul class="mk-note-ul">' + items.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>'; }
+        return '<div class="mk-note">' +
+          grp(mL('시험 구성', 'Exam format'), [mL(F.ko[0], F.en[0]), mL(F.ko[1], F.en[1])]) +
+          grp(mL('진행 규칙', 'During the exam'), [mL('최대 2회 휴식 (휴식 중 시계 정지)', 'Up to 2 breaks (the clock pauses during breaks)')]) +
+          grp(mL('종료 후 제공', 'After you finish'), [mL('문항별 해설과 영역별 결과', 'Per-question explanations and results by area'), mL('약점 토픽 Top 5 분석', 'Weak Topics Top 5 analysis')]) +
+        '</div>';
+      })() +
+      '<div class="mk-lastscores" id="mock-lastscores"></div>' + cta +
       '<div style="margin-top:12px;text-align:center;"><a href="#" onclick="showScreen(\'mock-history\');return false;" style="font-size:14.5px;color:var(--teal);font-weight:700;text-decoration:none;">' +
         mL('모의고사 이력 보기 →', 'View history →') + '</a></div></div>';
     el.innerHTML = html;
