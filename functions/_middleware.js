@@ -561,7 +561,7 @@ async function irsNews(context, p) {
     title += " | PracExam";
     desc = (lang === "ko" ? "IRS Tax Tip 한국어 정리 (" + row.slug + "): " : "Plain-English summary of IRS Tax Tips (" + row.slug + "): ") + (titles.length ? titles.join(" · ") : head);
     if (desc.length > 300) desc = desc.slice(0, 297) + "...";
-    back = { href: nwPath(lang, ""), label: lang === "ko" ? "&larr; IRS 주간 뉴스" : "&larr; IRS Weekly" };
+    back = { href: nwPath(lang, ""), label: lang === "ko" ? "IRS 주간 뉴스 더 보기 &rarr;" : "More IRS Weekly &rarr;" };
     main = '<div class="nw-page">'
       + '<article class="nw-article" lang="' + lang + '">' + nwClean(row.html) + "</article>"
       + '<p class="nw-note">' + nwEsc(L.note) + "</p>"
@@ -590,7 +590,7 @@ async function irsNews(context, p) {
         + (mine.length > 3 ? '<div class="nw-older"><h3>' + (K ? "지난 주간 정리" : "Earlier weeks") + "</h3><ul>"
           + mine.slice(3).map(r => '<li><a href="' + nwPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + "</span>" + nwEsc(nwHeadline(r, L)) + "</a></li>").join("") + "</ul></div>" : "")
       : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
-    back = { href: L.homeHref, label: lang === "ko" ? "&larr; EA 홈" : "&larr; EA Home" };
+    back = { href: L.homeHref, label: lang === "ko" ? "EA 홈 &rarr;" : "EA Home &rarr;" };
     main = '<div class="nw-page nw-page-list">'
       + '<span class="nw-eyebrow">' + (K ? "IRS Tax Tip 한국어판" : "IRS TAX TIPS") + "</span><h1>" + (K ? "IRS 주간 뉴스" : "IRS Weekly") + "</h1>"
       + '<section class="nw-sec" aria-labelledby="nw-sec-news"><div class="nw-sec-head"><h2 id="nw-sec-news">' + (K ? "IRS 주간 Tax Tip" : "IRS Weekly Tax Tips") + "</h2>"
@@ -626,8 +626,8 @@ async function irsNews(context, p) {
     .on('link[rel="alternate"][type="application/rss+xml"]', new AttrSetter("href", nwUrl(lang, "") + "rss.xml"))
     .on("script#nw-ld", { element(el) { el.setInnerContent(JSON.stringify(ld).replace(/</g, "\\u003c"), { html: true }); } })
     .on("#nw-main", { element(el) { el.setInnerContent(main, { html: true }); } })
-    .on(".px-backbar", { element(el) { if (back) el.setInnerContent('<a class="px-back" href="' + back.href + '">' + back.label + "</a>"
-      + '<a class="px-back px-back-app" href="/app">' + (lang === "ko" ? "내 학습 &rarr;" : "My Practice &rarr;") + "</a>", { html: true }); } });   // boss 2026-11-17
+    .on(".px-backbar", { element(el) { if (back) el.setInnerContent('<a class="px-back px-back-app" href="/app">' + (lang === "ko" ? "&larr; 내 학습" : "&larr; My Practice") + "</a>"
+      + '<a class="px-back" href="' + back.href + '">' + back.label + "</a>", { html: true }); } });   // boss 2026-11-17; 2026-11-27 boss: «← 내 학습» (back to the app) on the left, «… →» (go further) on the right
   if (robots) out = out.on("head", { element(el) { el.append('<meta name="robots" content="' + robots + '">', { html: true }); } });
   // a missing other-language issue: drop that hreflang line instead of pointing it at a list page
   if (slug && !otherHas) out = out.on('link[rel="alternate"][hreflang="' + other + '"]', { element(el) { el.remove(); } });
@@ -785,7 +785,7 @@ async function reNews(context, p) {
     title += " | PracExam";
     desc = row.summary || row.headline;
     if (desc.length > 300) desc = desc.slice(0, 297) + "...";
-    back = { href: rnPath(lang, ""), label: K ? "&larr; 부동산 위클리" : "&larr; Real Estate Weekly" };
+    back = { href: rnPath(lang, ""), label: K ? "부동산 위클리 더 보기 &rarr;" : "More Real Estate Weekly &rarr;" };
     main = '<div class="nw-page"><article class="nw-article" lang="' + lang + '">' + nwClean(row.html) + "</article>"
       + '<p class="nw-note">' + nwEsc(L.note) + "</p>" + cta
       + '<p class="nw-more"><a href="' + rnPath(lang, "") + '">' + nwEsc(L.more) + " &rarr;</a></p></div>";
@@ -806,14 +806,15 @@ async function reNews(context, p) {
         + (mine.length > 3 ? '<div class="nw-older"><h3>' + L.earlier + "</h3><ul>"
           + mine.slice(3).map(r => '<li><a href="' + rnPath(lang, r.slug) + '"><span class="nw-date">' + nwEsc(r.slug) + "</span>" + nwEsc(r.headline) + "</a></li>").join("") + "</ul></div>" : "")
       : '<p class="nw-empty">' + nwEsc(L.empty) + "</p>";
-    back = { href: L.homeHref, label: K ? "&larr; RE 홈" : "&larr; RE Home" };
+    back = { href: L.homeHref, label: K ? "RE 홈 &rarr;" : "RE Home &rarr;" };
     main = '<div class="nw-page nw-page-list"><span class="nw-eyebrow">' + L.eyebrow + "</span><h1>" + nwEsc(L.h1) + "</h1>"
       + '<p class="nw-lead">' + nwEsc(L.lead) + "</p>" + list + cta + "</div>";
     ld = { "@context": "https://schema.org", "@type": "CollectionPage", name: L.h1, description: desc, inLanguage: lang, url: selfUrl,
       hasPart: mine.slice(0, 20).map(r => ({ "@type": "Article", headline: r.headline.slice(0, 110), url: rnUrl(lang, r.slug), datePublished: r.issue_date })) };
   }
-  const backHtml = '<a class="px-back" href="' + back.href + '">' + back.label + "</a>"
-    + '<a class="px-back px-back-app" href="/re/app">' + (K ? "내 학습 &rarr;" : "My Practice &rarr;") + "</a>";
+  // 2026-11-27 boss: «← 내 학습» (back to the app) on the left, «… →» (go further) on the right
+  const backHtml = '<a class="px-back px-back-app" href="/re/app">' + (K ? "&larr; 내 학습" : "&larr; My Practice") + "</a>"
+    + '<a class="px-back" href="' + back.href + '">' + back.label + "</a>";
   let out = new HTMLRewriter()
     .on("html", new AttrSetter("lang", lang))
     .on("html", new AttrSetter("class", "lang-" + lang))
