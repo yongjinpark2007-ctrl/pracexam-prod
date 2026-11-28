@@ -250,3 +250,5 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
   .rvi-av{width:44px; height:44px; font-size:19px; margin:0;}
   .rvi-ver,.rvi-pass,.rvi-date{margin:0;}
 }
+.rvi-star{color:#E0A526; margin-right:2px;}
+.rvi-sub{font-weight:600; letter-spacing:.06em; color:var(--text-muted);}

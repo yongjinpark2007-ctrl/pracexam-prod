@@ -188,7 +188,7 @@
       +   '<p class="rvi-date">' + dateText(r.date) + '</p>'
       + '</div>'
       + '<div class="rvi-main">'
-      +   '<p class="rvi-eyebrow">' + bi('고객 인터뷰', 'CUSTOMER INTERVIEW') + '</p>'
+      +   '<p class="rvi-eyebrow"><span class="rvi-star" aria-hidden="true">\u2605</span> FEATURED REVIEW <span class="rvi-sub">' + bi('· 고객 인터뷰', '· CUSTOMER INTERVIEW') + '</span></p>'   // boss 2026-11-27: «Featured Review»
       +   '<h3 class="rvi-head">' + head + '</h3>'
       +   qa
       +   '<p class="rvi-note">' + (r.subscriber
