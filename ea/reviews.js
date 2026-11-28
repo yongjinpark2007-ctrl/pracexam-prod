@@ -85,6 +85,7 @@
     return live.then(function(rows){
       rows = Array.isArray(rows) ? rows : [];
       if (!IS_TEST) return rows;   // pracexam.com never requests the sample file
+      if (/[?&]rv=live\b/.test(location.search)) return rows;   // test site: see exactly what pracexam.com shows (spotlight check)
       // boss 2026-11-14: on the test site add 3 English SAMPLE reviews so the section can be seen (needs 3 English)
       return loadSample().then(function(sm){
         var en3 = (sm || []).filter(function(r){ return r.lang === 'en'; }).slice(0, 3);
@@ -153,11 +154,67 @@
 
   var MIN_EN = 3;   // boss 2026-11-14: at least 3 published reviews (any language; Korean ones carry an English translation)
 
+  // ── Interview spotlight (boss 2026-11-27): until the carousel has its 3 reviews, show the best one as a short
+  //    interview (our question -> the customer's own words, as written). Verified Subscriber is stressed: the badge is
+  //    only on members with a paid subscription, and the pass is the customer's own answer (said so on the card).
+  //    When 3+ reviews are published this goes away by itself and the carousel takes over.
+  var STATE_NAMES = { AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California', CO:'Colorado', CT:'Connecticut', DE:'Delaware',
+    FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois', IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana',
+    ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota', MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska',
+    NV:'Nevada', NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York', NC:'North Carolina', ND:'North Dakota', OH:'Ohio',
+    OK:'Oklahoma', OR:'Oregon', PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota', TN:'Tennessee', TX:'Texas',
+    UT:'Utah', VT:'Vermont', VA:'Virginia', WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming', DC:'Washington, D.C.' };
+  function spotlight(r){
+    var p = (r.passed || []).filter(function(n){ return n >= 1 && n <= 3; }).sort();
+    var first = esc(String(r.name || '').split(/\s+/)[0] || r.name || '');
+    var st = r.state ? esc(STATE_NAMES[String(r.state).toUpperCase()] || r.state) : '';
+    var init = esc(String(r.name || '?').trim().charAt(0).toUpperCase());
+    var head = p.length
+      ? bi('Part ' + p.join('·') + ' 합격, ' + first + ' 님의 이야기', first + '\u2019s story: passed Part ' + p.join(' & '))
+      : bi(first + ' 님의 이야기', first + '\u2019s story');
+    var tr = r.lang === 'ko' && r.helped_en;
+    function ans(ko, en){ return tr ? '<div class="ko" lang="ko">' + esc(ko) + '</div><div class="en" lang="en">' + esc(en) + '</div>' : esc(ko); }
+    var qa = '<div class="rvi-qa"><p class="rvi-q">' + bi('PracExam에서 가장 도움이 된 것은 무엇이었나요?', 'What helped you most in PracExam?') + '</p>'
+      + '<blockquote class="rvi-a" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">' + ans(r.helped, r.helped_en) + '</blockquote></div>';
+    if (r.advice) qa += '<div class="rvi-qa"><p class="rvi-q">' + bi('앞으로 EA를 준비하는 분들께 한마디 해 주세요.', 'Any advice for future EAs?') + '</p>'
+      + '<blockquote class="rvi-a" lang="' + (r.lang === 'ko' ? 'ko' : 'en') + '">' + ans(r.advice, r.advice_en) + '</blockquote></div>';
+    return '<article class="rvi" id="' + key(r) + '">'
+      + '<div class="rvi-side">'
+      +   '<span class="rvi-av" aria-hidden="true">' + init + '</span>'
+      +   '<p class="rvi-name">' + esc(r.name) + '</p>'
+      +   (st ? '<p class="rvi-where">' + st + '</p>' : '')
+      +   '<p class="rvi-ver">' + CHECK + (r.subscriber ? bi('인증된 구독 회원', 'Verified Subscriber') : bi('인증된 회원', 'Verified User')) + '</p>'
+      +   (p.length ? '<p class="rvi-pass"><img src="/check-mark.png" alt="" width="14" height="14">' + bi('Part ' + p.join('·') + ' 합격', 'Passed Part ' + p.join(' & ')) + '</p>' : '')
+      +   '<p class="rvi-date">' + dateText(r.date) + '</p>'
+      + '</div>'
+      + '<div class="rvi-main">'
+      +   '<p class="rvi-eyebrow"><span class="rvi-star" aria-hidden="true">\u2605</span> FEATURED REVIEW <span class="rvi-sub">' + bi('· 고객 인터뷰', '· CUSTOMER INTERVIEW') + '</span></p>'   // boss 2026-11-27: «Featured Review»
+      +   '<h3 class="rvi-head">' + head + '</h3>'
+      +   qa
+      +   '<p class="rvi-note">' + (r.subscriber
+            ? bi('PracExam 구독 결제가 확인된 회원이 직접 작성한 후기입니다. 답변은 고객이 쓴 그대로이며, 합격 여부는 본인 응답입니다.',
+                 'Written by a PracExam member with a confirmed paid subscription. Answers are in the customer\u2019s own words; the pass is self-reported.')
+            : bi('PracExam 회원이 직접 작성한 후기입니다. 답변은 고객이 쓴 그대로이며, 합격 여부는 본인 응답입니다.',
+                 'Written by a PracExam member. Answers are in the customer\u2019s own words; the pass is self-reported.')) + '</p>'
+      + '</div></article>';
+  }
+  function renderSpotlight(sec, all){
+    var r = all.filter(function(x){ return x.featured; })[0];
+    if (!r) return;
+    var box = document.getElementById('rv-carousels');
+    if (!box) return;
+    box.innerHTML = spotlight(r);
+    var more = sec.querySelector('.rv-more'); if (more) more.hidden = true;   // the /ea/reviews/ page still waits for 3
+    if (r.lang !== 'ko' || r.helped_en) sec.classList.remove('rv-few-en'); else sec.classList.add('rv-few-en');
+    sec.hidden = false;
+    sec.classList.add('rv-spot');
+  }
+
   // ── EA landing section ──
   function renderLanding(sec, list){
     var all = sortReviews(list);
     var en = all.filter(function(r){ return r.lang !== 'ko' || r.helped_en; });
-    if (all.length < MIN_EN) return;   // boss 2026-11-14: no section until there are 3 published reviews in any language (test site too)
+    if (all.length < MIN_EN) { renderSpotlight(sec, all); return; }   // boss 2026-11-14: carousel only from 3 reviews; until then one interview (2026-11-27)
     var box = document.getElementById('rv-carousels'), ban = document.getElementById('rv-banner');
     if (ban) ban.innerHTML = sampleBanner(all);
     if (box){
