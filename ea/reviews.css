@@ -260,3 +260,10 @@ a.rv-card:focus-visible{outline:2px solid var(--navy); outline-offset:2px;}
 #reviews.rv-spot .rvi{border-color:rgba(53,70,73,.10); box-shadow:0 6px 24px rgba(53,70,73,.08);}
 #reviews.rv-spot .rvi-a{font-family:inherit; font-style:normal; font-size:16px; line-height:1.75; color:#2b3a3c;
   background:#F7FAF9; border-left-color:var(--accent,#6FA39E); border-radius:0 10px 10px 0; padding:12px 16px;}
+/* v3 (boss 2026-11-27): heading at the same size as the other landing sections; a deeper (still soft) gradient */
+#reviews.reviews.rv-spot{background:linear-gradient(160deg,#C9DFDB 0%,#DCE3D9 45%,#EAD6C4 100%); padding:72px 0 64px;}
+#reviews.rv-spot .rv-head{max-width:620px; margin:0 auto 36px;}
+#reviews.rv-spot .rv-head .eyebrow{margin-bottom:10px;}
+#reviews.rv-spot .rv-head h2{font-size:clamp(26px,4vw,38px); line-height:1.2; margin-bottom:0;}
+#reviews.rv-spot .rvi{box-shadow:0 10px 30px rgba(53,70,73,.12);}
+@media (max-width:720px){ #reviews.reviews.rv-spot{padding:48px 0 44px;} }
